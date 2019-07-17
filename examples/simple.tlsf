@@ -1,0 +1,21 @@
+INFO{
+TITLE:       "BC example"
+DESCRIPTION: "Example of unrealizability" 
+SEMANTICS:   Mealy
+TARGET: Mealy
+}
+MAIN{
+INPUTS{
+p;r;
+}
+OUTPUTS{
+q;
+}
+ASSUME{
+G (r -> p);
+}
+GUARANTEE{
+G (p -> q);
+G (p -> !q);
+}
+}
