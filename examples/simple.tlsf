@@ -1,21 +1,28 @@
-INFO{
-TITLE:       "BC example"
-DESCRIPTION: "Example of unrealizability" 
-SEMANTICS:   Mealy
-TARGET: Mealy
+INFO {
+  TITLE:       "TLSF - Test Specification"
+  DESCRIPTION: "Test Test Test"
+  SEMANTICS:   Mealy_Strict
+  TARGET:      Moore_Strict
 }
-MAIN{
-INPUTS{
-p;r;
-}
-OUTPUTS{
-q;
-}
-ASSUME{
-G (r -> p);
-}
-GUARANTEE{
-G (p -> q);
-G (p -> !q);
-}
+
+MAIN {
+  INPUTS {
+    a1;b2;c3;d4;e5;
+  }
+  OUTPUTS {
+    f6;g7;h8;i9;
+  }
+
+  REQUIRE {
+    c3;
+  }
+
+  ASSUMPTIONS {
+    (f6 & g7);
+  }
+
+  GUARANTEES {
+    h8;
+    i9;
+  }
 }
