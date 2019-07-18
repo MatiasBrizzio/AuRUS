@@ -32,7 +32,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Test;
 
 import geneticalgorithm.TLSF_Utils;
-import owl.grammar.TLSFParser;
 import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.parser.*;
@@ -336,4 +335,18 @@ class TlsfParserTest {
 	Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
 	System.out.println(tlsf2);
   }
+  
+  @Test
+  void testTlsfEmpty() throws IOException {
+    Tlsf tlsf = TlsfParser.parse(TLSF_Utils.TLSF_EXAMPLE_SPEC);
+    System.out.println(tlsf);
+  }
+  
+  @Test
+  void testTlsfChangeSpec() throws IOException {
+    Tlsf tlsf = TlsfParser.parse(TLSF_Utils.TLSF_EXAMPLE_SPEC);
+    Tlsf tlsf2 = TLSF_Utils.change_assumptions(tlsf, LtlParser.syntax("G(a)"));
+    System.out.println(tlsf2);
+  }
+  
 }

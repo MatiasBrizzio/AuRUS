@@ -1,29 +1,55 @@
 package geneticalgorithm;
 
 import java.util.List;
-
-import org.hamcrest.core.IsInstanceOf;
-
 import com.lagodiuk.ga.Chromosome;
-
-import owl.ltl.BooleanConstant;
-import owl.ltl.Formula;
-import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 
 public class SpecificationChromosome implements Chromosome<SpecificationChromosome>, Cloneable {
 	
-	Tlsf spec = null;
+	// 			 /  ASSUMPTIONS  \
+	// UNKNOWN --				  --  UNREALIZABLE  --  REALIZABLE
+	//			 \  GUARANTEES   /
+	
+	// we distinguish the particular case when the specification is realizable
+	// just because the assumptions are unsatisfiable.
+	
+	public static enum SPEC_STATUS {
+		UNKNOWN, 		// UNKNOWN: the status of the specification has not been computed yet.
+		ASSUMPTIONS, 	// ASSUMPTIONS: the environment assumptions are consistent, but not the goals.
+		GUARANTEES, 	// GUARANTEES: the goals are consistent, but not the environment assumptions.
+		UNREALIZABLE, 	// UNREALIZABLE: the specification is consistent, but not realizable.
+		REALIZABLE;		// REALIZABLE: the specification is consistent and realizable.
+	
+		public boolean compatible (SPEC_STATUS other) {
+			if (this == UNKNOWN || other == UNKNOWN 
+				|| (this == ASSUMPTIONS && other == ASSUMPTIONS) 
+				|| (this == GUARANTEES && other == GUARANTEES)
+				)
+				return false;
+			
+			return true;
+		}
+	};
+		
+	public Tlsf spec = null;
+	public SPEC_STATUS status = SPEC_STATUS.UNKNOWN;
 	
 	public SpecificationChromosome() {
-		// TODO Auto-generated constructor stub
+		spec = null;
+		this.status = SPEC_STATUS.UNKNOWN;
 	}
 	
 	public SpecificationChromosome(Tlsf spec) {
-		this.spec = TlsfParser.parse(spec.toString());
+		this.spec = TlsfParser.parse(TLSF_Utils.toTLSF(spec));
+		this.status = SPEC_STATUS.UNKNOWN;
 	}
 
+	public SpecificationChromosome(SpecificationChromosome other) {
+		this.spec = TlsfParser.parse(TLSF_Utils.toTLSF(other.spec));
+		this.status = other.status;
+	}
+	
 	@Override
 	public List<SpecificationChromosome> crossover(SpecificationChromosome anotherChromosome) {
 		// TODO Auto-generated method stub
@@ -32,8 +58,10 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 
 	@Override
 	public SpecificationChromosome mutate() {
-		// TODO Auto-generated method stub
-		return null;
+		//clone the current specification
+		SpecificationChromosome mutated_chromosome = new SpecificationChromosome(this);
+		
+		return mutated_chromosome;
 	}
 
 	
