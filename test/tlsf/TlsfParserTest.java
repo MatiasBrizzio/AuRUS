@@ -1,4 +1,4 @@
-package parser;
+package tlsf;
 /*
  * Copyright (C) 2016 - 2018  (See AUTHORS)
  *
@@ -26,14 +26,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Test;
 
-import geneticalgorithm.TLSF_Utils;
+import geneticalgorithm.SpecificationMerger;
+import owl.ltl.Formula;
+import owl.ltl.Formula.LogicalOperator;
+import owl.ltl.Formula.ModalOperator;
+import owl.ltl.Formula.TemporalOperator;
 import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
+import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
 
 class TlsfParserTest {
@@ -345,8 +356,20 @@ class TlsfParserTest {
   @Test
   void testTlsfChangeSpec() throws IOException {
     Tlsf tlsf = TlsfParser.parse(TLSF_Utils.TLSF_EXAMPLE_SPEC);
-    Tlsf tlsf2 = TLSF_Utils.change_assumptions(tlsf, LtlParser.syntax("G(a)"));
-    System.out.println(tlsf2);
+    Tlsf tlsf1 = TLSF_Utils.change_assume(tlsf, LtlParser.syntax("G(a)"));
+    Tlsf tlsf2 = TLSF_Utils.change_initially(tlsf, LtlParser.syntax("b & c"));
+    List<Tlsf> res = SpecificationMerger.merge(tlsf1, tlsf2);
+    System.out.println(res);
+  }
+  
+  @Test
+  void testFormulas() throws IOException {
+	  List<String> vars = List.of("a", "b", "c");
+	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  System.out.println(f);
+//	  System.out.println(f.formula().subformulas(TemporalOperator.class));
+      System.out.println(Formula_Utils.subformulas(f, vars));
+//      System.out.println(f);
   }
   
 }

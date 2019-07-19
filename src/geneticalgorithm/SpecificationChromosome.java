@@ -4,6 +4,7 @@ import java.util.List;
 import com.lagodiuk.ga.Chromosome;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
+import tlsf.TLSF_Utils;
 
 public class SpecificationChromosome implements Chromosome<SpecificationChromosome>, Cloneable {
 	

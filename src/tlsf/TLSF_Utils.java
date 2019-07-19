@@ -1,4 +1,4 @@
-package geneticalgorithm;
+package tlsf;
 
 import java.util.List;
 
@@ -559,7 +559,7 @@ public class TLSF_Utils {
 		return TlsfParser.parse(new_tlsf_spec);
 	}
 
-	public static Tlsf change_assumptions(Tlsf spec, Formula new_assumption) {
+	public static Tlsf change_assume(Tlsf spec, Formula new_assumption) {
 		String tlsf_spec = "INFO {\n"
 			    + "  TITLE:       " + spec.title() + "\n"
 			    + "  DESCRIPTION: " + spec.description() + "\n";			    
