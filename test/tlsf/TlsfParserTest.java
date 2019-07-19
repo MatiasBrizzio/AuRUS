@@ -38,6 +38,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Test;
 
 import geneticalgorithm.SpecificationMerger;
+import owl.grammar.LTLParserBaseVisitor;
 import owl.ltl.Formula;
 import owl.ltl.Formula.LogicalOperator;
 import owl.ltl.Formula.ModalOperator;
@@ -368,8 +369,27 @@ class TlsfParserTest {
 	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
 	  System.out.println(f);
 //	  System.out.println(f.formula().subformulas(TemporalOperator.class));
-      System.out.println(Formula_Utils.subformulas(f, vars));
+      System.out.println(Formula_Utils.subformulas(f));
 //      System.out.println(f);
+  }
+  
+  @Test
+  void testSplitConjunction() throws IOException {
+	  List<String> vars = List.of("a", "b", "c");
+	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  System.out.println(f);
+      System.out.println(Formula_Utils.splitConjunction(f));
+  }
+  
+  @Test
+  void testReplaceSubformula() throws IOException {
+	  List<String> vars = List.of("a", "b", "c");
+	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  LabelledFormula src = LtlParser.parse("a", vars);
+	  LabelledFormula target = LtlParser.parse("c", vars);
+	  System.out.println(f);
+      System.out.println(Formula_Utils.replaceSubformula(f.formula(), src.formula(), target.formula()));
+      System.out.println(f);
   }
   
 }

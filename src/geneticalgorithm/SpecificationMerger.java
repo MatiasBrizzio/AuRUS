@@ -15,8 +15,8 @@ public class SpecificationMerger {
 		return merge(spec0, spec1, SPEC_STATUS.UNKNOWN, SPEC_STATUS.UNKNOWN, 0);
 	}
 
-	// level == 0 implements random merge (no guarantee consistency); 
-	// level == 1 merges the assumptions and guarantees (no guarantee consistency);
+	// level == 0 implements random swap (no guarantee consistency); 
+	// level == 1 implements random merge of the assumptions and guarantees (no guarantee consistency);
 	// level == 2 swaps assumptions and guarantees preserving consistency; and
 	// level == 3 merges the assumptions and guarantees preserving consistency.
 	public static List<Tlsf> merge(Tlsf spec0, Tlsf spec1, SPEC_STATUS status0, SPEC_STATUS status1, int level) {
