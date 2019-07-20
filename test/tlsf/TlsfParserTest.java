@@ -23,6 +23,7 @@ package tlsf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,7 +50,78 @@ import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
 
 class TlsfParserTest {
-
+	
+	  private static final String TLSFFULL = "INFO {\n" 
+			  + "  TITLE:       \"Parameterized Load Balancer\"\n" 
+			  + "  DESCRIPTION: \"Parameterized Load Balancer (generalized version of the Acacia+ benchmark)\"\n" 
+			  + "  SEMANTICS:   Moore\n" 
+			  + "  TARGET:      Mealy\n" 
+			  + "}\n" 
+			  + "\n" 
+			  + "GLOBAL {\n" 
+			  + "  PARAMETERS {\n" 
+			  + "    n = 2;\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  DEFINITIONS {\n" 
+			  + "    // ensures mutual exclusion on an n-ary bus\n" 
+			  + "    mutual_exclusion(bus) =\n" 
+			  + "     mone(bus,0,(SIZEOF bus) - 1);\n" 
+			  + "\n" 
+			  + "    // ensures that none of the signals\n" 
+			  + "    // bus[i] - bus[j] is HIGH\n" 
+			  + "    none(bus,i,j) =\n" 
+			  + "      &&[i <= t <= j]\n" 
+			  + "        !bus[t];\n" 
+			  + "\n" 
+			  + "    // ensures that at most one of the signals\n" 
+			  + "    // bus[i] - bus[j] is HIGH\n" 
+			  + "    mone(bus,i,j) =\n" 
+			  + "    i > j : false\n" 
+			  + "    i == j : true\n" 
+			  + "    i < j :\n" 
+			  + "      // either no signal of the lower half is HIGH and at \n" 
+			  + "      // most one signal of the upper half is HIGH\n" 
+			  + "      (none(bus, i, m(i,j)) && mone(bus, m(i,j) + 1, j)) ||\n" 
+			  + "      // or at most one signal of the lower half is HIGH\n" 
+			  + "      // and no signal in of the upper half is HIGH\n" 
+			  + "      (mone(bus, i, m(i,j)) && none(bus, m(i,j) + 1, j));\n" 
+			  + "\n" 
+			  + "    // returns the position between i and j\n" 
+			  + "    m(i,j) = (i + j) / 2;\n" 
+			  + "  }   \n" 
+			  + "}\n" 
+			  + "\n" 
+			  + "MAIN {\n" 
+			  + "\n" 
+			  + "  INPUTS {\n" 
+			  + "    idle;\n" 
+			  + "    request[n];\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  OUTPUTS {\n" 
+			  + "    grant[n];\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  ASSUMPTIONS {\n" 
+			  + "    G F idle;\n" 
+			  + "    G (idle && X &&[0 <= i < n] !grant[i] -> X idle);\n" 
+			  + "    G (X !grant[0] || X ((!request[0] && !idle) U (!request[0] && idle)));\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  INVARIANTS {\n" 
+			  + "    X mutual_exclusion(grant);    \n" 
+			  + "    &&[0 <= i < n] (X grant[i] -> request[i]);\n" 
+			  + "    &&[0 < i < n] (request[0] -> grant[i]);\n" 
+			  + "    !idle -> X &&[0 <= i < n] !grant[i];\n" 
+			  + "  }\n"
+			  + "\n" 
+			  + "  GUARANTEES {\n" 
+			  + "    &&[0 <= i < n] ! F G (request[i] && X !grant[i]);\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "}";
+	
   private static final String TLSF1 = "INFO {\n"
     + "  TITLE:       \"LTL -> DBA  -  Example 12\"\n"
     + "  DESCRIPTION: \"One of the Acacia+ example files\"\n"
@@ -332,7 +404,7 @@ class TlsfParserTest {
   
   @Test
   void testTlsfFile() throws IOException {
-	  String filename = "examples/simple.tlsf";
+	  String filename = "examples/round_robin_arbiter.tlsf";
 //		System.out.println(TLSF_COMPLETE);
 
 	  FileReader f = new FileReader(filename);
@@ -341,6 +413,7 @@ class TlsfParserTest {
 //    System.out.println(tlsf.inputs());
 //    System.out.println(tlsf);
     System.out.println(TLSF_Utils.toTLSF(tlsf));
+   // TLSF_Utils.toBasicTLSF(tlsf);
     
 //	System.out.println(LabelledFormula.of(tlsf.assume(), tlsf.variables()));
 	
@@ -349,9 +422,24 @@ class TlsfParserTest {
   }
   
   @Test
+  void testTlsfFile2() throws IOException, InterruptedException {
+	  String filename = "examples/round_robin_arbiter.tlsf";
+	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+	  //Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
+	  System.out.println("TLSF TEST2 \n "+TLSF_Utils.toTLSF(tlsf)+" \n end TLSF TEST2");
+	  
+  }
+  
+  @Test
   void testTlsfEmpty() throws IOException {
     Tlsf tlsf = TlsfParser.parse(TLSF_Utils.TLSF_EXAMPLE_SPEC);
     System.out.println(tlsf);
+  }
+  
+  @Test
+  void testTlsfFullString() throws IOException, InterruptedException {
+	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(TLSFFULL);
+	  System.out.println("TLSF FULL TEST STRING \n "+TLSF_Utils.toTLSF(tlsf)+" \n END TLSF FULL TEST STRING");
   }
   
   @Test

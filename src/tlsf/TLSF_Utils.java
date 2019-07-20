@@ -1,5 +1,15 @@
 package tlsf;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.List;
 
 import owl.ltl.BooleanConstant;
@@ -36,6 +46,45 @@ public class TLSF_Utils {
 		    + "    true;\n"
 		    + "  }  \n"
 		    + '}';
+	
+	private static String getCommand(){
+		String cmd = "";
+		String currentOS = System.getProperty("os.name");
+		if (currentOS.startsWith("Mac"))
+				cmd = "./lib/syfco_macos";
+		else
+			cmd = "./lib/syfco";
+		System.out.println(cmd);
+		return cmd;
+	}
+	
+	public static Tlsf toBasicTLSF(String spec) throws IOException, InterruptedException {
+		File file = null;
+		try {
+			file = new File("out2.tlsf");
+			FileWriter fileWriter = new FileWriter(file);
+			fileWriter.write(spec);
+			fileWriter.flush();
+			fileWriter.close();
+			String cmd = getCommand();
+			cmd += " -o out2.tlsf -f basic -m pretty -s0 out2.tlsf"; 
+			Process p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+			return toBasicTLSF(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+
+	}
+	
+	public static Tlsf toBasicTLSF(File spec) throws IOException {
+		String cmd = getCommand();
+		cmd += " -o "+ spec.getAbsolutePath() +" -f basic -m pretty -s0 " +spec.getAbsolutePath();
+		Runtime.getRuntime().exec(cmd);
+		return TlsfParser.parse(new FileReader(spec));
+	}
 	
 	public static String toTLSF(Tlsf spec) {
 		String tlsf_spec = "INFO {\n"
