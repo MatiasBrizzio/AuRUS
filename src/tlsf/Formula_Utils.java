@@ -8,6 +8,7 @@ import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.Formula.LogicalOperator;
+import owl.ltl.parser.LtlParser;
 import owl.ltl.LabelledFormula;
 
 public class Formula_Utils {
@@ -69,5 +70,9 @@ public class Formula_Utils {
 			}
 		}
 		return f0;
+	}
+
+	public static LabelledFormula replaceSubformula(LabelledFormula f, LabelledFormula src, LabelledFormula target) {
+		return LtlParser.parse(f.toString().replace(src.toString(), target.toString()),f.variables());
 	}
 }

@@ -475,9 +475,11 @@ class TlsfParserTest {
 	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
 	  LabelledFormula src = LtlParser.parse("a", vars);
 	  LabelledFormula target = LtlParser.parse("c", vars);
-	  System.out.println(f);
-      System.out.println(Formula_Utils.replaceSubformula(f.formula(), src.formula(), target.formula()));
-      System.out.println(f);
+
+	  System.out.println("Before replace subformula "+f);
+     // System.out.println(Formula_Utils.replaceSubformula(f.formula(), src.formula(), target.formula()));
+      f = Formula_Utils.replaceSubformula(f, src, target);
+      System.out.println("After replace subformula! "+f);
   }
   
 }
