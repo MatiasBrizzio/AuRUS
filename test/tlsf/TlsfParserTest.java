@@ -482,4 +482,16 @@ class TlsfParserTest {
       System.out.println("After replace subformula! "+f);
   }
   
+  @Test
+  void testReplaceSubformula2() throws IOException {
+	  List<String> vars = List.of("grant0","grant1");
+	  LabelledFormula src = LtlParser.parse("F (grant0 || grant1)", vars);
+	  LabelledFormula target =  LtlParser.parse("G (grant0 && grant1) -> grant1",vars);
+
+
+	  System.out.println("Before replace subformula "+src);
+      src = Formula_Utils.replaceSubformula(src, target);
+      System.out.println("After replace subformula! "+ src);
+  }
+  
 }

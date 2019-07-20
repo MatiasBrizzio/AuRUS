@@ -45,13 +45,16 @@ public class Formula_Utils {
 		// select randomly the fub formula of f0 to be replaced
 		List<LabelledFormula> subformulas_f0 = subformulas(f0);
 		LabelledFormula src = subformulas_f0.get(rand.nextInt(subformulas_f0.size()));
+		System.out.println("Selected source formula "+ src);
 		
 		// get randomly the sub formula of f1 to be used to replace in f0.
 		List<LabelledFormula> subformulas_f1 = subformulas(f1);
 		LabelledFormula target = subformulas_f1.get(rand.nextInt(subformulas_f1.size()));
+		System.out.println("Selected target formula "+target);
 		
 		LabelledFormula f0_copy = LabelledFormula.of(f0.formula(), f0.variables());
-		replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
+		//replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
+		f0_copy = replaceSubformula(f0_copy, src, target);
 		return f0_copy;
 	}
 	
