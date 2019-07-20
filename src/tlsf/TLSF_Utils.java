@@ -79,11 +79,12 @@ public class TLSF_Utils {
 
 	}
 	
-	public static Tlsf toBasicTLSF(File spec) throws IOException {
+	public static Tlsf toBasicTLSF(File spec) throws IOException, InterruptedException {
 		String cmd = getCommand();
 		String tlsfBasic = spec.getAbsolutePath().replace(".tlsf","_basic.tlsf");
 		cmd += " -o "+ tlsfBasic +" -f basic -m pretty -s0 " +spec.getAbsolutePath();
-		Runtime.getRuntime().exec(cmd);
+		Process p = Runtime.getRuntime().exec(cmd);
+		p.waitFor();
 		return TlsfParser.parse(new FileReader(new File(tlsfBasic)));
 	}
 	
