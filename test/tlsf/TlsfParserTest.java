@@ -471,13 +471,12 @@ class TlsfParserTest {
   
   @Test
   void testReplaceSubformula() throws IOException {
-	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  List<String> vars = List.of("aa", "a", "c");
+	  LabelledFormula f =  LtlParser.parse("G !(aa -> !a)",vars);
 	  LabelledFormula src = LtlParser.parse("a", vars);
 	  LabelledFormula target = LtlParser.parse("c", vars);
 
 	  System.out.println("Before replace subformula "+f);
-     // System.out.println(Formula_Utils.replaceSubformula(f.formula(), src.formula(), target.formula()));
       f = Formula_Utils.replaceSubformula(f, src, target);
       System.out.println("After replace subformula! "+f);
   }
