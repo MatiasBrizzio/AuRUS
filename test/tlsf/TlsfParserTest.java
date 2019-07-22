@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import geneticalgorithm.SpecificationMerger;
@@ -408,17 +409,9 @@ class TlsfParserTest {
 //		System.out.println(TLSF_COMPLETE);
 
 	  FileReader f = new FileReader(filename);
-    Tlsf tlsf = TlsfParser.parse(f);
-//    System.out.println(tlsf.variables());
-//    System.out.println(tlsf.inputs());
-//    System.out.println(tlsf);
-    System.out.println(TLSF_Utils.toTLSF(tlsf));
-   // TLSF_Utils.toBasicTLSF(tlsf);
     
-//	System.out.println(LabelledFormula.of(tlsf.assume(), tlsf.variables()));
-	
-	Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
-	System.out.println(tlsf2);
+    
+    Assertions.assertThrows(ParseCancellationException.class, () -> TlsfParser.parse(f));
   }
   
   @Test
