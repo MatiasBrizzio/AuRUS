@@ -17,6 +17,7 @@ import owl.ltl.Formula;
 import owl.ltl.Formula.LogicalOperator;
 import owl.ltl.parser.FormulaParser;
 import owl.ltl.parser.LtlParser;
+import owl.ltl.parser.SubformulaReplacer;
 import owl.ltl.parser.TokenErrorListener;
 import owl.ltl.LabelledFormula;
 
@@ -84,11 +85,31 @@ public class Formula_Utils {
 		return f0;
 	}
 
+//	public static LabelledFormula replaceSubformula(LabelledFormula f, LabelledFormula src, LabelledFormula target) {
+//		String form = f.formula().toString().replace(src.formula().toString(), target.formula().toString());
+////		System.out.println(form);
+//		
+//		CharStream input = CharStreams.fromString(form);
+//		// Tokenize the stream
+//	    LTLLexer lexer = new LTLLexer(input);
+//	    // Don't print long error messages on the console
+//	    lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
+//	    // Add a fail-fast behaviour for token errors
+//	    lexer.addErrorListener(new TokenErrorListener());
+//	    CommonTokenStream tokens = new CommonTokenStream(lexer);
+//
+//	    // Parse the tokens
+//	    LTLParser parser = new LTLParser(tokens);
+//		 // Convert the AST into a proper object
+//	    FormulaParser formVisitor = new FormulaParser(f.variables());
+//	    return LabelledFormula.of(formVisitor.visit(parser.formula()), formVisitor.variables());
+//	}
+	
 	public static LabelledFormula replaceSubformula(LabelledFormula f, LabelledFormula src, LabelledFormula target) {
-		String form = f.formula().toString().replace(src.formula().toString(), target.formula().toString());
+		//String form = f.formula().toString().replace(src.formula().toString(), target.formula().toString());
 //		System.out.println(form);
 		
-		CharStream input = CharStreams.fromString(form);
+		CharStream input = CharStreams.fromString(f.toString());
 		// Tokenize the stream
 	    LTLLexer lexer = new LTLLexer(input);
 	    // Don't print long error messages on the console
@@ -100,7 +121,7 @@ public class Formula_Utils {
 	    // Parse the tokens
 	    LTLParser parser = new LTLParser(tokens);
 		 // Convert the AST into a proper object
-	    FormulaParser formVisitor = new FormulaParser(f.variables());
-	    return LabelledFormula.of(formVisitor.visit(parser.formula()), formVisitor.variables());
+	    SubformulaReplacer formVisitor = new SubformulaReplacer(src, target, f.variables());
+	    return LabelledFormula.of(formVisitor.visit(parser.formula()), f.variables());
 	}
 }

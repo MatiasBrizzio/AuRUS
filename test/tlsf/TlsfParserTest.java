@@ -470,12 +470,50 @@ class TlsfParserTest {
   }
   
   @Test
-  void testReplaceSubformula() throws IOException {
-	  List<String> vars = List.of("aa", "a", "c");
+  void testReplaceSubformula0() throws IOException {
+	  List<String> vars = List.of("aa", "a", "c", "d", "e", "f", "g", "h", "i", "j", "k");
 	  LabelledFormula f =  LtlParser.parse("G !(aa -> !a)",vars);
 	  LabelledFormula src = LtlParser.parse("a", vars);
 	  LabelledFormula target = LtlParser.parse("c", vars);
 
+	  System.out.println("Before replace subformula "+f);
+      f = Formula_Utils.replaceSubformula(f, src, target);
+      System.out.println("After replace subformula! "+f);
+  }
+  
+  @Test
+  void testReplaceSubformula0b() throws IOException {
+	  List<String> vars = List.of("aa", "a", "c", "d", "e", "f", "g", "h", "i", "j", "k");
+	  LabelledFormula f =  LtlParser.parse("G !(aa -> !a)",vars);
+	  LabelledFormula src = LtlParser.parse("Gaa", vars);
+	  LabelledFormula target = LtlParser.parse("c", vars);
+
+	  System.out.println("Before replace subformula "+f);
+      f = Formula_Utils.replaceSubformula(f, src, target);
+      System.out.println("After replace subformula! "+f);
+  }
+  
+  @Test
+  void testReplaceSubformula1() throws IOException {
+	  List<String> vars = List.of("aa", "a", "c", "d", "e", "f", "g", "h", "i", "j", "k");
+	  LabelledFormula f =  LtlParser.parse("G !(k -> !a)",vars);
+	  LabelledFormula src = LtlParser.parse("a", vars);
+	  LabelledFormula target = LtlParser.parse("c", vars);
+
+	  System.out.println("Before replace subformula "+f);
+      f = Formula_Utils.replaceSubformula(f, src, target);
+      System.out.println("After replace subformula! "+f);
+  }
+  
+  @Test
+  void testReplaceSubformula1b() throws IOException {
+	  List<String> vars = List.of("aa", "a", "c", "d", "e", "f", "g", "h", "i", "j", "k");
+	  LabelledFormula f =  LtlParser.parse("G !(k -> !a)",vars);
+	  System.out.println(f.formula());
+	  LabelledFormula src = LtlParser.parse("k", vars);
+	  System.out.println(src.formula());
+	  LabelledFormula target = LtlParser.parse("Fc", vars);
+	  System.out.println(target.formula().toString());
 	  System.out.println("Before replace subformula "+f);
       f = Formula_Utils.replaceSubformula(f, src, target);
       System.out.println("After replace subformula! "+f);
