@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
+import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -80,4 +81,6 @@ public class SpecificationMerger {
 		}
 		return merged_specifications;
 	}
+	
+
 }
