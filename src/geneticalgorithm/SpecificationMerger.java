@@ -100,7 +100,7 @@ public class SpecificationMerger {
 			List<LabelledFormula> contraints_preset1 = Formula_Utils.splitConjunction(preset1);
 			
 			List<Formula> new_preset = getRandomFormulas(contraints_preset0);
-			new_init.addAll(getRandomFormulas(contraints_preset1));		
+			new_preset.addAll(getRandomFormulas(contraints_preset1));		
 			new_spec = TLSF_Utils.change_preset(new_spec,Conjunction.of(new_preset));
 			
 			// set require
@@ -111,7 +111,7 @@ public class SpecificationMerger {
 			List<LabelledFormula> contraints_require1 = Formula_Utils.splitConjunction(require1);
 			
 			List<Formula> new_require = getRandomFormulas(contraints_require0);
-			new_init.addAll(getRandomFormulas(contraints_require1));		
+			new_require.addAll(getRandomFormulas(contraints_require1));		
 			new_spec = TLSF_Utils.change_require(new_spec,Conjunction.of(new_require));
 			
 			// set assert
@@ -124,7 +124,7 @@ public class SpecificationMerger {
 				contraints_assert1.add(LabelledFormula.of(a, spec1.variables()));
 			
 			List<Formula> new_assert = getRandomFormulas(contraints_assert0);
-			new_init.addAll(getRandomFormulas(contraints_assert1));		
+			new_assert.addAll(getRandomFormulas(contraints_assert1));		
 			new_spec = TLSF_Utils.change_assert(new_spec,new_assert);
 			
 			// set assume
@@ -240,7 +240,123 @@ public class SpecificationMerger {
 			}
 			
 			merged_specifications.add(new_spec);
+		}
+		else if (level == 3 && status0.compatible(status1)) {
+			//create empty specification
+			Tlsf new_spec = TLSF_Utils.empty_spec(spec0);
 			
+			// set initially
+			if (status0.areAssumptionsSAT() && status1.areAssumptionsSAT()) {
+				LabelledFormula init0 =  LabelledFormula.of(spec0.initially(), spec0.variables());
+				List<LabelledFormula> contraints_init0 = Formula_Utils.splitConjunction(init0);
+				
+				LabelledFormula init1 =  LabelledFormula.of(spec1.initially(), spec1.variables());
+				List<LabelledFormula> contraints_init1 = Formula_Utils.splitConjunction(init1);
+				
+				List<Formula> new_init = getRandomFormulas(contraints_init0);
+				new_init.addAll(getRandomFormulas(contraints_init1));
+				
+				new_spec = TLSF_Utils.change_initially(new_spec,Conjunction.of(new_init));
+			}
+			else if (status0.areAssumptionsSAT()) {
+					new_spec = TLSF_Utils.change_initially(new_spec, spec0.initially());
+			}
+			else if (status1.areAssumptionsSAT()) {
+				new_spec = TLSF_Utils.change_initially(new_spec, spec1.initially());
+			}
+			
+			// set preset
+			if (status0.areGuaranteesSAT() && status1.areGuaranteesSAT()) {
+				LabelledFormula preset0 =  LabelledFormula.of(spec0.preset(), spec0.variables());
+				List<LabelledFormula> contraints_preset0 = Formula_Utils.splitConjunction(preset0);
+				
+				LabelledFormula preset1 =  LabelledFormula.of(spec1.preset(), spec1.variables());
+				List<LabelledFormula> contraints_preset1 = Formula_Utils.splitConjunction(preset1);
+				
+				List<Formula> new_preset = getRandomFormulas(contraints_preset0);
+				new_preset.addAll(getRandomFormulas(contraints_preset1));		
+				new_spec = TLSF_Utils.change_preset(new_spec,Conjunction.of(new_preset));
+			}
+			else if (status0.areGuaranteesSAT()) {
+					new_spec = TLSF_Utils.change_preset(new_spec, spec0.preset());
+			}
+			else if (status1.areGuaranteesSAT()) {
+				new_spec = TLSF_Utils.change_preset(new_spec, spec1.preset());
+			}
+			
+			// set require
+			if (status0.areAssumptionsSAT() && status1.areAssumptionsSAT()) {
+				LabelledFormula require0 =  LabelledFormula.of(spec0.require(), spec0.variables());
+				List<LabelledFormula> contraints_require0 = Formula_Utils.splitConjunction(require0);
+				
+				LabelledFormula require1 =  LabelledFormula.of(spec1.require(), spec1.variables());
+				List<LabelledFormula> contraints_require1 = Formula_Utils.splitConjunction(require1);
+				
+				List<Formula> new_require = getRandomFormulas(contraints_require0);
+				new_require.addAll(getRandomFormulas(contraints_require1));		
+				new_spec = TLSF_Utils.change_require(new_spec,Conjunction.of(new_require));
+			}
+			else if (status0.areAssumptionsSAT()) {
+				new_spec = TLSF_Utils.change_require(new_spec, spec0.require());
+			}
+			else if (status1.areAssumptionsSAT()) {
+				new_spec = TLSF_Utils.change_require(new_spec, spec1.require());
+			}
+			
+			// set assert
+			if (status0.areGuaranteesSAT() && status1.areGuaranteesSAT()) {
+				List<LabelledFormula> contraints_assert0 = new LinkedList<LabelledFormula>();
+				for (Formula a : spec0.assert_())
+					contraints_assert0.add(LabelledFormula.of(a, spec0.variables()));
+				
+				List<LabelledFormula> contraints_assert1 = new LinkedList<LabelledFormula>();
+				for (Formula a : spec1.assert_())
+					contraints_assert1.add(LabelledFormula.of(a, spec1.variables()));
+				
+				List<Formula> new_assert = getRandomFormulas(contraints_assert0);
+				new_assert.addAll(getRandomFormulas(contraints_assert1));		
+				new_spec = TLSF_Utils.change_assert(new_spec,new_assert);
+			}
+			else if (status0.areGuaranteesSAT()) {
+					new_spec = TLSF_Utils.change_assert(new_spec, spec0.assert_());
+			}
+			else if (status1.areGuaranteesSAT()) {
+				new_spec = TLSF_Utils.change_assert(new_spec, spec1.assert_());
+			}
+			
+			// set assume
+			if (status0.areAssumptionsSAT() && status1.areAssumptionsSAT()) {
+				LabelledFormula assumspec0 =  LabelledFormula.of(spec0.assume(), spec0.variables());
+				List<LabelledFormula> assumesspec0 = Formula_Utils.splitConjunction(assumspec0);
+				
+				LabelledFormula assumspec1 =  LabelledFormula.of(spec1.assume(), spec1.variables());
+				List<LabelledFormula> assumesspec1 = Formula_Utils.splitConjunction(assumspec1);
+				
+				List<Formula> f = getRandomFormulas(assumesspec0);
+				f.addAll(getRandomFormulas(assumesspec1));	
+				System.out.println("asd");
+				new_spec = TLSF_Utils.change_assume(new_spec,f);
+			}
+			else if (status0.areAssumptionsSAT()) {
+				System.out.println("asd2");
+					new_spec = TLSF_Utils.change_assume(new_spec, spec0.assume());
+			}
+			else if (status1.areAssumptionsSAT()) {
+				System.out.println("asd22");
+				new_spec = TLSF_Utils.change_assume(new_spec, spec1.assume());
+			}
+			
+			// set guarantees
+			if (status0.areGuaranteesSAT() && status1.areGuaranteesSAT()) {
+				new_spec = TLSF_Utils.change_guarantees(new_spec, mergeGuarantess(spec0.guarantee(),spec1.guarantee()));		
+			}
+			else if (status0.areGuaranteesSAT()) {
+					new_spec = TLSF_Utils.change_guarantees(new_spec, spec0.guarantee());
+			}
+			else if (status1.areGuaranteesSAT()) {
+				new_spec = TLSF_Utils.change_guarantees(new_spec, spec1.guarantee());
+			}
+			merged_specifications.add(new_spec);
 		}
 		return merged_specifications;
 	}
