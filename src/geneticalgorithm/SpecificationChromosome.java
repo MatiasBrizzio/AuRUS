@@ -37,6 +37,18 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 			
 			return true;
 		}
+		
+		public boolean areAssumptionsSAT () {
+			return (this == ASSUMPTIONS || this == CONTRADICTORY || this == UNREALIZABLE || this == REALIZABLE);
+		}
+		
+		public boolean areGuaranteesSAT () {
+			return (this == GUARANTEES || this == CONTRADICTORY || this == UNREALIZABLE || this == REALIZABLE);
+		}
+		
+		public boolean isSpecificationConsistent () {
+			return (this == UNREALIZABLE || this == REALIZABLE);
+		}
 	};
 		
 	public Tlsf spec = null;

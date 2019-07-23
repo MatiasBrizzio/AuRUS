@@ -97,4 +97,11 @@ class SpecificationMergerTest {
 		assertTrue(!mergeRes.get(0).equals(TlsfParser.parse(TLSF2)));
 	}
 
+	@Test
+	void testMergeLevel2() {
+		List<Tlsf> mergeRes = SpecificationMerger.merge(TlsfParser.parse(TLSF1), TlsfParser.parse(TLSF2),SPEC_STATUS.CONTRADICTORY, SPEC_STATUS.GUARANTEES, 2);
+		System.out.println(TLSF_Utils.toTLSF(mergeRes.get(0)));
+		assertTrue(!mergeRes.get(0).equals(TlsfParser.parse(TLSF1)));
+		assertTrue(!mergeRes.get(0).equals(TlsfParser.parse(TLSF2)));
+	}
 }

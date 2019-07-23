@@ -424,6 +424,16 @@ class TlsfParserTest {
   }
   
   @Test
+  void testTlsfMinepump() throws IOException, InterruptedException {
+	  String filename = "examples/minepump.tlsf";
+	  FileReader f = new FileReader(filename);
+	    Tlsf tlsf = TlsfParser.parse(f);
+//	  Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
+	  System.out.println(TLSF_Utils.toTLSF(tlsf));
+	  
+  }
+  
+  @Test
   void testTlsfEmpty() throws IOException {
     Tlsf tlsf = TlsfParser.parse(TLSF_Utils.TLSF_EXAMPLE_SPEC);
     System.out.println(tlsf);
