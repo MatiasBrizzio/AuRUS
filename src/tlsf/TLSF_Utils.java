@@ -797,7 +797,7 @@ public class TLSF_Utils {
 		    tlsf_spec += "  }\n";
 		}
 		tlsf_spec += '}';
-		
+
 		return TlsfParser.parse(tlsf_spec);
 	}
 		
@@ -876,7 +876,7 @@ public class TLSF_Utils {
 		}
 
 		if (!new_assumes.isEmpty()) {
-			tlsf_spec += "  ASSUMPTIONSs {\n";
+			tlsf_spec += "  ASSUMPTIONS {\n";
 			
 		    for (Formula f : new_assumes) {
 		    	tlsf_spec += "    " + LabelledFormula.of(f,spec.variables()) + ";\n"	;
@@ -893,7 +893,7 @@ public class TLSF_Utils {
 		    tlsf_spec += "  }\n";
 		}
 		tlsf_spec += '}';
-		
+
 		return TlsfParser.parse(tlsf_spec);
 	}
 	

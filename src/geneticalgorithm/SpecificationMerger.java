@@ -90,11 +90,13 @@ public class SpecificationMerger {
 			List<LabelledFormula> assumesspec1 = Formula_Utils.splitConjunction(assumspec1);
 			
 			List<Formula> f = getRandomFormulas(assumesspec0);
-			f.addAll(getRandomFormulas(assumesspec1));
+			f.addAll(getRandomFormulas(assumesspec1));		
 			newspec = TLSF_Utils.change_assume(newspec,f);
 			
 			//merge guarantees randomly
 			newspec = TLSF_Utils.change_guarantees(newspec, mergeGuarantess(spec0.guarantee(),spec1.guarantee()));		
+			
+			merged_specifications.add(newspec);
 		}
 		else if (level == 2 && status0.compatible(status1)) {
 			
@@ -105,35 +107,37 @@ public class SpecificationMerger {
 
 	private static List<Formula> mergeGuarantess(List<Formula> guarantee, List<Formula> guarantee2) {
 		Random rand1 = new Random(System.currentTimeMillis());
-		int amountOfFormulas2 = rand1.nextInt(guarantee2.size());
-		int amountOfFormulas1 = rand1.nextInt(guarantee.size());
-		
 		List<Formula> newg = new ArrayList<Formula>();
-		Formula selectedFormula;
-		while (newg.size() != amountOfFormulas1) {
-			selectedFormula = guarantee.get(rand1.nextInt(guarantee.size()));
-			if (newg.contains(selectedFormula)) continue;
-			else newg.add(selectedFormula);
-		}
-		
 		List<Formula> newg2 = new ArrayList<Formula>();
-		while (newg2.size() != amountOfFormulas2) {
-			selectedFormula = guarantee2.get(rand1.nextInt(guarantee2.size()));
-			if (newg2.contains(selectedFormula)) continue;
-			else newg2.add(selectedFormula);
+		Formula selectedFormula;
+		if (!guarantee.isEmpty()) {
+			int amountOfFormulas1 = rand1.nextInt((guarantee.size()))+1;
+			while (newg.size() != amountOfFormulas1) {
+				selectedFormula = guarantee.get(rand1.nextInt(guarantee.size()));
+				if (newg.contains(selectedFormula)) continue;
+				else newg.add(selectedFormula);
+			}
 		}
-		
+		if (!guarantee2.isEmpty()) {
+			int amountOfFormulas2 = rand1.nextInt(guarantee2.size())+1;
+			while (newg2.size() != amountOfFormulas2) {
+				selectedFormula = guarantee2.get(rand1.nextInt(guarantee2.size()));
+				if (newg2.contains(selectedFormula)) continue;
+				else newg2.add(selectedFormula);
+			}	
+		}
+
 		newg.addAll(newg2);
 		return newg;
 	}
 
 	private static List<Formula> getRandomFormulas(List<LabelledFormula> assumesspec0) {
 		Random rand1 = new Random(System.currentTimeMillis());
-		int amountOfFormulas = rand1.nextInt(assumesspec0.size());
+		int amountOfFormulas = !assumesspec0.isEmpty()? rand1.nextInt(assumesspec0.size())+1 : 0;
 		
 		List<LabelledFormula> newAssumes = new ArrayList<LabelledFormula>();
-
 		LabelledFormula selectedFormula;
+		
 		while (newAssumes.size() != amountOfFormulas) {
 			selectedFormula = assumesspec0.get(rand1.nextInt(assumesspec0.size()));
 			if (newAssumes.contains(selectedFormula)) continue;
