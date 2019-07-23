@@ -3,6 +3,7 @@ package geneticalgorithm;
 import java.util.Random;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
+import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -13,6 +14,9 @@ public class SpecificationMutator {
 
 		//create empty specification
 		Tlsf new_spec = TLSF_Utils.empty_spec(spec);
+		
+		if (spec.assume() instanceof Literal)
+		{ }
 		
 		// set initially
 //		int turn = rand.nextInt(2);

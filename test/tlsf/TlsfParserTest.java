@@ -457,11 +457,11 @@ class TlsfParserTest {
   @Test
   void testFormulas() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  LabelledFormula f =  LtlParser.parse("a <-> b",vars);
 	  System.out.println(f);
 //	  System.out.println(f.formula().subformulas(TemporalOperator.class));
       System.out.println(Formula_Utils.subformulas(f));
-//      System.out.println(f);
+      System.out.println(f.formula().children());
   }
   
   @Test
