@@ -1,12 +1,17 @@
 package geneticalgorithm;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import owl.ltl.Formula;
+import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
+import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
 public class SpecificationMerger {
@@ -72,8 +77,24 @@ public class SpecificationMerger {
 			merged_specifications.add(new_spec);
 		}
 		else if (level == 1) {
+			//Create a new spec to fill all tlsf file 
+			List<Tlsf> newSpec = merge(spec0,spec1,status0,status1,0);
+			Tlsf newspec = newSpec.get(0);
 			
-				
+			//Get assume form spec0
+			LabelledFormula assumspec0 =  LabelledFormula.of(spec0.assume(), spec0.variables());
+			List<LabelledFormula> assumesspec0 = Formula_Utils.splitConjunction(assumspec0);
+			
+			//Get assume from spec1
+			LabelledFormula assumspec1 =  LabelledFormula.of(spec1.assume(), spec1.variables());
+			List<LabelledFormula> assumesspec1 = Formula_Utils.splitConjunction(assumspec1);
+			
+			List<Formula> f = getRandomFormulas(assumesspec0);
+			f.addAll(getRandomFormulas(assumesspec1));
+			newspec = TLSF_Utils.change_assume(newspec,f);
+			
+			//merge guarantees randomly
+			newspec = TLSF_Utils.change_guarantees(newspec, mergeGuarantess(spec0.guarantee(),spec1.guarantee()));		
 		}
 		else if (level == 2 && status0.compatible(status1)) {
 			
@@ -81,6 +102,47 @@ public class SpecificationMerger {
 		}
 		return merged_specifications;
 	}
-	
 
-}
+	private static List<Formula> mergeGuarantess(List<Formula> guarantee, List<Formula> guarantee2) {
+		Random rand1 = new Random(System.currentTimeMillis());
+		int amountOfFormulas2 = rand1.nextInt(guarantee2.size());
+		int amountOfFormulas1 = rand1.nextInt(guarantee.size());
+		
+		List<Formula> newg = new ArrayList<Formula>();
+		Formula selectedFormula;
+		while (newg.size() != amountOfFormulas1) {
+			selectedFormula = guarantee.get(rand1.nextInt(guarantee.size()));
+			if (newg.contains(selectedFormula)) continue;
+			else newg.add(selectedFormula);
+		}
+		
+		List<Formula> newg2 = new ArrayList<Formula>();
+		while (newg2.size() != amountOfFormulas2) {
+			selectedFormula = guarantee2.get(rand1.nextInt(guarantee2.size()));
+			if (newg2.contains(selectedFormula)) continue;
+			else newg2.add(selectedFormula);
+		}
+		
+		newg.addAll(newg2);
+		return newg;
+	}
+
+	private static List<Formula> getRandomFormulas(List<LabelledFormula> assumesspec0) {
+		Random rand1 = new Random(System.currentTimeMillis());
+		int amountOfFormulas = rand1.nextInt(assumesspec0.size());
+		
+		List<LabelledFormula> newAssumes = new ArrayList<LabelledFormula>();
+
+		LabelledFormula selectedFormula;
+		while (newAssumes.size() != amountOfFormulas) {
+			selectedFormula = assumesspec0.get(rand1.nextInt(assumesspec0.size()));
+			if (newAssumes.contains(selectedFormula)) continue;
+			else newAssumes.add(selectedFormula);
+		}
+		List<Formula> newAssm = new ArrayList<Formula>();
+		for (LabelledFormula lf : newAssumes) {
+			newAssm.add(lf.formula());
+		}
+		return newAssm;
+	}
+	}
