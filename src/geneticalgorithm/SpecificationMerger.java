@@ -334,15 +334,12 @@ public class SpecificationMerger {
 				
 				List<Formula> f = getRandomFormulas(assumesspec0);
 				f.addAll(getRandomFormulas(assumesspec1));	
-				System.out.println("asd");
 				new_spec = TLSF_Utils.change_assume(new_spec,f);
 			}
 			else if (status0.areAssumptionsSAT()) {
-				System.out.println("asd2");
 					new_spec = TLSF_Utils.change_assume(new_spec, spec0.assume());
 			}
 			else if (status1.areAssumptionsSAT()) {
-				System.out.println("asd22");
 				new_spec = TLSF_Utils.change_assume(new_spec, spec1.assume());
 			}
 			

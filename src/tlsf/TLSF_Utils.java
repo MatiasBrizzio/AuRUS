@@ -1,5 +1,7 @@
 package tlsf;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import owl.ltl.BooleanConstant;
@@ -895,6 +898,54 @@ public class TLSF_Utils {
 		tlsf_spec += '}';
 
 		return TlsfParser.parse(tlsf_spec);
+	}
+	
+	public static boolean equals(Tlsf tlsf1, Tlsf tlsf2) {
+		if (!tlsf1.assume().equals(tlsf2.assume())) return false;
+
+		if (!tlsf1.initially().equals(tlsf2.initially())) return false;
+
+		if (!tlsf1.preset().equals(tlsf2.preset())) return false;
+
+		if (!tlsf1.require().equals(tlsf2.require())) return false;
+		
+		for (Formula f1 : tlsf1.assert_()) {
+			if (tlsf2.assert_().contains(f1)) continue;
+			else return false;
+		}
+		
+		for (Formula f1 : tlsf1.guarantee()) {
+			if (tlsf2.guarantee().contains(f1)) continue;
+			else return false;
+		}
+
+		List<String> vars = new ArrayList<String>();
+		int i = 0;
+		while (tlsf1.inputs().get(i)) {
+			vars.add(tlsf1.variables().get(i));
+			i++;
+		}
+
+		i = 0;
+		while (tlsf2.inputs().get(i)) {
+			if (!vars.contains(tlsf2.variables().get(i))) return false;
+			i++;
+		}
+		
+		i = 0;
+		List<String> outs = new ArrayList<String>();
+		while (tlsf1.outputs().get(i)) {
+			outs.add(tlsf1.variables().get(i));
+			i++;
+		}
+		i = 0;
+		while (tlsf2.outputs().get(i)) {
+			if (!outs.contains(tlsf2.variables().get(i))) return false;
+			i++;
+		}
+		
+		return true;
+		
 	}
 	
 }
