@@ -68,22 +68,22 @@ public class Formula_Utils {
 		return f0_copy;
 	}
 	
-	public static Formula replaceSubformula (Formula f0, Formula src, Formula target) {		
-		if (f0 == src)
-			return target;
-		if(f0.children().contains(src)) {
-			f0.children().remove(src);
-			f0.children().add(target);
-		}
-		else {
-			for (Formula child : f0.children()) {
-				Formula res = replaceSubformula(child, src, target);
-				if (!child.equals(res))
-					return res;
-			}
-		}
-		return f0;
-	}
+//	public static Formula replaceSubformula (Formula f0, Formula src, Formula target) {		
+//		if (f0 == src)
+//			return target;
+//		if(f0.children().contains(src)) {
+//			f0.children().remove(src);
+//			f0.children().add(target);
+//		}
+//		else {
+//			for (Formula child : f0.children()) {
+//				Formula res = replaceSubformula(child, src, target);
+//				if (!child.equals(res))
+//					return res;
+//			}
+//		}
+//		return f0;
+//	}
 
 //	public static LabelledFormula replaceSubformula(LabelledFormula f, LabelledFormula src, LabelledFormula target) {
 //		String form = f.formula().toString().replace(src.formula().toString(), target.formula().toString());

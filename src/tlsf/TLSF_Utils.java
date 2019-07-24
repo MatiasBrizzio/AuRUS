@@ -98,20 +98,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					tlsf_spec += "  TARGET:   Moore\n";
 				else
-					tlsf_spec += "  TARGET:   Moore_Strict\n";
+					tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				tlsf_spec += "}\n"
 			    + '\n'

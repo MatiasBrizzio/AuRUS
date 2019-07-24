@@ -27,10 +27,7 @@ import owl.ltl.ZOperator;
 
 public class FormulaMutator {
 
-	
 
-
-	
 	public static Formula mutate (Formula formula, List<String> variables) {
 		if (formula instanceof BooleanConstant || formula instanceof Literal)
 			return mutateLiteral(formula, variables);
