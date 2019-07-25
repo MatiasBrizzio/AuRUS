@@ -426,8 +426,9 @@ class TlsfParserTest {
   @Test
   void testTlsfMinepump() throws IOException, InterruptedException {
 	  String filename = "examples/minepump.tlsf";
-	  FileReader f = new FileReader(filename);
-	    Tlsf tlsf = TlsfParser.parse(f);
+//	  FileReader f = new FileReader(filename);
+//	    Tlsf tlsf = TlsfParser.parse(f);
+	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 //	  Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
 	  System.out.println(TLSF_Utils.toTLSF(tlsf));
 	  
@@ -457,11 +458,11 @@ class TlsfParserTest {
   @Test
   void testFormulas() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  LabelledFormula f =  LtlParser.parse("a <-> b",vars);
 	  System.out.println(f);
 //	  System.out.println(f.formula().subformulas(TemporalOperator.class));
       System.out.println(Formula_Utils.subformulas(f));
-//      System.out.println(f);
+      System.out.println(f.formula().children());
   }
   
   @Test
