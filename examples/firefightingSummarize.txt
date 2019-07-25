@@ -1,0 +1,30 @@
+# Initial conditions
+Env starts with false
+Robot starts in porch with false
+
+# Assumptions about the environment
+
+If you were in porch then do not hazardous_item
+If you were in porch then do not person
+
+#If one of these assumptions dissapear the system will be unrealizable
+#In LTL these assumptions are:
+#If you were in porch then do not hazardous_item -> G( (( ((!bit0 & !bit1 & !bit2)) ) ) -> (   !  X(hazardous_item))) 
+#If you were in porch then do not person -> G((( ((!bit0 & !bit1 & !bit2)) ) ) -> (   !  X(person)) )
+
+# Define robot safety including how to pick up
+Do pick_up if and only if you are sensing hazardous_item and you are not activating carrying_item
+If you are activating pick_up then stay there
+carrying_item is set on pick_up and reset on drop
+Do drop if and only if you are in porch and you are activating carrying_item
+
+If you did not activate carrying_item then always not porch
+
+# Define when and how to radio
+Do radio if and only if you are sensing person
+If you are activating radio or you were activating radio then stay there
+
+# Patrol goals
+Group rooms is living, bedroom, deck, kitchen, dining
+If you are not activating carrying_item and you are not activating radio then visit all rooms
+if you are activating carrying_item and you are not activating radio then visit porch
