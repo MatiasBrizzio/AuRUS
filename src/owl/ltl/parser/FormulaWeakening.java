@@ -45,15 +45,15 @@ import owl.ltl.XOperator;
 import tlsf.Formula_Utils;
 import owl.ltl.FrequencyG.Limes;
 
-public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
+public class FormulaWeakening extends LTLParserBaseVisitor<Formula> {
 	  private final List<Literal> literalCache;
 	  private final List<String> variables;
 	  private final boolean fixedVariables;
-	  private int mutation_rate;
-	  private int numOfRemainingMutations = 0;
+	  private int weakening_rate;
+	  private int numOfRemainingWeakenings = 0;
 	 
 
-	  public SubformulaMutator(List<String> literals, int mutation_rate, int num_of_mutations_to_appply) {
+	  public FormulaWeakening(List<String> literals, int weakening_rate, int num_of_weakening_to_appply) {
 		    ListIterator<String> literalIterator = literals.listIterator();
 		    List<Literal> literalList = new ArrayList<>();
 		    List<String> variableList = new ArrayList<>();
@@ -68,8 +68,8 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 		    literalCache = List.copyOf(literalList);
 		    variables = List.copyOf(variableList);
 		    fixedVariables = true;
-		    this.mutation_rate = mutation_rate;
-		    this.numOfRemainingMutations = num_of_mutations_to_appply;
+		    this.weakening_rate = weakening_rate;
+		    this.numOfRemainingWeakenings = num_of_weakening_to_appply;
 	  }
 
 	  public List<String> variables() {
@@ -84,12 +84,24 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	  	      .filter(child -> !(child instanceof TerminalNode))
 		      .map(this::visit));
 	    
-	    if (numOfRemainingMutations > 0) { 	
+	    if (numOfRemainingWeakenings > 0) { 	
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		current = FormulaMutator.mutate(current, variables);
+	    		// 0: TRUE 1: disjunction
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(2);
+	    		if (option == 0) 
+	    			current = BooleanConstant.TRUE;
+	    		else {
+	    			current = Disjunction.of(current.children()); // weak(a & b) = a | b
+//	    			List<Formula> new_conjuncts = new LinkedList<>();
+//	    			for (Formula c : current.children())
+//	    				new_conjuncts.add(c);
+//	    			int to_be_deleted = rand.nextInt(new_conjuncts.size());
+//	    			new_conjuncts.remove(to_be_deleted);
+//	    			current = Conjunction.of(new_conjuncts);
+	    		}
 	    	}
 	    }
 	    return current;
@@ -101,48 +113,89 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	    assert ctx.left != null && ctx.right != null;
 
 	    BinaryOpContext binaryOp = ctx.binaryOp();
+	    
+	    if (binaryOp.BIIMP() != null || binaryOp.IMP() != null || binaryOp.XOR() != null) 
+	    	throw new ParseCancellationException("FormulaWeakening: formula in NNF was expected: " + ctx.left + binaryOp + ctx.right);
+
 	    Formula left = visit(ctx.left);
 	    Formula right = visit(ctx.right);
-	    
 	    Formula current = null;
 	    
-	    if (binaryOp.BIIMP() != null) {
-	    	current = Biconditional.of(left, right);
-	    }
-
-	    if (binaryOp.IMP() != null) {
-	    	current = Disjunction.of(left.not(), right);
-	    }
-
-	    if (binaryOp.XOR() != null) {
-	    	current = Biconditional.of(left.not(), right);
-	    }
-
-	    if (binaryOp.UNTIL() != null) {
-	    	current = UOperator.of(left, right);
-	    }
-
-	    if (binaryOp.WUNTIL() != null) {
-	    	current = WOperator.of(left, right);
-	    }
-
-	    if (binaryOp.RELEASE() != null) {
-	    	current = ROperator.of(left, right);
-	    }
-
-	    if (binaryOp.SRELEASE() != null) {
-	    	current = MOperator.of(left, right);
-	    }
+	    if (numOfRemainingWeakenings <= 0) {
+		    if (binaryOp.UNTIL() != null) {
+		    	current = UOperator.of(left, right);
+		    }
+	
+		    if (binaryOp.WUNTIL() != null) {
+		    	current = WOperator.of(left, right);
+		    }
+	
+		    if (binaryOp.RELEASE() != null) {
+		    	current = ROperator.of(left, right);
+		    }
+	
+		    if (binaryOp.SRELEASE() != null) {
+		    	current = MOperator.of(left, right);
+		    }
 	    
-	    if (current == null)
-	    	throw new ParseCancellationException("Unknown operator");
-	    
-	    if (numOfRemainingMutations > 0) { 	
+		    if (current == null)
+		    	throw new ParseCancellationException("Unknown operator");
+	    }
+	    else {
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		current = FormulaMutator.mutate(current, variables);
+	    		numOfRemainingWeakenings--;
+	    		
+	    	    if (binaryOp.UNTIL() != null) {
+	    	    	// 0:TRUE 1:W 2:F
+	    	    	int option = rand.nextInt(3);
+	    	    	if (option == 0)
+	    	    		current = BooleanConstant.TRUE;
+	    	    	else if (option == 1)
+	    	    		current = WOperator.of(left, right); // weak(a U b) = a W b
+	    	    	else
+	    	    		current = FOperator.of(right); // weak(a U b) = F(b)
+	    	    }
+
+	    	    if (binaryOp.WUNTIL() != null) {
+	    	    	// a W b = G(a) || a U b.
+	    	    	// we decided to weak the each disjunct.
+	    	    	// 0:TRUE 1:F 2:F
+	    	    	int option = rand.nextInt(3);
+	    	    	if (option == 0)
+	    	    		current = BooleanConstant.TRUE;
+	    	    	else if (option == 1)
+	    	    		current = Disjunction.of(FOperator.of(left),UOperator.of(left, right)); // weak(a W b) = F(a) || a U b
+	    	    	else
+	    	    		current = Disjunction.of(GOperator.of(left), FOperator.of(right)); // weak(a W b) = G(a) || F(b)
+	    	    }
+
+	    	    if (binaryOp.RELEASE() != null) {
+	    	    	// a R b = b W (a & b)
+	    	    	// 0:TRUE 1:F 2:F
+	    	    	int option = rand.nextInt(3);
+	    	    	if (option == 0)
+	    	    		current = BooleanConstant.TRUE;
+	    	    	else if (option == 1)
+	    	    		// weak(b W (a & b)) = F(b) || b U (a & b)
+	    	    		current = Disjunction.of(FOperator.of(right),UOperator.of(right, Conjunction.of(left,right))); 
+	    	    	else
+	    	    		// weak(b W (a & b)) = G(b) || F (a & b)
+	    	    		current = Disjunction.of(GOperator.of(right), FOperator.of(Conjunction.of(left,right))); 
+	    	    }
+
+	    	    if (binaryOp.SRELEASE() != null) {
+	    	    	// a R b = b U (a & b)
+	    	    	// 0:TRUE 1:W 2:F
+	    	    	int option = rand.nextInt(3);
+	    	    	if (option == 0)
+	    	    		current = BooleanConstant.TRUE;
+	    	    	else if (option == 1)
+	    	    		current = WOperator.of(right, Conjunction.of(left,right)); // weak(b U (a & b)) = b W (a & b)
+	    	    	else
+	    	    		current = FOperator.of(Conjunction.of(left,right)); // weak(b U (a & b)) = F(a & b)
+	    	    }
 	    	}
 	    }
 	    
@@ -155,25 +208,18 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	    BoolContext constant = ctx.bool();
 
 	    Formula current = null;
-
-	    if (constant.FALSE() != null) {
-	      current = BooleanConstant.FALSE;
-	    }
-
-	    if (constant.TRUE() != null) {
-	      current = BooleanConstant.TRUE;
-	    }
 	    
-	    if (current == null)
-	    	throw new ParseCancellationException("Unknown constant");
-	    
-	    if (numOfRemainingMutations > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
-	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		current = FormulaMutator.mutate(current, variables);
-	    	}
+	    if (numOfRemainingWeakenings <= 0) {
+		    if (constant.FALSE() != null) {
+		      current = BooleanConstant.FALSE;
+		    }
+		    else if (constant.TRUE() != null) {
+		      current = BooleanConstant.TRUE;
+		    }
+	    }
+	    else {
+	    	numOfRemainingWeakenings--;
+	    	current = BooleanConstant.TRUE;
 	    }
 	    
 	    return current;	
@@ -206,12 +252,21 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	      .filter(child -> !(child instanceof TerminalNode))
 	      .map(this::visit));
 	    
-	    if (numOfRemainingMutations > 0) { 	
+	    if (numOfRemainingWeakenings > 0) {
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		current = FormulaMutator.mutate(current, variables);
+	    		// 0: TRUE 1: add disjunct
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(2);
+	    		if (option == 0) 
+	    			current = BooleanConstant.TRUE;
+	    		else {
+	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
+	    			if (rand.nextBoolean())
+	    				new_literal = new_literal.not();
+	    			current = Disjunction.of(current, new_literal); 
+	    		}
 	    	}
 	    }
 	    
@@ -246,11 +301,11 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	    if (current == null)
 	    	throw new AssertionError("Unreachable Code");
 	    
-	    if (numOfRemainingMutations > 0) { 	
+	    if (numOfRemainingWeakenings > 0) { 	
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
+	    		numOfRemainingWeakenings --;
 	    		current = FormulaMutator.mutate(current, variables);
 	    	}
 	    }
@@ -263,11 +318,11 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	    assert ctx.getChildCount() == 1;
 	    Formula current =  createVariable(ctx.getText());
 	    
-	    if (numOfRemainingMutations > 0) { 	
+	    if (numOfRemainingWeakenings > 0) { 	
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
+	    		numOfRemainingWeakenings --;
 	    		current = FormulaMutator.mutate(current, variables);
 	    	}
 	    }
@@ -280,11 +335,11 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	    assert ctx.getChildCount() == 3;
 	    Formula current = createVariable(ctx.variable.getText());
 	    
-	    if (numOfRemainingMutations > 0) { 	
+	    if (numOfRemainingWeakenings > 0) { 	
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
+	    		numOfRemainingWeakenings --;
 	    		current = FormulaMutator.mutate(current, variables);
 	    	}
 	    }
@@ -297,11 +352,11 @@ public class SubformulaMutator extends LTLParserBaseVisitor<Formula> {
 	    assert ctx.getChildCount() == 3;
 	    Formula current = createVariable(ctx.variable.getText());
 	    
-	    if (numOfRemainingMutations > 0) {
+	    if (numOfRemainingWeakenings > 0) { 	
 	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
+	    		numOfRemainingWeakenings --;
 	    		current = FormulaMutator.mutate(current, variables);
 	    	}
 	    }

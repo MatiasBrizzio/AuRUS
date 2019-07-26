@@ -39,6 +39,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import geneticalgorithm.FormulaMutator;
 import geneticalgorithm.SpecificationMerger;
 import owl.grammar.LTLParserBaseVisitor;
 import owl.ltl.Formula;
@@ -49,6 +50,7 @@ import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
+import owl.ltl.rewriter.NormalForms;
 
 class TlsfParserTest {
 	
@@ -458,19 +460,21 @@ class TlsfParserTest {
   @Test
   void testFormulas() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("a <-> b",vars);
+	  LabelledFormula f =  LtlParser.parse("G ( (a | b) & (a | c))",vars);
 	  System.out.println(f);
-//	  System.out.println(f.formula().subformulas(TemporalOperator.class));
+	  System.out.println(f.formula().subformulas(TemporalOperator.class));
       System.out.println(Formula_Utils.subformulas(f));
-      System.out.println(f.formula().children());
+      System.out.println(NormalForms.toCnf(f.formula()));
+      System.out.println(NormalForms.toDnf(f.formula()));
   }
   
   @Test
   void testSplitConjunction() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("G !(a -> !b)",vars);
+	  LabelledFormula f =  LtlParser.parse("(a | (b & c))",vars);
 	  System.out.println(f);
-      System.out.println(Formula_Utils.splitConjunction(f));
+	  System.out.println(f.nnf());
+      System.out.println(NormalForms.toCnf(f.formula()));
   }
   
   @Test
@@ -535,4 +539,24 @@ class TlsfParserTest {
       System.out.println("After replace subformula! "+ src);
   }
   
+  
+  @Test
+  void testMutate0() throws IOException {
+	  List<String> vars = List.of("grant0","grant1");
+	  LabelledFormula f = LtlParser.parse("G (grant0 && grant1) -> grant1", vars);
+	  System.out.println("After replace subformula! "+ f.formula());
+	  Formula m = FormulaMutator.mutate(f.formula(), vars);
+	  System.out.println("After replace subformula! "+ m);
+	  
+  }
+  
+  @Test
+  void testMutate1() throws IOException {
+	  List<String> vars = List.of("grant0","grant1");
+	  LabelledFormula f = LtlParser.parse("G (grant0 && grant1 | grant1)", vars);
+	  System.out.println("After replace subformula! "+ f.formula());
+	  Formula m = FormulaMutator.mutate(f.formula(), vars);
+	  System.out.println("After replace subformula! "+ m);
+	  
+  }
 }

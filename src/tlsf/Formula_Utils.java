@@ -35,6 +35,13 @@ public class Formula_Utils {
 		return s;
 	}
 	
+	public static int formulaSize (Formula f) {//, List<String> variables) {
+		int size = 1;
+		for (Formula c : f.children())
+			size =+ formulaSize(c);		
+		return size;
+	}
+	
 	public static List<LabelledFormula> splitConjunction (LabelledFormula f){
 		List<LabelledFormula> conjuncts = new LinkedList<>();
 		if (f.formula() instanceof Conjunction) {
@@ -43,6 +50,8 @@ public class Formula_Utils {
 		    	  conjuncts.add(LabelledFormula.of(c, f.variables()));
 		      
 	    }
+		else
+			conjuncts.add(f);
 		return conjuncts;
 	}
 
