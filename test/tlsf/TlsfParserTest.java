@@ -48,6 +48,7 @@ import owl.ltl.Formula.ModalOperator;
 import owl.ltl.Formula.TemporalOperator;
 import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
+import owl.ltl.visitors.FormulaWeakening;
 import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
 import owl.ltl.rewriter.NormalForms;
@@ -471,7 +472,7 @@ class TlsfParserTest {
   @Test
   void testSplitConjunction() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("(a | (b & c))",vars);
+	  LabelledFormula f =  LtlParser.parse("F (true)",vars);
 	  System.out.println(f);
 	  System.out.println(f.nnf());
       System.out.println(NormalForms.toCnf(f.formula()));
@@ -558,5 +559,25 @@ class TlsfParserTest {
 	  Formula m = FormulaMutator.mutate(f.formula(), vars);
 	  System.out.println("After replace subformula! "+ m);
 	  
+  }
+  
+  @Test
+  void testWeaken1() throws IOException {
+	  List<String> vars = List.of("grant0","grant1");
+	  LabelledFormula f = LtlParser.parse("G (grant0 U grant1 | F grant1)", vars);
+	  System.out.println("After replace subformula! "+ f.formula());
+	  FormulaWeakening weakener = new FormulaWeakening(vars, Formula_Utils.formulaSize(f.formula()), 1);
+	  Formula m = weakener.apply(f.formula());
+	  System.out.println("After weaken subformula! "+ m);
+  }
+  
+  @Test
+  void testWeaken2() throws IOException {
+	  List<String> vars = List.of("grant0","grant1", "grant2");
+	  LabelledFormula f = LtlParser.parse("G (grant0 U grant1 & F grant1)", vars);
+	  System.out.println("After replace subformula! "+ f.formula());
+	  FormulaWeakening weakener = new FormulaWeakening(vars, Formula_Utils.formulaSize(f.formula()), 1);
+	  Formula m = weakener.apply(f.formula());
+	  System.out.println("After weaken subformula! "+ m);
   }
 }

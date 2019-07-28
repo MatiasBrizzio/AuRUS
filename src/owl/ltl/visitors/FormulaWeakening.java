@@ -1,0 +1,421 @@
+package owl.ltl.visitors;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Random;
+import java.util.Set;
+
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import owl.ltl.Biconditional;
+import owl.ltl.BooleanConstant;
+import owl.ltl.Conjunction;
+import owl.ltl.Disjunction;
+import owl.ltl.FOperator;
+import owl.ltl.Formula;
+import owl.ltl.FrequencyG;
+import owl.ltl.GOperator;
+import owl.ltl.HOperator;
+import owl.ltl.Literal;
+import owl.ltl.MOperator;
+import owl.ltl.OOperator;
+import owl.ltl.ROperator;
+import owl.ltl.SOperator;
+import owl.ltl.TOperator;
+import owl.ltl.UOperator;
+import owl.ltl.WOperator;
+import owl.ltl.XOperator;
+import owl.ltl.YOperator;
+import owl.ltl.ZOperator;
+import owl.ltl.rewriter.NormalForms;
+
+public class FormulaWeakening implements Visitor<Formula>{
+	private final List<Literal> literalCache;
+	  private final List<String> variables;
+	  private final boolean fixedVariables;
+	  private int weakening_rate;
+	  private int numOfRemainingWeakenings = 0;
+	
+	public FormulaWeakening(List<String> literals, int weakening_rate, int num_of_weakening_to_appply) {
+		ListIterator<String> literalIterator = literals.listIterator();
+	    List<Literal> literalList = new ArrayList<>();
+	    List<String> variableList = new ArrayList<>();
+
+	    while (literalIterator.hasNext()) {
+	      int index = literalIterator.nextIndex();
+	      String name = literalIterator.next();
+	      literalList.add(Literal.of(index));
+	      variableList.add(name);
+	    }
+
+	    literalCache = List.copyOf(literalList);
+	    variables = List.copyOf(variableList);
+	    fixedVariables = true;
+	    this.weakening_rate = weakening_rate;
+	    this.numOfRemainingWeakenings = num_of_weakening_to_appply;
+		
+	}
+	
+	public List<String> variables() {
+	    return List.copyOf(variables);
+	  }
+	
+	@Override
+	public Formula apply(Formula formula) {
+		return formula.accept(this);
+	}
+
+	@Override
+	public Formula visit(Biconditional biconditional) {
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + biconditional);
+	}
+
+	@Override
+	public Formula visit(BooleanConstant booleanConstant) {
+		Formula current = booleanConstant;
+	    
+	    if (numOfRemainingWeakenings > 0) {
+	    	numOfRemainingWeakenings--;
+	    	current = BooleanConstant.TRUE;
+	    }
+	    
+	    return current;	
+	}
+
+	@Override
+	public Formula visit(Conjunction conjunction) {
+		Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
+		if (numOfRemainingWeakenings > 0) { 	
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		// 0: TRUE 1: disjunction
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(2);
+	    		if (option == 0)
+	    			current = BooleanConstant.TRUE;
+	    		else {
+	    			current = Disjunction.of(current.children()); // weak(a & b) = a | b
+	    		}
+	    	}
+	    }
+	    return current;
+	}
+
+	@Override
+	public Formula visit(Disjunction disjunction) {
+		Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		// 0: TRUE 1: add disjunct
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(2);
+	    		if (option == 0) 
+	    			current = BooleanConstant.TRUE;
+	    		else {
+	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
+	    			if (rand.nextBoolean())
+	    				new_literal = new_literal.not();
+	    			current = Disjunction.of(current, new_literal); 
+	    		}
+	    	}
+	    }
+	    
+	    return current;	
+	}
+
+	@Override
+	public Formula visit(FOperator fOperator) {
+		Formula current = FOperator.of(fOperator.operand.accept(this));
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		Formula operand = ((FOperator)current).operand;
+	    		// 0:TRUE 1:distribute to conjunction 2:persistence to infinitely often 3:remove X 4:remove G
+    			int option = rand.nextInt(5);
+    			
+    			current = BooleanConstant.TRUE; // (option == 0) and default
+	    		if (option == 1 && operand instanceof Conjunction) {
+	    			// weak (F (a & b)) = F(a) & F(b)
+	    			for (Set<Formula> c : NormalForms.toCnf(operand)) {
+	    				Formula clause = Disjunction.of(c);
+	    				current = FOperator.of(Conjunction.of(current, clause));
+	    			}
+	    		}
+	    		else if (option == 2 && operand instanceof GOperator) {
+	    			// weak (F G (a)) = G F (a)
+	    			current = GOperator.of(FOperator.of(operand.children().iterator().next()));
+	    		}
+	    		else if (option == 3 && operand instanceof XOperator) {
+	    			// weak (F X (a)) = F (a)
+	    			current = FOperator.of(operand.children().iterator().next());
+	    		}
+	    		else if (option == 4 && operand instanceof GOperator) {
+	    			// weak (F G (a)) = F (a)
+	    			current = FOperator.of(operand.children().iterator().next());
+	    		}
+	    	}
+		}
+		return current;
+	}
+
+	
+
+	@Override
+	public Formula visit(GOperator gOperator) {
+		Formula current = GOperator.of(gOperator.operand.accept(this));
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		Formula operand = ((GOperator)current).operand;
+	    		// 0:TRUE 1:remove G 2:F 3:X 4:GF 5:FG 6:XG
+    	    	int option = rand.nextInt(7);
+    			if (option == 0) 
+    				current = BooleanConstant.TRUE;
+    			else if (option == 1) {
+	    			// weak (G(a)) = a
+	    			current = operand;
+	    		}
+	    		else if (option == 2) {
+	    			// weak (G(a)) = F(a)
+	    			current = FOperator.of(operand);
+	    		}
+	    		else if (option == 3) { 
+	    			// weak (G(a)) = X(a)
+	    			current = XOperator.of(operand);
+	    		}
+	    		else if (option == 4) { 
+	    			// weak (G(a)) = GF(a)
+	    			current = GOperator.of(FOperator.of(operand));
+	    		}
+	    		else if (option == 5) { 
+	    			// weak (G(a)) = FG(a)
+	    			current = FOperator.of(GOperator.of(operand));
+	    		}
+	    		else if (option == 6) { 
+	    			// weak (G(a)) = XG(a)
+	    			current = XOperator.of(GOperator.of(operand));
+	    		}
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(Literal literal) {
+		Formula current = literal;
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		// 0: TRUE 1: add disjunct 2:F
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(3);
+	    		if (option == 0) 
+	    			current = BooleanConstant.TRUE;
+	    		else if (option == 1) {
+	    			// weak(a) = a | b
+	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
+	    			if (rand.nextBoolean())
+	    				new_literal = new_literal.not();
+	    			current = Disjunction.of(current, new_literal); 
+	    		}
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(MOperator mOperator) {
+		Formula left = mOperator.left.accept(this);
+		Formula right = mOperator.right.accept(this);
+		Formula current = MOperator.of(left, right);
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		
+	    		// a M b = b U (a & b)
+    	    	// 0:TRUE 1:W 2:F
+    	    	int option = rand.nextInt(3);
+    	    	if (option == 0)
+    	    		current = BooleanConstant.TRUE;
+    	    	else if (option == 1)
+    	    		current = WOperator.of(right, Conjunction.of(left,right)); // weak(b U (a & b)) = b W (a & b)
+    	    	else
+    	    		current = FOperator.of(Conjunction.of(left,right)); // weak(b U (a & b)) = F(a & b)
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(ROperator rOperator) {
+		Formula left = rOperator.left.accept(this);
+		Formula right = rOperator.right.accept(this);
+		Formula current = ROperator.of(left, right);
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		// a R b = b W (a & b)
+    	    	// 0:TRUE 1:F 2:F
+    	    	int option = rand.nextInt(3);
+    	    	if (option == 0)
+    	    		current = BooleanConstant.TRUE;
+    	    	else if (option == 1)
+    	    		// weak(b W (a & b)) = F(b) || b U (a & b)
+    	    		current = Disjunction.of(FOperator.of(right),UOperator.of(right, Conjunction.of(left,right))); 
+    	    	else
+    	    		// weak(b W (a & b)) = G(b) || F (a & b)
+    	    		current = Disjunction.of(GOperator.of(right), FOperator.of(Conjunction.of(left,right))); 
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(UOperator uOperator) {
+		Formula left = uOperator.left.accept(this);
+		Formula right = uOperator.right.accept(this);
+		Formula current = UOperator.of(left, right);
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		// 0:TRUE 1:W 2:F
+    	    	int option = rand.nextInt(3);
+    	    	if (option == 0)
+    	    		current = BooleanConstant.TRUE;
+    	    	else if (option == 1)
+    	    		current = WOperator.of(left, right); // weak(a U b) = a W b
+    	    	else
+    	    		current = FOperator.of(right); // weak(a U b) = F(b)
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(WOperator wOperator) {
+		Formula left = wOperator.left.accept(this);
+		Formula right = wOperator.right.accept(this);
+		Formula current = WOperator.of(left, right);
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		// a W b = G(a) || a U b.
+    	    	// we decided to weak the each disjunct.
+    	    	// 0:TRUE 1:F 2:F
+    	    	int option = rand.nextInt(3);
+    	    	if (option == 0)
+    	    		current = BooleanConstant.TRUE;
+    	    	else if (option == 1)
+    	    		current = Disjunction.of(FOperator.of(left),UOperator.of(left, right)); // weak(a W b) = F(a) || a U b
+    	    	else
+    	    		current = Disjunction.of(GOperator.of(left), FOperator.of(right)); // weak(a W b) = G(a) || F(b)
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(XOperator xOperator) {
+		Formula operand = xOperator.accept(this);
+		Formula current = XOperator.of(operand);
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		numOfRemainingWeakenings--;
+	    		// 0:TRUE 1:F 2: remove X
+    	    	int option = rand.nextInt(3);
+    			current = BooleanConstant.TRUE; //(option == 0) and default
+    			if (option == 1) {
+	    			// weak (X(a)) = F(a)
+	    			current = FOperator.of(operand);
+	    		}
+	    		else if (option == 2 && operand instanceof FOperator) {
+	    			// weak (X F(a)) = F(a)
+	    			current = operand;
+	    		}
+	    	}
+		}
+		return current;
+	}
+
+	@Override
+	public Formula visit(FrequencyG freq) {
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + freq);
+	}
+	
+	@Override
+	public Formula visit(OOperator oOperator) {
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + oOperator);
+	}
+
+	@Override
+	public Formula visit(HOperator hOperator) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + hOperator);
+	}
+
+	@Override
+	public Formula visit(TOperator tOperator) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + tOperator);
+	}
+
+	@Override
+	public Formula visit(SOperator sOperator) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + sOperator);
+	}
+
+	@Override
+	public Formula visit(YOperator yOperator) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + yOperator);
+	}
+
+	@Override
+	public Formula visit(ZOperator zOperator) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + zOperator);
+	}
+	
+	private Formula createVariable(String name) {
+	    assert variables.size() == literalCache.size();
+	    int index = variables.indexOf(name);
+
+	    if (index == -1) {
+	      if (fixedVariables) {
+	        throw new IllegalStateException("Encountered unknown variable " + name
+	          + " with fixed set " + variables);
+	      }
+
+	      int newIndex = variables.size();
+	      Literal literal = Literal.of(newIndex);
+	      variables.add(name);
+	      literalCache.add(literal);
+	      return literal;
+	    }
+
+	    return literalCache.get(index);
+	  }
+
+}
