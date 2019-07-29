@@ -38,7 +38,7 @@ public class Formula_Utils {
 	public static int formulaSize (Formula f) {//, List<String> variables) {
 		int size = 1;
 		for (Formula c : f.children())
-			size =+ formulaSize(c);		
+			size += formulaSize(c);		
 		return size;
 	}
 	

@@ -31,14 +31,14 @@ import owl.ltl.YOperator;
 import owl.ltl.ZOperator;
 import owl.ltl.rewriter.NormalForms;
 
-public class FormulaWeakening implements Visitor<Formula>{
+public class FormulaStrengthening implements Visitor<Formula>{
 	private final List<Literal> literalCache;
 	  private final List<String> variables;
 	  private final boolean fixedVariables;
 	  private int weakening_rate;
 	  private int numOfRemainingWeakenings = 0;
 	
-	public FormulaWeakening(List<String> literals, int weakening_rate, int num_of_weakening_to_appply) {
+	public FormulaStrengthening(List<String> literals, int weakening_rate, int num_of_weakening_to_appply) {
 		ListIterator<String> literalIterator = literals.listIterator();
 	    List<Literal> literalList = new ArrayList<>();
 	    List<String> variableList = new ArrayList<>();
@@ -67,18 +67,20 @@ public class FormulaWeakening implements Visitor<Formula>{
 		return formula.accept(this);
 	}
 
+
+
 	@Override
 	public Formula visit(BooleanConstant booleanConstant) {
 		Formula current = booleanConstant;
 	    
 	    if (numOfRemainingWeakenings > 0) {
 	    	numOfRemainingWeakenings--;
-	    	current = BooleanConstant.TRUE;
+	    	current = BooleanConstant.FALSE;
 	    }
 	    
 	    return current;	
 	}
-
+	
 	@Override
 	public Formula visit(Literal literal) {
 		Formula current = literal;
@@ -87,65 +89,21 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
 	    	if (mutate) {
 	    		numOfRemainingWeakenings--;
-	    		// 0: TRUE 1: add disjunct 2:F
+	    		// 0: FALSE 1: add disjunct 2:F
 	    		numOfRemainingWeakenings--;
 	    		int option = rand.nextInt(3);
 	    		if (option == 0) 
-	    			current = BooleanConstant.TRUE;
+	    			current = BooleanConstant.FALSE;
 	    		else if (option == 1) {
-	    			// weak(a) = a | b
+	    			// strength(a) = a & b
 	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
 	    			if (rand.nextBoolean())
 	    				new_literal = new_literal.not();
-	    			current = Disjunction.of(current, new_literal); 
+	    			current = Conjunction.of(current, new_literal); 
 	    		}
 	    	}
 		}
 		return current;
-	}
-
-	@Override
-	public Formula visit(Conjunction conjunction) {
-		Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
-		if (numOfRemainingWeakenings > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
-	    	if (mutate) {
-	    		// 0: TRUE 1: disjunction
-	    		numOfRemainingWeakenings--;
-	    		int option = rand.nextInt(2);
-	    		if (option == 0)
-	    			current = BooleanConstant.TRUE;
-	    		else {
-	    			current = Disjunction.of(current.children()); // weak(a & b) = a | b
-	    		}
-	    	}
-	    }
-	    return current;
-	}
-
-	@Override
-	public Formula visit(Disjunction disjunction) {
-		Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
-	    	if (mutate) {
-	    		// 0: TRUE 1: add disjunct
-	    		numOfRemainingWeakenings--;
-	    		int option = rand.nextInt(2);
-	    		if (option == 0) 
-	    			current = BooleanConstant.TRUE;
-	    		else {
-	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
-	    			if (rand.nextBoolean())
-	    				new_literal = new_literal.not();
-	    			current = Disjunction.of(current, new_literal); 
-	    		}
-	    	}
-	    }
-	    
-	    return current;	
 	}
 
 	@Override
@@ -158,9 +116,9 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    	if (mutate) {
 	    		numOfRemainingWeakenings--;
 	    		// 0:TRUE 1:F 2: remove X
-		    	int option = rand.nextInt(3);
-				current = BooleanConstant.TRUE; //(option == 0) and default
-				if (option == 1) {
+    	    	int option = rand.nextInt(3);
+    			current = BooleanConstant.TRUE; //(option == 0) and default
+    			if (option == 1) {
 	    			// weak (X(a)) = F(a)
 	    			current = FOperator.of(operand);
 	    		}
@@ -172,7 +130,8 @@ public class FormulaWeakening implements Visitor<Formula>{
 		}
 		return current;
 	}
-
+	
+	
 	@Override
 	public Formula visit(FOperator fOperator) {
 		Formula current = FOperator.of(fOperator.operand.accept(this));
@@ -254,6 +213,55 @@ public class FormulaWeakening implements Visitor<Formula>{
 		return current;
 	}
 
+	
+
+	@Override
+	public Formula visit(Conjunction conjunction) {
+		Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
+		if (numOfRemainingWeakenings > 0) { 	
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		// 0: TRUE 1: disjunction
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(2);
+	    		if (option == 0)
+	    			current = BooleanConstant.TRUE;
+	    		else {
+	    			current = Disjunction.of(current.children()); // weak(a & b) = a | b
+	    		}
+	    	}
+	    }
+	    return current;
+	}
+
+	@Override
+	public Formula visit(Disjunction disjunction) {
+		Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
+		if (numOfRemainingWeakenings > 0) {
+	    	Random rand = new Random(System.currentTimeMillis());
+	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+	    	if (mutate) {
+	    		// 0: TRUE 1: add disjunct
+	    		numOfRemainingWeakenings--;
+	    		int option = rand.nextInt(2);
+	    		if (option == 0) 
+	    			current = BooleanConstant.TRUE;
+	    		else {
+	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
+	    			if (rand.nextBoolean())
+	    				new_literal = new_literal.not();
+	    			current = Disjunction.of(current, new_literal); 
+	    		}
+	    	}
+	    }
+	    
+	    return current;	
+	}
+	
+	
+	
+
 	@Override
 	public Formula visit(UOperator uOperator) {
 		Formula left = uOperator.left.accept(this);
@@ -302,6 +310,8 @@ public class FormulaWeakening implements Visitor<Formula>{
 		return current;
 	}
 
+	
+	
 	@Override
 	public Formula visit(MOperator mOperator) {
 		Formula left = mOperator.left.accept(this);
@@ -314,14 +324,14 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    		numOfRemainingWeakenings--;
 	    		
 	    		// a M b = b U (a & b)
-		    	// 0:TRUE 1:W 2:F
-		    	int option = rand.nextInt(3);
-		    	if (option == 0)
-		    		current = BooleanConstant.TRUE;
-		    	else if (option == 1)
-		    		current = WOperator.of(right, Conjunction.of(left,right)); // weak(b U (a & b)) = b W (a & b)
-		    	else
-		    		current = FOperator.of(Conjunction.of(left,right)); // weak(b U (a & b)) = F(a & b)
+    	    	// 0:TRUE 1:W 2:F
+    	    	int option = rand.nextInt(3);
+    	    	if (option == 0)
+    	    		current = BooleanConstant.TRUE;
+    	    	else if (option == 1)
+    	    		current = WOperator.of(right, Conjunction.of(left,right)); // weak(b U (a & b)) = b W (a & b)
+    	    	else
+    	    		current = FOperator.of(Conjunction.of(left,right)); // weak(b U (a & b)) = F(a & b)
 	    	}
 		}
 		return current;
@@ -338,21 +348,21 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    	if (mutate) {
 	    		numOfRemainingWeakenings--;
 	    		// a R b = b W (a & b)
-		    	// 0:TRUE 1:F 2:F
-		    	int option = rand.nextInt(3);
-		    	if (option == 0)
-		    		current = BooleanConstant.TRUE;
-		    	else if (option == 1)
-		    		// weak(b W (a & b)) = F(b) || b U (a & b)
-		    		current = Disjunction.of(FOperator.of(right),UOperator.of(right, Conjunction.of(left,right))); 
-		    	else
-		    		// weak(b W (a & b)) = G(b) || F (a & b)
-		    		current = Disjunction.of(GOperator.of(right), FOperator.of(Conjunction.of(left,right))); 
+    	    	// 0:TRUE 1:F 2:F
+    	    	int option = rand.nextInt(3);
+    	    	if (option == 0)
+    	    		current = BooleanConstant.TRUE;
+    	    	else if (option == 1)
+    	    		// weak(b W (a & b)) = F(b) || b U (a & b)
+    	    		current = Disjunction.of(FOperator.of(right),UOperator.of(right, Conjunction.of(left,right))); 
+    	    	else
+    	    		// weak(b W (a & b)) = G(b) || F (a & b)
+    	    		current = Disjunction.of(GOperator.of(right), FOperator.of(Conjunction.of(left,right))); 
 	    	}
 		}
 		return current;
 	}
-
+	
 	@Override
 	public Formula visit(Biconditional biconditional) {
 		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + biconditional);

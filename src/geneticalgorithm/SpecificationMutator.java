@@ -17,10 +17,11 @@ import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.Literal;
-import owl.ltl.parser.SubformulaMutator;
 import owl.ltl.parser.SubformulaReplacer;
 import owl.ltl.parser.TokenErrorListener;
 import owl.ltl.tlsf.Tlsf;
+import owl.ltl.visitors.FormulaMutator;
+import owl.ltl.visitors.FormulaWeakening;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
@@ -93,29 +94,15 @@ public class SpecificationMutator {
 
 		
 		public static Formula applyMutation (LabelledFormula f) {
-			CharStream input = CharStreams.fromString(f.toString());
-			// Tokenize the stream
-		    LTLLexer lexer = new LTLLexer(input);
-		    // Don't print long error messages on the console
-		    lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
-		    // Add a fail-fast behaviour for token errors
-		    lexer.addErrorListener(new TokenErrorListener());
-		    CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-		    // Parse the tokens
-		    LTLParser parser = new LTLParser(tokens);
-			 // Convert the AST into a proper object
-		    SubformulaMutator formVisitor = new SubformulaMutator(f.variables(), Formula_Utils.formulaSize(f.formula()), 1);
-		    return formVisitor.visit(parser.formula());
+			FormulaMutator formVisitor = new FormulaMutator(f.variables(), Formula_Utils.formulaSize(f.formula()), 1);
+			Formula m = f.formula().accept(formVisitor);
+			return m;
 		}
 		
 		public static Formula weakenFormula (LabelledFormula f) {
-			Random rand = new Random(System.currentTimeMillis());
-			List<LabelledFormula> conjuncts = Formula_Utils.splitConjunction(f);
-			LabelledFormula to_be_weaken = conjuncts.remove(rand.nextInt(conjuncts.size()));
-			
-			
-			return null;
+			FormulaWeakening formVisitor = new FormulaWeakening(f.variables(), Formula_Utils.formulaSize(f.formula()), 1);
+			Formula m = f.formula().accept(formVisitor);
+			return m;
 		}
 		
 		public static Formula strengthenFormula (LabelledFormula f) {
