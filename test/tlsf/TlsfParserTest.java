@@ -437,6 +437,23 @@ class TlsfParserTest {
   }
   
   @Test
+  void testTlsfInitially() throws IOException, InterruptedException {
+	  String filename = "examples/collector_v4_6.tlsf";
+	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+	  Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
+	  System.out.println(TLSF_Utils.toTLSF(tlsf2));
+	  
+  }
+  
+  @Test
+  void testTlsfInitiallyBasic() throws IOException, InterruptedException {
+	  String filename = "examples/collector_v4_6_basic.tlsf";
+	  Tlsf tlsf2 = TlsfParser.parse(new FileReader(filename));
+	  System.out.println(TLSF_Utils.toTLSF(tlsf2));
+	  
+  }
+  
+  @Test
   void testTlsfEmpty() throws IOException {
     Tlsf tlsf = TlsfParser.parse(TLSF_Utils.TLSF_EXAMPLE_SPEC);
     System.out.println(tlsf);
