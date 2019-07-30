@@ -1,0 +1,144 @@
+package strixutils;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+import owl.ltl.tlsf.Tlsf;
+import tlsf.TLSF_Utils;
+
+class StrixHelperTest {
+	 private static final String TLSFFULL = "INFO {\n" 
+			  + "  TITLE:       \"Parameterized Load Balancer\"\n" 
+			  + "  DESCRIPTION: \"Parameterized Load Balancer (generalized version of the Acacia+ benchmark)\"\n" 
+			  + "  SEMANTICS:   Moore\n" 
+			  + "  TARGET:      Mealy\n" 
+			  + "}\n" 
+			  + "\n" 
+			  + "GLOBAL {\n" 
+			  + "  PARAMETERS {\n" 
+			  + "    n = 2;\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  DEFINITIONS {\n" 
+			  + "    // ensures mutual exclusion on an n-ary bus\n" 
+			  + "    mutual_exclusion(bus) =\n" 
+			  + "     mone(bus,0,(SIZEOF bus) - 1);\n" 
+			  + "\n" 
+			  + "    // ensures that none of the signals\n" 
+			  + "    // bus[i] - bus[j] is HIGH\n" 
+			  + "    none(bus,i,j) =\n" 
+			  + "      &&[i <= t <= j]\n" 
+			  + "        !bus[t];\n" 
+			  + "\n" 
+			  + "    // ensures that at most one of the signals\n" 
+			  + "    // bus[i] - bus[j] is HIGH\n" 
+			  + "    mone(bus,i,j) =\n" 
+			  + "    i > j : false\n" 
+			  + "    i == j : true\n" 
+			  + "    i < j :\n" 
+			  + "      // either no signal of the lower half is HIGH and at \n" 
+			  + "      // most one signal of the upper half is HIGH\n" 
+			  + "      (none(bus, i, m(i,j)) && mone(bus, m(i,j) + 1, j)) ||\n" 
+			  + "      // or at most one signal of the lower half is HIGH\n" 
+			  + "      // and no signal in of the upper half is HIGH\n" 
+			  + "      (mone(bus, i, m(i,j)) && none(bus, m(i,j) + 1, j));\n" 
+			  + "\n" 
+			  + "    // returns the position between i and j\n" 
+			  + "    m(i,j) = (i + j) / 2;\n" 
+			  + "  }   \n" 
+			  + "}\n" 
+			  + "\n" 
+			  + "MAIN {\n" 
+			  + "\n" 
+			  + "  INPUTS {\n" 
+			  + "    idle;\n" 
+			  + "    request[n];\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  OUTPUTS {\n" 
+			  + "    grant[n];\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  ASSUMPTIONS {\n" 
+			  + "    G F idle;\n" 
+			  + "    G (idle && X &&[0 <= i < n] !grant[i] -> X idle);\n" 
+			  + "    G (X !grant[0] || X ((!request[0] && !idle) U (!request[0] && idle)));\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "  INVARIANTS {\n" 
+			  + "    X mutual_exclusion(grant);    \n" 
+			  + "    &&[0 <= i < n] (X grant[i] -> request[i]);\n" 
+			  + "    &&[0 < i < n] (request[0] -> grant[i]);\n" 
+			  + "    !idle -> X &&[0 <= i < n] !grant[i];\n" 
+			  + "  }\n"
+			  + "\n" 
+			  + "  GUARANTEES {\n" 
+			  + "    &&[0 <= i < n] ! F G (request[i] && X !grant[i]);\n" 
+			  + "  }\n" 
+			  + "\n" 
+			  + "}";
+	 
+	  private static final String TLSF2 = "INFO {\n"
+			    + "  TITLE:       \"Load Balancing - Environment - 2 Clients\"\n"
+			    + "  DESCRIPTION: \"One of the Acacia+ Example files\"\n"
+			    + "  SEMANTICS:   Moore\n"
+			    + "  TARGET:      Mealy\n"
+			    + "}\n"
+			    + '\n'
+			    + "MAIN {\n"
+			    + '\n'
+			    + "  INPUTS {\n"
+			    + "    idle;\n"
+			    + "    request0;\n"
+			    + "    request1;\n"
+			    + "  }\n"
+			    + '\n'
+			    + "  OUTPUTS {\n"
+			    + "    grant0;\n"
+			    + "    grant1;\n"
+			    + "  }\n"
+			    + '\n'
+			    + "  ASSUMPTIONS {\n"
+			    + "    G F idle;\n"
+			    + "    G (!(idle && !grant0 && !grant1) || X idle);    \n"
+			    + "    G (!grant0 || X ((!request0 && !idle) U (!request0 && idle)));\n"
+			    + "  }\n"
+			    + '\n'
+			    + "  INVARIANTS {\n"
+			    + "    !request0 || !grant1;\n"
+			    + "    !grant0 || !grant1;\n"
+			    + "    !grant1 || !grant0;\n"
+			    + "    !grant0 || request0;\n"
+			    + "    !grant1 || request1;\n"
+			    + "    (!grant0 && !grant1) || idle;\n"
+			    + "  }\n"
+			    + '\n'
+			    + "  GUARANTEES {\n"
+			    + "    ! F G (request0 && !grant0);\n"
+			    + "    ! F G (request1 && !grant1);\n"
+			    + "  }\n"
+			    + '\n'
+			    + "}\n";	 
+	
+	 @Test
+	void testCheckRealizability() throws IOException, InterruptedException {
+		Tlsf tlsf = TLSF_Utils.toBasicTLSF(TLSFFULL);
+		assertFalse(StrixHelper.checkRealizability(tlsf));
+	}
+	 
+	@Test
+	void testCheckRealizability2() throws IOException, InterruptedException {
+		Tlsf tlsf = TLSF_Utils.toBasicTLSF(TLSF2);
+		assertFalse(StrixHelper.checkRealizability(tlsf));
+	}
+	
+	@Test
+	void testCheckRealizability3() throws IOException, InterruptedException {
+		assertTrue(StrixHelper.checkRealizability("/examples/collector_v4_6_basic.tlsf"));
+	}
+
+
+}
