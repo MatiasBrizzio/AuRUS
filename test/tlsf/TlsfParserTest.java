@@ -47,6 +47,7 @@ import owl.ltl.Formula.TemporalOperator;
 import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaMutator;
+import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
 import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
@@ -556,15 +557,15 @@ class TlsfParserTest {
       System.out.println("After replace subformula! "+ src);
   }
   
-  
+ 
  
   
   @Test
   void testWeaken1() throws IOException {
 	  List<String> vars = List.of("grant0","grant1");
 	  LabelledFormula f = LtlParser.parse("G (grant0 U grant1 | F grant1)", vars);
-	  System.out.println("After replace subformula! "+ f.formula());
-	  FormulaWeakening weakener = new FormulaWeakening(vars, Formula_Utils.formulaSize(f.formula()), 1);
+	  System.out.println("Before weaken subformula! "+ f.formula() + " mutation rate=" + Formula_Utils.formulaSize(f.formula()));
+	  FormulaWeakening weakener = new FormulaWeakening(vars, Formula_Utils.formulaSize(f.formula()), 5);
 	  Formula m = weakener.apply(f.formula());
 	  System.out.println("After weaken subformula! "+ m);
   }
@@ -573,8 +574,9 @@ class TlsfParserTest {
   void testWeaken2() throws IOException {
 	  List<String> vars = List.of("grant0","grant1", "grant2");
 	  LabelledFormula f = LtlParser.parse("G (grant0 U grant1 & F grant1)", vars);
-	  System.out.println("After replace subformula! "+ f.formula());
-	  FormulaWeakening weakener = new FormulaWeakening(vars, Formula_Utils.formulaSize(f.formula()), 1);
+	  int n = Formula_Utils.formulaSize(f.formula());
+	  System.out.println("Before weaken subformula! "+ f.formula() + " mutation rate=" + n);
+	  FormulaWeakening weakener = new FormulaWeakening(vars, n, n);
 	  Formula m = weakener.apply(f.formula());
 	  System.out.println("After weaken subformula! "+ m);
   }
@@ -588,23 +590,46 @@ class TlsfParserTest {
 //	  System.out.println("After replace subformula! "+ m);
 //  }
   
-  @Test
-  void testMutate0() throws IOException {
-	  List<String> vars = List.of("grant0","grant1", "grant2");
-	  LabelledFormula f = LtlParser.parse("G (grant0 U !grant1)", vars);
-	  System.out.println("After replace subformula! "+ f.formula() + " mutation rate=" + Formula_Utils.formulaSize(f.formula()));
-	  FormulaMutator weakener = new FormulaMutator(vars, Formula_Utils.formulaSize(f.formula()), 1);
-	  Formula m = f.formula().accept(weakener);
-	  System.out.println("After weaken subformula! "+ m);
-  }
-  
-//  @Test
-//  void testMutate1() throws IOException {
+//@Test
+//void testMutate1() throws IOException {
 //	  List<String> vars = List.of("grant0","grant1");
 //	  LabelledFormula f = LtlParser.parse("G (grant0 && grant1 | grant1)", vars);
 //	  System.out.println("After replace subformula! "+ f.formula());
 //	  Formula m = FormulaMutator.mutate(f.formula(), vars);
 //	  System.out.println("After replace subformula! "+ m);
 //	  
-//  }
+//}
+  
+  @Test
+  void testMutate0() throws IOException {
+	  List<String> vars = List.of("grant0","grant1", "grant2");
+	  LabelledFormula f = LtlParser.parse("G (grant0 && grant1 | grant1)", vars);
+	  System.out.println("After replace subformula! "+ f.formula() + " mutation rate=" + Formula_Utils.formulaSize(f.formula()));
+	  FormulaMutator visitor = new FormulaMutator(vars, Formula_Utils.formulaSize(f.formula()), 1);
+	  Formula m = f.formula().accept(visitor);
+	  System.out.println("After weaken subformula! "+ m);
+  }
+  
+
+  @Test
+  void testStrengthening1() throws IOException {
+	  List<String> vars = List.of("grant0","grant1");
+	  LabelledFormula f = LtlParser.parse("G (grant0 U grant1 | F grant1)", vars);
+	  int n = Formula_Utils.formulaSize(f.formula());
+	  System.out.println("Before stregthen subformula! "+ f.formula() + " mutation rate=" + n);
+	  FormulaStrengthening visitor = new FormulaStrengthening(vars, n, n);
+	  Formula m = f.formula().accept(visitor);
+	  System.out.println("After stregthen subformula! "+ m);
+  }
+  
+  @Test
+  void testStrengthening2() throws IOException {
+	  List<String> vars = List.of("grant0","grant1", "grant2");
+	  LabelledFormula f = LtlParser.parse("G (grant0 U grant1 & F grant1)", vars);
+	  int n = Formula_Utils.formulaSize(f.formula());
+	  System.out.println("Before weaken subformula! "+ f.formula() + " mutation rate=" + n);
+	  FormulaStrengthening visitor = new FormulaStrengthening(vars, n, n);
+	  Formula m = visitor.apply(f.formula());
+	  System.out.println("After weaken subformula! "+ m);
+  }
 }

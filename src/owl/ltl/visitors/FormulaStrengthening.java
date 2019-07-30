@@ -1,14 +1,10 @@
 package owl.ltl.visitors;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Random;
 import java.util.Set;
-
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import geneticalgorithm.Settings;
 import owl.ltl.Biconditional;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
@@ -35,10 +31,11 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	private final List<Literal> literalCache;
 	  private final List<String> variables;
 	  private final boolean fixedVariables;
-	  private int weakening_rate;
-	  private int numOfRemainingWeakenings = 0;
-	
-	public FormulaStrengthening(List<String> literals, int weakening_rate, int num_of_weakening_to_appply) {
+	  private int strengthening_rate;
+	  private int numOfAllowedStrengthenings = 0;
+	  private boolean print_debug_info = true;
+	  
+	public FormulaStrengthening(List<String> literals, int strengthening_rate, int num_of_strengthening_to_appply) {
 		ListIterator<String> literalIterator = literals.listIterator();
 	    List<Literal> literalList = new ArrayList<>();
 	    List<String> variableList = new ArrayList<>();
@@ -53,8 +50,8 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	    literalCache = List.copyOf(literalList);
 	    variables = List.copyOf(variableList);
 	    fixedVariables = true;
-	    this.weakening_rate = weakening_rate;
-	    this.numOfRemainingWeakenings = num_of_weakening_to_appply;
+	    this.strengthening_rate = strengthening_rate;
+	    this.numOfAllowedStrengthenings = num_of_strengthening_to_appply;
 		
 	}
 	
@@ -72,35 +69,40 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	@Override
 	public Formula visit(BooleanConstant booleanConstant) {
 		Formula current = booleanConstant;
-	    
-	    if (numOfRemainingWeakenings > 0) {
-	    	numOfRemainingWeakenings--;
-	    	current = BooleanConstant.FALSE;
+		if (numOfAllowedStrengthenings > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
+	    	if (mutate) {
+	    	   	numOfAllowedStrengthenings--;
+	    	   	current = BooleanConstant.FALSE;
+	    	}
 	    }
-	    
-	    return current;	
+		return current;
 	}
 	
 	@Override
 	public Formula visit(Literal literal) {
 		Formula current = literal;
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
-	    		// 0: FALSE 1: add disjunct 2:F
-	    		numOfRemainingWeakenings--;
-	    		int option = rand.nextInt(3);
+	    		numOfAllowedStrengthenings--;
+	    		// 0: FALSE 1: add conjunct 2:G
+	    		int option = Settings.RANDOM_GENERATOR.nextInt(3);
+	    		if (print_debug_info) System.out.print("before: " + literal + " random: " + option);
 	    		if (option == 0) 
 	    			current = BooleanConstant.FALSE;
 	    		else if (option == 1) {
 	    			// strength(a) = a & b
-	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
-	    			if (rand.nextBoolean())
+	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				new_literal = new_literal.not();
 	    			current = Conjunction.of(current, new_literal); 
 	    		}
+	    		else {
+	    			// strength(a) = G(a)
+	    			current = GOperator.of(current);
+	    		}
+	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -110,22 +112,23 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	public Formula visit(XOperator xOperator) {
 		Formula operand = xOperator.accept(this);
 		Formula current = XOperator.of(operand);
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
-	    		// 0:TRUE 1:F 2: remove X
-    	    	int option = rand.nextInt(3);
-    			current = BooleanConstant.TRUE; //(option == 0) and default
+	    		numOfAllowedStrengthenings--;
+	    		// 0:FALSE 1:G 2: remove X
+    	    	int option = Settings.RANDOM_GENERATOR.nextInt(3);
+    	    	if (print_debug_info) System.out.print("before: " + xOperator + " random: " + option);
+    			current = BooleanConstant.FALSE; //(option == 0) and default
     			if (option == 1) {
-	    			// weak (X(a)) = F(a)
-	    			current = FOperator.of(operand);
+    				// strength(X a) = G(a)
+    				current = GOperator.of(operand);
 	    		}
-	    		else if (option == 2 && operand instanceof FOperator) {
-	    			// weak (X F(a)) = F(a)
+	    		else if (option == 2 && operand instanceof GOperator) {
+	    			// strength(X G a) = G(a)
 	    			current = operand;
 	    		}
+	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -134,36 +137,48 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	
 	@Override
 	public Formula visit(FOperator fOperator) {
-		Formula current = FOperator.of(fOperator.operand.accept(this));
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		Formula operand = fOperator.operand.accept(this);
+		Formula current = FOperator.of(operand);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
-	    		Formula operand = ((FOperator)current).operand;
-	    		// 0:TRUE 1:distribute to conjunction 2:persistence to infinitely often 3:remove X 4:remove G
-    			int option = rand.nextInt(5);
-    			
-    			current = BooleanConstant.TRUE; // (option == 0) and default
-	    		if (option == 1 && operand instanceof Conjunction) {
-	    			// weak (F (a & b)) = F(a) & F(b)
-	    			for (Set<Formula> c : NormalForms.toCnf(operand)) {
-	    				Formula clause = Disjunction.of(c);
-	    				current = FOperator.of(Conjunction.of(current, clause));
-	    			}
+	    		numOfAllowedStrengthenings--;
+	    		// 0:FALSE 1:removeOp 2:X 3:G 4:FX 5:FG 6:GF 7:U
+    			int option = Settings.RANDOM_GENERATOR.nextInt(8);
+    			if (print_debug_info) System.out.print("before: " + fOperator + " random: " + option);
+    			if (option == 0)
+    				current = BooleanConstant.FALSE; 
+    			else if (option == 1)
+	    			// strength (F (a)) = a
+    				current = operand;
+	    		else if (option == 2) {
+	    			// strength (F (a)) = X (a)
+	    			current = XOperator.of(operand);
 	    		}
-	    		else if (option == 2 && operand instanceof GOperator) {
-	    			// weak (F G (a)) = G F (a)
-	    			current = GOperator.of(FOperator.of(operand.children().iterator().next()));
+	    		else if (option == 3) {
+	    			// strength (F(a)) = G (a)
+	    			current = GOperator.of(operand);
 	    		}
-	    		else if (option == 3 && operand instanceof XOperator) {
-	    			// weak (F X (a)) = F (a)
-	    			current = FOperator.of(operand.children().iterator().next());
+	    		else if (option == 4) {
+	    			// strength (F(a)) = F X(a)
+	    			current = FOperator.of(XOperator.of(operand));
 	    		}
-	    		else if (option == 4 && operand instanceof GOperator) {
-	    			// weak (F G (a)) = F (a)
-	    			current = FOperator.of(operand.children().iterator().next());
+	    		else if (option == 5) {
+	    			// strength (F(a)) = F G(a)
+	    			current = FOperator.of(GOperator.of(operand));
 	    		}
+	    		else if (option == 6) {
+	    			// strength (F(a)) = G F(a)
+	    			current = GOperator.of(FOperator.of(operand));
+	    		}
+	    		else if (option == 7) {
+	    			// strength (F(a)) = b U a
+	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
+	    				new_literal = new_literal.not();
+	    			current = UOperator.of(new_literal, operand);
+	    		}
+    			if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -173,41 +188,36 @@ public class FormulaStrengthening implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(GOperator gOperator) {
-		Formula current = GOperator.of(gOperator.operand.accept(this));
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		Formula operand = gOperator.operand.accept(this);
+		Formula current = GOperator.of(operand);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
-	    		Formula operand = ((GOperator)current).operand;
-	    		// 0:TRUE 1:remove G 2:F 3:X 4:GF 5:FG 6:XG
-    	    	int option = rand.nextInt(7);
-    			if (option == 0) 
-    				current = BooleanConstant.TRUE;
-    			else if (option == 1) {
-	    			// weak (G(a)) = a
-	    			current = operand;
+	    		numOfAllowedStrengthenings--;		
+	    		// 0:FLASE 1:distribute to disjunction 2:infinitely often to persistence 3:remove X 4:remove F
+    			int option = Settings.RANDOM_GENERATOR.nextInt(5);
+    			if (print_debug_info) System.out.print("before: " + gOperator + " random: " + option);
+    			current = BooleanConstant.FALSE; // (option == 0) and default
+	    		if (option == 1 && operand instanceof Disjunction) {
+	    			// strengthen (G (a | b)) = G(a) | G(b)
+	    			for (Set<Formula> c : NormalForms.toDnf(operand)) {
+	    				Formula clause = Conjunction.of(c);
+	    				current = Disjunction.of(current, GOperator.of(clause));
+	    			}
 	    		}
-	    		else if (option == 2) {
-	    			// weak (G(a)) = F(a)
-	    			current = FOperator.of(operand);
+	    		else if (option == 2 && operand instanceof FOperator) {
+	    			// strengthen (G F (a)) = F G (a)
+	    			current = FOperator.of(GOperator.of(operand.children().iterator().next()));
 	    		}
-	    		else if (option == 3) { 
-	    			// weak (G(a)) = X(a)
-	    			current = XOperator.of(operand);
+	    		else if (option == 3 && operand instanceof XOperator) {
+	    			// strengthen (G X (a)) = G (a)
+	    			current = GOperator.of(operand.children().iterator().next());
 	    		}
-	    		else if (option == 4) { 
-	    			// weak (G(a)) = GF(a)
-	    			current = GOperator.of(FOperator.of(operand));
+	    		else if (option == 4 && operand instanceof GOperator) {
+	    			// weak (G F (a)) = G (a)
+	    			current = GOperator.of(operand.children().iterator().next());
 	    		}
-	    		else if (option == 5) { 
-	    			// weak (G(a)) = FG(a)
-	    			current = FOperator.of(GOperator.of(operand));
-	    		}
-	    		else if (option == 6) { 
-	    			// weak (G(a)) = XG(a)
-	    			current = XOperator.of(GOperator.of(operand));
-	    		}
+	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -218,18 +228,25 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	@Override
 	public Formula visit(Conjunction conjunction) {
 		Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
-		if (numOfRemainingWeakenings > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		// 0: TRUE 1: disjunction
-	    		numOfRemainingWeakenings--;
-	    		int option = rand.nextInt(2);
+	    		// 0: FALSE 1:add conjunct 2:G
+	    		numOfAllowedStrengthenings--;
+	    		int option = Settings.RANDOM_GENERATOR.nextInt(3);
+	    		if (print_debug_info) System.out.print("before: " + conjunction + " random: " + option);
 	    		if (option == 0)
-	    			current = BooleanConstant.TRUE;
-	    		else {
-	    			current = Disjunction.of(current.children()); // weak(a & b) = a | b
+	    			current = BooleanConstant.FALSE;
+	    		else if (option == 1){
+	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
+	    				new_literal = new_literal.not();
+	    			current = Conjunction.of(current, new_literal); // strengthen(a & b) = a & b & c
 	    		}
+	    		else {
+	    			current = GOperator.of(current); // strengthen(a & b) = G(a & b)
+	    		}
+	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 	    }
 	    return current;
@@ -238,48 +255,49 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	@Override
 	public Formula visit(Disjunction disjunction) {
 		Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		// 0: TRUE 1: add disjunct
-	    		numOfRemainingWeakenings--;
-	    		int option = rand.nextInt(2);
+	    		// 0: FALSE 1:conjunct 2:G
+	    		numOfAllowedStrengthenings--;
+	    		int option = Settings.RANDOM_GENERATOR.nextInt(3);
+	    		if (print_debug_info) System.out.print("before: " + disjunction + " random: " + option);
 	    		if (option == 0) 
-	    			current = BooleanConstant.TRUE;
-	    		else {
-	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
-	    			if (rand.nextBoolean())
-	    				new_literal = new_literal.not();
-	    			current = Disjunction.of(current, new_literal); 
+	    			current = BooleanConstant.FALSE;
+	    		else if (option == 1){
+	    			current = Conjunction.of(current.children()); // strengthen(a | b) = a & b
 	    		}
+	    		else {
+	    			current = GOperator.of(current); // strengthen(a | b) = G(a | b)
+	    		}
+	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 	    }
-	    
 	    return current;	
 	}
 	
 	
-	
-
 	@Override
 	public Formula visit(UOperator uOperator) {
 		Formula left = uOperator.left.accept(this);
 		Formula right = uOperator.right.accept(this);
 		Formula current = UOperator.of(left, right);
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
-	    		// 0:TRUE 1:W 2:F
-    	    	int option = rand.nextInt(3);
+	    		numOfAllowedStrengthenings--;
+	    		// a U b = b || a & !b & X(a U b).
+    	    	// we decided to strengthen each disjunct.
+	    		// 0:FALSE 1:b 2:a & X(a U b)
+    	    	int option = Settings.RANDOM_GENERATOR.nextInt(3);
+    	    	if (print_debug_info) System.out.print("before: " + uOperator + " random: " + option);
     	    	if (option == 0)
-    	    		current = BooleanConstant.TRUE;
+    	    		current = BooleanConstant.FALSE;
     	    	else if (option == 1)
-    	    		current = WOperator.of(left, right); // weak(a U b) = a W b
+    	    		current = right; // strengthen(a U b) = b
     	    	else
-    	    		current = FOperator.of(right); // weak(a U b) = F(b)
+    	    		current = Conjunction.of(left, right.not(), XOperator.of(current)); // strengthen(a U b) = a & !b & X(a U b)
+    	    	if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -290,21 +308,22 @@ public class FormulaStrengthening implements Visitor<Formula>{
 		Formula left = wOperator.left.accept(this);
 		Formula right = wOperator.right.accept(this);
 		Formula current = WOperator.of(left, right);
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
+	    		numOfAllowedStrengthenings--;
 	    		// a W b = G(a) || a U b.
     	    	// we decided to weak the each disjunct.
-    	    	// 0:TRUE 1:F 2:F
-    	    	int option = rand.nextInt(3);
+    	    	// 0:FALSE 1:G(a) 2:a U b
+    	    	int option = Settings.RANDOM_GENERATOR.nextInt(3);
+    	    	if (print_debug_info) System.out.print("before: " + wOperator + " random: " + option);
     	    	if (option == 0)
-    	    		current = BooleanConstant.TRUE;
+    	    		current = BooleanConstant.FALSE;
     	    	else if (option == 1)
-    	    		current = Disjunction.of(FOperator.of(left),UOperator.of(left, right)); // weak(a W b) = F(a) || a U b
+    	    		current = GOperator.of(left); // strengthen(a W b) = G(a)
     	    	else
-    	    		current = Disjunction.of(GOperator.of(left), FOperator.of(right)); // weak(a W b) = G(a) || F(b)
+    	    		current = UOperator.of(left, right); // strengthen(a W b) = a U b
+    	    	if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -317,21 +336,23 @@ public class FormulaStrengthening implements Visitor<Formula>{
 		Formula left = mOperator.left.accept(this);
 		Formula right = mOperator.right.accept(this);
 		Formula current = MOperator.of(left, right);
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
+	    		numOfAllowedStrengthenings--;
 	    		
-	    		// a M b = b U (a & b)
-    	    	// 0:TRUE 1:W 2:F
-    	    	int option = rand.nextInt(3);
+	    		// a M b = b U (a & b) = (a & b) || b & !(a & b) & X(b U (a & b))
+    	    	// we decided to strengthen each disjunct.
+	    		// 0:FALSE 1:(a & b) 2:b & !(a & b) & X(b U (a & b))
+    	    	int option = Settings.RANDOM_GENERATOR.nextInt(3);
+    	    	if (print_debug_info) System.out.print("before: " + mOperator + " random: " + option);
     	    	if (option == 0)
-    	    		current = BooleanConstant.TRUE;
+    	    		current = BooleanConstant.FALSE;
     	    	else if (option == 1)
-    	    		current = WOperator.of(right, Conjunction.of(left,right)); // weak(b U (a & b)) = b W (a & b)
+    	    		current = Conjunction.of(left,right); // strengthen(a M b) = (a & b)
     	    	else
-    	    		current = FOperator.of(Conjunction.of(left,right)); // weak(b U (a & b)) = F(a & b)
+    	    		current = Conjunction.of(right, Conjunction.of(left,right).not(), XOperator.of(current)); // strengthen(a M b) = b & !(a & b) & X(a M b)
+    	    	if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;
@@ -342,22 +363,22 @@ public class FormulaStrengthening implements Visitor<Formula>{
 		Formula left = rOperator.left.accept(this);
 		Formula right = rOperator.right.accept(this);
 		Formula current = ROperator.of(left, right);
-		if (numOfRemainingWeakenings > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(weakening_rate) == 0);
+		if (numOfAllowedStrengthenings > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		numOfRemainingWeakenings--;
-	    		// a R b = b W (a & b)
-    	    	// 0:TRUE 1:F 2:F
-    	    	int option = rand.nextInt(3);
+	    		numOfAllowedStrengthenings--;
+	    		// a R b = b W (a & b) = G(b) || a M b
+    	    	// we decided to weak the each disjunct.
+    	    	// 0:FALSE 1:G(a) 2:a U b
+    	    	int option = Settings.RANDOM_GENERATOR.nextInt(3);
+    	    	if (print_debug_info) System.out.print("before: " + rOperator + " random: " + option);
     	    	if (option == 0)
-    	    		current = BooleanConstant.TRUE;
+    	    		current = BooleanConstant.FALSE;
     	    	else if (option == 1)
-    	    		// weak(b W (a & b)) = F(b) || b U (a & b)
-    	    		current = Disjunction.of(FOperator.of(right),UOperator.of(right, Conjunction.of(left,right))); 
+    	    		current = GOperator.of(right); // strengthen(a W b) = G(b)
     	    	else
-    	    		// weak(b W (a & b)) = G(b) || F (a & b)
-    	    		current = Disjunction.of(GOperator.of(right), FOperator.of(Conjunction.of(left,right))); 
+    	    		current = MOperator.of(left, right); // strengthen(a R b) = a M b
+    	    	if (print_debug_info) System.out.println(" after: " + current);
 	    	}
 		}
 		return current;

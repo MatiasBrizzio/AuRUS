@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
+import geneticalgorithm.Settings;
 import owl.grammar.LTLParser;
 import owl.ltl.Biconditional;
 import owl.ltl.BooleanConstant;
@@ -35,11 +36,11 @@ public class FormulaMutator implements Visitor<Formula>{
 	  private final List<String> variables;
 	  private final boolean fixedVariables;
 	  private int mutation_rate;
-	  private int numOfRemainingMutations = 0;
+	  private int numOfAllowedMutations = 0;
 
 	  private boolean print_debug_info = true;
 	  
-	  public FormulaMutator(List<String> literals, int mutation_rate, int num_of_mutations_to_appply) {
+	  public FormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_appply) {
 			ListIterator<String> literalIterator = literals.listIterator();
 		    List<Literal> literalList = new ArrayList<>();
 		    List<String> variableList = new ArrayList<>();
@@ -55,7 +56,7 @@ public class FormulaMutator implements Visitor<Formula>{
 		    variables = List.copyOf(variableList);
 		    fixedVariables = true;
 		    this.mutation_rate = mutation_rate;
-		    this.numOfRemainingMutations = num_of_mutations_to_appply;
+		    this.numOfAllowedMutations = max_num_of_mutations_to_appply;
 			
 	}
 	
@@ -73,19 +74,18 @@ public class FormulaMutator implements Visitor<Formula>{
 	@Override
 	public Formula visit(BooleanConstant booleanConstant) {
 		Formula current = booleanConstant;		    
-		if (numOfRemainingMutations > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(2); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(2); 
 	    		//0: negateFormula 1:new literal
 	    		if (print_debug_info) System.out.print("before: " + booleanConstant + " random: " + random);
 	    		if (random == 0)
 	    				current = current.not();
 	    		else {
-	    			Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
-	    			if (rand.nextBoolean())
+	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				new_literal = new_literal.not();
 	    			current = new_literal;
 	    		}
@@ -99,12 +99,11 @@ public class FormulaMutator implements Visitor<Formula>{
 	@Override
 	public Formula visit(Literal literal) {
 		Formula current = literal;		    
-		if (numOfRemainingMutations > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(4); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
 	    		//0: TRUE 1:FALSE 2:negateFormula 3:new literal
 	    		if (print_debug_info) System.out.print("before: " + literal + " random: " + random);
 	    		if (random == 0)
@@ -114,8 +113,8 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		else if (random == 2)
 	    			current = current.not();
 	    		else {
-		    		Formula new_literal = createVariable(variables.get(rand.nextInt(variables.size())));
-					if (rand.nextBoolean())
+		    		Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+					if (Settings.RANDOM_GENERATOR.nextBoolean())
 						new_literal = new_literal.not();
 					current = new_literal;
 	    		}
@@ -130,12 +129,11 @@ public class FormulaMutator implements Visitor<Formula>{
 	public Formula visit(XOperator xOperator) {
 		Formula operand = xOperator.operand.accept(this);
 		Formula current = XOperator.of(operand);		    
-		if (numOfRemainingMutations > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0: removeOP 1:negateFormula 2:changeOp
 	    		if (print_debug_info) System.out.print("before: " + xOperator + " random: " + random);
 	    		if (random == 0)
@@ -144,7 +142,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    			current = current.not();
 	    		else { //random == 2
 	    			//0:F 1:G
-    				int op = rand.nextInt(2);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(2);
     				if (op == 0)
     					current = FOperator.of(operand);
     				else
@@ -160,12 +158,11 @@ public class FormulaMutator implements Visitor<Formula>{
 	public Formula visit(FOperator fOperator) {
 		Formula operand = fOperator.operand.accept(this);
 		Formula current = FOperator.of(operand);		    
-		if (numOfRemainingMutations > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0: removeOP 1:negateFormula 2:changeOp
 	    		if (print_debug_info) System.out.print("before: " + fOperator + " random: " + random);
 	    		if (random == 0)
@@ -174,7 +171,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    			current = current.not();
 	    		else { //random == 2
 	    			//0:F 1:G
-    				int op = rand.nextInt(2);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(2);
     				if (op == 0)
     					current = XOperator.of(operand);
     				else
@@ -191,12 +188,11 @@ public class FormulaMutator implements Visitor<Formula>{
 	public Formula visit(GOperator gOperator) {
 		Formula operand = gOperator.operand.accept(this);
 		Formula current = GOperator.of(operand);		    
-		if (numOfRemainingMutations > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0: removeOP 1:negateFormula 2:changeOp
 	    		if (print_debug_info) System.out.print("before: " + gOperator + " random: " + random);
 	    		if (random == 0)
@@ -205,7 +201,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    			current = current.not();
 	    		else { //random == 2
 	    			//0:F 1:G
-    				int op = rand.nextInt(2);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(2);
     				if (op == 0)
     					current = FOperator.of(operand);
     				else
@@ -221,21 +217,20 @@ public class FormulaMutator implements Visitor<Formula>{
 	@Override
 	public Formula visit(Conjunction conjunction) {
 		Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
-		if (numOfRemainingMutations > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> removeOP; 1 -> negateFormula; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + conjunction + " random: " + random);
 	    		if (random == 0) {
 	    			Iterator<Formula> it = conjunction.children.iterator();
 	    			current = it.next();
-	    			boolean select = it.hasNext() && rand.nextBoolean();
+	    			boolean select = it.hasNext() && Settings.RANDOM_GENERATOR.nextBoolean();
 	    			while (select) {
 	    				current = it.next();
-	    				select = it.hasNext() && rand.nextBoolean();
+	    				select = it.hasNext() && Settings.RANDOM_GENERATOR.nextBoolean();
 	    			}
 	    		}
 	    		else if (random == 1) { 
@@ -243,7 +238,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		}
 	    		else { // random == 2
 	    			//0:| 1:U 2:W 3:R 4:M
-    				int op = rand.nextInt(5);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Disjunction.of(current.children());
     				else { 
@@ -253,7 +248,7 @@ public class FormulaMutator implements Visitor<Formula>{
 
     	    			while (it.hasNext()) {
     	    				Formula c = it.next();
-    	    				if (rand.nextBoolean()) {
+    	    				if (Settings.RANDOM_GENERATOR.nextBoolean()) {
     	    					rightChild.add(left);
     	    					left = c;
     	    				}
@@ -281,21 +276,20 @@ public class FormulaMutator implements Visitor<Formula>{
 	@Override
 	public Formula visit(Disjunction disjunction) {
 		Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
-		if (numOfRemainingMutations > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+		if (numOfAllowedMutations > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> removeOP; 1 -> negateFormula; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + disjunction + " random: " + random);
 	    		if (random == 0) {
 	    			Iterator<Formula> it = disjunction.children.iterator();
 	    			current = it.next();
-	    			boolean select = it.hasNext() && rand.nextBoolean();
+	    			boolean select = it.hasNext() && Settings.RANDOM_GENERATOR.nextBoolean();
 	    			while (select) {
 	    				current = it.next();
-	    				select = it.hasNext() && rand.nextBoolean();
+	    				select = it.hasNext() && Settings.RANDOM_GENERATOR.nextBoolean();
 	    			}
 	    		}
 	    		else if (random == 1) { 
@@ -303,7 +297,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		}
 	    		else { // random == 2
 	    			//0:& 1:U 2:W 3:R 4:M
-    				int op = rand.nextInt(5);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(current.children());
     				else { 
@@ -313,7 +307,7 @@ public class FormulaMutator implements Visitor<Formula>{
 
     	    			while (it.hasNext()) {
     	    				Formula c = it.next();
-    	    				if (rand.nextBoolean()) {
+    	    				if (Settings.RANDOM_GENERATOR.nextBoolean()) {
     	    					rightChild.add(left);
     	    					left = c;
     	    				}
@@ -344,16 +338,15 @@ public class FormulaMutator implements Visitor<Formula>{
 	    Formula right = uOperator.right.accept(this);
 	    Formula current = UOperator.of(left, right);
 	    
-	    if (numOfRemainingMutations > 0) { 	
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    if (numOfAllowedMutations > 0) { 	
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> removeOP; 1 -> negateFormula; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + uOperator + " random: " + random);
 	    		if (random == 0) {
-	    			if (rand.nextBoolean())
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				current = left;
 	    			else
 	    				current = right;
@@ -363,7 +356,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		}
 	    		else { // random == 2
 	    			//0:& 1:| 2:W 3:R 4:M
-    				int op = rand.nextInt(5);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
     				else if (op == 1)
@@ -387,16 +380,15 @@ public class FormulaMutator implements Visitor<Formula>{
 	    Formula right = wOperator.right.accept(this);
 	    Formula current = WOperator.of(left, right);
 	    
-	    if (numOfRemainingMutations > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    if (numOfAllowedMutations > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> removeOP; 1 -> negateFormula; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + wOperator + " random: " + random);
 	    		if (random == 0) {
-	    			if (rand.nextInt(2) == 0)
+	    			if (Settings.RANDOM_GENERATOR.nextInt(2) == 0)
 	    				current = left;
 	    			else
 	    				current = right;
@@ -406,7 +398,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		}
 	    		else { // random == 2
 	    			//0:& 1:| 2:U 3:R 4:M
-    				int op = rand.nextInt(5);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
     				else if (op == 1)
@@ -430,16 +422,15 @@ public class FormulaMutator implements Visitor<Formula>{
 	    Formula right = mOperator.right.accept(this);
 	    Formula current = MOperator.of(left, right);
 	    
-	    if (numOfRemainingMutations > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    if (numOfAllowedMutations > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> removeOP; 1 -> negateFormula; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + mOperator + " random: " + random);
 	    		if (random == 0) {
-	    			if (rand.nextInt(2) == 0)
+	    			if (Settings.RANDOM_GENERATOR.nextInt(2) == 0)
 	    				current = left;
 	    			else
 	    				current = right;
@@ -449,7 +440,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		}
 	    		else { // random == 2
 	    			//0:& 1:| 2:U 3:R 4:W
-    				int op = rand.nextInt(5);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
     				else if (op == 1)
@@ -473,16 +464,15 @@ public class FormulaMutator implements Visitor<Formula>{
 	    Formula right = rOperator.right.accept(this);
 	    Formula current = ROperator.of(left, right);
 	    
-	    if (numOfRemainingMutations > 0) {
-	    	Random rand = new Random(System.currentTimeMillis());
-	    	boolean mutate = (rand.nextInt(mutation_rate) == 0);
+	    if (numOfAllowedMutations > 0) {
+	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
-	    		this.numOfRemainingMutations --;
-	    		int random = rand.nextInt(3); 
+	    		this.numOfAllowedMutations --;
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> removeOP; 1 -> negateFormula; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + rOperator + " random: " + random);
 	    		if (random == 0) {
-	    			if (rand.nextInt(2) == 0)
+	    			if (Settings.RANDOM_GENERATOR.nextInt(2) == 0)
 	    				current = left;
 	    			else
 	    				current = right;
@@ -492,7 +482,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		}
 	    		else { // random == 2
 	    			//0:& 1:| 2:U 3:W 4:M
-    				int op = rand.nextInt(5);
+    				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
     				else if (op == 1)
