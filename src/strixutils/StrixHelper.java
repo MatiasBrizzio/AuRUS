@@ -28,10 +28,12 @@ public class StrixHelper {
 	 * @param tlsf tlsf file containing all specification.
 	 * @return true iff the tlsf file is realizable
 	 * @throws IOException
+	 * @throws InterruptedException 
 	 */
-	public static boolean checkRealizability(Tlsf tlsf) throws IOException {
+	public static boolean checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
 		//Writes the tlsf object into file...
-		String tlsf_string = TLSF_Utils.toTLSF(tlsf);
+		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF(tlsf));
+		String tlsf_string = TLSF_Utils.toTLSF(tlsf2);
 		File file = new File(tlsf.title().replace("\"", "")+".tlsf");
 		//Create the file
 		try {

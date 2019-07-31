@@ -125,18 +125,22 @@ class StrixHelperTest {
 	
 	 @Test
 	void testCheckRealizability() throws IOException, InterruptedException {
-		Tlsf tlsf = TLSF_Utils.toBasicTLSF(TLSFFULL);
-		assertFalse(StrixHelper.checkRealizability(tlsf));
+		assertFalse(StrixHelper.checkRealizability(TLSFFULL));
 	}
 	 
 	@Test
 	void testCheckRealizability2() throws IOException, InterruptedException {
+		assertFalse(StrixHelper.checkRealizability(TLSF2));
+	}
+	
+	@Test
+	void testCheckRealizability3() throws IOException, InterruptedException {
 		Tlsf tlsf = TLSF_Utils.toBasicTLSF(TLSF2);
 		assertFalse(StrixHelper.checkRealizability(tlsf));
 	}
 	
 	@Test
-	void testCheckRealizability3() throws IOException, InterruptedException {
+	void testCheckRealizability4() throws IOException, InterruptedException {
 		assertTrue(StrixHelper.checkRealizability("/examples/collector_v4_6_basic.tlsf"));
 	}
 
