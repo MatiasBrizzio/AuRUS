@@ -15,10 +15,9 @@ import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.Formula.LogicalOperator;
-import owl.ltl.parser.FormulaParser;
 import owl.ltl.parser.LtlParser;
-import owl.ltl.parser.SubformulaReplacer;
 import owl.ltl.parser.TokenErrorListener;
+import owl.ltl.visitors.SubformulaReplacer;
 import owl.ltl.LabelledFormula;
 
 public class Formula_Utils {
@@ -73,64 +72,11 @@ public class Formula_Utils {
 		
 		LabelledFormula f0_copy = LabelledFormula.of(f0.formula(), f0.variables());
 		//replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
-		f0_copy = replaceSubformula(f0_copy, src, target);
+		SubformulaReplacer visitor = new SubformulaReplacer(f0.variables(), src.formula(),target.formula());
+		Formula m = f0.formula().accept(visitor);
+		f0_copy = LabelledFormula.of(m, f0.variables());
 		return f0_copy;
 	}
 	
-//	public static Formula replaceSubformula (Formula f0, Formula src, Formula target) {		
-//		if (f0 == src)
-//			return target;
-//		if(f0.children().contains(src)) {
-//			f0.children().remove(src);
-//			f0.children().add(target);
-//		}
-//		else {
-//			for (Formula child : f0.children()) {
-//				Formula res = replaceSubformula(child, src, target);
-//				if (!child.equals(res))
-//					return res;
-//			}
-//		}
-//		return f0;
-//	}
 
-//	public static LabelledFormula replaceSubformula(LabelledFormula f, LabelledFormula src, LabelledFormula target) {
-//		String form = f.formula().toString().replace(src.formula().toString(), target.formula().toString());
-////		System.out.println(form);
-//		
-//		CharStream input = CharStreams.fromString(form);
-//		// Tokenize the stream
-//	    LTLLexer lexer = new LTLLexer(input);
-//	    // Don't print long error messages on the console
-//	    lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
-//	    // Add a fail-fast behaviour for token errors
-//	    lexer.addErrorListener(new TokenErrorListener());
-//	    CommonTokenStream tokens = new CommonTokenStream(lexer);
-//
-//	    // Parse the tokens
-//	    LTLParser parser = new LTLParser(tokens);
-//		 // Convert the AST into a proper object
-//	    FormulaParser formVisitor = new FormulaParser(f.variables());
-//	    return LabelledFormula.of(formVisitor.visit(parser.formula()), formVisitor.variables());
-//	}
-	
-	public static LabelledFormula replaceSubformula(LabelledFormula f, LabelledFormula src, LabelledFormula target) {
-		//String form = f.formula().toString().replace(src.formula().toString(), target.formula().toString());
-//		System.out.println(form);
-		
-		CharStream input = CharStreams.fromString(f.toString());
-		// Tokenize the stream
-	    LTLLexer lexer = new LTLLexer(input);
-	    // Don't print long error messages on the console
-	    lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
-	    // Add a fail-fast behaviour for token errors
-	    lexer.addErrorListener(new TokenErrorListener());
-	    CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-	    // Parse the tokens
-	    LTLParser parser = new LTLParser(tokens);
-		 // Convert the AST into a proper object
-	    SubformulaReplacer formVisitor = new SubformulaReplacer(src, target, f.variables());
-	    return LabelledFormula.of(formVisitor.visit(parser.formula()), f.variables());
-	}
 }

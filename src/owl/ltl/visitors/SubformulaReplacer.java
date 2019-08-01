@@ -60,19 +60,20 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(Biconditional biconditional) {
-		Formula left = biconditional.left.accept(this);
-		Formula right = biconditional.right.accept(this);
-		
 		if (biconditional.equals(this.source))
 			return this.target;
+		
+		Formula left = biconditional.left.accept(this);
+		Formula right = biconditional.right.accept(this);
 		
 		return Biconditional.of(left, right);
 	}
 
 	@Override
 	public Formula visit(BooleanConstant booleanConstant) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(booleanConstant);
+		if (booleanConstant.equals(this.source))
+			return this.target;
+		return booleanConstant;
 	}
 
 	@Override
@@ -93,154 +94,144 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(FOperator fOperator) {
-		Formula operand = fOperator.operand.accept(this);
-		
 		if (fOperator.equals(this.source))
 			return this.target;
 		
+		Formula operand = fOperator.operand.accept(this);
 		return FOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(FrequencyG freq) {
-		Formula operand = freq.operand.accept(this);
-		
 		if (freq.equals(this.source))
 			return this.target;
 		
+		Formula operand = freq.operand.accept(this);
 		return FrequencyG.of(operand);
 	}
 
 	@Override
 	public Formula visit(GOperator gOperator) {
-		Formula operand = gOperator.operand.accept(this);
-		
 		if (gOperator.equals(this.source))
 			return this.target;
 		
+		Formula operand = gOperator.operand.accept(this);
 		return GOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(HOperator hOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(hOperator);
+		if (hOperator.equals(this.source))
+			return this.target;
+		
+		Formula operand = hOperator.operand.accept(this);
+		return HOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(Literal literal) {
-		Formula current = literal;
-		
-		if (current.equals(this.source))
+		if (literal.equals(this.source))
 			return this.target;
 		
-		return createVariable(LabelledFormula.of(current, variables).toString());
+		return literal;
 		
 	}
 
 	@Override
 	public Formula visit(MOperator mOperator) {
-		Formula left = mOperator.left.accept(this);
-		Formula right = mOperator.right.accept(this);
-		
 		if (mOperator.equals(this.source))
 			return this.target;
 		
+		Formula left = mOperator.left.accept(this);
+		Formula right = mOperator.right.accept(this);
 		return MOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(OOperator oOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(oOperator);
+		if (oOperator.equals(this.source))
+			return this.target;
+		
+		Formula operand = oOperator.operand.accept(this);
+		return OOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(ROperator rOperator) {
-		Formula left = rOperator.left.accept(this);
-		Formula right = rOperator.right.accept(this);
-		
 		if (rOperator.equals(this.source))
 			return this.target;
+		
+		Formula left = rOperator.left.accept(this);
+		Formula right = rOperator.right.accept(this);
 		
 		return ROperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(SOperator sOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(sOperator);
+		if (sOperator.equals(this.source))
+			return this.target;
+		
+		Formula left = sOperator.left.accept(this);
+		Formula right = sOperator.right.accept(this);
+		
+		return SOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(TOperator tOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(tOperator);
+		if (tOperator.equals(this.source))
+			return this.target;
+		
+		Formula left = tOperator.left.accept(this);
+		Formula right = tOperator.right.accept(this);
+		
+		return TOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(UOperator uOperator) {
-		Formula left = uOperator.left.accept(this);
-		Formula right = uOperator.right.accept(this);
-		
 		if (uOperator.equals(this.source))
 			return this.target;
-		
+		Formula left = uOperator.left.accept(this);
+		Formula right = uOperator.right.accept(this);
 		return UOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(WOperator wOperator) {
-		Formula left = wOperator.left.accept(this);
-		Formula right = wOperator.right.accept(this);
-		
 		if (wOperator.equals(this.source))
 			return this.target;
-		
+		Formula left = wOperator.left.accept(this);
+		Formula right = wOperator.right.accept(this);
 		return WOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(XOperator xOperator) {
-		Formula operand = xOperator.operand.accept(this);
-		
 		if (xOperator.equals(this.source))
 			return this.target;
 		
+		Formula operand = xOperator.operand.accept(this);
 		return XOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(YOperator yOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(yOperator);
+		if (yOperator.equals(this.source))
+			return this.target;
+		
+		Formula operand = yOperator.operand.accept(this);
+		return YOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(ZOperator zOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(zOperator);
+		if (zOperator.equals(this.source))
+			return this.target;
+		
+		Formula operand = zOperator.operand.accept(this);
+		return YOperator.of(operand);
 	}
-
-	private Formula createVariable(String name) {
-		assert variables.size() == literalCache.size();
-		int index = variables.indexOf(name);
-	
-		if (index == -1) {
-			
-			if (fixedVariables) {
-				throw new IllegalStateException("Encountered unknown variable " + name    + " with fixed set " + variables);
-			}
-			
-	      int newIndex = variables.size();
-	      Literal literal = Literal.of(newIndex);
-	      variables.add(name);
-	      literalCache.add(literal);
-	      return literal;
-	    }
-	
-	    return literalCache.get(index);
-	  }
-	
 	
 }
