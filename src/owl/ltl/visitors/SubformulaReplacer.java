@@ -1,5 +1,9 @@
 package owl.ltl.visitors;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import owl.ltl.Biconditional;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
@@ -9,6 +13,7 @@ import owl.ltl.Formula;
 import owl.ltl.FrequencyG;
 import owl.ltl.GOperator;
 import owl.ltl.HOperator;
+import owl.ltl.LabelledFormula;
 import owl.ltl.Literal;
 import owl.ltl.MOperator;
 import owl.ltl.OOperator;
@@ -25,8 +30,25 @@ public class SubformulaReplacer implements Visitor<Formula>{
 	
 	private final Formula source;
 	private final Formula target;
+	private List<String> variables = null;
+	private List<Literal> literalCache;
+	private boolean fixedVariables = false;
 	
-	public SubformulaReplacer (Formula source, Formula target) {
+	public SubformulaReplacer (List<String> literals, Formula source, Formula target) {
+		ListIterator<String> literalIterator = literals.listIterator();
+	    List<Literal> literalList = new ArrayList<>();
+	    List<String> variableList = new ArrayList<>();
+
+	    while (literalIterator.hasNext()) {
+	      int index = literalIterator.nextIndex();
+	      String name = literalIterator.next();
+	      literalList.add(Literal.of(index));
+	      variableList.add(name);
+	    }
+
+	    literalCache = List.copyOf(literalList);
+	    variables = List.copyOf(variableList);
+	    fixedVariables = true;
 		this.source = source;
 		this.target = target;
 	}
@@ -38,8 +60,13 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(Biconditional biconditional) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(biconditional);
+		Formula left = biconditional.left.accept(this);
+		Formula right = biconditional.right.accept(this);
+		
+		if (biconditional.equals(this.source))
+			return this.target;
+		
+		return Biconditional.of(left, right);
 	}
 
 	@Override
@@ -50,32 +77,48 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(Conjunction conjunction) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(conjunction);
+		if (conjunction.equals(this.source))
+			return this.target;
+		
+		return Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
 	}
 
 	@Override
 	public Formula visit(Disjunction disjunction) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(disjunction);
+		if (disjunction.equals(this.source))
+			return this.target;
+		
+		return Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
 	}
 
 	@Override
 	public Formula visit(FOperator fOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(fOperator);
+		Formula operand = fOperator.operand.accept(this);
+		
+		if (fOperator.equals(this.source))
+			return this.target;
+		
+		return FOperator.of(operand);
 	}
 
 	@Override
 	public Formula visit(FrequencyG freq) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(freq);
+		Formula operand = freq.operand.accept(this);
+		
+		if (freq.equals(this.source))
+			return this.target;
+		
+		return FrequencyG.of(operand);
 	}
 
 	@Override
 	public Formula visit(GOperator gOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(gOperator);
+		Formula operand = gOperator.operand.accept(this);
+		
+		if (gOperator.equals(this.source))
+			return this.target;
+		
+		return GOperator.of(operand);
 	}
 
 	@Override
@@ -86,14 +129,24 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(Literal literal) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(literal);
+		Formula current = literal;
+		
+		if (current.equals(this.source))
+			return this.target;
+		
+		return createVariable(LabelledFormula.of(current, variables).toString());
+		
 	}
 
 	@Override
 	public Formula visit(MOperator mOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(mOperator);
+		Formula left = mOperator.left.accept(this);
+		Formula right = mOperator.right.accept(this);
+		
+		if (mOperator.equals(this.source))
+			return this.target;
+		
+		return MOperator.of(left, right);
 	}
 
 	@Override
@@ -104,8 +157,13 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(ROperator rOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(rOperator);
+		Formula left = rOperator.left.accept(this);
+		Formula right = rOperator.right.accept(this);
+		
+		if (rOperator.equals(this.source))
+			return this.target;
+		
+		return ROperator.of(left, right);
 	}
 
 	@Override
@@ -122,20 +180,34 @@ public class SubformulaReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(UOperator uOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(uOperator);
+		Formula left = uOperator.left.accept(this);
+		Formula right = uOperator.right.accept(this);
+		
+		if (uOperator.equals(this.source))
+			return this.target;
+		
+		return UOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(WOperator wOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(wOperator);
+		Formula left = wOperator.left.accept(this);
+		Formula right = wOperator.right.accept(this);
+		
+		if (wOperator.equals(this.source))
+			return this.target;
+		
+		return WOperator.of(left, right);
 	}
 
 	@Override
 	public Formula visit(XOperator xOperator) {
-		// TODO Auto-generated method stub
-		return Visitor.super.visit(xOperator);
+		Formula operand = xOperator.operand.accept(this);
+		
+		if (xOperator.equals(this.source))
+			return this.target;
+		
+		return XOperator.of(operand);
 	}
 
 	@Override
@@ -150,4 +222,25 @@ public class SubformulaReplacer implements Visitor<Formula>{
 		return Visitor.super.visit(zOperator);
 	}
 
+	private Formula createVariable(String name) {
+		assert variables.size() == literalCache.size();
+		int index = variables.indexOf(name);
+	
+		if (index == -1) {
+			
+			if (fixedVariables) {
+				throw new IllegalStateException("Encountered unknown variable " + name    + " with fixed set " + variables);
+			}
+			
+	      int newIndex = variables.size();
+	      Literal literal = Literal.of(newIndex);
+	      variables.add(name);
+	      literalCache.add(literal);
+	      return literal;
+	    }
+	
+	    return literalCache.get(index);
+	  }
+	
+	
 }
