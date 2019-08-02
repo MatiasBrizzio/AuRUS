@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
+import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -14,17 +15,33 @@ public class StrixHelper {
 	private static FileWriter writer;
 
 	/**
-	 * Checks the realizability of the system specified by the TLSF file passed as parameter
-	 * @param path path to TLSF file
-	 * @return true iff the TLSF file in path is realizable
+	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
+	 * @param tlsf a TLSF File containing all tlsf specifiaction
+	 * @return true iff the TLSF spec is realizable
 	 * @throws IOException
+	 * @throws InterruptedException 
 	 */
-	public static boolean checkRealizability(String path) throws IOException {
-		return executeStrix(path);
+	public static boolean checkRealizability(File tlsf) throws IOException, InterruptedException {
+		return executeStrix(tlsf.getPath());
+	}
+	
+	
+	
+	
+	/**
+	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
+	 * @param tlsf a string containing all tlsf specifiaction
+	 * @return true iff the TLSF spec is realizable
+	 * @throws IOException
+	 * @throws InterruptedException 
+	 */
+	public static boolean checkRealizability(String tlsf) throws IOException, InterruptedException {
+		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(tlsf);
+		return checkRealizability(tlsf2);
 	}
 	
 	/**
-	 * Checks the realizability of the system specified by the TLSF file passed as parameter
+	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
 	 * @param tlsf tlsf file containing all specification.
 	 * @return true iff the tlsf file is realizable
 	 * @throws IOException
@@ -62,7 +79,8 @@ public class StrixHelper {
 	 * @throws IOException
 	 */
 	private static boolean executeStrix(String path) throws IOException {
-		Process pr = Runtime.getRuntime().exec( new String[]{"lib/strix/bin/strix", "."+path});
+		System.out.println(path);
+		Process pr = Runtime.getRuntime().exec( new String[]{"lib/strix/bin/strix", "./"+path});
 		InputStream in = new BufferedInputStream( pr.getInputStream());
 		
 		int i = 0;
@@ -70,6 +88,7 @@ public class StrixHelper {
 		byte[] buffer = new byte[1024];
 		String res;
 		while ( in.read(buffer) != -1 && i++<1) {
+			System.out.println(path);
 		    res = new String(buffer).trim();
 		    if (res.equals("REALIZABLE")) flag = true;
 		}  

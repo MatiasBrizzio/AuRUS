@@ -2,6 +2,7 @@ package solvers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -121,7 +122,46 @@ class StrixHelperTest {
 			    + "    ! F G (request1 && !grant1);\n"
 			    + "  }\n"
 			    + '\n'
-			    + "}\n";	 
+			    + "}\n";	
+	  
+	  
+	private static final String TLSF3 = "INFO {\n" + 
+			"  TITLE:       \"Parameterized Collector\"\n" + 
+			"  DESCRIPTION: \"Signals whether all input clients have delivered a token\"\n" + 
+			"  SEMANTICS:   Mealy\n" + 
+			"  TARGET:      Mealy\n" + 
+			"}\n" + 
+			"\n" + 
+			"MAIN {\n" + 
+			"  INPUTS {\n" + 
+			"    finished_0;\n" + 
+			"    finished_1;\n" + 
+			"    finished_2;\n" + 
+			"    finished_3;\n" + 
+			"    finished_4;\n" + 
+			"    finished_5;\n" + 
+			"  }\n" + 
+			"  OUTPUTS {\n" + 
+			"    allFinished;\n" + 
+			"  }\n" + 
+			"  INITIALLY {\n" + 
+			"    ((! (allFinished)) W (finished_0));\n" + 
+			"    ((! (allFinished)) W (finished_1));\n" + 
+			"    ((! (allFinished)) W (finished_2));\n" + 
+			"    ((! (allFinished)) W (finished_3));\n" + 
+			"    ((! (allFinished)) W (finished_4));\n" + 
+			"    ((! (allFinished)) W (finished_5));\n" + 
+			"  }\n" + 
+			"  ASSERT {\n" + 
+			"    (((((((G (F (finished_0))) && (G (F (finished_1)))) && (G (F (finished_2)))) && (G (F (finished_3)))) && (G (F (finished_4)))) && (G (F (finished_5)))) -> (G (F (allFinished))));\n" + 
+			"    ((allFinished) -> (X ((! (allFinished)) W (finished_0))));\n" + 
+			"    ((allFinished) -> (X ((! (allFinished)) W (finished_1))));\n" + 
+			"    ((allFinished) -> (X ((! (allFinished)) W (finished_2))));\n" + 
+			"    ((allFinished) -> (X ((! (allFinished)) W (finished_3))));\n" + 
+			"    ((allFinished) -> (X ((! (allFinished)) W (finished_4))));\n" + 
+			"    ((allFinished) -> (X ((! (allFinished)) W (finished_5))));\n" + 
+			"  }\n" + 
+			"}";
 	
 	 @Test
 	void testCheckRealizability() throws IOException, InterruptedException {
@@ -141,7 +181,12 @@ class StrixHelperTest {
 	
 	@Test
 	void testCheckRealizability4() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability("/examples/collector_v4_6_basic.tlsf"));
+		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic.tlsf")));
+	}
+	
+	 @Test
+	void testCheckRealizability5() throws IOException, InterruptedException {
+		assertTrue(StrixHelper.checkRealizability(TLSF3));
 	}
 
 
