@@ -1,0 +1,31 @@
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Moore
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+	r;
+	c;
+  }
+  OUTPUTS {
+	g;
+	v;
+  }
+  
+  ASSUMPTIONS{
+	//Assumptions to be added to make the specification realizable	
+	//!(G(!r || !c) && G (r || !c));
+	//G (!c);
+
+  }
+
+  GUARANTEE {
+	G(r -> X (G g));
+	G( (c || g) -> X !g);
+	G (c -> !v) ;
+	G (F(g && v));
+  }
+}
