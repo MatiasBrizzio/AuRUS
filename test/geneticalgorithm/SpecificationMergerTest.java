@@ -2,6 +2,8 @@ package geneticalgorithm;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -120,4 +122,18 @@ class SpecificationMergerTest {
 		assertTrue(!TLSF_Utils.equals(mergeRes.get(0),TlsfParser.parse(TLSF1)));
 		assertTrue(!TLSF_Utils.equals(mergeRes.get(0),TlsfParser.parse(TLSF2)));
 	}
+
+	@Test
+	void testMergeMinepump0() throws IOException, InterruptedException {
+		String filename = "examples/minepump.tlsf";
+		FileReader f = new FileReader(filename);
+	    Tlsf spec = TlsfParser.parse(f);
+		Tlsf mutated_spec = SpecificationMutator.mutate(spec, SPEC_STATUS.GUARANTEES);
+		System.out.println(TLSF_Utils.toTLSF(mutated_spec));
+		List<Tlsf> mergeRes = SpecificationMerger.merge(spec, mutated_spec,SPEC_STATUS.ASSUMPTIONS, SPEC_STATUS.ASSUMPTIONS);
+		System.out.println(TLSF_Utils.toTLSF(mergeRes.get(0)));
+	}
+
 }
+
+

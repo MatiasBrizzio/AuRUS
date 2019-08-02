@@ -73,33 +73,34 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 	@Override
 	public List<SpecificationChromosome> crossover(SpecificationChromosome anotherChromosome) {
 		List<SpecificationChromosome> result = new LinkedList<SpecificationChromosome>();
-		Random rand = new Random(System.currentTimeMillis());
-		
 		// if the specifications will not lead us to a consistent specification, then do a random merge.
-		if (!this.status.compatible(anotherChromosome.status)) {
-			int level = rand.nextInt(2);
-			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
-			for (Tlsf s : mergedSpecs) {
-				result.add(new SpecificationChromosome(s));
-			}
-		} 
-		else {
-			int level = rand.nextInt(2) + 2;
-			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
-			for (Tlsf s : mergedSpecs) {
-				result.add(new SpecificationChromosome(s));
-			}
+		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
+		for (Tlsf s : mergedSpecs) {
+			result.add(new SpecificationChromosome(s));
 		}
+		result.add(new SpecificationChromosome());
+//		if (!this.status.compatible(anotherChromosome.status)) {
+//			int level = Settings.RANDOM_GENERATOR.nextInt(2);
+//			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
+//			for (Tlsf s : mergedSpecs) {
+//				result.add(new SpecificationChromosome(s));
+//			}
+//		} 
+//		else {
+//			int level = Settings.RANDOM_GENERATOR.nextInt(2) + 2;
+//			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
+//			for (Tlsf s : mergedSpecs) {
+//				result.add(new SpecificationChromosome(s));
+//			}
+//		}
 		return result;
 	}
 
 	@Override
 	public SpecificationChromosome mutate() {
 		//clone the current specification
-		
-		
-		SpecificationChromosome mutated_chromosome = new SpecificationChromosome(this);
-		
+		Tlsf mutated_spec = SpecificationMutator.mutate(spec, status);
+		SpecificationChromosome mutated_chromosome = new SpecificationChromosome(mutated_spec);
 		return mutated_chromosome;
 	}
 

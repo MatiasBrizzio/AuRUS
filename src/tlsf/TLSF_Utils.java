@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import owl.ltl.BooleanConstant;
@@ -226,7 +227,7 @@ public class TLSF_Utils {
 		return  TlsfParser.parse(TLSF_EMPTY_SPEC);
 	}
 	
-	public static Tlsf duplicate (Tlsf spec) {
+	public static Tlsf fromSpec (Tlsf spec) {
 		return TlsfParser.parse(toTLSF(spec));
 	}
 	
@@ -713,6 +714,12 @@ public class TLSF_Utils {
 		return TlsfParser.parse(tlsf_spec);
 	}
 
+	public static Tlsf change_guarantees(Tlsf spec, Formula new_guarantee) {
+		List<Formula> list = new LinkedList<Formula>();
+		list.add(new_guarantee);
+		return change_guarantees(spec, list);
+	}
+	
 	public static Tlsf change_guarantees(Tlsf spec, List<Formula> new_guarantees) {
 		String tlsf_spec = "INFO {\n"
 			    + "  TITLE:       " + spec.title() + "\n"

@@ -28,32 +28,30 @@ import tlsf.TLSF_Utils;
 public class SpecificationMutator {
 
 	public static Tlsf mutate(Tlsf spec, SPEC_STATUS status) {
-		Random rand = new Random(System.currentTimeMillis());
-
 		//create empty specification
-		Tlsf new_spec = TLSF_Utils.duplicate(spec);
+		Tlsf new_spec = TLSF_Utils.fromSpec(spec);
 		
 		// assumptions must be weaken/mutated
 		boolean weakAssumptions = !status.areAssumptionsSAT() || (status == SPEC_STATUS.CONTRADICTORY);
+		// assumptions must be strengthen/mutated
+		boolean strengthenAssumptions = false;
 		
 		// guarantees must be weaken/mutated
 		boolean weakGuarantees = !status.areGuaranteesSAT();
 		
-		// guarantees must be strengthen/mutated
-		boolean strengthenGuarantees = false;
+		
 				
 		// consider the particular situation when specification is sat but unrealizable		
 		if (status == SPEC_STATUS.UNREALIZABLE) {
-			weakGuarantees = false;
-			boolean changeAssumptions = Settings.RANDOM_GENERATOR.nextBoolean();
-			weakAssumptions = changeAssumptions;
-			strengthenGuarantees = !changeAssumptions;
+			weakAssumptions = false;
+			strengthenAssumptions = true;
+			weakGuarantees = true;
 		}
 
 		
 		if (weakAssumptions) {	
 			Formula new_assume = BooleanConstant.TRUE;
-			int modification =  rand.nextInt(2);
+			int modification =  Settings.RANDOM_GENERATOR.nextInt(2);
 			if (modification == 0) {
 				// arbitrary mutation
 				new_assume = mutateFormula(spec.assume(), spec.variables());
@@ -65,9 +63,23 @@ public class SpecificationMutator {
 			new_spec = TLSF_Utils.change_assume(new_spec, new_assume);
 		}
 		
+		if (strengthenAssumptions) {
+			Formula new_assumptions = BooleanConstant.FALSE;
+			int modification =  Settings.RANDOM_GENERATOR.nextInt(2);
+			if (modification == 0) {
+				// arbitrary mutation
+				new_assumptions = mutateFormula(spec.assume(), spec.variables());
+			}
+			else {
+				// weaken mutation
+				new_assumptions = strengthenFormula(spec.assume(), spec.variables());
+			}
+			new_spec = TLSF_Utils.change_assume(new_spec, new_assumptions);
+		}
+		
 		if (weakGuarantees) {
 			Formula new_guarantees = BooleanConstant.TRUE;
-			int modification =  rand.nextInt(2);
+			int modification =  Settings.RANDOM_GENERATOR.nextInt(2);
 			if (modification == 0) {
 				// arbitrary mutation
 				new_guarantees = mutateFormula(Conjunction.of(spec.guarantee()), spec.variables());
@@ -79,19 +91,19 @@ public class SpecificationMutator {
 			new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
 		}
 		
-		if (strengthenGuarantees) {
-			Formula new_guarantees = BooleanConstant.FALSE;
-			int modification =  rand.nextInt(2);
-			if (modification == 0) {
-				// arbitrary mutation
-				new_guarantees = mutateFormula(Conjunction.of(spec.guarantee()), spec.variables());
-			}
-			else {
-				// weaken mutation
-				new_guarantees = strengthenFormula(Conjunction.of(spec.guarantee()), spec.variables());
-			}
-			new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
-		}
+//		if (strengthenGuarantees) {
+//			Formula new_guarantees = BooleanConstant.FALSE;
+//			int modification =  rand.nextInt(2);
+//			if (modification == 0) {
+//				// arbitrary mutation
+//				new_guarantees = mutateFormula(Conjunction.of(spec.guarantee()), spec.variables());
+//			}
+//			else {
+//				// weaken mutation
+//				new_guarantees = strengthenFormula(Conjunction.of(spec.guarantee()), spec.variables());
+//			}
+//			new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
+//		}
 		
 		return new_spec;
 	}

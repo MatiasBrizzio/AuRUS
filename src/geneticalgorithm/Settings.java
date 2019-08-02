@@ -10,7 +10,6 @@ public class Settings {
 	// level == 3 merges the assumptions and guarantees preserving consistency.
 	public static int CROSSOVER_LEVEL = 0;
 	
-	public static Random RANDOM_GENERATOR = new Random(1);
-	
-
+	public static Random RANDOM_GENERATOR = new Random(System.currentTimeMillis());
 }
+
