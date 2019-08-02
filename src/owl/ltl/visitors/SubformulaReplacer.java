@@ -30,25 +30,8 @@ public class SubformulaReplacer implements Visitor<Formula>{
 	
 	private final Formula source;
 	private final Formula target;
-	private List<String> variables = null;
-	private List<Literal> literalCache;
-	private boolean fixedVariables = false;
 	
-	public SubformulaReplacer (List<String> literals, Formula source, Formula target) {
-		ListIterator<String> literalIterator = literals.listIterator();
-	    List<Literal> literalList = new ArrayList<>();
-	    List<String> variableList = new ArrayList<>();
-
-	    while (literalIterator.hasNext()) {
-	      int index = literalIterator.nextIndex();
-	      String name = literalIterator.next();
-	      literalList.add(Literal.of(index));
-	      variableList.add(name);
-	    }
-
-	    literalCache = List.copyOf(literalList);
-	    variables = List.copyOf(variableList);
-	    fixedVariables = true;
+	public SubformulaReplacer (Formula source, Formula target) {
 		this.source = source;
 		this.target = target;
 	}
@@ -231,7 +214,7 @@ public class SubformulaReplacer implements Visitor<Formula>{
 			return this.target;
 		
 		Formula operand = zOperator.operand.accept(this);
-		return YOperator.of(operand);
+		return ZOperator.of(operand);
 	}
 	
 }

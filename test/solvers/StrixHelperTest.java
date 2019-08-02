@@ -1,4 +1,4 @@
-package strixutils;
+package solvers;
 
 import static org.junit.jupiter.api.Assertions.*;
 

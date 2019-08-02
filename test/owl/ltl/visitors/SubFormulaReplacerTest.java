@@ -21,7 +21,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("F ( grant0 && grant2)",vars);
 		  LabelledFormula trg = LtlParser.parse("G (grant2 && grant0)",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -33,7 +33,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("F (grant1 || F ( grant0 && grant2))",vars);
 		  LabelledFormula trg = LtlParser.parse("grant1",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -45,7 +45,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("F (grant1 || F ( grant0 && grant2))",vars);
 		  LabelledFormula trg = LtlParser.parse("grant1",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -57,7 +57,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("F (grant1 || F ( grant0 && grant2))",vars);
 		  LabelledFormula trg = LtlParser.parse("grant1 && (G (grant1 || grant2))",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -69,7 +69,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("F (grant1 || F ( grant0 && grant2))",vars);
 		  LabelledFormula trg = LtlParser.parse("grant1",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 		  org.junit.Assert.assertTrue(LtlParser.parse("grant1 U grant2",vars).equals( LabelledFormula.of(m, vars)));
@@ -83,7 +83,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("grant2",vars);
 		  LabelledFormula trg = LtlParser.parse("grant0 <-> grant1",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -95,7 +95,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("grant0",vars);
 		  LabelledFormula trg = LtlParser.parse("grant0 && (G (grant0 && grant1 U grant2))",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -107,7 +107,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("grant0",vars);
 		  LabelledFormula trg = LtlParser.parse("grant0 && (G (grant0 && grant1 U grant2))",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }
@@ -119,7 +119,7 @@ class SubFormulaReplacerTest {
 		  LabelledFormula src = LtlParser.parse("grant0",vars);
 		  LabelledFormula trg = LtlParser.parse("grant0 && (G (grant0 && grant1 U grant2))",vars);
 		  System.out.println("before repalce subformula! "+ LabelledFormula.of(f.formula(), vars));
-		  SubformulaReplacer visitor = new SubformulaReplacer(vars, src.formula(),trg.formula());
+		  SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),trg.formula());
 		  Formula m = f.formula().accept(visitor);
 		  System.out.println("After reaplace subformula! "+ LabelledFormula.of(m, vars));
 	  }

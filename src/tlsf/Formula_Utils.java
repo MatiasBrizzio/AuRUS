@@ -84,7 +84,7 @@ public class Formula_Utils {
 		
 		LabelledFormula f0_copy = LabelledFormula.of(f0.formula(), f0.variables());
 		//replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
-		SubformulaReplacer visitor = new SubformulaReplacer(f0.variables(), src.formula(),target.formula());
+		SubformulaReplacer visitor = new SubformulaReplacer(src.formula(),target.formula());
 		Formula m = f0.formula().accept(visitor);
 		f0_copy = LabelledFormula.of(m, f0.variables());
 		return f0_copy;
