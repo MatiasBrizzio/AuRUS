@@ -53,7 +53,19 @@ public class Formula_Utils {
 			conjuncts.add(f);
 		return conjuncts;
 	}
-
+	
+	public static List<Formula> splitConjunction (Formula f){
+		List<Formula> conjuncts = new LinkedList<>();
+		if (f instanceof Conjunction) {
+		      Conjunction conjunction = (Conjunction) f;
+		      for (Formula c : conjunction.children)
+		    	  conjuncts.add(c);
+		      
+	    }
+		else
+			conjuncts.add(f);
+		return conjuncts;
+	}
 	
 	public static LabelledFormula replaceSubformula (LabelledFormula f0, LabelledFormula f1) {
 		if (!f0.variables().containsAll(f1.variables()))

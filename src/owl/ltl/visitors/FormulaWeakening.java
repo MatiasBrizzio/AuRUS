@@ -111,7 +111,7 @@ public class FormulaWeakening implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(XOperator xOperator) {
-		Formula operand = xOperator.accept(this);
+		Formula operand = xOperator.operand.accept(this);
 		Formula current = XOperator.of(operand);
 		if (numOfAllowedWeakenings > 0) {
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);

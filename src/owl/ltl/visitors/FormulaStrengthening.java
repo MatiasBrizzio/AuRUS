@@ -110,7 +110,7 @@ public class FormulaStrengthening implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(XOperator xOperator) {
-		Formula operand = xOperator.accept(this);
+		Formula operand = xOperator.operand.accept(this);
 		Formula current = XOperator.of(operand);
 		if (numOfAllowedStrengthenings > 0) {
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);

@@ -17,96 +17,104 @@ import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.Literal;
-import owl.ltl.parser.SubformulaReplacer;
 import owl.ltl.parser.TokenErrorListener;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaMutator;
+import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
 public class SpecificationMutator {
-	
+
 	public static Tlsf mutate(Tlsf spec, SPEC_STATUS status) {
 		Random rand = new Random(System.currentTimeMillis());
 
 		//create empty specification
-		Tlsf new_spec = TLSF_Utils.empty_spec(spec);
+		Tlsf new_spec = TLSF_Utils.duplicate(spec);
 		
-		// set initially
-		if (!status.areAssumptionsSAT()) {
-			int modification =  rand.nextInt(3);
-			if (spec.initially().compareTo(BooleanConstant.TRUE) == 0)
-				modification = rand.nextInt(2);
-			
-			Formula new_init = null;
-			switch (modification) {
-				// arbitrary mutation
-				case 0 : new_init = applyMutation(LabelledFormula.of(spec.initially(), spec.variables()));
-							
-				// strengthen mutation
-				case 1 : 
-					
-				// weaken mutation
-				case 2 : 
-			}
-			new_spec = TLSF_Utils.change_initially(new_spec, new_init);
+		// assumptions must be weaken/mutated
+		boolean weakAssumptions = !status.areAssumptionsSAT() || (status == SPEC_STATUS.CONTRADICTORY);
+		
+		// guarantees must be weaken/mutated
+		boolean weakGuarantees = !status.areGuaranteesSAT();
+		
+		// guarantees must be strengthen/mutated
+		boolean strengthenGuarantees = false;
+				
+		// consider the particular situation when specification is sat but unrealizable		
+		if (status == SPEC_STATUS.UNREALIZABLE) {
+			weakGuarantees = false;
+			boolean changeAssumptions = Settings.RANDOM_GENERATOR.nextBoolean();
+			weakAssumptions = changeAssumptions;
+			strengthenGuarantees = !changeAssumptions;
 		}
-			
+
 		
-		// set preset
-//		turn = rand.nextInt(2);
-//		if (turn == 0)
-//			new_spec = TLSF_Utils.change_preset(new_spec, spec0.preset());
-//		else 
-//			new_spec = TLSF_Utils.change_preset(new_spec, spec1.preset());
-//		
-//		// set require
-//		turn = rand.nextInt(2);
-//		if (turn == 0)
-//			new_spec = TLSF_Utils.change_require(new_spec, spec0.require());
-//		else 
-//			new_spec = TLSF_Utils.change_require(new_spec, spec1.require());
-//		
-//		// set assert
-//		turn = rand.nextInt(2);
-//		if (turn == 0)
-//			new_spec = TLSF_Utils.change_assert(new_spec, spec0.assert_());
-//		else 
-//			new_spec = TLSF_Utils.change_assert(new_spec, spec1.assert_());
-//		
-//		// set assume
-//		turn = rand.nextInt(2);
-//		if (turn == 0)
-//			new_spec = TLSF_Utils.change_assume(new_spec, spec0.assume());
-//		else 
-//			new_spec = TLSF_Utils.change_assume(new_spec, spec1.assume());
-//		
-//		// set guarantees
-//		turn = rand.nextInt(2);
-//		if (turn == 0)
-//			new_spec = TLSF_Utils.change_guarantees(new_spec, spec0.guarantee());
-//		else 
-//			new_spec = TLSF_Utils.change_guarantees(new_spec, spec1.guarantee());
+		if (weakAssumptions) {	
+			Formula new_assume = BooleanConstant.TRUE;
+			int modification =  rand.nextInt(2);
+			if (modification == 0) {
+				// arbitrary mutation
+				new_assume = mutateFormula(spec.assume(), spec.variables());
+			}
+			else {
+				// weaken mutation
+				new_assume = weakenFormula(spec.assume(), spec.variables());
+			}
+			new_spec = TLSF_Utils.change_assume(new_spec, new_assume);
+		}
+		
+		if (weakGuarantees) {
+			Formula new_guarantees = BooleanConstant.TRUE;
+			int modification =  rand.nextInt(2);
+			if (modification == 0) {
+				// arbitrary mutation
+				new_guarantees = mutateFormula(Conjunction.of(spec.guarantee()), spec.variables());
+			}
+			else {
+				// weaken mutation
+				new_guarantees = weakenFormula(Conjunction.of(spec.guarantee()), spec.variables());
+			}
+			new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
+		}
+		
+		if (strengthenGuarantees) {
+			Formula new_guarantees = BooleanConstant.FALSE;
+			int modification =  rand.nextInt(2);
+			if (modification == 0) {
+				// arbitrary mutation
+				new_guarantees = mutateFormula(Conjunction.of(spec.guarantee()), spec.variables());
+			}
+			else {
+				// weaken mutation
+				new_guarantees = strengthenFormula(Conjunction.of(spec.guarantee()), spec.variables());
+			}
+			new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
+		}
 		
 		return new_spec;
 	}
 
-		
-		public static Formula applyMutation (LabelledFormula f) {
-			FormulaMutator formVisitor = new FormulaMutator(f.variables(), Formula_Utils.formulaSize(f.formula()), 1);
-			Formula m = f.formula().accept(formVisitor);
-			return m;
-		}
-		
-		public static Formula weakenFormula (LabelledFormula f) {
-			FormulaWeakening formVisitor = new FormulaWeakening(f.variables(), Formula_Utils.formulaSize(f.formula()), 1);
-			Formula m = f.formula().accept(formVisitor);
-			return m;
-		}
-		
-		public static Formula strengthenFormula (LabelledFormula f) {
-			
-			return null;
-		}
+
+	public static Formula mutateFormula (Formula f, List<String> variables) {
+		int n = Formula_Utils.formulaSize(f);
+		FormulaMutator formVisitor = new FormulaMutator(variables, n, n);
+		Formula m = f.accept(formVisitor);
+		return m;
+	}
+
+	public static Formula weakenFormula (Formula f, List<String> variables) {
+		int n = Formula_Utils.formulaSize(f);
+		FormulaWeakening formVisitor = new FormulaWeakening(variables, n, n);
+		Formula m = f.accept(formVisitor);
+		return m;
+	}
+
+	public static Formula strengthenFormula (Formula f, List<String> variables) {
+		int n = Formula_Utils.formulaSize(f);
+		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, n, n);
+		Formula m = f.accept(formVisitor);
+		return m;
+	}
 }

@@ -226,6 +226,10 @@ public class TLSF_Utils {
 		return  TlsfParser.parse(TLSF_EMPTY_SPEC);
 	}
 	
+	public static Tlsf duplicate (Tlsf spec) {
+		return TlsfParser.parse(toTLSF(spec));
+	}
+	
 	public static Tlsf change_initially(Tlsf spec, Formula new_initially) {
 		String new_tlsf_spec = "INFO {\n"
 			    + "  TITLE:       " + spec.title() + "\n"
