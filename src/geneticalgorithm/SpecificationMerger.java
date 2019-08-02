@@ -497,7 +497,7 @@ public class SpecificationMerger {
 				selectedFormula = guarantee2.get(Settings.RANDOM_GENERATOR.nextInt(guarantee2.size()));
 				if (newg.contains(selectedFormula) || newg2.contains(selectedFormula)) continue;
 				else newg2.add(selectedFormula);
-			}	
+			}
 		}
 
 		newg.addAll(newg2);

@@ -1,4 +1,4 @@
-package strixutils;
+package solvers;
 
 import java.io.BufferedInputStream;
 import java.io.File;
