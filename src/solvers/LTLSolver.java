@@ -15,7 +15,9 @@ public class LTLSolver {
 		SAT,
 		UNSAT,
 		TIMEOUT,
-		ERROR
+		ERROR;
+		
+		public boolean inconclusive () { return this == TIMEOUT || this == ERROR; }
 	}
 	
 	public static boolean useAalta = false; 

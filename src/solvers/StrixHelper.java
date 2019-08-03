@@ -21,7 +21,8 @@ public class StrixHelper {
 		REALIZABLE,
 		UNREALIZABLE,
 		TIMEOUT,
-		ERROR
+		ERROR;
+		public boolean inconclusive () { return this == TIMEOUT || this == ERROR; }
 	}
 	
 	/**
