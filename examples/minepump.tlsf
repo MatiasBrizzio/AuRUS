@@ -16,7 +16,7 @@ MAIN {
 
 
   ASSUMPTIONS {
-    G (pump_on -> (high_water || X(high_water || X(high_water))));
+    G (pump_on -> (!high_water || X(!high_water || X(!high_water))));
   }
 
   GUARANTEES {
