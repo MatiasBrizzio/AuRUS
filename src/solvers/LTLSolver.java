@@ -19,8 +19,7 @@ public class LTLSolver {
 		
 		public boolean inconclusive () { return this == TIMEOUT || this == ERROR; }
 	}
-	
-	public static boolean useAalta = false; 
+	 
 	public static int numOfTimeout = 0;
 	public static int numOfError = 0;
 	public static int numOfCalls = 0;
@@ -35,7 +34,7 @@ public class LTLSolver {
 //			else
 				cmd = "./pltl graph";
 		else
-			cmd = "./aalta_linux";
+			cmd = "./lib/aalta_linux";
 		return cmd;
 	}
 	
@@ -56,8 +55,6 @@ public class LTLSolver {
 	    	out.close();
     	}
 
-		System.out.print(".");
-		
 		boolean timeout = false;
 		if(!p.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
@@ -76,7 +73,7 @@ public class LTLSolver {
 	    	InputStreamReader inread = new InputStreamReader(in);
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 		    while ((aux = bufferedreader.readLine()) != null) {
-		    	if ((useAalta && aux.equals("sat")) || (!useAalta && aux.contains("Formula 1: satisfiable"))){
+		    	if ((aux.equals("sat")) || (aux.contains("Formula 1: satisfiable"))){
 		    		sat = SolverResult.SAT;
 		    		break;
 		    	}
