@@ -113,12 +113,13 @@ class SpecificationFitnessTest {
 	}
 	
 	@Test
-	void test3() throws IOException, InterruptedException {
-		String filename = "examples/round_robin_arbiter.tlsf";
-		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+	void testMinePump() throws IOException, InterruptedException {
+		String filename = "examples/minepump.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationChromosome chromosome = new SpecificationChromosome(tlsf);
 		Fitness<SpecificationChromosome, Double> fitnessFunc = new SpecificationFitness();  
 		System.out.println(fitnessFunc.calculate(chromosome));
 	}
-
+	
 }

@@ -51,7 +51,7 @@ public class SpecificationFitness implements Fitness<SpecificationChromosome, Do
 	
 	private void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {
 		//check if status has been computed before
-		if (chromosome.status == SPEC_STATUS.UNKNOWN)
+		if (chromosome.status != SPEC_STATUS.UNKNOWN)
 			return;
 
 		Tlsf spec = chromosome.spec;
