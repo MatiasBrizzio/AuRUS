@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import owl.ltl.tlsf.Tlsf;
+import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 
 class StrixHelperTest {
@@ -165,28 +166,33 @@ class StrixHelperTest {
 	
 	 @Test
 	void testCheckRealizability() throws IOException, InterruptedException {
-		assertFalse(StrixHelper.checkRealizability(TLSFFULL));
+		 assertTrue(StrixHelper.checkRealizability(TLSFFULL).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 	 
 	@Test
 	void testCheckRealizability2() throws IOException, InterruptedException {
-		assertFalse(StrixHelper.checkRealizability(TLSF2));
+		assertTrue(StrixHelper.checkRealizability(TLSF2).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 	
 	@Test
 	void testCheckRealizability3() throws IOException, InterruptedException {
 		Tlsf tlsf = TLSF_Utils.toBasicTLSF(TLSF2);
-		assertFalse(StrixHelper.checkRealizability(tlsf));
+		assertTrue(StrixHelper.checkRealizability(tlsf).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 	
 	@Test
 	void testCheckRealizability4() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic.tlsf")));
+		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic.tlsf")).equals(RealizabilitySolverResult.REALIZABLE));
 	}
 	
 	 @Test
 	void testCheckRealizability5() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability(TLSF3));
+		assertTrue(StrixHelper.checkRealizability(TLSF3).equals(RealizabilitySolverResult.REALIZABLE));
+	}
+	 
+	 @Test
+	void testCheckRealizability6() throws IOException, InterruptedException {
+		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic2.tlsf")).equals(RealizabilitySolverResult.ERROR));
 	}
 
 

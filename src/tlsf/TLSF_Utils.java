@@ -58,7 +58,6 @@ public class TLSF_Utils {
 				cmd = "./lib/syfco_macos";
 		else
 			cmd = "./lib/syfco";
-		System.out.println(cmd);
 		return cmd;
 	}
 	
