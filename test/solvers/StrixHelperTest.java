@@ -194,6 +194,11 @@ class StrixHelperTest {
 	void testCheckRealizability6() throws IOException, InterruptedException {
 		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic2.tlsf")).equals(RealizabilitySolverResult.ERROR));
 	}
+	 
+	@Test
+	void testCheckRealizability7() throws IOException, InterruptedException {
+		assertTrue(StrixHelper.checkRealizability(new File("/examples/unreal2.tlsf")).equals(RealizabilitySolverResult.UNREALIZABLE));
+	}
 
 
 }

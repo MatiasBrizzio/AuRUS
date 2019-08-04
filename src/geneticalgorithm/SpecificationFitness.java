@@ -94,7 +94,6 @@ public class SpecificationFitness implements Fitness<SpecificationChromosome, Do
 							if (!rel.inconclusive()) {
 								if (rel == RealizabilitySolverResult.REALIZABLE) {
 									status = SPEC_STATUS.REALIZABLE;
-									System.out.println("asdasdasd");
 								}
 								else
 									status = SPEC_STATUS.UNREALIZABLE;
