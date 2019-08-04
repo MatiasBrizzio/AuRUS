@@ -21,7 +21,7 @@ import owl.ltl.XOperator;
 import owl.ltl.YOperator;
 import owl.ltl.ZOperator;
 
-public class StrongReleaseReplacer implements Visitor<Formula>{
+public class SolverSyntaxOperatorReplacer implements Visitor<Formula>{
 	
 	@Override
 	public Formula apply(Formula formula) {
@@ -81,6 +81,7 @@ public class StrongReleaseReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(MOperator mOperator) {
+		// p M q" -> "q U (p & q)
 		Formula left = mOperator.left.accept(this);
 		Formula right = mOperator.right.accept(this);
 		
@@ -95,10 +96,11 @@ public class StrongReleaseReplacer implements Visitor<Formula>{
 
 	@Override
 	public Formula visit(ROperator rOperator) {
+		// p R q" -> "q W (p & q)
 		Formula left = rOperator.left.accept(this);
 		Formula right = rOperator.right.accept(this);
-		
-		return ROperator.of(left, right);
+		Formula wformula = WOperator.of(right,Conjunction.of(right,left));
+		return wformula.accept(this);
 	}
 
 	@Override
@@ -128,7 +130,7 @@ public class StrongReleaseReplacer implements Visitor<Formula>{
 	public Formula visit(WOperator wOperator) {
 		Formula left = wOperator.left.accept(this);
 		Formula right = wOperator.right.accept(this);
-		return WOperator.of(left, right);
+		return Disjunction.of(GOperator.of(left), UOperator.of(left, right));
 	}
 
 	@Override

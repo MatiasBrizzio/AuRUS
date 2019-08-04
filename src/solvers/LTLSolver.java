@@ -32,7 +32,7 @@ public class LTLSolver {
 //			if (useAalta)
 //				cmd = "./aalta";
 //			else
-				cmd = "./pltl graph";
+				cmd = "./lib/pltl graph";
 		else
 			cmd = "./lib/aalta_linux";
 		return cmd;
