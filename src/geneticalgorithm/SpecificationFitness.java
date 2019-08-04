@@ -1,18 +1,12 @@
 package geneticalgorithm;
 
 import java.io.IOException;
-import java.util.Set;
-
 import com.lagodiuk.ga.Fitness;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import owl.ltl.Conjunction;
-import owl.ltl.Disjunction;
-import owl.ltl.FOperator;
 import owl.ltl.Formula;
 import owl.ltl.GOperator;
-import owl.ltl.LabelledFormula;
-import owl.ltl.rewriter.NormalForms;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
@@ -22,7 +16,11 @@ import solvers.LTLSolver.SolverResult;
 
 public class SpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 	
-	static double LOGICAL_INCONSISTENCY = 1;
+	public static double SOLUTION = 5d;
+	public SpecificationFitness() {
+		
+	}
+	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
 	@Override
 	public Double calculate(SpecificationChromosome chromosome) {
@@ -47,10 +45,15 @@ public class SpecificationFitness implements Fitness<SpecificationChromosome, Do
 		else
 			fitness = 5d;
 		
+		chromosome.fitness = fitness;
 		return fitness;
 	}
 	
 	private void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {
+		//check if status has been computed before
+		if (chromosome.status == SPEC_STATUS.UNKNOWN)
+			return;
+
 		Tlsf spec = chromosome.spec;
 		// Env = initially && G(require) & assume
 		Formula environment = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.assume());

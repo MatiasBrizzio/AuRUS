@@ -53,6 +53,7 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		
 	public Tlsf spec = null;
 	public SPEC_STATUS status = SPEC_STATUS.UNKNOWN;
+	public double fitness = 0d;
 	
 	public SpecificationChromosome() {
 		spec = null;
