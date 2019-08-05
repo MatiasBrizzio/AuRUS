@@ -33,7 +33,10 @@ public class SpecificationGeneticAlgorithm {
 	}
 	
 	private static Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
-		return null;
+		Population<SpecificationChromosome> population = new Population<>();
+		SpecificationChromosome init = new SpecificationChromosome(spec);
+		population.addChromosome(init);
+		return population;
 	}
 	
 	private static void addListener(GeneticAlgorithm<SpecificationChromosome,Double> ga) {
