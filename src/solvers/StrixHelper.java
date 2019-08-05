@@ -91,7 +91,7 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
-		Process pr = Runtime.getRuntime().exec( new String[]{"lib/strix/bin/strix", "./"+path});
+		Process pr = Runtime.getRuntime().exec( new String[]{"lib/strix/bin/strix", "-r" ,"./"+path});
 		
 		boolean timeout = false;
 		if(!pr.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
