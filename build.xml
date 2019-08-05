@@ -19,6 +19,8 @@
     <path id="compile.classpath">
         <pathelement location="lib/owl-18.10-snapshot.jar"/>
         <pathelement location="lib/strix/bin/*.jar"/>
+        <pathelement location="lib/hamcrest-core-1.3.jar"/>
+        <pathelement location="lib/junit-4.12.jar"/>  
     </path>
 
 
