@@ -9,7 +9,7 @@
     <property name="test.build.dir" value="${build.dir}"/>
    
     <condition property="test.to.run" value="geneticalgorithm.SpecificationFitnessTest">
-        <equals arg1="${case}" arg2="minepump"/>
+        <equals arg1="${case}" arg2="fitness"/>
     </condition>
 
     <condition property="method.to.run" value="testMinePump">
