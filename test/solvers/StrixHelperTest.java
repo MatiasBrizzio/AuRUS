@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
@@ -164,7 +165,7 @@ class StrixHelperTest {
 			"  }\n" + 
 			"}";
 	
-	 @Test
+	@Test
 	void testCheckRealizability() throws IOException, InterruptedException {
 		 assertTrue(StrixHelper.checkRealizability(TLSFFULL).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
@@ -190,7 +191,7 @@ class StrixHelperTest {
 		assertTrue(StrixHelper.checkRealizability(TLSF3).equals(RealizabilitySolverResult.REALIZABLE));
 	}
 	 
-	 @Test
+	@Test
 	void testCheckRealizability6() throws IOException, InterruptedException {
 		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic2.tlsf")).equals(RealizabilitySolverResult.ERROR));
 	}
@@ -200,5 +201,10 @@ class StrixHelperTest {
 		assertTrue(StrixHelper.checkRealizability(new File("/examples/unreal2.tlsf")).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 
+	 @Test
+	void testCheckRealizability8() throws IOException, InterruptedException {
+		 Tlsf tlsf = TlsfParser.parse(TLSF3);
+		assertTrue(StrixHelper.checkRealizability(tlsf).equals(RealizabilitySolverResult.REALIZABLE));
+	}
 
 }

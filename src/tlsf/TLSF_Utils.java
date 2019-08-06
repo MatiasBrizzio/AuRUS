@@ -13,8 +13,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import owl.ltl.BooleanConstant;
 import owl.ltl.Formula;
@@ -22,9 +25,16 @@ import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.tlsf.Tlsf.Semantics;
+import solvers.StrixHelper.RealizabilitySolverResult;
 
 public class TLSF_Utils {
-	
+	static Map<String, String> replacements = new HashMap<String, String>(){
+		private static final long serialVersionUID = 1L;
+	{
+        put("&", "&&");
+        put("|", "||");
+    }};
+    
 	public static String TLSF_EXAMPLE_SPEC = "INFO {\n"
 		    + "  TITLE:       \"TLSF - Empty Specification\"\n"
 		    + "  DESCRIPTION: \"Empty Specification\"\n"
@@ -64,16 +74,41 @@ public class TLSF_Utils {
 	public static Tlsf toBasicTLSF(String spec) throws IOException, InterruptedException {
 		File file = null;
 		try {
+			//System.out.println(spec);
+			/*file = new File("out2.tlsf");
+			FileWriter fileWriter = new FileWriter(file);
+			fileWriter.write(spec);
+			fileWriter.flush();
+			fileWriter.close();
+			
+			if (hasSyfcoSintax(file)) {
+				if (isBasic(file)) {
+					return TlsfParser.parse(new FileReader(file));
+				}
+				else {
+					String cmd = getCommand();
+					cmd += " -o out2.tlsf -f basic -m pretty -s0 out2.tlsf"; 
+					Process p = Runtime.getRuntime().exec(cmd);
+					p.waitFor();
+				}
+			}
+			else {
+				String tlsfAdapted = adaptTLSFSpec(TlsfParser.parse(new FileReader(file)));
+				file = new File("out2.tlsf");
+				FileWriter fileWriter2 = new FileWriter(file);
+				fileWriter2.write(tlsfAdapted);
+				fileWriter2.flush();
+				fileWriter2.close();
+			}
+			System.out.println(p.waitFor());*/
+			
 			file = new File("out2.tlsf");
 			FileWriter fileWriter = new FileWriter(file);
 			fileWriter.write(spec);
 			fileWriter.flush();
 			fileWriter.close();
-			String cmd = getCommand();
-			cmd += " -o out2.tlsf -f basic -m pretty -s0 out2.tlsf"; 
-			Process p = Runtime.getRuntime().exec(cmd);
-			p.waitFor();
 			return toBasicTLSF(file);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -82,13 +117,62 @@ public class TLSF_Utils {
 
 	}
 	
+	
+	private static boolean hasSyfcoSintax(File spec) throws InterruptedException, IOException {
+		String cmd = getCommand();
+		cmd += " "+spec.getPath();
+		Process pr = Runtime.getRuntime().exec(cmd);
+		int res = pr.waitFor();
+		return (res == 0);
+	}
+	
+	private static boolean isBasic(File spec) throws IOException, InterruptedException {
+	
+		String cmd = getCommand();
+		cmd += " -p "+spec.getName();
+		Process pr = Runtime.getRuntime().exec(cmd);
+		
+		if (pr.waitFor() == 1) return false;
+		
+		InputStream in = pr.getInputStream();
+    	InputStreamReader inread = new InputStreamReader(in);
+    	BufferedReader bufferedreader = new BufferedReader(inread);
+    	String aux;
+    	boolean basic = false;
+	    while ((aux = bufferedreader.readLine()) != null) {
+	    	if (aux.isEmpty()){
+	    		basic = true;
+	    		break;
+	    	}
+	    }
+		return basic;
+	}
+
 	public static Tlsf toBasicTLSF(File spec) throws IOException, InterruptedException {
+		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) );
+		if (hasSyfcoSintax(spec)) {
+			if (isBasic(spec)) 
+				return TlsfParser.parse(new FileReader(spec));
+		}
+		else {
+			String tlsfAdapted = adaptTLSFSpec(TlsfParser.parse(new FileReader(spec)));
+			FileWriter fileWriter2 = new FileWriter(spec);
+			fileWriter2.write(tlsfAdapted);
+			fileWriter2.flush();
+			fileWriter2.close();
+		}
+		
 		String cmd = getCommand();
 		String tlsfBasic = spec.getAbsolutePath().replace(".tlsf","_basic.tlsf");
 		cmd += " -o "+ tlsfBasic +" -f basic -m pretty -s0 " +spec.getAbsolutePath();
 		Process p = Runtime.getRuntime().exec(cmd);
+
 		p.waitFor();
-		return TlsfParser.parse(new FileReader(new File(tlsfBasic)));
+		
+		FileReader fr = new FileReader(new File(tlsfBasic));
+		Tlsf tlsf =  TlsfParser.parse(new FileReader(new File(tlsfBasic)));
+		fr.close();
+		return tlsf;
 	}
 	
 	public static String toTLSF(Tlsf spec) {
@@ -956,6 +1040,124 @@ public class TLSF_Utils {
 		
 		return true;
 		
+	}
+	
+	public static String adaptTLSFSpec(Tlsf spec) {
+		String new_tlsf_spec = "INFO {\n"
+			    + "  TITLE:       " + spec.title() + "\n"
+			    + "  DESCRIPTION: " + spec.description() + "\n";			    
+				if (spec.semantics().equals(Semantics.MEALY))
+					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
+				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
+					new_tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+				else if (spec.semantics().equals(Semantics.MOORE))
+					new_tlsf_spec += "  SEMANTICS:   Moore\n";
+				else
+					new_tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+										
+				if (spec.target().equals(Semantics.MEALY))
+					new_tlsf_spec += "  TARGET:   Mealy\n";
+				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
+					new_tlsf_spec += "  TARGET:   Mealy_Strict\n";
+				else if (spec.target().equals(Semantics.MOORE))
+					new_tlsf_spec += "  TARGET:   Moore\n";
+				else
+					new_tlsf_spec += "  TARGET:   Moore_Strict\n";
+				
+				new_tlsf_spec += "}\n"
+			    + '\n'
+			    + "MAIN {\n"
+			    + "  INPUTS {\n"
+			    + "    ";
+		int i = 0;
+		while (spec.inputs().get(i)) {
+			new_tlsf_spec += spec.variables().get(i) + ";";
+			i++;
+		}
+		new_tlsf_spec += "\n"
+			    + "  }\n"
+			    + "  OUTPUTS {\n"
+			    + "    ";
+		while (spec.outputs().get(i)) {
+			new_tlsf_spec += spec.variables().get(i) + ";";
+			i++;
+		}
+		new_tlsf_spec += "\n"
+			    + "  }\n"
+			    + '\n';
+		// set new initially
+		if (spec.initially().compareTo(BooleanConstant.TRUE) != 0) {
+			new_tlsf_spec += "  INITIALLY {\n"
+					+ "    "
+				    + toSolverSyntax((LabelledFormula.of(spec.initially(),spec.variables()))) + ";\n"
+				    + "  }\n"
+				    + '\n';
+		}
+		
+		if (spec.preset().compareTo(BooleanConstant.TRUE) != 0) {
+			new_tlsf_spec += "  PRESET {\n"
+				+ "    "
+			    + toSolverSyntax((LabelledFormula.of(spec.preset(),spec.variables()))) + ";\n"
+			    + "  }\n"
+			    + '\n';
+		}
+		if (spec.require().compareTo(BooleanConstant.TRUE) != 0) {
+			new_tlsf_spec += "  REQUIRE {\n"
+				+ "    "
+			    + toSolverSyntax((LabelledFormula.of(spec.require(),spec.variables()))) + ";\n"
+			    + "  }\n"
+			    + '\n';
+		}
+			  
+		if (!spec.assert_().isEmpty()) {
+			new_tlsf_spec += "  ASSERT {\n";
+			for (Formula f : spec.assert_()) {
+				new_tlsf_spec += "    " +  toSolverSyntax((LabelledFormula.of(f,spec.variables()))) + ";\n"	;
+			}
+			new_tlsf_spec += "  }\n"
+			    + '\n';
+		}
+
+		if (spec.assume().compareTo(BooleanConstant.TRUE) != 0) {
+			new_tlsf_spec += "  ASSUMPTIONS {\n"
+				+ "    "
+			    + toSolverSyntax(LabelledFormula.of(spec.assume(),spec.variables())) + ";\n"
+			    + "  }\n"
+			    + '\n';
+		}
+
+		if (!spec.guarantee().isEmpty()) {
+			new_tlsf_spec += "  GUARANTEES {\n";
+			
+		    for (Formula f : spec.guarantee()) {
+		    	new_tlsf_spec += "    " + toSolverSyntax(((LabelledFormula.of(f,spec.variables())))) + ";\n";
+		    }
+		    new_tlsf_spec += "  }\n";
+		}
+		new_tlsf_spec += '}';
+		
+		for (String v : spec.variables()) 
+			new_tlsf_spec = new_tlsf_spec.replaceAll(v, v.toLowerCase());	
+		
+		return  (new_tlsf_spec);
+	}
+	
+	private static String toSolverSyntax(LabelledFormula f) {
+		String LTLFormula = f.toString();
+		
+		for (String v : f.variables()) 
+			LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());			
+
+		LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
+		
+		return new String(replaceLTLConstructions(LTLFormula)); 
+	}
+	
+	private static String replaceLTLConstructions(String line) {
+		Set<String> keys = replacements.keySet();
+	    for(String key: keys)
+	        line = line.replace(key, replacements.get(key));    
+		return line;
 	}
 	
 }

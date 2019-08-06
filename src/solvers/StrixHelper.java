@@ -7,15 +7,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import owl.ltl.BooleanConstant;
+import owl.ltl.Formula;
+import owl.ltl.LabelledFormula;
+import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
+import owl.ltl.tlsf.Tlsf.Semantics;
 import tlsf.TLSF_Utils;
 
 public class StrixHelper {
 
 	private static FileWriter writer;
 	private static int TIMEOUT = 10;
+	
 	
 	public static enum RealizabilitySolverResult {
 		REALIZABLE,
@@ -35,9 +44,6 @@ public class StrixHelper {
 	public static RealizabilitySolverResult checkRealizability(File tlsf) throws IOException, InterruptedException {
 		return executeStrix(tlsf.getPath());
 	}
-	
-	
-	
 	
 	/**
 	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
@@ -60,7 +66,8 @@ public class StrixHelper {
 	 */
 	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
 		//Writes the tlsf object into file...
-		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF(tlsf));
+		
+		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF((tlsf)));
 		String tlsf_string = TLSF_Utils.toTLSF(tlsf2);
 		File file = new File(tlsf.title().replace("\"", "")+".tlsf");
 		//Create the file
@@ -150,4 +157,6 @@ public class StrixHelper {
    		
    		return realizable;
 	}
+	
+	
 }
