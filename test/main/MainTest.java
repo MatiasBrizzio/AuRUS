@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class MainTest {
 
 	@Test
-	void testMinePump() throws IOException {
+	void testMinePump() throws IOException, InterruptedException {
 		String [] args = {"examples/minepump.tlsf"};
 		Main.main(args);
 	}

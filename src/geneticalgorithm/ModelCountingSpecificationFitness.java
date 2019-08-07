@@ -25,9 +25,9 @@ import solvers.StrixHelper.RealizabilitySolverResult;
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public static final int BOUND = 1000;
-	public static final double STATUS_FACTOR = 0.9d;
-	public static final double LOST_MODELS_FACTOR = 0.05d;
-	public static final double WON_MODELS_FACTOR = 0.05d;
+	public static final double STATUS_FACTOR = 1d;
+	public static final double LOST_MODELS_FACTOR = 0.25d;
+	public static final double WON_MODELS_FACTOR = 0.25d;
 	public static final double SOLUTION = STATUS_FACTOR * 5d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
@@ -73,7 +73,8 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
 			try {
-				lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
+				lost_models_fitness = 1d - compute_lost_models_porcentage(originalSpecification, chromosome.spec);
+				System.out.print(lost_models_fitness);
 			}
 			catch (Exception e) { e.printStackTrace(); }
 		}
@@ -83,7 +84,8 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
 			try {
-				won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
+				won_models_fitness = 1d - compute_won_models_porcentage(originalSpecification, chromosome.spec);
+				System.out.print(won_models_fitness);
 			}
 			catch (Exception e) { e.printStackTrace(); }
 		}
@@ -94,6 +96,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 	
 	public void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {
+		System.out.print(".");
 		//check if status has been computed before
 		if (chromosome.status != SPEC_STATUS.UNKNOWN)
 			return;
@@ -151,36 +154,34 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 	
 	private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
+		System.out.print("-");
 		// #(original & !refined) = #(Ie, Is, []Se, Ae -> ([]Ss & G), Ae', []Ss -> !G'
-		List<LabelledFormula> constraints = new LinkedList<>();
-		List<String> variables = original.variables();
+		List<Formula> constraints = new LinkedList<>();
 		// Ie
-		constraints.add(LabelledFormula.of(original.initially(), variables));
+		constraints.add(original.initially());
 		// Is
-		constraints.add(LabelledFormula.of(original.preset(), variables));
+		constraints.add(original.preset());
 		// []Se
-		constraints.add(LabelledFormula.of(GOperator.of(original.require()), variables));
+		constraints.add(GOperator.of(original.require()));
 		//Ae -> ([]Ss & G)
-		constraints.add(LabelledFormula.of(Disjunction.of(original.assume().not(), 
-														  Conjunction.of(GOperator.of(Conjunction.of(original.assert_())), 
-																  		 Conjunction.of(original.guarantee())))
-						, variables));
+		constraints.add(Disjunction.of(original.assume().not(), 
+									Conjunction.of(GOperator.of(Conjunction.of(original.assert_())), 
+												  Conjunction.of(original.guarantee()))));
 		
 		//Ae'
-		constraints.add(LabelledFormula.of(refined.assume(), variables));
+		constraints.add(refined.assume());
 		//[]Ss -> !G' = ![]Ss | !G'
-		constraints.add(LabelledFormula.of(Disjunction.of(GOperator.of(Conjunction.of(original.assert_())).not(), 
-						  		 Conjunction.of(refined.guarantee()).not() )
-						, variables));
+		constraints.add(Disjunction.of(GOperator.of(Conjunction.of(original.assert_())).not(), 
+						  		 Conjunction.of(refined.guarantee()).not() ));
 		
 		List<String> formulas = new LinkedList<String>();
-		for (LabelledFormula f : constraints)
-			formulas.add(f.toString());
+		for (Formula f : constraints)
+			formulas.add(toLambConvSyntax(f));
 		
 		BigDecimal numOfLostModels = new BigDecimal(Count.count(formulas, null, BOUND, false));
 		
 		formulas = new LinkedList<String>();
-		formulas.add(original.toFormula().toString());
+		formulas.add(toLambConvSyntax(original.toFormula().formula()));
 		BigDecimal numOfModels = new BigDecimal(Count.count(formulas, null, BOUND, false));
 		
 		BigDecimal res = numOfLostModels.divide(numOfModels);
@@ -190,36 +191,34 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 	
 	private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
+		System.out.print("+");
 		// #(original & !refined) = #(Ie, Is, []Se, Ae' -> ([]Ss & G'), Ae, []Ss -> !G
-		List<LabelledFormula> constraints = new LinkedList<>();
-		List<String> variables = original.variables();
+		List<Formula> constraints = new LinkedList<>();
 		// Ie
-		constraints.add(LabelledFormula.of(original.initially(), variables));
+		constraints.add(original.initially());
 		// Is
-		constraints.add(LabelledFormula.of(original.preset(), variables));
+		constraints.add(original.preset());
 		// []Se
-		constraints.add(LabelledFormula.of(GOperator.of(original.require()), variables));
+		constraints.add(GOperator.of(original.require()));
 		//Ae' -> ([]Ss & G')
-		constraints.add(LabelledFormula.of(Disjunction.of(refined.assume().not(), 
-														  Conjunction.of(GOperator.of(Conjunction.of(original.assert_())), 
-																  		 Conjunction.of(refined.guarantee())))
-						, variables));
+		constraints.add(Disjunction.of(refined.assume().not(), 
+									Conjunction.of(GOperator.of(Conjunction.of(original.assert_())), 
+												Conjunction.of(refined.guarantee()))));
 		
 		//Ae
-		constraints.add(LabelledFormula.of(original.assume(), variables));
+		constraints.add(original.assume());
 		//[]Ss -> !G = ![]Ss | !G
-		constraints.add(LabelledFormula.of(Disjunction.of(GOperator.of(Conjunction.of(original.assert_())).not(), 
-						  		 Conjunction.of(original.guarantee()).not() )
-						, variables));
+		constraints.add(Disjunction.of(GOperator.of(Conjunction.of(original.assert_())).not(), 
+						  		 		Conjunction.of(original.guarantee()).not() ));
 		
 		List<String> formulas = new LinkedList<String>();
-		for (LabelledFormula f : constraints)
-			formulas.add(f.toString());
+		for (Formula f : constraints)
+			formulas.add(toLambConvSyntax(f));
 		
 		BigDecimal numOfWonModels = new BigDecimal(Count.count(formulas, null, BOUND, false));
 		
 		formulas = new LinkedList<String>();
-		formulas.add(original.toFormula().not().toString());
+		formulas.add(toLambConvSyntax(original.toFormula().formula().not()));
 		BigDecimal numOfModels = new BigDecimal(Count.count(formulas, null, BOUND, false));
 		
 		BigDecimal res = numOfWonModels.divide(numOfModels);
@@ -232,6 +231,13 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		String LTLFormula = f.toString();
 		LTLFormula = LTLFormula.replaceAll("\\!", "~");
 		LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
+		return new String(LTLFormula); 
+	}
+	
+	private String toLambConvSyntax(Formula f) {
+		String LTLFormula = f.toString();
+		LTLFormula = LTLFormula.replaceAll("&", "&&");
+		LTLFormula = LTLFormula.replaceAll("\\|", "||");
 		return new String(LTLFormula); 
 	}
 

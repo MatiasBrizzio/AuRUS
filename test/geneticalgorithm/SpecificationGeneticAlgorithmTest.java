@@ -15,7 +15,7 @@ import owl.ltl.tlsf.Tlsf;
 class SpecificationGeneticAlgorithmTest {
 
 	@Test
-	void testRun() throws IOException {
+	void testRun() throws IOException, InterruptedException {
 		String filename = "examples/minepump.tlsf";
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
