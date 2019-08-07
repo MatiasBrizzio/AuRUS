@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.WeakHashMap;
 
 public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> {
@@ -65,7 +66,12 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	// number of parental chromosomes, which survive (and move to new
 	// population)
 	private int parentChromosomesSurviveCount = ALL_PARENTAL_CHROMOSOMES;
-
+	
+	// Percentage of chromosomes that are selected for crossover
+	private int CROSSOVER_RATE = 10; 
+	// Probability with which the mutation is applied to each chromosome
+	private int MUTATION_RATE = 100;
+	
 	private int iteration = 0;
 
 	public GeneticAlgorithm(Population<C> population, Fitness<C, T> fitnessFunc) {
@@ -84,19 +90,28 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			newPopulation.addChromosome(this.population.getChromosomeByIndex(i));
 		}
 
+		// apply mutation
+		Random r = new Random();
 		for (int i = 0; i < parentPopulationSize; i++) {
-			C chromosome = this.population.getChromosomeByIndex(i);
-			C mutated = chromosome.mutate();
-
+			int mut = r.nextInt(100);
+			if (mut < MUTATION_RATE){
+				C chromosome = this.population.getChromosomeByIndex(i);
+				C mutated = chromosome.mutate();
+				newPopulation.addChromosome(mutated);
+			}
+		}
+		
+		// apply crossover
+		int numOfCrossovers = Math.max(10, parentPopulationSize*(CROSSOVER_RATE/100));
+		for (int i = 0; i < numOfCrossovers; i++) {
+			C chromosome = this.population.getRandomChromosome();
 			C otherChromosome = this.population.getRandomChromosome();
 			List<C> crossovered = chromosome.crossover(otherChromosome);
-
-			newPopulation.addChromosome(mutated);
 			for (C c : crossovered) {
 				newPopulation.addChromosome(c);
 			}
 		}
-
+		
 		newPopulation.sortPopulationByFitness(this.chromosomesComparator);
 		newPopulation.trim(parentPopulationSize);
 		this.population = newPopulation;
@@ -140,10 +155,27 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	public void setParentChromosomesSurviveCount(int parentChromosomesCount) {
 		this.parentChromosomesSurviveCount = parentChromosomesCount;
 	}
-
+	
 	public int getParentChromosomesSurviveCount() {
 		return this.parentChromosomesSurviveCount;
 	}
+	
+	public void setMutationRate(int mutationRate) {
+		this.MUTATION_RATE = mutationRate;
+	}
+	
+	public int getMutationRate() {
+		return MUTATION_RATE;
+	}
+
+	public void setCrossoverRate(int crossoverRate) {
+		this.CROSSOVER_RATE = crossoverRate;
+	}
+	
+	public int getCrossoverRate() {
+		return CROSSOVER_RATE;
+	}
+	
 
 	public void addIterationListener(IterartionListener<C, T> listener) {
 		this.iterationListeners.add(listener);
