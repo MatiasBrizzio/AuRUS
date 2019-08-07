@@ -9,6 +9,7 @@ import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 
 import owl.ltl.tlsf.Tlsf;
+import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
 	
@@ -29,7 +30,8 @@ public class SpecificationGeneticAlgorithm {
 		ga.evolve(GENERATIONS);
 		
 		System.out.println("Realizable Specifications:" );
-		System.out.println(solutions.toString());
+		for (Tlsf tlsf : solutions)
+			System.out.println(TLSF_Utils.toTLSF(tlsf));
 	}
 	
 	private static Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
