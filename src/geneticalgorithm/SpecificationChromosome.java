@@ -79,7 +79,7 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		for (Tlsf s : mergedSpecs) {
 			result.add(new SpecificationChromosome(s));
 		}
-		result.add(new SpecificationChromosome());
+		//result.add(new SpecificationChromosome());
 //		if (!this.status.compatible(anotherChromosome.status)) {
 //			int level = Settings.RANDOM_GENERATOR.nextInt(2);
 //			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
