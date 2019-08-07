@@ -34,7 +34,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		public int compare(C chr1, C chr2) {
 			T fit1 = this.fit(chr1);
 			T fit2 = this.fit(chr2);
-			int ret = fit1.compareTo(fit2);
+			int ret = fit2.compareTo(fit1);//reverse order
 			return ret;
 		}
 

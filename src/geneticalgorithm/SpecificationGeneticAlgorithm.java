@@ -13,7 +13,7 @@ import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
 	
-	public static int GENERATIONS = 50;
+	public static int GENERATIONS = 10;
 	public static int POPULATION_SIZE = 100;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
@@ -27,7 +27,9 @@ public class SpecificationGeneticAlgorithm {
 		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		addListener(ga);
-
+		ga.setCrossoverRate(CROSSOVER_RATE);
+		ga.setMutationRate(MUTATION_RATE);
+		ga.setParentChromosomesSurviveCount(POPULATION_SIZE);
 		ga.evolve(GENERATIONS);
 		
 		System.out.println("Realizable Specifications:" );
@@ -60,8 +62,8 @@ public class SpecificationGeneticAlgorithm {
 						int iteration = ga.getIteration();
 						
 						// put current best in the list
-						if (!bestSolutions.contains(best.spec))
-							bestSolutions.add(best.spec);
+//						if (!bestSolutions.contains(best.spec))
+//							bestSolutions.add(best.spec);
 
 						// Listener prints best achieved solution
 						System.out.println(String.format("%s\t%s\t%s", iteration, bestFit, best));
@@ -69,7 +71,8 @@ public class SpecificationGeneticAlgorithm {
 						// If fitness is satisfying 
 						if (bestFit >= this.threshold) {
 							// we save the best solutions as one in the boundary
-							solutions.add(best.spec);
+							if (!solutions.contains(best.spec))
+								solutions.add(best.spec);
 							// we can stop Genetic algorithm
 //							ga.terminate(); 
 						}
