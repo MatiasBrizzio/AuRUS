@@ -13,12 +13,13 @@ import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
 	
-	public static int GENERATIONS = 10;
+	public static int GENERATIONS = 50;
 	public static int POPULATION_SIZE = 100;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	
 	public static List<Tlsf> solutions = new LinkedList<>();
+	public static List<Tlsf> bestSolutions = new LinkedList<>();
 	
 	public void run(Tlsf spec){
 		
@@ -59,8 +60,8 @@ public class SpecificationGeneticAlgorithm {
 						int iteration = ga.getIteration();
 						
 						// put current best in the list
-						if (!solutions.contains(best.spec))
-							solutions.add(best.spec);
+						if (!bestSolutions.contains(best.spec))
+							bestSolutions.add(best.spec);
 
 						// Listener prints best achieved solution
 						System.out.println(String.format("%s\t%s\t%s", iteration, bestFit, best));

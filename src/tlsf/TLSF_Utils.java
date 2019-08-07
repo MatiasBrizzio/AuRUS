@@ -149,7 +149,7 @@ public class TLSF_Utils {
 	}
 
 	public static Tlsf toBasicTLSF(File spec) throws IOException, InterruptedException {
-		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) );
+//		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) );
 		if (hasSyfcoSintax(spec)) {
 			if (isBasic(spec)) 
 				return TlsfParser.parse(new FileReader(spec));

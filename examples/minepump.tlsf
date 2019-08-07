@@ -1,8 +1,8 @@
 INFO {
   TITLE:       "TLSF - Test Specification"
   DESCRIPTION: "Test Test Test"
-  SEMANTICS:   Mealy_Strict
-  TARGET:      Moore_Strict
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
 }
 
 MAIN {
