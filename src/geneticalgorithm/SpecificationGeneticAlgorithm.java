@@ -1,5 +1,6 @@
 package geneticalgorithm;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,10 +22,11 @@ public class SpecificationGeneticAlgorithm {
 	public static List<Tlsf> solutions = new LinkedList<>();
 	public static List<Tlsf> bestSolutions = new LinkedList<>();
 	
-	public void run(Tlsf spec){
+	public void run(Tlsf spec) throws IOException, InterruptedException{
 		
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
-		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
+//		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
+		Fitness<SpecificationChromosome, Double> fitness = new ModelCountingSpecificationFitness(spec);
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		addListener(ga);
 		ga.setCrossoverRate(CROSSOVER_RATE);

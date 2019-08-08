@@ -1,7 +1,5 @@
 package modelcounter;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -12,7 +10,7 @@ import de.uni_luebeck.isp.rltlconv.automata.Nba;
 
 public class Count {
 
-	public static BigInteger count(List<String> dom, List<String> goals, String BC, String alphStr, int k, boolean exhaustive) throws IOException, InterruptedException{
+	public static BigInteger count(List<String> formulas, String alphStr, int k, boolean exhaustive) throws IOException, InterruptedException{
 		long bound = 1;
 		if(!exhaustive)
 			bound = k;
@@ -27,13 +25,8 @@ public class Count {
 			BigInteger count = BigInteger.ZERO;
 			double time = 0;
 			if (first){
-				LinkedList<String> formulas = new LinkedList<>();
-				formulas.addAll(dom);
-				formulas.addAll(goals);
-				
 				double iTime = System.currentTimeMillis();
-				
-				count = count(formulas, BC, alphStr, bound);
+				count = count(formulas, alphStr, bound);
 				time = getTimeInSecond(iTime,System.currentTimeMillis());
 //				System.out.println("Time: " + time); 
 				first = false;
@@ -71,17 +64,14 @@ public class Count {
 		return res;
 	}
 	
-	private static BigInteger count(LinkedList<String> formulas, String BC, String alph, long bound) throws IOException, InterruptedException{
+	private static BigInteger count(List<String> formulas, String alph, long bound) throws IOException, InterruptedException{
 		
 		LinkedList<String> abcStrs = new LinkedList<>();
 		for(String f: formulas){
 			String abcStr = genABCString(f, alph);
 			abcStrs.add(abcStr);
 		}
-		if (BC!=null){
-			String s = genABCString(BC, alph);	
-			abcStrs.add(s); //RENZO: BCs can have any ltl shape
-		}
+
 //		String [] arr = Discretizer.cat(s);
 //		String abcStr = "";
 //		for(int i=0; i < arr.length-1; i++){
