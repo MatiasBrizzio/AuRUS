@@ -25,7 +25,7 @@ import solvers.StrixHelper.RealizabilitySolverResult;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public static final int BOUND = 3;
+	public static final int BOUND = 5;
 	public static final double STATUS_FACTOR = 1d;
 	public static final double LOST_MODELS_FACTOR = 0.25d;
 	public static final double WON_MODELS_FACTOR = 0.25d;
@@ -156,7 +156,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	
 	private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
-		// #(original & !refined) = #(Ie, Is, []Se, Ae -> ([]Ss & G), Ae', []Ss -> !G'
+		// #(original & refined) = #(Ie, Is, []Se, Ae -> ([]Ss & G), Ae', []Ss -> !G'
 		List<Formula> constraints = new LinkedList<>();
 		// Ie
 //		constraints.add(original.initially());
@@ -214,7 +214,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 //		constraints.add(Disjunction.of(GOperator.of(Conjunction.of(original.assert_())).not(), 
 //						  		 		Conjunction.of(original.guarantee()).not() ));
 		constraints.add(original.toFormula().formula().not());
-		constraints.add(refined.toFormula().formula());
+		constraints.add(refined.toFormula().formula().not());
 		
 		List<String> formulas = new LinkedList<String>();
 		for (Formula f : constraints)
