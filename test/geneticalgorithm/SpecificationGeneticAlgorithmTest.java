@@ -20,6 +20,7 @@ class SpecificationGeneticAlgorithmTest {
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+//		ga.GENERATIONS = 50;
 		ga.run(tlsf);
 	}
 

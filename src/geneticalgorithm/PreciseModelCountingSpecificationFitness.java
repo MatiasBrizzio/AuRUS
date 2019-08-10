@@ -11,6 +11,7 @@ import com.lagodiuk.ga.Fitness;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import modelcounter.Count;
+import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Disjunction;
 import owl.ltl.Formula;
@@ -162,8 +163,12 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	public double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
 		int numOfVars = original.variables().size();
-		
-		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined.toFormula().formula());
+		Formula refined_formula = refined.toFormula().formula();
+		if (refined_formula == BooleanConstant.TRUE)
+			return 1d;
+		if (refined_formula == BooleanConstant.FALSE)
+			return 0d;
+		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
 		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
 		
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
@@ -177,8 +182,12 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	public double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
 		int numOfVars = original.variables().size();
-		
-		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined.toFormula().formula().not());
+		Formula refined_negated_formula = refined.toFormula().formula().not();
+		if (refined_negated_formula == BooleanConstant.TRUE)
+			return 1d;
+		if (refined_negated_formula == BooleanConstant.FALSE)
+			return 0d;
+		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined_negated_formula);
 		BigDecimal numOfWonModels = new BigDecimal(LTLModelCounter.count(wonModels, numOfVars));
 		
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
