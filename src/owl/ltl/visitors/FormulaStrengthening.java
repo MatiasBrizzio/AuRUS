@@ -275,8 +275,9 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	    			Iterator<Formula> it = current.children().iterator();
 	    			int i = 0;
 	    			while (it.hasNext()) {
-	    				if (i != to_be_removed)
-	    					new_set_children.add(it.next());
+	    				if (i == to_be_removed)
+	    					continue;
+	    				new_set_children.add(it.next());
 	    			}
 	    			current = Disjunction.of(new_set_children);
 	    		}
