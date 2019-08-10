@@ -206,5 +206,11 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		return value;
 	}
 	
+	private String toSolverSyntax(Formula f) {
+		String LTLFormula = f.toString();
+		LTLFormula = LTLFormula.replaceAll("\\!", "~");
+		LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
+		return new String(LTLFormula); 
+	}
 
 }
