@@ -122,7 +122,7 @@ public class StrixHelper {
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 	    	
 		    while ((aux = bufferedreader.readLine()) != null) {
-		    	System.out.println(aux);
+//		    	System.out.println(aux);
 		    	if (aux.equals("REALIZABLE")){
 		    		realizable = RealizabilitySolverResult.REALIZABLE;
 		    		break;

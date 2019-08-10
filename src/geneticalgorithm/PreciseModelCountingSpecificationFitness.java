@@ -169,6 +169,10 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		if (refined_formula == BooleanConstant.FALSE)
 			return 0d;
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
+		if (lostModels == BooleanConstant.TRUE)
+			return 1d;
+		if (lostModels == BooleanConstant.FALSE)
+			return 0d;
 		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
 		
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
@@ -188,6 +192,10 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		if (refined_negated_formula == BooleanConstant.FALSE)
 			return 0d;
 		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined_negated_formula);
+		if (wonModels == BooleanConstant.TRUE)
+			return 1d;
+		if (wonModels == BooleanConstant.FALSE)
+			return 0d;
 		BigDecimal numOfWonModels = new BigDecimal(LTLModelCounter.count(wonModels, numOfVars));
 		
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
@@ -198,11 +206,5 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		return value;
 	}
 	
-	private String toSolverSyntax(Formula f) {
-		String LTLFormula = f.toString();
-		LTLFormula = LTLFormula.replaceAll("\\!", "~");
-		LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-		return new String(LTLFormula); 
-	}
 
 }

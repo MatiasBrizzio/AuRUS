@@ -40,7 +40,7 @@ public class LTLModelCounter {
 	}
 	
 	public static BigInteger count(Formula f, int numOfVars) throws IOException, InterruptedException {
-		String formula = f.toString();
+		String formula = f.toString().replaceAll("([A-Z])", " $1 ");
 		List<String> vars = new LinkedList<String>();
 		 for (int i = 0; i < numOfVars; i++)
 			 vars.add("p"+i);
@@ -84,6 +84,7 @@ public class LTLModelCounter {
 		BigInteger numOfModels = null;
 		if (timeout){
 			numOfTimeout++;
+			numOfModels = BigInteger.ZERO;
 			p.destroy();
 		}
 		else {
@@ -95,6 +96,10 @@ public class LTLModelCounter {
 //		    		System.out.println(aux);
 		    		String val = aux.replace("Number of solutions: ", "");
 		    		numOfModels = new BigInteger(val);
+		    		break;
+		    	}
+		    	else if (aux.startsWith("UNSAT")){
+		    		numOfModels = BigInteger.ZERO;
 		    		break;
 		    	}
 		    }
