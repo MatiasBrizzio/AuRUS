@@ -25,27 +25,30 @@ public class SpecificationMerger {
 
 	public static List<Tlsf> merge(Tlsf spec0, Tlsf spec1, SPEC_STATUS status0, SPEC_STATUS status1) {
 		List<Tlsf> merged_specifications = new LinkedList<>();
-		//create empty specification
-		Tlsf new_spec = TLSF_Utils.fromSpec(spec0);
 		
-		// set assume
-		int option = Settings.RANDOM_GENERATOR.nextInt(2);
-		//arbitrary merge of assumptions
-		if (option == 0) { 
-			LabelledFormula assumespec0 =  LabelledFormula.of(spec0.assume(), spec0.variables());
-			List<LabelledFormula> assumesspec0 = Formula_Utils.splitConjunction(assumespec0);
-			
-			LabelledFormula assumspec1 =  LabelledFormula.of(spec1.assume(), spec1.variables());
-			List<LabelledFormula> assumesspec1 = Formula_Utils.splitConjunction(assumspec1);
-			
-			List<Formula> f = getRandomFormulas(assumesspec0);
-			for (Formula s : getRandomFormulas(assumesspec1))
-				if (!f.contains(s))
-					f.add(s);		
-			new_spec = TLSF_Utils.change_assume(new_spec,f);
-		}
-		else {
-			if (status0 != SPEC_STATUS.UNREALIZABLE && status1 != SPEC_STATUS.UNREALIZABLE) {
+		
+//		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+		// crossover assume
+		//create empty specification
+			Tlsf new_spec = TLSF_Utils.fromSpec(spec0);
+			int option = Settings.RANDOM_GENERATOR.nextInt(3);
+			//arbitrary merge of assumptions
+			if (option == 0) { 
+				LabelledFormula assumespec0 =  LabelledFormula.of(spec0.assume(), spec0.variables());
+				List<LabelledFormula> assumesspec0 = Formula_Utils.splitConjunction(assumespec0);
+				
+				LabelledFormula assumspec1 =  LabelledFormula.of(spec1.assume(), spec1.variables());
+				List<LabelledFormula> assumesspec1 = Formula_Utils.splitConjunction(assumspec1);
+				
+				List<Formula> f = getRandomFormulas(assumesspec0);
+				for (Formula s : getRandomFormulas(assumesspec1))
+					if (!f.contains(s))
+						f.add(s);		
+				new_spec = TLSF_Utils.change_assume(new_spec,f);
+			}
+			else if (option == 1){
+				//if (status0 != SPEC_STATUS.UNREALIZABLE && status1 != SPEC_STATUS.UNREALIZABLE) {
+				
 				// weaken assumptions
 				List<Formula> conjuncts0 = new LinkedList<Formula>();
 				for (Set<Formula> clause : NormalForms.toCnf(spec0.assume())){
@@ -74,7 +77,7 @@ public class SpecificationMerger {
 				
 				new_spec = TLSF_Utils.change_assume(new_spec, listOfConjuncts);
 			}
-			else{
+			else{ // (option ==2)
 				// strengthen assumptions
 				List<Formula> conjuncts = new LinkedList<Formula>();
 				for (Set<Formula> clause :NormalForms.toCnf(spec0.assume())){
@@ -90,16 +93,19 @@ public class SpecificationMerger {
 				
 				new_spec = TLSF_Utils.change_assume(new_spec, conjuncts);
 			}
-		}
+			merged_specifications.add(new_spec);
 			
-		// set guarantees
-		option = Settings.RANDOM_GENERATOR.nextInt(2);
-		//arbitrary merge of assumptions
-		if (option == 0) { 
-			new_spec = TLSF_Utils.change_guarantees(new_spec, mergeGuarantess(spec0.guarantee(),spec1.guarantee()));		
-		}
-		else {
-			if (status0 != SPEC_STATUS.REALIZABLE && status1 != SPEC_STATUS.REALIZABLE) {
+//		}
+//		else {	
+		// crossover guarantees
+			new_spec = TLSF_Utils.fromSpec(spec0);
+			option = Settings.RANDOM_GENERATOR.nextInt(3);
+			//arbitrary merge of assumptions
+			if (option == 0) { 
+				new_spec = TLSF_Utils.change_guarantees(new_spec, mergeGuarantess(spec0.guarantee(),spec1.guarantee()));		
+			}
+			else if (option == 1){
+	//			if (status0 != SPEC_STATUS.REALIZABLE && status1 != SPEC_STATUS.REALIZABLE) {
 				// weaken guarantees
 				List<Formula> conjuncts0 = new LinkedList<Formula>();
 				for (Formula f : spec0.guarantee()){
@@ -137,9 +143,10 @@ public class SpecificationMerger {
 						conjuncts.add(s);
 				new_spec = TLSF_Utils.change_guarantees(new_spec, conjuncts);
 			}
-		}
+			merged_specifications.add(new_spec);
+//		}
 		
-		merged_specifications.add(new_spec);
+			
 		return merged_specifications;
 		
 	}

@@ -22,7 +22,7 @@ class SpecificationGeneticAlgorithmTest {
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
 		ga.GENERATIONS = 10;
 		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 30;
+		ga.MUTATION_RATE = 20;
 		ga.run(tlsf);
 	}
 
