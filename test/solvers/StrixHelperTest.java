@@ -84,47 +84,87 @@ class StrixHelperTest {
 			  + "\n" 
 			  + "}";
 	 
-	  private static final String TLSF2 = "INFO {\n"
-			    + "  TITLE:       \"Load Balancing - Environment - 2 Clients\"\n"
-			    + "  DESCRIPTION: \"One of the Acacia+ Example files\"\n"
-			    + "  SEMANTICS:   Moore\n"
-			    + "  TARGET:      Mealy\n"
-			    + "}\n"
-			    + '\n'
-			    + "MAIN {\n"
-			    + '\n'
-			    + "  INPUTS {\n"
-			    + "    idle;\n"
-			    + "    request0;\n"
-			    + "    request1;\n"
-			    + "  }\n"
-			    + '\n'
-			    + "  OUTPUTS {\n"
-			    + "    grant0;\n"
-			    + "    grant1;\n"
-			    + "  }\n"
-			    + '\n'
-			    + "  ASSUMPTIONS {\n"
-			    + "    G F idle;\n"
-			    + "    G (!(idle && !grant0 && !grant1) || X idle);    \n"
-			    + "    G (!grant0 || X ((!request0 && !idle) U (!request0 && idle)));\n"
-			    + "  }\n"
-			    + '\n'
-			    + "  INVARIANTS {\n"
-			    + "    !request0 || !grant1;\n"
-			    + "    !grant0 || !grant1;\n"
-			    + "    !grant1 || !grant0;\n"
-			    + "    !grant0 || request0;\n"
-			    + "    !grant1 || request1;\n"
-			    + "    (!grant0 && !grant1) || idle;\n"
-			    + "  }\n"
-			    + '\n'
-			    + "  GUARANTEES {\n"
-			    + "    ! F G (request0 && !grant0);\n"
-			    + "    ! F G (request1 && !grant1);\n"
-			    + "  }\n"
-			    + '\n'
-			    + "}\n";	
+	  private static final String TLSF2 = "INFO {\n" + 
+	  		"  TITLE:       \"Parameterized Load Balancer, unrealizable variant 1\"\n" + 
+	  		"  DESCRIPTION: \"Parameterized Load Balancer (generalized version of the Acacia+ benchmark)\"\n" + 
+	  		"  SEMANTICS:   Mealy\n" + 
+	  		"  TARGET:      Mealy\n" + 
+	  		"}\n" + 
+	  		"\n" + 
+	  		"GLOBAL {\n" + 
+	  		"  PARAMETERS {\n" + 
+	  		"    n = 2;\n" + 
+	  		"    u = 12;\n" + 
+	  		"  }\n" + 
+	  		"\n" + 
+	  		"  DEFINITIONS {\n" + 
+	  		"    // ensures mutual exclusion on an n-ary bus\n" + 
+	  		"    mutual_exclusion(bus) =\n" + 
+	  		"     mone(bus,0,(SIZEOF bus) - 1);\n" + 
+	  		"\n" + 
+	  		"    // ensures that none of the signals\n" + 
+	  		"    // bus[i] - bus[j] is HIGH\n" + 
+	  		"    none(bus,i,j) =\n" + 
+	  		"      &&[i <= t <= j]\n" + 
+	  		"        !bus[t];\n" + 
+	  		"\n" + 
+	  		"    // ensures that at most one of the signals\n" + 
+	  		"    // bus[i] - bus[j] is HIGH\n" + 
+	  		"    mone(bus,i,j) =\n" + 
+	  		"    i > j : false\n" + 
+	  		"    i == j : true\n" + 
+	  		"    i < j :\n" + 
+	  		"      // either no signal of the lower half is HIGH and at \n" + 
+	  		"      // most one signal of the upper half is HIGH\n" + 
+	  		"      (none(bus, i, m(i,j)) && mone(bus, m(i,j) + 1, j)) ||\n" + 
+	  		"      // or at most one signal of the lower half is HIGH\n" + 
+	  		"      // and no signal in of the upper half is HIGH\n" + 
+	  		"      (mone(bus, i, m(i,j)) && none(bus, m(i,j) + 1, j));\n" + 
+	  		"\n" + 
+	  		"    // returns the position between i and j\n" + 
+	  		"    m(i,j) = (i + j) / 2;\n" + 
+	  		"  }   \n" + 
+	  		"}\n" + 
+	  		"\n" + 
+	  		"MAIN {\n" + 
+	  		"\n" + 
+	  		"  INPUTS {\n" + 
+	  		"    idle;\n" + 
+	  		"    request[n];\n" + 
+	  		"  }\n" + 
+	  		"\n" + 
+	  		"  OUTPUTS {\n" + 
+	  		"    grant[n];\n" + 
+	  		"  }\n" + 
+	  		"\n" + 
+	  		"  ASSUMPTIONS {\n" + 
+	  		"    G F idle;\n" + 
+	  		"    G (idle && X &&[0 <= i < n] !grant[i] -> X idle);\n" + 
+	  		"    G (X !grant[0] || X ((!request[0] && !idle) U (!request[0] && idle)));\n" + 
+	  		"  }\n" + 
+	  		"\n" + 
+	  		"  INVARIANTS {\n" + 
+	  		"    X mutual_exclusion(grant);    \n" + 
+	  		"    &&[0 <= i < n] (X grant[i] -> request[i]);\n" + 
+	  		"    &&[0 < i < n] (request[0] -> grant[i]);\n" + 
+	  		"    !idle -> X &&[0 <= i < n] !grant[i];    \n" + 
+	  		"      \n" + 
+	  		"    /* Making the benchmark unrealizable: ask for two grants at the same time, \n" + 
+	  		"     * after u steps.\n" + 
+	  		"     */\n" + 
+	  		"    &&[0 <= i <n] ( &&[i < j < n] (request[i] && X request[j] -> \n" + 
+	  		"      X[u] (grant[i] && grant[j])) ); \n" + 
+	  		"  }\n" + 
+	  		"\n" + 
+	  		"  GUARANTEES {\n" + 
+	  		"    &&[0 <= i < n] ! F G (request[i] && X !grant[i]);\n" + 
+	  		"  }\n" + 
+	  		"\n" + 
+	  		"}\n" + 
+	  		"//#!SYNTCOMP\n" + 
+	  		"//STATUS : unrealizable\n" + 
+	  		"//REF_SIZE : 0\n" + 
+	  		"//#.";	
 	  
 	  
 	private static final String TLSF3 = "INFO {\n" + 
@@ -167,7 +207,7 @@ class StrixHelperTest {
 	
 	@Test
 	void testCheckRealizability() throws IOException, InterruptedException {
-		 assertTrue(StrixHelper.checkRealizability(TLSFFULL).equals(RealizabilitySolverResult.UNREALIZABLE));
+		 assertTrue(StrixHelper.checkRealizability(TLSFFULL).equals(RealizabilitySolverResult.REALIZABLE));
 	}
 	 
 	@Test
@@ -183,28 +223,33 @@ class StrixHelperTest {
 	
 	@Test
 	void testCheckRealizability4() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic.tlsf")).equals(RealizabilitySolverResult.REALIZABLE));
+		assertTrue(StrixHelper.checkRealizability(new File("examples/collector_v4_6_basic.tlsf")).equals(RealizabilitySolverResult.REALIZABLE));
 	}
 	
 	 @Test
 	void testCheckRealizability5() throws IOException, InterruptedException {
 		assertTrue(StrixHelper.checkRealizability(TLSF3).equals(RealizabilitySolverResult.REALIZABLE));
 	}
-	 
+	
 	@Test
 	void testCheckRealizability6() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability(new File("/examples/collector_v4_6_basic2.tlsf")).equals(RealizabilitySolverResult.ERROR));
+		assertTrue(StrixHelper.checkRealizability(new File("examples/collector_v4_6_basic2.tlsf")).equals(RealizabilitySolverResult.ERROR));
 	}
 	 
 	@Test
 	void testCheckRealizability7() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability(new File("/examples/unreal2.tlsf")).equals(RealizabilitySolverResult.UNREALIZABLE));
+		assertTrue(StrixHelper.checkRealizability(new File("examples/minepump.tlsf")).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 
-	 @Test
+	@Test
 	void testCheckRealizability8() throws IOException, InterruptedException {
 		 Tlsf tlsf = TlsfParser.parse(TLSF3);
 		assertTrue(StrixHelper.checkRealizability(tlsf).equals(RealizabilitySolverResult.REALIZABLE));
+	}
+	
+	 @Test
+	void testCheckRealizabilit95() throws IOException, InterruptedException {
+		assertTrue(StrixHelper.checkRealizability(new File("examples/tictactoe.tlsf")).equals(RealizabilitySolverResult.REALIZABLE));
 	}
 
 }

@@ -2,6 +2,7 @@ package solvers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,7 @@ import tlsf.TLSF_Utils;
 public class StrixHelper {
 
 	private static FileWriter writer;
-	private static int TIMEOUT = 10;
+	private static int TIMEOUT = 100;
 	
 	
 	public static enum RealizabilitySolverResult {
@@ -42,7 +43,9 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	public static RealizabilitySolverResult checkRealizability(File tlsf) throws IOException, InterruptedException {
-		return executeStrix(tlsf.getPath());
+		TLSF_Utils.toBasicTLSF(tlsf);
+		String tlsfBasic = tlsf.getPath().replace(".tlsf","_basic.tlsf");
+		return executeStrix(tlsfBasic);
 	}
 	
 	/**
@@ -68,8 +71,9 @@ public class StrixHelper {
 		//Writes the tlsf object into file...
 		
 		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF((tlsf)));
-		String tlsf_string = TLSF_Utils.toTLSF(tlsf2);
-		File file = new File(tlsf.title().replace("\"", "")+".tlsf");
+		String tlsf_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
+		//System.out.println(tlsf_string);
+		File file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 		//Create the file
 		try {
 			if (file.createNewFile()){
@@ -98,8 +102,7 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
-		Process pr = Runtime.getRuntime().exec( new String[]{"lib/strix/bin/strix", "-r" ,"./"+path});
-		
+		Process pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
 		boolean timeout = false;
 		if(!pr.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
@@ -119,6 +122,7 @@ public class StrixHelper {
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 	    	
 		    while ((aux = bufferedreader.readLine()) != null) {
+		    	System.out.println(aux);
 		    	if (aux.equals("REALIZABLE")){
 		    		realizable = RealizabilitySolverResult.REALIZABLE;
 		    		break;
@@ -157,6 +161,5 @@ public class StrixHelper {
    		
    		return realizable;
 	}
-	
-	
+		
 }
