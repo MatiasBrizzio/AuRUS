@@ -28,10 +28,10 @@ import solvers.StrixHelper.RealizabilitySolverResult;
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public static final int BOUND = 5;
-	public static final double STATUS_FACTOR = 1d;
+	public static final double STATUS_FACTOR = 0.5d;
 	public static final double LOST_MODELS_FACTOR = 0.25d;
 	public static final double WON_MODELS_FACTOR = 0.25d;
-	public static final double SOLUTION = STATUS_FACTOR * 5d;
+//	public static final double SOLUTION = STATUS_FACTOR * d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	BigInteger originalNumOfModels;
@@ -51,6 +51,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	@Override
 	public Double calculate(SpecificationChromosome chromosome) {
 		// compute multi-objective fitness function
+		if (chromosome.status != SPEC_STATUS.UNKNOWN)
+			return chromosome.fitness;
 		
 		// First compute the status fitness
 		try { 
@@ -64,15 +66,15 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		if (chromosome.status == SPEC_STATUS.UNKNOWN)
 			status_fitness = 0d;
 		else if (chromosome.status == SPEC_STATUS.GUARANTEES)
-			status_fitness = 1d;
+			status_fitness = 0.15d;
 		else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
-			status_fitness = 2d;
+			status_fitness = 0.25d;
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
-			status_fitness = 3d;
-		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 4d;
+			status_fitness = 0.5d;
+				else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
+			status_fitness = 0.75d;
 		else
-			status_fitness = 5d;
+			status_fitness = 1d;
 		
 		
 		// Second, compute the portion of loosing models with respect to the original specification

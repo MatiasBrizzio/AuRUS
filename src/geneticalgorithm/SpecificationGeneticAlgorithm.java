@@ -9,6 +9,7 @@ import com.lagodiuk.ga.GeneticAlgorithm;
 import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 
+import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
@@ -16,7 +17,7 @@ import tlsf.TLSF_Utils;
 public class SpecificationGeneticAlgorithm {
 	
 	public static int GENERATIONS = 10;
-	public static int POPULATION_SIZE = 100;
+	public static int POPULATION_SIZE = 30;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	
@@ -24,7 +25,7 @@ public class SpecificationGeneticAlgorithm {
 	public static List<Tlsf> bestSolutions = new LinkedList<>();
 	
 	public void run(Tlsf spec) throws IOException, InterruptedException{
-		
+		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
@@ -34,10 +35,16 @@ public class SpecificationGeneticAlgorithm {
 		ga.setMutationRate(MUTATION_RATE);
 		ga.setParentChromosomesSurviveCount(POPULATION_SIZE);
 		ga.evolve(GENERATIONS);
+		long finalTime = System.currentTimeMillis();
 		
 		System.out.println("Realizable Specifications:" );
 		for (Tlsf tlsf : solutions)
 			System.out.println(TLSF_Utils.toTLSF(tlsf));
+		
+		long totalTime = finalTime-initialTime;
+		int min = (int) (totalTime)/60000;
+		int sec = (int) (totalTime - min*60000)/1000;
+		System.out.println(String.format("Time: %s m  %s s",min, sec));
 	}
 	
 	private static Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
@@ -55,7 +62,7 @@ public class SpecificationGeneticAlgorithm {
 	
 	private static void addListener(GeneticAlgorithm<SpecificationChromosome,Double> ga) {
 		// just for pretty print
-				System.out.println(String.format("%s\t%s\t%s", "iter", "fit", "chromosome"));
+				System.out.println(String.format("%s\t%s\t%s\t%s\t%s", "iter", "fit", "chromosome","#Pop","#Sol"));
 
 				// Lets add listener, which prints best chromosome after each iteration
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
@@ -76,10 +83,10 @@ public class SpecificationGeneticAlgorithm {
 
 						// Listener prints best achieved solution
 						System.out.println();
-						System.out.println(String.format("%s\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize()));
+						System.out.println(String.format("%s\t%s\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize(),solutions.size()));
 
 						// If fitness is satisfying 
-						if (bestFit >= this.threshold) {
+						if (best.status == SPEC_STATUS.REALIZABLE) {
 							// we save the best solutions as one in the boundary
 							if (!solutions.contains(best.spec))
 								solutions.add(best.spec);
