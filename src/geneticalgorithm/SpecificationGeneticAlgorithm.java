@@ -9,6 +9,7 @@ import com.lagodiuk.ga.GeneticAlgorithm;
 import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 
+import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -26,7 +27,7 @@ public class SpecificationGeneticAlgorithm {
 		
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
-		Fitness<SpecificationChromosome, Double> fitness = new ModelCountingSpecificationFitness(spec);
+		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		addListener(ga);
 		ga.setCrossoverRate(CROSSOVER_RATE);
@@ -43,6 +44,12 @@ public class SpecificationGeneticAlgorithm {
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		population.addChromosome(init);
+//		for (Formula g : spec.guarantee()) {
+//			Tlsf g_spec = TLSF_Utils.fromSpec(spec);
+//			g_spec = TLSF_Utils.change_guarantees(g_spec, g);
+//			SpecificationChromosome g_init = new SpecificationChromosome(g_spec);
+//			population.addChromosome(g_init);
+//		}
 		return population;
 	}
 	
@@ -68,7 +75,8 @@ public class SpecificationGeneticAlgorithm {
 //							bestSolutions.add(best.spec);
 
 						// Listener prints best achieved solution
-						System.out.println(String.format("%s\t%s\t%s", iteration, bestFit, best));
+						System.out.println();
+						System.out.println(String.format("%s\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize()));
 
 						// If fitness is satisfying 
 						if (bestFit >= this.threshold) {

@@ -87,7 +87,7 @@ public class LTLModelCounter {
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 		    while ((aux = bufferedreader.readLine()) != null) {
 		    	if (aux.startsWith("Number of solutions:")){
-		    		System.out.println(aux);
+//		    		System.out.println(aux);
 		    		String val = aux.replace("Number of solutions: ", "");
 		    		numOfModels = new BigInteger(val);
 		    		break;
@@ -99,7 +99,7 @@ public class LTLModelCounter {
 	    	InputStreamReader errread = new InputStreamReader(err);
 	    	BufferedReader errbufferedreader = new BufferedReader(errread);
 		    while ((aux = errbufferedreader.readLine()) != null) {
-		    	System.out.println("ERR: " + aux);
+		    	System.out.println("ERR: " + aux + " Formula: " + formula);
 		    }
 		   
 		    // Check for failure

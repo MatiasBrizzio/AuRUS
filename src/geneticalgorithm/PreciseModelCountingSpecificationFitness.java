@@ -33,12 +33,16 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	public static final double SOLUTION = STATUS_FACTOR * 5d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+	BigInteger originalNumOfModels;
+	BigInteger originalNegationNumOfModels;
 	
 	public PreciseModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
+		originalNumOfModels = LTLModelCounter.count(originalSpecification.toFormula().formula(), originalSpecification.variables().size());
+		originalNegationNumOfModels = LTLModelCounter.count(originalSpecification.toFormula().formula().not(), originalSpecification.variables().size());
 	}
 	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
@@ -162,11 +166,11 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined.toFormula().formula());
 		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
 		
-		BigDecimal numOfModels = new BigDecimal(LTLModelCounter.count(original.toFormula().formula(), numOfVars));
+		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 		
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfLostModels + " " + numOfModels + " ");
+//		System.out.print(numOfLostModels + " " + numOfModels + " ");
 		return value;
 	}
 	
@@ -177,11 +181,11 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined.toFormula().formula().not());
 		BigDecimal numOfWonModels = new BigDecimal(LTLModelCounter.count(wonModels, numOfVars));
 		
-		BigDecimal numOfNegationModels = new BigDecimal(LTLModelCounter.count(original.toFormula().formula().not(), numOfVars));
+		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 		
 		BigDecimal res = numOfWonModels.divide(numOfNegationModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
+//		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
 		return value;
 	}
 	
