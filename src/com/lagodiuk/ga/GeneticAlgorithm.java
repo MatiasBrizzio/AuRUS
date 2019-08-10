@@ -113,7 +113,8 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		}
 		
 		newPopulation.sortPopulationByFitness(this.chromosomesComparator);
-		newPopulation.trim(parentPopulationSize);
+		if (newPopulation.getSize() > this.parentChromosomesSurviveCount)
+			newPopulation.trim(this.parentChromosomesSurviveCount);
 		this.population = newPopulation;
 	}
 
@@ -174,6 +175,10 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	
 	public int getCrossoverRate() {
 		return CROSSOVER_RATE;
+	}
+	
+	public int getPopulationSize() {
+		return this.population.getSize();
 	}
 	
 
