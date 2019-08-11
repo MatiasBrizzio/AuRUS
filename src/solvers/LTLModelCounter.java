@@ -30,7 +30,12 @@ public class LTLModelCounter {
 	public static int TIMEOUT = 20;
 	
 	public static String getCommand(){
-		String cmd = "./lib/ltl-model-counter/ltl-modelcounter.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+		String cmd = "";
+		String currentOS = System.getProperty("os.name");
+		if (currentOS.startsWith("Mac"))
+			cmd = "./lib/ltl-model-counter/ltl-modelcountermac.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+		else
+			cmd = "./lib/ltl-model-counter/ltl-modelcounterlinux.sh "+ INFILE + " " + BASENAME + " " + BOUND;
 		return cmd;
 	}
 	
