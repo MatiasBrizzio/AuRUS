@@ -27,6 +27,7 @@ data TokenLTL = PROP String
            | EQUIV
            | NEXT
            | UNTIL
+           | WUNTIL
            | REL
            | DIAM
            | BOX
@@ -43,6 +44,7 @@ lexLTL ('-':'>':xr) = IMP:lexLTL xr
 lexLTL ('<':'-':'>':xr) = EQUIV:lexLTL xr
 lexLTL ('X':xr) = NEXT:lexLTL xr
 lexLTL ('U':xr) = UNTIL:lexLTL xr
+lexLTL ('W':xr) = WUNTIL:lexLTL xr
 lexLTL ('R':xr) = REL:lexLTL xr
 lexLTL ('F':xr) = DIAM:lexLTL xr
 lexLTL ('G':xr) = BOX:lexLTL xr
@@ -72,6 +74,7 @@ data ExpLTL a = Prop a
 		   | Equiv(ExpLTL a, ExpLTL a)
 		   | Next (ExpLTL a)
 		   | Until(ExpLTL a, ExpLTL a)
+       | WUntil(ExpLTL a, ExpLTL a)
 		   | Rel  (ExpLTL a, ExpLTL a)
 		   | Diam (ExpLTL a)
 		   | Box  (ExpLTL a) 
@@ -84,6 +87,7 @@ leftChild (Imp(e,e')) = e
 leftChild (Equiv(e,e')) = e
 leftChild (Next e) = e
 leftChild (Until(e,e')) = e
+leftChild (WUntil(e,e')) = e
 leftChild (Rel(e,e')) = e
 leftChild (Diam e) = e
 leftChild (Box e) = e
@@ -95,6 +99,7 @@ rightChild (Or(e,e')) = e'
 rightChild (Imp(e,e')) = e'
 rightChild (Equiv(e,e')) = e'
 rightChild (Until(e,e')) = e'
+rightChild (WUntil(e,e')) = e'
 rightChild (Rel(e,e')) = e'
 rightChild _ =  throw (Error "No right child")
 
@@ -109,6 +114,7 @@ foldLTL f g (Imp(e,e'))   = g(Imp(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (Equiv(e,e')) = g(Equiv(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (Next e)      = g(Next(e),[foldLTL f g e])
 foldLTL f g (Until(e,e')) = g(Until(e,e'),[foldLTL f g e, foldLTL f g e'])
+foldLTL f g (WUntil(e,e')) = g(WUntil(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (Rel(e,e'))   = g(Rel(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (Diam e)      = g(Diam(e),[foldLTL f g e])
 foldLTL f g (Box e)       = g(Box(e),[foldLTL f g e])
@@ -127,9 +133,10 @@ andexp   ts = andexp' (temp1exp ts)
 andexp'(e,AND:tr) = andexp' (let (e', tr') = temp1exp tr in (And(e,e'), tr'))
 andexp' s = s
 temp1exp ts = case (temp2exp ts) of
-	                           (e, UNTIL:tr) ->  let (e',tr') = temp1exp tr in (Until(e,e'), tr')
-	                           (e, REL:tr) -> let (e',tr') = temp1exp tr in (Rel(e,e'), tr')
-	                           s -> s
+                   (e, UNTIL:tr)   ->  let (e',tr') = temp1exp tr in (Until(e,e'), tr')
+                   (e, WUNTIL:tr)  ->  let (e',tr') = temp1exp tr in (WUntil(e,e'), tr')
+                   (e, REL:tr)     -> let (e',tr') = temp1exp tr in (Rel(e,e'), tr')
+                   s -> s
 temp2exp ts = case ts of
                    (BOX:tr) -> let (e', tr') = temp1exp tr in (Box(e'),tr')
                    (DIAM:tr)-> let (e', tr') = temp1exp tr in (Diam(e'),tr')
@@ -159,6 +166,7 @@ normalForm (Imp(e,e')) = Neg(And(normalForm e, normalForm (Neg e')))
 normalForm (Equiv(e,e')) = And( Neg(And(normalForm e, normalForm (Neg e'))),Neg(And(normalForm e', normalForm (Neg e))))
 normalForm (Next e) = Next(normalForm e)
 normalForm (Until(e,e')) = Until(normalForm e, normalForm e')
+normalForm (WUntil(e,e')) = normalForm (Or(Box (e), Until(e, e')))
 normalForm (Rel(e,e')) = Neg (Until(normalForm (Neg e), normalForm (Neg e')))
 normalForm (Diam e) = Until(T, normalForm e)
 normalForm (Box e) = Neg (Until(T, normalForm (Neg e)))
@@ -175,6 +183,7 @@ pnf (Imp(e,e')) = Imp(pnf e, pnf e')
 pnf (Equiv(e,e')) = Equiv(pnf e, pnf e')
 pnf (Next e) = Next(pnf e)
 pnf (Until(e,e')) = Until(pnf e, pnf e')
+pnf (WUntil(e,e')) = pnf (Or(Box (e), Until(e, e')))
 pnf (Rel(e,e')) = Rel(pnf e, pnf e')
 pnf (Diam e) = Until(T, pnf e)
 pnf (Box e) = Rel(F, pnf e)
@@ -190,6 +199,7 @@ negPnf (Imp(e,e')) = And(pnf e, negPnf e')
 negPnf (Equiv(e,e')) = Or(And(pnf e, negPnf e'), And(negPnf e, pnf e'))
 negPnf (Next e) = Next(negPnf e)
 negPnf (Until(e,e')) = Rel(negPnf e, negPnf e')
+negPnf (WUntil(e,e')) = negPnf (Or(Box (e), Until(e, e')))
 negPnf (Rel(e,e')) = Until(negPnf e, negPnf e')
 negPnf (Diam e) = Rel(F, negPnf e)
 negPnf (Box e) = Until(T,negPnf e)
@@ -206,6 +216,7 @@ elimDoubleNegation (Imp(e,e')) = Imp(elimDoubleNegation e, elimDoubleNegation e'
 elimDoubleNegation (Equiv(e,e')) = Equiv(elimDoubleNegation e, elimDoubleNegation e')
 elimDoubleNegation (Next e) = Next(elimDoubleNegation e)
 elimDoubleNegation (Until(e,e')) = Until(elimDoubleNegation e, elimDoubleNegation e')
+elimDoubleNegation (WUntil(e,e')) = WUntil(elimDoubleNegation e, elimDoubleNegation e')
 elimDoubleNegation (Rel(e,e')) = Rel(elimDoubleNegation e, elimDoubleNegation e')
 elimDoubleNegation (Diam e) = Diam(elimDoubleNegation e)
 elimDoubleNegation (Box e) = Box(elimDoubleNegation e)
@@ -221,27 +232,29 @@ unify [] ys = ys
 unify (x:xs) ys = if isIn x ys then unify xs ys else unify xs (x:ys)
 
 subFormulas :: Eq a => ExpLTL a-> [ExpLTL a]
-subFormulas formula = case formula of 
-	                        T -> [T]
-	                        F -> [F]
-	                        Prop s -> [Prop s]
-	                        Neg e -> let xs = subFormulas e in if isIn (Neg e) xs then xs else Neg e:xs
-	                        And (e,e') -> let xs = (subFormulas e `unify` subFormulas e') in if isIn (And(e,e')) xs then xs else And(e,e'):xs
-	                        Next e -> let xs = subFormulas e in if isIn (Next e) xs then xs else Next e:xs
-	                        Until (e,e') -> let xs = (subFormulas e `unify` subFormulas e') in if isIn (Until(e,e')) xs then xs else Until(e,e'):xs
-	                        _ -> error "Convert to normal form using normalForm"
+subFormulas formula = case (formula) of 
+              	                        T             -> [T]
+              	                        F             -> [F]
+              	                        Prop s        -> [Prop s]
+              	                        Neg e         -> let xs = subFormulas e in if isIn (Neg e) xs then xs else Neg e:xs
+              	                        And (e,e')    -> let xs = (subFormulas e `unify` subFormulas e') in if isIn (And(e,e')) xs then xs else And(e,e'):xs
+              	                        Next e        -> let xs = subFormulas e in if isIn (Next e) xs then xs else Next e:xs
+              	                        Until (e,e')  -> let xs = (subFormulas e `unify` subFormulas e') in if isIn (Until(e,e')) xs then xs else Until(e,e'):xs
+                                        WUntil (e,e') -> let xs = (subFormulas e `unify` subFormulas e') in if isIn (WUntil(e,e')) xs then xs else WUntil(e,e'):xs
+              	                        _             -> error "Convert to normal form using normalForm"
 
 --No negations
 pureSubFormulas :: Eq a => ExpLTL a-> [ExpLTL a]
 pureSubFormulas formula = case formula of 
-	                        T -> [T]
-	                        F -> [F]
-	                        Prop s -> [Prop s]
-	                        Neg e -> pureSubFormulas e
-	                        And (e,e') -> let xs = (pureSubFormulas e `unify` pureSubFormulas e') in if isIn (And(e,e')) xs then xs else And(e,e'):xs
-	                        Next e -> let xs = pureSubFormulas e in if isIn (Next e) xs then xs else Next e:xs
-	                        Until (e,e') -> let xs = (pureSubFormulas e `unify` pureSubFormulas e') in if isIn (Until(e,e')) xs then xs else Until(e,e'):xs
-	                        _ -> error "Convert to normal form using normalForm"
+              	                        T -> [T]
+              	                        F -> [F]
+              	                        Prop s -> [Prop s]
+              	                        Neg e -> pureSubFormulas e
+              	                        And (e,e') -> let xs = (pureSubFormulas e `unify` pureSubFormulas e') in if isIn (And(e,e')) xs then xs else And(e,e'):xs
+              	                        Next e -> let xs = pureSubFormulas e in if isIn (Next e) xs then xs else Next e:xs
+              	                        Until (e,e') -> let xs = (pureSubFormulas e `unify` pureSubFormulas e') in if isIn (Until(e,e')) xs then xs else Until(e,e'):xs
+                                        WUntil (e,e') -> let xs = (pureSubFormulas e `unify` pureSubFormulas e') in if isIn (WUntil(e,e')) xs then xs else WUntil(e,e'):xs
+              	                        _ -> error "Convert to normal form using normalForm"
 
 
 --closureLTL :: Eq a => ExpLTL a->[(ExpLTL a, ExpLTL a)]
@@ -278,6 +291,8 @@ elementarySets (x:xs) = let
                            	                      T -> if (isIn T set) then False else True
                            	                      (Until(e,e')) -> if (isIn e' set) then True
                            	                      	                else if (isIn e set) then True else False
+                                                  --(WUntil(e,e')) -> if (isIn e' set) then True
+                                                  --                  else if (isIn e set) then True else False
                            	                      e-> case e of 
                            	                      	       (Neg(Until(e,e')))->if (isIn e' set) then False else True
                            	                      	       (Neg(And(e,e')))-> if (isIn e set) && (isIn e' set) then False else True
@@ -292,83 +307,6 @@ elementarySets (x:xs) = let
 
 --GNBA
 
-data Automaton st l =  GNBA ([st], [l], st->l->st->Bool, st -> Bool, [[st]]) -- states, labels , transitions, initial states, accepting set
-                     | DFA  ([st], [l])
-
-getStates (GNBA(states,_,_,_,_)) = states
-getLables (GNBA(_,labels,_,_,_)) = labels
-getTransR (GNBA(_,_,trans,_,_))  = trans
-getInitS  (GNBA(_,_,_,initial,_))= initial
-getAccepS (GNBA(_,_,_,_,acc))    = acc   
-
-
-powerSet :: [a] -> [[a]]
-powerSet [] = [[]]
-powerSet (x:xs) = let 
-                     ps = Main.powerSet xs
-                   in
-                     Data.List.foldl (\ s set -> (x:set):s) ps ps 
-
-ltl2GNBA :: Eq a => ExpLTL a -> Automaton [ExpLTL a] [ExpLTL a]
-ltl2GNBA form = let 
-                   closure = pureSubFormulas (elimDoubleNegation (normalForm form))
-                   alphabet = Data.List.foldl (\ s f -> case f of 
-                   	                                        Prop x -> f:s 
-                   	                                        _ -> s
-                   	                          ) 
-                                              [] closure
-                   labels = Main.powerSet alphabet
-                   states = elementarySets closure
-                   initial_states state = isIn form state
-                   until_forms   = Data.List.foldl (\ s form -> case form of
-                                                                        Until(_,_) -> form:s 
-                                                                        _ -> s
-                   	                                ) [] closure
-                   next_forms    = Data.List.foldl (\ s form -> case form of
-                                                                        Next _ -> form:s 
-                                                                        _ -> s
-                   	                                ) [] closure 
-                   create_accepting_set form = case form of 
-                                                    Until(e,e') -> Data.List.foldl (\ s state -> if not(isIn form state) || (isIn e' state) then state:s else s  ) [] states
-                                                    _ -> error "create_accepting_set: form not Until formula"  
-                   accepting_sets = Data.List.foldl (\ s uForm -> (create_accepting_set uForm):s) [] until_forms	
-                   
-                   isTransition s1 lb s2 =  let 
-                                               containsLabel = s1 `intersect` lb == lb
-                                               nextTest = Data.List.foldl (\ s x -> if s then 
-                                               	                                          case (isIn x s1) of 
-      																		                     True -> isIn (leftChild x) s2
-      																		                     False -> not (isIn (leftChild x) s2)
-      																		         else 
-      																		         	s
-                                               	                          ) 
-                                                                          True next_forms
-                                               untilTest = Data.List.foldl (\ s x -> if s then 
-                                               											case (isIn x s1) of
-                                               												  True -> isIn (rightChild x) s1
-                                               												           ||
-                                               												           (isIn (leftChild x) s1
-                                               												           	&& 
-                                               												           	isIn x s2
-                                               												           	)
-                                               												  False -> not (isIn (rightChild x) s1)
-                                               												           &&
-                                               												           (not (isIn (leftChild x) s1)
-                                               												           	|| 
-                                               												           	not (isIn x s2)
-                                               												           	)
-                                               	                                     else
-                                               	                                     	s 
-                                               	                           )
-                                                                           True
-                                                                           until_forms
-                                            in
-                                              containsLabel && nextTest && untilTest
-                   in
-                    GNBA (states,labels, isTransition, initial_states, accepting_sets)
-
---CWA: Counting Word Automaton
--- It was just too much :/
 
 -- SAT Formulas 
 data ExpSAT  =  PF
@@ -490,6 +428,7 @@ fixpoint phi i k = case phi of
                      Equiv (e, e') -> PEquiv (fixpoint e i k) (fixpoint e' i k)
                      Next e -> fixpointNext phi i k
                      Until (e, e') -> fixpointUntil phi i k
+                     WUntil (e, e') -> fixpoint (Or(Box (e), Until(e, e'))) i k
                      Rel (e, e') -> fixpointRel phi i k 
                      _ -> error "fixpoint: Transform formula to pnf"
 
