@@ -11,6 +11,7 @@ import com.lagodiuk.ga.Fitness;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import modelcounter.Count;
+import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Disjunction;
 import owl.ltl.Formula;
@@ -33,12 +34,16 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	public static final double SOLUTION = STATUS_FACTOR * 5d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+	BigInteger originalNumOfModels;
+	BigInteger originalNegationNumOfModels;
 	
 	public PreciseModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
+		originalNumOfModels = LTLModelCounter.count(originalSpecification.toFormula().formula(), originalSpecification.variables().size());
+		originalNegationNumOfModels = LTLModelCounter.count(originalSpecification.toFormula().formula().not(), originalSpecification.variables().size());
 	}
 	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
@@ -158,30 +163,38 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	public double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
 		int numOfVars = original.variables().size();
-		
-		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined.toFormula().formula());
+		Formula refined_formula = refined.toFormula().formula();
+		if (refined_formula == BooleanConstant.TRUE)
+			return 1d;
+		if (refined_formula == BooleanConstant.FALSE)
+			return 0d;
+		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
 		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
 		
-		BigDecimal numOfModels = new BigDecimal(LTLModelCounter.count(original.toFormula().formula(), numOfVars));
+		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 		
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfLostModels + " " + numOfModels + " ");
+//		System.out.print(numOfLostModels + " " + numOfModels + " ");
 		return value;
 	}
 	
 	public double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
 		int numOfVars = original.variables().size();
-		
-		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined.toFormula().formula().not());
+		Formula refined_negated_formula = refined.toFormula().formula().not();
+		if (refined_negated_formula == BooleanConstant.TRUE)
+			return 1d;
+		if (refined_negated_formula == BooleanConstant.FALSE)
+			return 0d;
+		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined_negated_formula);
 		BigDecimal numOfWonModels = new BigDecimal(LTLModelCounter.count(wonModels, numOfVars));
 		
-		BigDecimal numOfNegationModels = new BigDecimal(LTLModelCounter.count(original.toFormula().formula().not(), numOfVars));
+		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 		
 		BigDecimal res = numOfWonModels.divide(numOfNegationModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
+//		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
 		return value;
 	}
 	
