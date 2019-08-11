@@ -1,0 +1,25 @@
+# "nmake" makefile for relsat on PC with Miscrosoft C++
+# /G6: Compile for pentium pro processor
+#CFLAGS = /DMICROSOFT /G6 /O2
+# For fully optimized executable on P-Pro processor:
+
+#CFLAGS = /DNDEBUG /DMICROSOFT /G6 /O2
+CFLAGS = /DNDEBUG /DMICROSOFT /G6 /O2 /DNO_GMP
+
+.SUFFIXES: .obj .cpp
+
+OBJS_c =  Debug.cpp SATPreprocessor.cpp Random.cpp ClauseList.cpp Clause.cpp \
+          SATInstance.cpp sat_solve.cpp SATSolver.cpp VariableList.cpp RandGen.cpp
+OBJS_o = $(OBJS_c:.cpp=.obj)
+
+#relsat.exe: $(OBJS_c) $(OBJS_o) main.obj main.cpp
+#	$(CC) $(LDFLAGS) $(CFLAGS) -o relsat gmp.lib $(OBJS_o) main.obj gmp.lib
+
+relsat.exe: $(OBJS_c) $(OBJS_o) main.obj main.cpp
+	$(CC) $(LDFLAGS) $(CFLAGS) -o relsat $(OBJS_o) main.obj
+
+clean:
+	del *.obj
+
+.cpp.obj:
+	$(CC) $(CFLAGS) /c $<

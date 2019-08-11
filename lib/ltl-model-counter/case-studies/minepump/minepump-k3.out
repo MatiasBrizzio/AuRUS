@@ -1,0 +1,21 @@
+Translating LTL formula to CNF
+Done
+c Instance is: case-studies/minepump/minepump-k3.cnf
+c Reading instance.....done.
+c Primary variable list specified: case-studies/minepump/minepump-k3.vars
+c Primary variables: 1 2 3 5 6 8 9 14 15 17 19 24 25 27 29 
+c Random number seed: 1
+c Status update interval: 300 seconds.
+c Learn order: 3
+c Fudge factor: 0.9
+c Solution phase timeout after: 3600 seconds.
+c Counting solutions (will output first solution if one exists)...
+c WARNING: Not using a bignum package. Solution counts may overflow.
+c   All solutions found.
+c Solution phase stats: 
+c   Variable Assignments        : 22223
+c   Branch Selections           : 10610
+c   Contradictions Discovered   : 22
+c   Seconds Elapsed (real time) : 0
+Number of solutions: 615
+SAT

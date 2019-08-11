@@ -1,0 +1,5 @@
+m
+hw
+po
+###
+!(!G(po -> (!hw | X(!hw | X(!hw)))) | (G(m -> X(!po)) & G(hw -> X(po)))) & !(!G(po -> (!hw | X(!hw | X(!hw)))) | (G(m -> X(!po))))

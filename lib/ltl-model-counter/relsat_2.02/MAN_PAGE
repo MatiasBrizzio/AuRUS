@@ -1,0 +1,285 @@
+  relsat, version 2.00
+  (c) Roberto J. Bayardo, 2000
+
+
+  Purpose
+
+  Attempts to solve a given instance of the propositional
+  satisfiability problem (SAT).
+
+
+  Syntax
+
+  relsat [-# { MaxSolutions | a | c} ] [-l LearnOrder] 
+         [-p PreProcessLevel] [-t { TimeoutInterval | n } ] 
+         [-u { StatusInterval | n } ] [-s RandomSeed]
+         [-r { RestartInterval | n} ]
+         [-a RestartInteravalIncrement ]
+         [-f FudgeFactor] 
+         [-o OutputInstance] [-c PostProcessLevel] 
+         [-i ProcessingIterationBound] InputInstance
+
+
+  Brief Description
+
+  Attempts to solve the SAT instance stored in the file specified
+  by InputInstance. The only supported input format is DIMACS.
+
+  Depending on the command line flag -#, relsat can be used
+  to either determine satisfiability of the instance, output
+  up to a specified number of solutions to the instance,
+  output all solutions to the instance, or output the number
+  of distinct solutions. In any case, if relsat is capable
+  of determining satisfiability, it outputs at least one
+  solution.
+
+  For a more detailed description of the functionality provided
+  by relsat as well as its operation, consult the Additional
+  Reading section below.
+
+
+  Flags
+
+    Note: All flags require an argument. If a flag is left
+    unspecified, the effect is as if it had been specified
+    with the indicated default value.
+
+  -#   Tells the algorithm to bound the number of solutions
+  output (when the argument is a positive integer), to output
+  all solutions (character a), or to  output only the number of
+  solutions in addition to a single solution should one exist
+  (character c). Default value is 1.
+
+  -l   Specifies the order of relevance-bounded learning to apply
+  during the solution-finding phase (a non-negative integer). A
+  value of 0 indicates that no learning is to be applied, though
+  conflict-directed backjumping remains active. Default value is
+  3. 
+
+  -p   Allowed arguments are 0,1,2,3, each specifying the level
+  of processing to apply to the input instance before entering
+  the solution-finding phase:
+       0  No processing.
+       1  Removal of redundant clauses, unit clause inference 
+          and reduction via unit propagation, and restricted
+          third order resolution.
+       2  In addition to 1, binary clause inference via
+          unit propagation.
+       3  In addition to 2, an attempt is made to reduce the
+          size of each input clause via unit propagation.
+  None of these procedures rename variables or affect the solution
+  set in any way. Default value is 1.
+
+  -t   Specifies the number of seconds the algorithm is to spend
+  in the solution-finding phase before timing out (a non-negative
+  integer), or to never time out (character n). Default
+  value is 43200 (12 hours).
+
+  -u   Specifies the number of seconds that are to elapse between
+  status updates (a positive integer), or to never output status
+  updates (character n). During the pre & post-processing phases,
+  this controls how often the algorithm reports percentage-done
+  information for the current sub-phase. During the solution-
+  finding phase, this controls how often the algorithm reports
+  information including branch depth of the stack, branch
+  selections made, contradictions discovered, the structure of
+  the stack, and, when used with -#c, the number of solutions
+  thus-far identified. Default value is 10.
+
+  -s   Specifies the random number seed. Allowed values are 
+  integers greater than 0. The algorithm randomly orders variable
+  labels, and also randomly breaks ties in variable and reason
+  (nogood) selection. As of v2.00, relsat includes its own random
+  number generator to support deterministic behavior across
+  platforms. Default value is 1.
+  
+  -r   Specifies the amount of seconds that elapse between 
+  algorithm restarts (positive integer), or that no restarts
+  are to be performed (the character n).  Restarts may result
+  in non-deterministic behavior due to differing processor
+  speeds & utilizations. Use of restarts also prohibits -#c and
+  -#a options since completeness cannot be guaranteed. In
+  addition, if more than one solution is requested, they are not 
+  guaranteed to be unique. Default value is n.
+
+  -a   Specifies how many seconds to add to the restart interval
+  after each restart. Default value is 0.
+
+  -f   Fudge factor for determining equivalent variables during
+  variable selection. Allowed values are floats in the range
+  [0.0-1.0]. A fudge factor of "f" results in any variable whose
+  score is within f*Max of the highest scoring variable to be
+  considered equivalent to the highest scoring variable. Ties
+  among equivalent variables are then broken randomly. Default 
+  value is .9. Lower values may be more appropriate when using
+  the restart (-r) option.
+  
+  -o   Specifies the filename in which to write the instance
+  should the algorithm time out, or that no output instance should
+  be written (character n). If the instance is found to be
+  unsatisfiable, or all requested solutions (or number of
+  solutions) are found before timing out, then this and the
+  following flag are ignored. This flag is only useful when either
+  learning and/or pre/post-processing is applied to the instance.
+  Any learned clause whose number of variables is less than or
+  equal to the learn order (as specified by -l) will be incorporated
+  into the output instance. Note that this does not imply that
+  the algorithm will resume where it left off if it is run again
+  on the output instance after timing out. Default value is
+  timeout.cnf.
+
+  -c   Post-processing level. Allowed values are the same as those
+  for the -p flag. Specifies the level of processing applied
+  to the output instance before it is written to the output file
+  (as specified by -o). Default value is 3.
+
+  -i   Specifies the maximum number of iterations performed by the
+  processing phase (positive integer), or that processing should
+  iterate until no more changes are made to the instance (character
+  n). Default value is n.
+  
+  Examples
+
+  1. Due to the defaults, only the input instance is required
+  to be provided in order to determine satisfiability (and
+  output a solution should one exist):
+
+  relsat input.cnf
+
+  2. To output all solutions:
+
+  relsat -#a input.cnf
+
+  3. To output the number of solutions to the input instance:
+
+  relsat -#c input.cnf  
+
+    Note: counting is often significantly faster than outputting all
+    solutions. 
+
+  4. Process the instance only, and save the result into
+  a specified file:
+
+  relsat -p0 -t0 -o processed_instance.cnf input.cnf
+
+     Note: The above invocation exploits the fact that the post-
+     processing level defaults to 3. We disable pre-processing to
+     prevent the instance from being processed twice.
+
+  5. Attempt to determine a solution using 30 second restart
+  intervals and a fudge factor of .3, timing out after one hour.
+
+  relsat -r30 -f.3 -t3600 input.cnf
+
+  6. Using restarts with timeout as a preprocessing method for
+  an attempt at complete solution:
+
+  relsat -r30 -f.3 -t3600 input.cnf; relsat -p0 -tn timeout.cnf
+
+
+  Output Format
+
+  All output is directed to standard out. Motivated by the DIMACS
+  input spec, progress and other informative messages are preceeded
+  by a "c" in the first column as follows:
+
+c Instance is: input.cnf
+c Preprocessing level: 1
+c Output preprocessing level: 3
+...
+
+  Solutions are output as they are found, each on its own line, as
+  follows:
+
+Solution 1: 23 45 99 ....
+Solution 2: 23 45 98 ...
+...
+
+  Each number following the ':' indicates which variables are set
+  to true in order to satisfy the formula. All other variables
+  should be set to false.
+
+  Should relsat determine unsatisfiability, it outputs UNSAT on a
+  line by itself. Otherwise, once the desired number of solutions
+  have been found (or all solutions identified), it outputs SAT.
+  Should a timeout take place before either such case, relsat
+  outputs TIME LIMIT EXPIRED. 
+
+  When counting the number of solutions (-#c option), relsat
+  outputs only a single solution should one exist, formatted as
+  above. In addition, before reporting SAT, relsat outputs the
+  number of solutions as follows:
+
+Number of solutions: 120
+
+  Should relsat time out before determining the number of
+  solutions, or determine the instance to be unsatisfiable,
+  then no such output will be provided.
+
+
+  Acknowledgments
+
+  The random number generator is an implementation of MT19937,
+  integer version, by Makoto Matsumoto (matumoto@math.keio.ac.jp)
+  and Takuji Nishimura: 
+
+    M. Matsumoto and T. Nishimura,                                 
+    "Mersenne Twister: A 623-Dimensionally Equidistributed Uniform 
+    Pseudo-Random Number Generator",                               
+    ACM Transactions on Modeling and Computer Simulation,          
+    Vol. 8, No. 1, January 1998, pp 3--30.                         
+
+  
+  Additional Reading
+
+  For info on relevance-bounded learning and related methods:	
+
+    R. J. Bayardo Jr. and R. C. Schrag.  Using CSP look-back techniques to
+    solve real world SAT instances.  In Proc. of the 14th National Conf.
+    on Artificial Intelligence, 203-208, 1997.
+
+    R. J. Bayardo Jr. and D. P. Miranker. A complexity analysis of
+    space-bounded learning algorithms for the constraint satisfaction
+    problem. In Proc. of the 13th National Conf. on Artificial
+    Intelligence, 298-304, 1996.
+
+    M. L. Ginsberg and D. A. McAllester. GSAT and Dynamic Backtracing.
+    Proc. of KR-94, 1994.
+
+    M. L. Ginsberg. Dynamic Backtracking. JAIR 1993.
+
+  For info on the model-counting technique used by relsat: 	
+
+    R. J. Bayardo Jr. and J. D. Pehoushek.  Counting Models using
+    Connected Components.  In Proc. of the 17th National Conf.
+    on Artificial Intelligence, 2000.
+
+  For info on restart methods for solving SAT instances:
+
+    Carla Gomes, Bart Selman, and Henry Kautz. Boosting Combinatorial
+    Search Through Randomization. In Proc. of the 15th National Conf.
+    on Artificial Intelligence, July 1998.
+
+  Also visit the SATLIB website at:
+
+    http://aida.intellektik.informatik.tu-darmstadt.de/~hoos/SATLIB/
+    http://www.cs.ubc.ca/~hoos/SATLIB/
+
+
+  Updates 
+
+  Visit my website at: 
+
+    http://www.almaden.ibm.com/cs/people/bayardo
+
+
+  Send bug reports, suggestions, comments, or any other feedback
+  to: 
+        bayardo@alum.mit.edu 
+
+
+  Disclaimer
+
+  This package is provided without any warrantee. It is
+  free to use and distribute for research purposes only.
+

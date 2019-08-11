@@ -1,0 +1,18 @@
+Using GCC 3 or higher:
+
+make -f Makefile.linux
+===============================================================================
+
+Using Miscrosoft visual C++ studio 8 & the MS command shell:
+
+C:\relsat>"%VS80COMNTOOLS%vsvars32.bat"
+
+C:\relsat>nmake -f Makefile.w32
+
+Produces many warnings, but seems to work. It should also compile for
+older versions of MS C++.
+
+
+NOTE: The default makefile does not link against the GMP library --
+you should change this if you intend to use the model counting
+feature.

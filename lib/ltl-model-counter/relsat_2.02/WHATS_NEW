@@ -1,0 +1,72 @@
+v2.20 (12/29/2006):
+
+Updated the code & makefile to compile with latest versions of GCC.
+
+Fixed a bug where in rare cases the model counting feature would
+return an incorrect result.
+
+Added the "-a" option which allows you to specify an amount of seconds
+that gets added to the restart interval with each restart.
+
+Added the ability to specify a list of "primary variables" that are
+always favored during branch point selection. This is useful when you
+know some variables are always dependent and should not be chosen as
+branches.
+
+Optimized the redundant clause checking preprocessing phase.
+
+Made all preprocessing phases offer some progress indication, and also
+check for timeouts.
+
+There are other changes whose exact details I don't remember, though
+probably nothing particularly significant.
+
+v2.00:
+
+For those who have used the previous relsat releases, the most
+significant change in this version is the addition of all solution
+finding and counting of distinct solutions. The ability to set almost
+all the parameters via the command line is also a convenient addition,
+as are the additional instance-processing options. Please check out
+the MAN_PAGE for detailed documentation on all of relsat's
+command-line options.
+
+I also modified the variable selection heuristic a bit. Instead of
+using Li and Anbulugan's PROP_31 strategy for selecting the test set,
+it selects the test set according to which variables have more binary
+clauses than when they were last examined. This seems to work quite a
+bit better at times, though as with most any change, there are a few
+cases where it fails to help or even hurts.
+
+One additional instance-processing option infers binary clauses that
+can be determined by two unit propagations.  Binary clauses implied by
+a single unit propagation are not recorded, since they are trivially
+implied. This is similar to the "-b" option of James Crawford's
+compact algorithm. It doesn't try every binary pair combination since
+that gets really slow on some instances. Thus, don't expect it to find
+every binary clause possible.
+
+The other additional instance-processing option attempts to reduce any
+clause in the input instance by unit propagating after labeling k-1 of
+the k variables. If a contradiction is derived, then the clause can be
+replaced by one with one fewer variable. This is mostly useful on
+instances which contain many long, derived clauses; though on such
+instances it can be quite slow.
+
+The counting algorithm is an interesting addition that is often
+remarkably efficient, even on instances with exorbitantly large
+numbers of solutions. Good test cases include the "flat200*" graph
+coloring instances from SATLIB. Relsat uses the gnu "GMP" bignum
+library to prevent overflows. It can also be compiled without a bignum
+library, though this isn't recommended if you plan to use solution
+counting. 
+
+Finally, relsat now incorporates a random number generator instead of
+using standard library implementations, since the standard library
+implementations seem to differ across platforms. This allows comparing
+of results across platforms. E.g., when I say instance X is solved
+after Y branch selections, then this statement will be true regardless
+of the platform on which relsat is run, as long as the random number
+seed and other input options are set identically. The random number
+generator, MT19937, is by Makoto Matsumoto and Takuji Nishimura.
+
