@@ -1,0 +1,9 @@
+2012-09-02  Thomas Krennwallner  <tkren@kr.tuwien.ac.at>
+
+	* parse.y: Use hash table for the variable names.
+	Add support for printing the signature.
+	Add support for multiple input files.
+	* scan.l: Likewise.
+
+	* Makefile: Remove libfl.
+
