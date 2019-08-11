@@ -29,6 +29,7 @@ data TokenLTL = PROP String
            | UNTIL
            | WUNTIL
            | REL
+           | MREL
            | DIAM
            | BOX
            | LPAR
@@ -46,6 +47,7 @@ lexLTL ('X':xr) = NEXT:lexLTL xr
 lexLTL ('U':xr) = UNTIL:lexLTL xr
 lexLTL ('W':xr) = WUNTIL:lexLTL xr
 lexLTL ('R':xr) = REL:lexLTL xr
+lexLTL ('M':xr) = MREL:lexLTL xr
 lexLTL ('F':xr) = DIAM:lexLTL xr
 lexLTL ('G':xr) = BOX:lexLTL xr
 lexLTL  (' ':xr) = lexLTL xr
@@ -76,6 +78,7 @@ data ExpLTL a = Prop a
 		   | Until(ExpLTL a, ExpLTL a)
        | WUntil(ExpLTL a, ExpLTL a)
 		   | Rel  (ExpLTL a, ExpLTL a)
+       | MRel (ExpLTL a, ExpLTL a)
 		   | Diam (ExpLTL a)
 		   | Box  (ExpLTL a) 
 		   deriving(Show, Eq)
@@ -89,6 +92,7 @@ leftChild (Next e) = e
 leftChild (Until(e,e')) = e
 leftChild (WUntil(e,e')) = e
 leftChild (Rel(e,e')) = e
+leftChild (MRel(e,e')) = e
 leftChild (Diam e) = e
 leftChild (Box e) = e
 leftChild _ = throw (Error "No left child")
@@ -101,6 +105,7 @@ rightChild (Equiv(e,e')) = e'
 rightChild (Until(e,e')) = e'
 rightChild (WUntil(e,e')) = e'
 rightChild (Rel(e,e')) = e'
+rightChild (MRel(e,e')) = e'
 rightChild _ =  throw (Error "No right child")
 
 foldLTL :: (ExpLTL a-> b)-> ((ExpLTL a,[b])->b)-> ExpLTL a-> b
@@ -116,6 +121,7 @@ foldLTL f g (Next e)      = g(Next(e),[foldLTL f g e])
 foldLTL f g (Until(e,e')) = g(Until(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (WUntil(e,e')) = g(WUntil(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (Rel(e,e'))   = g(Rel(e,e'),[foldLTL f g e, foldLTL f g e'])
+foldLTL f g (MRel(e,e'))   = g(MRel(e,e'),[foldLTL f g e, foldLTL f g e'])
 foldLTL f g (Diam e)      = g(Diam(e),[foldLTL f g e])
 foldLTL f g (Box e)       = g(Box(e),[foldLTL f g e])
 
@@ -136,6 +142,7 @@ temp1exp ts = case (temp2exp ts) of
                    (e, UNTIL:tr)   ->  let (e',tr') = temp1exp tr in (Until(e,e'), tr')
                    (e, WUNTIL:tr)  ->  let (e',tr') = temp1exp tr in (WUntil(e,e'), tr')
                    (e, REL:tr)     -> let (e',tr') = temp1exp tr in (Rel(e,e'), tr')
+                   (e, MREL:tr)     -> let (e',tr') = temp1exp tr in (MRel(e,e'), tr')
                    s -> s
 temp2exp ts = case ts of
                    (BOX:tr) -> let (e', tr') = temp1exp tr in (Box(e'),tr')
@@ -168,6 +175,7 @@ normalForm (Next e) = Next(normalForm e)
 normalForm (Until(e,e')) = Until(normalForm e, normalForm e')
 normalForm (WUntil(e,e')) = normalForm (Or(Box (e), Until(e, e')))
 normalForm (Rel(e,e')) = Neg (Until(normalForm (Neg e), normalForm (Neg e')))
+normalForm (MRel(e,e')) = normalForm (Neg (WUntil(Neg e, Neg e')))
 normalForm (Diam e) = Until(T, normalForm e)
 normalForm (Box e) = Neg (Until(T, normalForm (Neg e)))
 --normalForm s = s
@@ -185,6 +193,7 @@ pnf (Next e) = Next(pnf e)
 pnf (Until(e,e')) = Until(pnf e, pnf e')
 pnf (WUntil(e,e')) = pnf (Or(Box (e), Until(e, e')))
 pnf (Rel(e,e')) = Rel(pnf e, pnf e')
+pnf (MRel(e,e')) = pnf (Neg (WUntil(Neg e, Neg e')))
 pnf (Diam e) = Until(T, pnf e)
 pnf (Box e) = Rel(F, pnf e)
 pnf (x) = x 
@@ -201,6 +210,7 @@ negPnf (Next e) = Next(negPnf e)
 negPnf (Until(e,e')) = Rel(negPnf e, negPnf e')
 negPnf (WUntil(e,e')) = negPnf (Or(Box (e), Until(e, e')))
 negPnf (Rel(e,e')) = Until(negPnf e, negPnf e')
+negPnf (MRel(e,e')) = negPnf (Neg (WUntil(Neg e, Neg e')))
 negPnf (Diam e) = Rel(F, negPnf e)
 negPnf (Box e) = Until(T,negPnf e)
 
@@ -218,6 +228,7 @@ elimDoubleNegation (Next e) = Next(elimDoubleNegation e)
 elimDoubleNegation (Until(e,e')) = Until(elimDoubleNegation e, elimDoubleNegation e')
 elimDoubleNegation (WUntil(e,e')) = WUntil(elimDoubleNegation e, elimDoubleNegation e')
 elimDoubleNegation (Rel(e,e')) = Rel(elimDoubleNegation e, elimDoubleNegation e')
+elimDoubleNegation (MRel(e,e')) = MRel(elimDoubleNegation e, elimDoubleNegation e')
 elimDoubleNegation (Diam e) = Diam(elimDoubleNegation e)
 elimDoubleNegation (Box e) = Box(elimDoubleNegation e)
 elimDoubleNegation s = s
@@ -430,6 +441,7 @@ fixpoint phi i k = case phi of
                      Until (e, e') -> fixpointUntil phi i k
                      WUntil (e, e') -> fixpoint (Or(Box (e), Until(e, e'))) i k
                      Rel (e, e') -> fixpointRel phi i k 
+                     MRel (e, e') -> fixpointRel (Neg (WUntil(Neg e, Neg e'))) i k 
                      _ -> error "fixpoint: Transform formula to pnf"
 
 fixpointProp :: (Show b, Ord b, Num b) => ExpLTL String -> b -> b -> ExpSAT 
