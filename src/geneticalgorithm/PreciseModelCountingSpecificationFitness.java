@@ -35,10 +35,10 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 
 	public static final int BOUND = 5;
 	public static final double STATUS_FACTOR = 0.5d;
-	public static final double LOST_MODELS_FACTOR = 0.15d;
-	public static final double WON_MODELS_FACTOR = 0.15d;
+	public static final double LOST_MODELS_FACTOR = 0.125d;
+	public static final double WON_MODELS_FACTOR = 0.125d;
 //	public static final double SOLUTION = STATUS_FACTOR * d;
-	public static final double SYNTACTIC_FACTOR = 0.2d;
+	public static final double SYNTACTIC_FACTOR = 0.25d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	BigInteger originalNumOfModels;
@@ -109,7 +109,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		double syntactic_distance = 0d;
 		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
 			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
-			System.out.print("s"+ syntactic_distance + " ");
+			System.out.printf("s%.2f ", syntactic_distance);
 		}
 		
 		double fitness = STATUS_FACTOR * status_fitness + LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness + SYNTACTIC_FACTOR * syntactic_distance;
