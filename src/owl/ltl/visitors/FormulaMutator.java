@@ -292,10 +292,9 @@ public class FormulaMutator implements Visitor<Formula>{
 	    			Iterator<Formula> it = current.children().iterator();
 	    			int i = 0;
 	    			while (it.hasNext()) {
-	    				if (i == to_be_removed)
-	    					continue;
+	    				if (i != to_be_removed)
+	    					new_set_children.add(it.next());
 	    				i++;
-	    				new_set_children.add(it.next());
 	    			}
 	    			current = Disjunction.of(new_set_children);
 	    		}
