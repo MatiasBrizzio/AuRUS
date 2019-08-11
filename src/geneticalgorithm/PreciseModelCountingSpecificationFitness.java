@@ -6,7 +6,11 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
@@ -19,19 +23,22 @@ import owl.ltl.GOperator;
 import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
+import owl.util.StringUtil;
 import solvers.LTLModelCounter;
 import solvers.LTLSolver;
 import solvers.StrixHelper;
 import solvers.LTLSolver.SolverResult;
 import solvers.StrixHelper.RealizabilitySolverResult;
+import tlsf.Formula_Utils;
 
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public static final int BOUND = 5;
 	public static final double STATUS_FACTOR = 0.5d;
-	public static final double LOST_MODELS_FACTOR = 0.25d;
-	public static final double WON_MODELS_FACTOR = 0.25d;
+	public static final double LOST_MODELS_FACTOR = 0.15d;
+	public static final double WON_MODELS_FACTOR = 0.15d;
 //	public static final double SOLUTION = STATUS_FACTOR * d;
+	public static final double SYNTACTIC_FACTOR = 0.2d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	BigInteger originalNumOfModels;
@@ -99,7 +106,13 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			catch (Exception e) { e.printStackTrace(); }
 		}
 		
-		double fitness = STATUS_FACTOR * status_fitness + LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness;
+		double syntactic_distance = 0d;
+		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
+			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
+			System.out.print("s"+ syntactic_distance + " ");
+		}
+		
+		double fitness = STATUS_FACTOR * status_fitness + LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness + SYNTACTIC_FACTOR * syntactic_distance;
 		chromosome.fitness = fitness;
 		return fitness;
 	}
@@ -206,6 +219,25 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		double value = res.doubleValue();
 //		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
 		return value;
+	}
+	
+	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
+		double syntactic_distance = 0d;
+		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
+		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
+		
+		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
+		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
+//		String originalStr = original.toFormula().toString();
+//		String refinedStr = refined.toFormula().toString();
+//		String diffLost = StringUtils.difference(originalStr, refinedStr);
+//		System.out.println(lostSubs.size() +" " + sub_original.size());
+//		String diffWon = StringUtils.difference(refinedStr, originalStr);
+//		System.out.println(wonSubs.size()  +" " + sub_refined.size());
+		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
+		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
+		syntactic_distance = 0.5d * lost + 0.5d * won;
+		return syntactic_distance;
 	}
 	
 	private String toSolverSyntax(Formula f) {

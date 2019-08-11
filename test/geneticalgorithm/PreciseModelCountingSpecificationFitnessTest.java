@@ -33,7 +33,7 @@ class PreciseModelCountingSpecificationFitnessTest {
 		PreciseModelCountingSpecificationFitness fitnessFunc = new PreciseModelCountingSpecificationFitness(spec1);
 		System.out.println(fitnessFunc.compute_lost_models_porcentage(spec1, spec2));
 		System.out.println(fitnessFunc.compute_won_models_porcentage(spec1, spec2));
-		
+		System.out.println(fitnessFunc.compute_syntactic_distance(spec1, spec2));
 	}
 	
 	@Test
