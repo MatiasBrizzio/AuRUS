@@ -1,6 +1,8 @@
 package owl.ltl.visitors;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -258,14 +260,25 @@ public class FormulaStrengthening implements Visitor<Formula>{
 		if (numOfAllowedStrengthenings > 0) {
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(strengthening_rate) == 0);
 	    	if (mutate) {
-	    		// 0: FALSE 1:conjunct 2:G
+	    		// 0: FALSE 1:conjunct 2: remove disjunct 3:G
 	    		numOfAllowedStrengthenings--;
-	    		int option = Settings.RANDOM_GENERATOR.nextInt(3);
+	    		int option = Settings.RANDOM_GENERATOR.nextInt(4);
 	    		if (print_debug_info) System.out.print("before: " + disjunction + " random: " + option);
 	    		if (option == 0) 
 	    			current = BooleanConstant.FALSE;
 	    		else if (option == 1){
 	    			current = Conjunction.of(current.children()); // strengthen(a | b) = a & b
+	    		}
+	    		else if (option == 2) {
+	    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
+	    			List<Formula> new_set_children = new LinkedList<Formula>();
+	    			Iterator<Formula> it = current.children().iterator();
+	    			int i = 0;
+	    			while (it.hasNext()) {
+	    				if (i != to_be_removed)
+	    					new_set_children.add(it.next());
+	    			}
+	    			current = Disjunction.of(new_set_children);
 	    		}
 	    		else {
 	    			current = GOperator.of(current); // strengthen(a | b) = G(a | b)
