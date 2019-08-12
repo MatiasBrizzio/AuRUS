@@ -37,7 +37,10 @@ public class Main {
 				filename = args[i];
 			}
 		}
-		
+		if (filename == null || filename == "") {
+			correctUssage();
+			return;
+		}
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
