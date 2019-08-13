@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -87,7 +88,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		
 		double syntactic_distance = 0.0d;
 		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
-			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
+			syntactic_distance = compute_syntactic_distance2(originalSpecification, chromosome.spec);
 			System.out.printf("s%.2f ", syntactic_distance);
 		}
 		
@@ -250,5 +251,47 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
 		return new String(LTLFormula); 
 	}
+	
+	public double compute_syntactic_distance2(Tlsf original, Tlsf refined) {
+		
+		List<Formula> og = original.guarantee();
+		Formula oa = original.assume();
+		
+		List<Formula> rg = refined.guarantee();
+		Formula ra = refined.assume();
+			
+		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
+		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
+		
+		
+		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
+		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
 
+		List<LabelledFormula> guarantees = new ArrayList<LabelledFormula>();
+		List<Formula> assume = Formula_Utils.splitConjunction(oa);
+		for (Formula fo : og)
+			guarantees.add(LabelledFormula.of(fo, original.variables())) ;
+		
+
+		List<LabelledFormula> guaranteesr = new ArrayList<LabelledFormula>();
+		List<Formula> assumer = Formula_Utils.splitConjunction(ra);
+		for (Formula fo : rg)
+			guaranteesr.add(LabelledFormula.of(fo, refined.variables()));
+		
+		
+		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
+		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
+		double syntactic_distance = 0.5d * lost + 0.5d * won;
+		
+		double diff_guar = guaranteesr.size() - guarantees.size();
+		double diff_assum = assumer.size() - assume.size();
+		System.out.println("syntac:" + diff_guar + " " +diff_assum+ " " + assumer.size() + " " + guaranteesr.size());
+		
+			
+		syntactic_distance += diff_assum*0.5d + diff_guar*0.3d;
+		//syntactic_distance += ((( ) + ((double)diff_guar*0.3d))/ (sub_assumer.size() + sub_guaranteesr.size())) );
+		return syntactic_distance;
+	}
+	
+	
 }
