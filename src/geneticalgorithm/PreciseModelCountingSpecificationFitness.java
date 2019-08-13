@@ -35,10 +35,10 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 
 	public static final int BOUND = 5;
 	public static final double STATUS_FACTOR = 0.5d;
-	public static final double LOST_MODELS_FACTOR = 0.125d;
-	public static final double WON_MODELS_FACTOR = 0.125d;
+	public static final double LOST_MODELS_FACTOR = 0.2d;
+	public static final double WON_MODELS_FACTOR = 0.2d;
 //	public static final double SOLUTION = STATUS_FACTOR * d;
-	public static final double SYNTACTIC_FACTOR = 0.25d;
+	public static final double SYNTACTIC_FACTOR = 0.1d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	BigInteger originalNumOfModels;
@@ -81,38 +81,43 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 				else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
 			status_fitness = 0.9d;
 		else
-			status_fitness = 1d;
+			status_fitness = 1.0d;
 		
+		double fitness = STATUS_FACTOR * status_fitness;
 		
-		// Second, compute the portion of loosing models with respect to the original specification
-		double lost_models_fitness = 0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
-		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
-			// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
-			try {
-				lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
-				System.out.print(lost_models_fitness + " ");
-			}
-			catch (Exception e) { e.printStackTrace(); }
-		}
-		
-		// Third, compute the portion of winning models with respect to the original specification
-		double won_models_fitness = 0d;
-		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
-			// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
-			try {
-				won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
-				System.out.print(won_models_fitness + " ");
-			}
-			catch (Exception e) { e.printStackTrace(); }
-		}
-		
-		double syntactic_distance = 0d;
+		double syntactic_distance = 0.0d;
 		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
 			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
 			System.out.printf("s%.2f ", syntactic_distance);
 		}
 		
-		double fitness = STATUS_FACTOR * status_fitness + LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness + SYNTACTIC_FACTOR * syntactic_distance;
+		if (syntactic_distance < 1.0d) { 
+			//if the specifications are not syntactically equivalent 
+			// Second, compute the portion of loosing models with respect to the original specification
+			double lost_models_fitness = 0.0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
+			if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
+				// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
+				try {
+					lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
+					System.out.print(lost_models_fitness + " ");
+				}
+				catch (Exception e) { e.printStackTrace(); }
+			}
+			
+			// Third, compute the portion of winning models with respect to the original specification
+			double won_models_fitness = 0.0d;
+			if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
+				// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
+				try {
+					won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
+					System.out.print(won_models_fitness + " ");
+				}
+				catch (Exception e) { e.printStackTrace(); }
+			}
+			
+			fitness += LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness + SYNTACTIC_FACTOR * syntactic_distance;
+		}
+		
 		chromosome.fitness = fitness;
 		return fitness;
 	}
@@ -222,7 +227,6 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	}
 	
 	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
-		double syntactic_distance = 0d;
 		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
 		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
 		
@@ -236,7 +240,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 //		System.out.println(wonSubs.size()  +" " + sub_refined.size());
 		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
 		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
-		syntactic_distance = 0.5d * lost + 0.5d * won;
+		double syntactic_distance = ((double) 1.0d - (0.5d * lost + 0.5d * won));
 		return syntactic_distance;
 	}
 	

@@ -270,16 +270,18 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	    			current = Conjunction.of(current.children()); // strengthen(a | b) = a & b
 	    		}
 	    		else if (option == 2) {
-	    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
-	    			List<Formula> new_set_children = new LinkedList<Formula>();
-	    			Iterator<Formula> it = current.children().iterator();
-	    			int i = 0;
-	    			while (it.hasNext()) {
-	    				if (i != to_be_removed)
-	    					new_set_children.add(it.next());
-	    				i++;
+	    			if (current.children().size() > 0) {
+	    				int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
+	    				List<Formula> new_set_children = new LinkedList<Formula>();
+		    			Iterator<Formula> it = current.children().iterator();
+		    			int i = 0;
+		    			while (it.hasNext()) {
+		    				if (i != to_be_removed)
+		    					new_set_children.add(it.next());
+		    				i++;
+		    			}
+		    			current = Disjunction.of(new_set_children);
 	    			}
-	    			current = Disjunction.of(new_set_children);
 	    		}
 	    		else {
 	    			current = GOperator.of(current); // strengthen(a | b) = G(a | b)
