@@ -221,27 +221,27 @@ public class FormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> negateFormula; 1 -> remove disjunct; 2 -> add disjunct; 3 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + conjunction + " random: " + random);
 	    		if (random == 0) {
 	    			current = current.not(); 
 	    		}
-	    		else if (random == 1) { 
-	    			if (current.children().size() > 0) {
-		    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
-		    			List<Formula> new_set_children = new LinkedList<Formula>();
-		    			Iterator<Formula> it = current.children().iterator();
-		    			int i = 0;
-		    			while (it.hasNext()) {
-		    				if (i != to_be_removed)
-		    					new_set_children.add(it.next());
-		    				i++;
-		    			}
-		    			current = Conjunction.of(new_set_children);
-	    			}
-	    		}
-	    		else if (random == 2) {
+//	    		else if (random == 1) { 
+//	    			if (current.children().size() > 0) {
+//		    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
+//		    			List<Formula> new_set_children = new LinkedList<Formula>();
+//		    			Iterator<Formula> it = current.children().iterator();
+//		    			int i = 0;
+//		    			while (it.hasNext()) {
+//		    				if (i != to_be_removed)
+//		    					new_set_children.add(it.next());
+//		    				i++;
+//		    			}
+//		    			current = Conjunction.of(new_set_children);
+//	    			}
+//	    		}
+	    		else if (random == 1) {
 	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
 	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				new_literal = new_literal.not();
@@ -291,37 +291,38 @@ public class FormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
 	    		//0 -> negateFormula; 1 -> remove disjunct; 2 -> add disjunct; 3 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + disjunction + " random: " + random);
 	    		if (random == 0) {
 	    			current = current.not(); 
 	    		}
-	    		else if (random == 1) { 
-	    			if (current.children().size() > 0) {
-		    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
-		    			List<Formula> new_set_children = new LinkedList<Formula>();
-		    			Iterator<Formula> it = current.children().iterator();
-		    			int i = 0;
-		    			while (it.hasNext()) {
-		    				if (i != to_be_removed)
-		    					new_set_children.add(it.next());
-		    				i++;
-		    			}
-		    			current = Disjunction.of(new_set_children);
-	    			}
-	    		}
-	    		else if(random == 2) {
+//	    		else if (random == 1) { 
+//	    			if (current.children().size() > 0) {
+//		    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
+//		    			List<Formula> new_set_children = new LinkedList<Formula>();
+//		    			Iterator<Formula> it = current.children().iterator();
+//		    			int i = 0;
+//		    			while (it.hasNext()) {
+//		    				if (i != to_be_removed)
+//		    					new_set_children.add(it.next());
+//		    				i++;
+//		    			}
+//		    			current = Disjunction.of(new_set_children);
+//	    			}
+//	    		}
+	    		else if(random == 1) {
 	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
 	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				new_literal = new_literal.not();
 	    			current = Disjunction.of(current, new_literal); 
 	    		}
-	    		else { // random == 3
+	    		else if (current.children().size() > 0) { // random == 3
 	    			//0:& 1:U 2:W 3:R 4:M
     				int op = Settings.RANDOM_GENERATOR.nextInt(5);
-    				if (op == 0)
-    					current = Conjunction.of(current.children());
+    				if (op == 0) {		
+    						current = Conjunction.of(current.children());
+    				}
     				else { 
     					Iterator<Formula> it = disjunction.children.iterator();
     	    			Formula left = it.next();

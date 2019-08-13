@@ -262,27 +262,28 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	    	if (mutate) {
 	    		// 0: FALSE 1:conjunct 2: remove disjunct 3:G
 	    		numOfAllowedStrengthenings--;
-	    		int option = Settings.RANDOM_GENERATOR.nextInt(4);
+	    		int option = Settings.RANDOM_GENERATOR.nextInt(3);
 	    		if (print_debug_info) System.out.print("before: " + disjunction + " random: " + option);
 	    		if (option == 0) 
 	    			current = BooleanConstant.FALSE;
 	    		else if (option == 1){
-	    			current = Conjunction.of(current.children()); // strengthen(a | b) = a & b
+	    			if (current.children().size() > 0)
+	    				current = Conjunction.of(current.children()); // strengthen(a | b) = a & b
 	    		}
-	    		else if (option == 2) {
-	    			if (current.children().size() > 0) {
-	    				int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
-	    				List<Formula> new_set_children = new LinkedList<Formula>();
-		    			Iterator<Formula> it = current.children().iterator();
-		    			int i = 0;
-		    			while (it.hasNext()) {
-		    				if (i != to_be_removed)
-		    					new_set_children.add(it.next());
-		    				i++;
-		    			}
-		    			current = Disjunction.of(new_set_children);
-	    			}
-	    		}
+//	    		else if (option == 2) {
+//	    			if (current.children().size() > 0) {
+//	    				int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
+//	    				List<Formula> new_set_children = new LinkedList<Formula>();
+//		    			Iterator<Formula> it = current.children().iterator();
+//		    			int i = 0;
+//		    			while (it.hasNext()) {
+//		    				if (i != to_be_removed)
+//		    					new_set_children.add(it.next());
+//		    				i++;
+//		    			}
+//		    			current = Disjunction.of(new_set_children);
+//	    			}
+//	    		}
 	    		else {
 	    			current = GOperator.of(current); // strengthen(a | b) = G(a | b)
 	    		}

@@ -222,25 +222,26 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    	if (mutate) {
 	    		// 0: TRUE 1: remove conjunct 2:disjunction 3:F
 	    		numOfAllowedWeakenings--;
-	    		int option = Settings.RANDOM_GENERATOR.nextInt(4);
+	    		int option = Settings.RANDOM_GENERATOR.nextInt(3);
 	    		if (option == 0)
 	    			current = BooleanConstant.TRUE;
-	    		else if (option == 1){// weak(a & b) = a
-	    			if (current.children().size() > 0) {
-		    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
-		    			List<Formula> new_set_children = new LinkedList<Formula>();
-		    			Iterator<Formula> it = current.children().iterator();
-		    			int i = 0;
-		    			while (it.hasNext()) {
-		    				if (i != to_be_removed)
-		    					new_set_children.add(it.next());
-		    				i++;
-		    			}
-		    			current = Conjunction.of(new_set_children);
-	    			}
-	    		}
-	    		else if (option == 2) {
-	    			current = Disjunction.of(current.children()); // weak(a & b) = a | b
+//	    		else if (option == 1){// weak(a & b) = a
+//	    			if (current.children().size() > 0) {
+//		    			int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
+//		    			List<Formula> new_set_children = new LinkedList<Formula>();
+//		    			Iterator<Formula> it = current.children().iterator();
+//		    			int i = 0;
+//		    			while (it.hasNext()) {
+//		    				if (i != to_be_removed)
+//		    					new_set_children.add(it.next());
+//		    				i++;
+//		    			}
+//		    			current = Conjunction.of(new_set_children);
+//	    			}
+//	    		}
+	    		else if (option == 1) {
+	    			if (current.children().size() > 0)
+	    				current = Disjunction.of(current.children()); // weak(a & b) = a | b
 	    		}
 	    		else {
 	    			current = FOperator.of(current); // weak(a & b) = F(a & b)
