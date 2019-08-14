@@ -22,7 +22,7 @@ public class LTLModelCounter {
 	
 	public static final String BASENAME = "lib/ltl-model-counter/result/numofmodels";
 	public static final String INFILE = BASENAME+".ltl";
-	public static final int BOUND = 5;
+	public static int BOUND = 5;
 	
 	public static int numOfTimeout = 0;
 	public static int numOfError = 0;

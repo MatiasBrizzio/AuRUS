@@ -247,7 +247,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    				new_literal = new_literal.not();
 	    			current = Conjunction.of(current, new_literal);
 	    		}
-	    		else { // random == 3
+	    		else if (current.children().size() > 0){ // random == 3
 	    			//0:| 1:U 2:W 3:R 4:M
     				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)

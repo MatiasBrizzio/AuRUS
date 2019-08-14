@@ -45,8 +45,13 @@ public class SpecificationGeneticAlgorithm {
 		int min = (int) (totalTime)/60000;
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
+		print_config();
+		PreciseModelCountingSpecificationFitness.print_config();
 	}
 	
+	private void print_config() {
+		System.out.println(String.format("GEN: %s, Pop:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, MUTATION_RATE, CROSSOVER_RATE));
+	}
 	private static Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
