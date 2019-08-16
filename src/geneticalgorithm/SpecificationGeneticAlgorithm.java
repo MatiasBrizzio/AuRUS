@@ -34,6 +34,7 @@ public class SpecificationGeneticAlgorithm {
 		ga.setCrossoverRate(CROSSOVER_RATE);
 		ga.setMutationRate(MUTATION_RATE);
 		ga.setParentChromosomesSurviveCount(POPULATION_SIZE);
+		print_config();
 		ga.evolve(GENERATIONS);
 		long finalTime = System.currentTimeMillis();
 		
@@ -73,7 +74,7 @@ public class SpecificationGeneticAlgorithm {
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
 
 					//TODO: select a reasonable threshold
-					private final double threshold = SpecificationFitness.SOLUTION;
+					private final double threshold = 0.9d;
 
 					@Override
 					public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {
@@ -88,10 +89,10 @@ public class SpecificationGeneticAlgorithm {
 
 						// Listener prints best achieved solution
 						System.out.println();
-						System.out.println(String.format("%s\t%s\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize(),solutions.size()));
+						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize(),solutions.size()));
 
 						// If fitness is satisfying 
-						if (best.status == SPEC_STATUS.REALIZABLE) {
+						if (best.status == SPEC_STATUS.REALIZABLE && bestFit >= threshold) {
 							// we save the best solutions as one in the boundary
 							if (!solutions.contains(best.spec))
 								solutions.add(best.spec);
@@ -101,4 +102,5 @@ public class SpecificationGeneticAlgorithm {
 					}
 				});
 	}
+
 }

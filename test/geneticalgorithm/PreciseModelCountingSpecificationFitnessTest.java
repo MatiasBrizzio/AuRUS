@@ -31,9 +31,8 @@ class PreciseModelCountingSpecificationFitnessTest {
 		f = new FileReader("examples/minepump-2.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f);
 		PreciseModelCountingSpecificationFitness fitnessFunc = new PreciseModelCountingSpecificationFitness(spec1);
-		System.out.println(fitnessFunc.compute_lost_models_porcentage(spec1, spec2));
-		System.out.println(fitnessFunc.compute_won_models_porcentage(spec1, spec2));
-		System.out.println(fitnessFunc.compute_syntactic_distance(spec1, spec2));
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.println(fitnessFunc.calculate(chromosome));
 	}
 	
 	@Test
@@ -43,8 +42,8 @@ class PreciseModelCountingSpecificationFitnessTest {
 		f = new FileReader("examples/minepump-3.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f);
 		PreciseModelCountingSpecificationFitness fitnessFunc = new PreciseModelCountingSpecificationFitness(spec1);
-		System.out.println(fitnessFunc.compute_lost_models_porcentage(spec1, spec2));
-		System.out.println(fitnessFunc.compute_won_models_porcentage(spec1, spec2));
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.println(fitnessFunc.calculate(chromosome));
 		
 	}
 }

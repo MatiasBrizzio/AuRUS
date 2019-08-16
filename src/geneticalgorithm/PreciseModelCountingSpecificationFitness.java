@@ -33,11 +33,11 @@ import tlsf.Formula_Utils;
 
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public static final int BOUND = 3;
-	public static final double STATUS_FACTOR = 0.7d;
-	public static final double LOST_MODELS_FACTOR = 0.1d;
-	public static final double WON_MODELS_FACTOR = 0.1d;
-//	public static final double SOLUTION = STATUS_FACTOR * d;
+	public static final int BOUND = 5;
+	public static final double STATUS_FACTOR = 0.5d;
+	public static final double LOST_MODELS_FACTOR = 0.2d;
+	public static final double WON_MODELS_FACTOR = 0.2d;
+//	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.1d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
@@ -61,6 +61,15 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		if (chromosome.status != SPEC_STATUS.UNKNOWN)
 			return chromosome.fitness;
 		
+		// remove trivial specifications
+		if (originalSpecification.equals(chromosome.spec))
+			return 0.0d;
+		if (chromosome.spec.assume() == BooleanConstant.FALSE)
+			return 0.0d;
+		Formula guarantees = Conjunction.of(chromosome.spec.guarantee());
+		if (guarantees == BooleanConstant.TRUE)
+			return 0.0d;
+		
 		// First compute the status fitness
 		try { 
 			compute_status(chromosome);
@@ -78,7 +87,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			status_fitness = 0.25d;
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
 			status_fitness = 0.5d;
-				else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
+		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
 			status_fitness = 0.9d;
 		else
 			status_fitness = 1.0d;
@@ -86,16 +95,15 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		double fitness = STATUS_FACTOR * status_fitness;
 		
 		double syntactic_distance = 0.0d;
-		if (originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
-			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
-			System.out.printf("s%.2f ", syntactic_distance);
-		}
+		syntactic_distance = compute_syntactic_distance2(originalSpecification, chromosome.spec);
+		System.out.printf("s%.2f ", syntactic_distance);
+		
 		
 //		if (syntactic_distance < 1.0d) { 
 			//if the specifications are not syntactically equivalent 
 			// Second, compute the portion of loosing models with respect to the original specification
 			double lost_models_fitness = 0.0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
-			if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
+			if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 				// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
 				try {
 					lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
@@ -106,7 +114,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			
 			// Third, compute the portion of winning models with respect to the original specification
 			double won_models_fitness = 0.0d;
-			if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent() && originalSpecification.hashCode()!=chromosome.spec.hashCode()) {
+			if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 				// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
 				try {
 					won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
@@ -185,14 +193,14 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		int numOfVars = original.variables().size();
 		Formula refined_formula = refined.toFormula().formula();
 		if (refined_formula == BooleanConstant.TRUE)
-			return 1d;
+			return 1.0d;
 		if (refined_formula == BooleanConstant.FALSE)
-			return 0d;
+			return 0.0d;
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
 		if (lostModels == BooleanConstant.TRUE)
-			return 1d;
+			return 1.0d;
 		if (lostModels == BooleanConstant.FALSE)
-			return 0d;
+			return 0.0d;
 		LTLModelCounter.BOUND = this.BOUND;
 		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
 		
@@ -209,14 +217,14 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		int numOfVars = original.variables().size();
 		Formula refined_negated_formula = refined.toFormula().formula().not();
 		if (refined_negated_formula == BooleanConstant.TRUE)
-			return 1d;
+			return 1.0d;
 		if (refined_negated_formula == BooleanConstant.FALSE)
-			return 0d;
+			return 0.0d;
 		Formula wonModels = Conjunction.of(original.toFormula().formula().not(), refined_negated_formula);
 		if (wonModels == BooleanConstant.TRUE)
-			return 1d;
+			return 1.0d;
 		if (wonModels == BooleanConstant.FALSE)
-			return 0d;
+			return 0.0d;
 		LTLModelCounter.BOUND = this.BOUND;
 		BigDecimal numOfWonModels = new BigDecimal(LTLModelCounter.count(wonModels, numOfVars));
 		
@@ -238,7 +246,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		
 		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
 		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
-		double syntactic_distance = 0.4d * lost + 0.4d * won;
+		double syntactic_distance = 0.5d * lost + 0.5d * won;
 
 		List<Formula> og = original.guarantee();
 		Formula oa = original.assume();
@@ -248,20 +256,22 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		int num_of_original_guarantees = original.guarantee().size();
 		int num_of_refined_guarantees = refined.guarantee().size();
 		
-		double diff_guar = num_of_refined_assume - num_of_original_assume;
-		double diff_assum = num_of_refined_guarantees - num_of_original_guarantees;
+		int orig_size = num_of_original_assume + num_of_original_guarantees;
+		int ref_size = num_of_refined_assume + num_of_refined_guarantees;
 		
-		System.out.println("syntac:" + diff_guar + " " +diff_assum+ " " + num_of_refined_assume + " " + num_of_refined_guarantees);
+		if (orig_size > ref_size)
+			syntactic_distance = ((double)ref_size/ (double)orig_size) * syntactic_distance;
 		
-			
-		syntactic_distance += ((double) 0.2d * (diff_assum + diff_guar));
+//		System.out.println("syntac:" + diff_guar + " " +diff_assum+ " " + num_of_refined_assume + " " + num_of_refined_guarantees);
 		//syntactic_distance += ((( ) + ((double)diff_guar*0.3d))/ (sub_assumer.size() + sub_guaranteesr.size())) );
 		return syntactic_distance;
 	}
 	
 	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
 		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
+		sub_original.remove(original.toFormula());
 		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
+		sub_refined.remove(refined.toFormula());
 		
 		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
 		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
