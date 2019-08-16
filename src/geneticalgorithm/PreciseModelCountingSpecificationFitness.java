@@ -88,7 +88,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
 			status_fitness = 0.5d;
 		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 0.9d;
+			status_fitness = 0.8d;
 		else
 			status_fitness = 1.0d;
 		

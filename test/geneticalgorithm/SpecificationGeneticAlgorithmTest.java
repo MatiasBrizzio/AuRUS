@@ -21,8 +21,8 @@ class SpecificationGeneticAlgorithmTest {
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
 		ga.GENERATIONS = 10;
-		ga.POPULATION_SIZE = 32;
-		ga.MUTATION_RATE = 20;
+		ga.POPULATION_SIZE = 50;
+		ga.MUTATION_RATE = 30;
 		ga.run(tlsf);
 	}
 
