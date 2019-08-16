@@ -95,7 +95,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		double fitness = STATUS_FACTOR * status_fitness;
 		
 		double syntactic_distance = 0.0d;
-		syntactic_distance = compute_syntactic_distance2(originalSpecification, chromosome.spec);
+		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 		
 		
@@ -247,9 +247,6 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
 		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
 		double syntactic_distance = 0.5d * lost + 0.5d * won;
-
-		List<Formula> og = original.guarantee();
-		Formula oa = original.assume();
 		
 		int num_of_original_assume = Formula_Utils.splitConjunction(original.assume()).size();
 		int num_of_refined_assume = Formula_Utils.splitConjunction(refined.assume()).size();
