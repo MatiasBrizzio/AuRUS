@@ -74,7 +74,7 @@ public class SpecificationGeneticAlgorithm {
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
 
 					//TODO: select a reasonable threshold
-					private final double threshold = 0.9d;
+					private final double threshold = 0.95d;
 
 					@Override
 					public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {

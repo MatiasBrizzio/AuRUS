@@ -34,9 +34,9 @@ import tlsf.Formula_Utils;
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public static final int BOUND = 5;
-	public static final double STATUS_FACTOR = 0.5d;
-	public static final double LOST_MODELS_FACTOR = 0.2d;
-	public static final double WON_MODELS_FACTOR = 0.2d;
+	public static final double STATUS_FACTOR = 0.6d;
+	public static final double LOST_MODELS_FACTOR = 0.15d;
+	public static final double WON_MODELS_FACTOR = 0.15d;
 //	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.1d;
 	Tlsf originalSpecification = null;
@@ -88,14 +88,14 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
 			status_fitness = 0.5d;
 		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 0.8d;
+			status_fitness = 0.7d;
 		else
 			status_fitness = 1.0d;
 		
 		double fitness = STATUS_FACTOR * status_fitness;
 		
 		double syntactic_distance = 0.0d;
-		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
+		syntactic_distance = compute_syntactic_distance_size(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 		
 		
@@ -236,6 +236,13 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		return value;
 	}
 
+	public double compute_syntactic_distance_size(Tlsf original, Tlsf refined) {
+		double orig_size = Formula_Utils.formulaSize(original.toFormula().formula());
+		double ref_size = Formula_Utils.formulaSize(refined.toFormula().formula());
+		double diff = Math.abs(orig_size - ref_size); 
+		double syntactic_distance = (double) (1.0d - (diff / orig_size));
+		return syntactic_distance;
+	}
 	public double compute_syntactic_distance2(Tlsf original, Tlsf refined) {
 		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
 		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
