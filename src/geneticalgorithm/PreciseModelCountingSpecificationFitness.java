@@ -34,11 +34,11 @@ import tlsf.Formula_Utils;
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public static final int BOUND = 5;
-	public static final double STATUS_FACTOR = 0.6d;
-	public static final double LOST_MODELS_FACTOR = 0.15d;
-	public static final double WON_MODELS_FACTOR = 0.15d;
+	public static final double STATUS_FACTOR = 0.75d;
+	public static final double LOST_MODELS_FACTOR = 0.1d;
+	public static final double WON_MODELS_FACTOR = 0.1d;
 //	public static final double SOLUTION = 0.8d;
-	public static final double SYNTACTIC_FACTOR = 0.1d;
+	public static final double SYNTACTIC_FACTOR = 0.05d;
 	Tlsf originalSpecification = null;
 	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	BigInteger originalNumOfModels;
@@ -88,7 +88,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
 			status_fitness = 0.5d;
 		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 0.7d;
+			status_fitness = 0.9d;
 		else
 			status_fitness = 1.0d;
 		
@@ -190,6 +190,9 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	
 	public double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
+		if (originalNumOfModels == BigInteger.ZERO)
+			return 1.0d;
+		
 		int numOfVars = original.variables().size();
 		Formula refined_formula = refined.toFormula().formula();
 		if (refined_formula == BooleanConstant.TRUE)
@@ -203,7 +206,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			return 0.0d;
 		LTLModelCounter.BOUND = this.BOUND;
 		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
-		
+
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 		
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
@@ -214,6 +217,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	
 	public double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
+		if (originalNegationNumOfModels == BigInteger.ZERO)
+			return 1.0d;
 		int numOfVars = original.variables().size();
 		Formula refined_negated_formula = refined.toFormula().formula().not();
 		if (refined_negated_formula == BooleanConstant.TRUE)
