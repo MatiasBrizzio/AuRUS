@@ -167,10 +167,8 @@ public class TLSF_Utils {
 
 		p.waitFor();
 		
-		FileReader fr = new FileReader(new File(tlsfBasic));
-		Tlsf tlsf =  TlsfParser.parse(new FileReader(new File(tlsfBasic)));
-		fr.close();
-		return tlsf;
+		String tlsf =  adaptTLSFSpec(TlsfParser.parse(new FileReader(new File(tlsfBasic))));
+		return TlsfParser.parse(tlsf);
 	}
 	
 	public static String toTLSF(Tlsf spec) {

@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.IOException;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
+import tlsf.TLSF_Utils;
 
 public class Main {
 
@@ -41,8 +43,8 @@ public class Main {
 			correctUssage();
 			return;
 		}
-		FileReader f = new FileReader(filename);
-		Tlsf tlsf = TlsfParser.parse(f);
+		//FileReader f = new FileReader(filename);
+		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
 		if (popSize > 0) ga.POPULATION_SIZE = popSize;
 		if (crossoverRate > 0) ga.CROSSOVER_RATE = crossoverRate;
