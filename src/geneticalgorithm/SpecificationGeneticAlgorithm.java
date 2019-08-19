@@ -12,6 +12,8 @@ import com.lagodiuk.ga.Population;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
+import solvers.StrixHelper;
+import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
@@ -27,7 +29,8 @@ public class SpecificationGeneticAlgorithm {
 	public void run(Tlsf spec) throws IOException, InterruptedException{
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
-		if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
+		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
+		if (StrixHelper.checkRealizability(spec) ==  RealizabilitySolverResult.REALIZABLE) {	
 			System.out.println("The specification is already realizable.");
 			return;
 		}

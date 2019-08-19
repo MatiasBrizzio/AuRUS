@@ -23,6 +23,7 @@ import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.tlsf.Tlsf.Semantics;
+import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.StrixHelper.RealizabilitySolverResult;
 
 public class TLSF_Utils {
@@ -127,7 +128,7 @@ public class TLSF_Utils {
 	private static boolean isBasic(File spec) throws IOException, InterruptedException {
 	
 		String cmd = getCommand();
-		cmd += " -p "+spec.getName();
+		cmd += " -p "+ spec.getPath();
 		Process pr = Runtime.getRuntime().exec(cmd);
 		
 		if (pr.waitFor() == 1) return false;
@@ -136,18 +137,13 @@ public class TLSF_Utils {
     	InputStreamReader inread = new InputStreamReader(in);
     	BufferedReader bufferedreader = new BufferedReader(inread);
     	String aux;
-    	boolean basic = false;
-	    while ((aux = bufferedreader.readLine()) != null) {
-	    	if (aux.isEmpty()){
-	    		basic = true;
-	    		break;
-	    	}
-	    }
-		return basic;
+   // 	boolean basic = false;
+    	aux = bufferedreader.readLine();
+    	return aux.length() == 0;
 	}
 
 	public static Tlsf toBasicTLSF(File spec) throws IOException, InterruptedException {
-//		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) );
+//		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) + "File: " + spec.getPath() );
 		if (hasSyfcoSintax(spec)) {
 			if (isBasic(spec)) 
 				return TlsfParser.parse(new FileReader(spec));
@@ -217,21 +213,21 @@ public class TLSF_Utils {
 		if (spec.initially().compareTo(BooleanConstant.TRUE) != 0) {
 			tlsf_spec += "  INITIALLY {\n"
 				+ "    "
-			    + LabelledFormula.of(spec.initially(),spec.variables()) + ";\n"
+			    + LabelledFormula.of(spec.initially().accept(new SolverSyntaxOperatorReplacer()),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
 		if (spec.preset().compareTo(BooleanConstant.TRUE) != 0) {
 			tlsf_spec += "  PRESET {\n"
 				+ "    "
-			    + LabelledFormula.of(spec.preset(),spec.variables()) + ";\n"
+			    + LabelledFormula.of(spec.preset().accept(new SolverSyntaxOperatorReplacer()),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
 		if (spec.require().compareTo(BooleanConstant.TRUE) != 0) {
 			tlsf_spec += "  REQUIRE {\n"
 				+ "    "
-			    + LabelledFormula.of(spec.require(),spec.variables()) + ";\n"
+			    + LabelledFormula.of(spec.require().accept(new SolverSyntaxOperatorReplacer()),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
@@ -239,7 +235,7 @@ public class TLSF_Utils {
 		if (!spec.assert_().isEmpty()) {
 			tlsf_spec += "  ASSERT {\n";
 			for (Formula f : spec.assert_()) {
-				tlsf_spec += "    " + LabelledFormula.of(f,spec.variables()) + ";\n"	;
+				tlsf_spec += "    " + LabelledFormula.of(f.accept(new SolverSyntaxOperatorReplacer()),spec.variables()) + ";\n"	;
 			}
 			tlsf_spec += "  }\n"
 			    + '\n';
@@ -248,7 +244,7 @@ public class TLSF_Utils {
 		if (spec.assume().compareTo(BooleanConstant.TRUE) != 0) {
 			tlsf_spec += "  ASSUMPTIONS {\n"
 				+ "    "
-			    + LabelledFormula.of(spec.assume(),spec.variables()) + ";\n"
+			    + LabelledFormula.of(spec.assume().accept(new SolverSyntaxOperatorReplacer()),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
@@ -257,7 +253,7 @@ public class TLSF_Utils {
 			tlsf_spec += "  GUARANTEES {\n";
 			
 		    for (Formula f : spec.guarantee()) {
-		    	tlsf_spec += "    " + LabelledFormula.of(f,spec.variables()) + ";\n"	;
+		    	tlsf_spec += "    " + LabelledFormula.of(f.accept(new SolverSyntaxOperatorReplacer()),spec.variables()) + ";\n"	;
 		    }
 		    tlsf_spec += "  }\n";
 		}

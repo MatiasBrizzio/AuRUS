@@ -73,7 +73,6 @@ public class StrixHelper {
 		
 		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF((tlsf)));
 		String spec_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
-		//System.out.println(tlsf_string);
 		File file = null;
 		
 		if (Settings.USE_DOCKER)
@@ -82,17 +81,9 @@ public class StrixHelper {
 			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 		//Create the file
 		try {
-			if (file.createNewFile()){
-			  //System.out.println("File is created!");
-			}else{
-			  //System.out.println("File already exists.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
 			writer = new FileWriter(file);
 			writer.write(spec_string);
+			writer.flush();
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,7 +123,7 @@ public class StrixHelper {
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 	    	
 		    while ((aux = bufferedreader.readLine()) != null) {
-//		    	System.out.println(aux);
+		    	//System.out.println(aux);
 		    	if (aux.equals("REALIZABLE")){
 		    		realizable = RealizabilitySolverResult.REALIZABLE;
 		    		break;
