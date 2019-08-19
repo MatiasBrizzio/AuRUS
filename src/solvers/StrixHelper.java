@@ -72,16 +72,12 @@ public class StrixHelper {
 		//Writes the tlsf object into file...
 		
 		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF((tlsf)));
-		String spec_string = null;
-		if (Settings.USE_DOCKER)
-			spec_string = tlsf2.toFormula().toString();
-		else
-			spec_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
+		String spec_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
 		//System.out.println(tlsf_string);
 		File file = null;
 		
 		if (Settings.USE_DOCKER)
-			file = new File("docker/formula.ltl");
+			file = new File("docker/Spec.tlsf");
 		else
 			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 		//Create the file
