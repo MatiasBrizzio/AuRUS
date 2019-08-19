@@ -39,10 +39,10 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	public static final double WON_MODELS_FACTOR = 0.1d;
 //	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.05d;
-	Tlsf originalSpecification = null;
-	SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
-	BigInteger originalNumOfModels;
-	BigInteger originalNegationNumOfModels;
+	public static Tlsf originalSpecification = null;
+	public static SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+	public static BigInteger originalNumOfModels;
+	public static BigInteger originalNegationNumOfModels;
 	
 	public PreciseModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
