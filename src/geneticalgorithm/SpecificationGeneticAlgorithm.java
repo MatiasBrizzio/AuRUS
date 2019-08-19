@@ -27,6 +27,10 @@ public class SpecificationGeneticAlgorithm {
 	public void run(Tlsf spec) throws IOException, InterruptedException{
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
+		if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
+			System.out.println("The specification is already realizable.");
+			return;
+		}
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
