@@ -1,4 +1,4 @@
-FROM strix_image
+FROM rdegiovanni/strix_image:docker_runner
 # Bundle app source
 COPY Spec.tlsf Spec.tlsf
 COPY run-strix.sh run-strix.sh
