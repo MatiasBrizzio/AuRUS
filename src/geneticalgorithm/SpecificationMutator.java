@@ -64,6 +64,7 @@ public class SpecificationMutator {
 					// strengthen mutation
 					new_assume = strengthenFormula(spec.assume(), spec.variables());
 				}
+				
 				new_spec = TLSF_Utils.change_assume(new_spec, new_assume);
 //			}
 //			
@@ -98,12 +99,12 @@ public class SpecificationMutator {
 					// weaken mutation
 					new_guarantees = strengthenFormula(Conjunction.of(spec.guarantee()), spec.variables());
 				}
-				new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
+				
+				if (new_guarantees != BooleanConstant.FALSE)
+					new_spec = TLSF_Utils.change_guarantees(new_spec, Formula_Utils.splitConjunction(new_guarantees));
 //			}
 			
 		}
-		
-
 		
 		return new_spec;
 	}
