@@ -1,0 +1,41 @@
+INFO {
+  TITLE:       "Converted TSL Specification: escalatorsmart"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+GLOBAL {
+  DEFINITIONS {
+    leadsWith(x, y, e) = (G (F ((x && (! (y) W e)))) -> F (e));
+  }
+}
+
+MAIN {
+  INPUTS {
+    PTERMenterEventdbottomb;
+    PTERMenterEventdtopb;
+    PTERMexitEventdbottomb;
+    PTERMexitEventdtopb;
+  }
+
+  OUTPUTS {
+    UTERMstepsmoveDowndb;
+    UTERMstepsmoveUpdb;
+    UTERMstepssteps;
+  }
+
+  ASSERT {
+    (! ((UTERMstepsmoveUpdb && !(UTERMstepssteps || UTERMstepsmoveDowndb)) <-> ((! ((UTERMstepssteps && !(UTERMstepsmoveDowndb)) <-> (UTERMstepsmoveDowndb && !(UTERMstepssteps)))) && !(UTERMstepsmoveUpdb))));
+  }
+
+  GUARANTEE {
+    ((G ((PTERMenterEventdbottomb -> leadsWith(UTERMstepsmoveUpdb, UTERMstepsmoveDowndb, PTERMexitEventdtopb)))) && (G ((PTERMenterEventdtopb -> leadsWith(UTERMstepsmoveDowndb, UTERMstepsmoveUpdb, PTERMexitEventdbottomb))))) -> ((G ((PTERMenterEventdbottomb -> F ((UTERMstepsmoveUpdb U PTERMexitEventdtopb))))) && (G ((PTERMenterEventdtopb -> F ((UTERMstepsmoveDowndb U PTERMexitEventdbottomb))))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

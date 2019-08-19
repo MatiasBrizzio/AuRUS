@@ -1,0 +1,43 @@
+INFO {
+  TITLE:       "Converted TSL Specification: escalatorbidirectional"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMenterEventdbottomb;
+    PTERMenterEventdtopb;
+    PTERMexitEventdbottomb;
+    PTERMexitEventdtopb;
+    PTERMmovingDowndstepsb;
+    PTERMmovingUpdstepsb;
+    PTERMzerodusersb;
+  }
+
+  OUTPUTS {
+    UTERMstepsmoveDowndb;
+    UTERMstepsmoveUpdb;
+    UTERMstepssteps;
+    UTERMstepsstopdb;
+    UTERMusersdecdusersb;
+    UTERMusersincdusersb;
+    UTERMusersusers;
+  }
+
+  ASSERT {
+    (! (((! ((UTERMstepssteps && !(UTERMstepsmoveDowndb)) <-> (UTERMstepsmoveDowndb && !(UTERMstepssteps)))) && !(UTERMstepsstopdb || UTERMstepsmoveUpdb)) <-> ((! ((UTERMstepsstopdb && !(UTERMstepsmoveUpdb)) <-> (UTERMstepsmoveUpdb && !(UTERMstepsstopdb)))) && !(UTERMstepssteps || UTERMstepsmoveDowndb))));
+    (! ((UTERMusersincdusersb && !(UTERMusersusers || UTERMusersdecdusersb)) <-> ((! ((UTERMusersusers && !(UTERMusersdecdusersb)) <-> (UTERMusersdecdusersb && !(UTERMusersusers)))) && !(UTERMusersincdusersb))));
+  }
+
+  GUARANTEE {
+    ((G (! ((PTERMmovingDowndstepsb && PTERMmovingUpdstepsb)))) && (G (! ((PTERMenterEventdtopb && PTERMexitEventdtopb)))) && (G (! ((PTERMenterEventdbottomb && PTERMexitEventdbottomb))))) -> ((G (((((PTERMenterEventdbottomb && ! (PTERMexitEventdtopb)) && ! (PTERMmovingDowndstepsb)) || ((PTERMenterEventdtopb && ! (PTERMexitEventdbottomb)) && ! (PTERMmovingUpdstepsb))) <-> UTERMusersincdusersb))) && (G (((((PTERMexitEventdtopb && ! (PTERMenterEventdbottomb)) && ! (PTERMmovingDowndstepsb)) || ((PTERMexitEventdbottomb && ! (PTERMenterEventdtopb)) && ! (PTERMmovingUpdstepsb))) <-> UTERMusersdecdusersb))) && (G ((UTERMstepsmoveUpdb -> (PTERMzerodusersb && PTERMenterEventdbottomb)))) && (G ((UTERMstepsmoveDowndb -> (PTERMzerodusersb && PTERMenterEventdtopb)))) && (G ((((PTERMzerodusersb && PTERMenterEventdbottomb) && ! (PTERMenterEventdtopb)) -> UTERMstepsmoveUpdb))) && (G ((((PTERMzerodusersb && PTERMenterEventdtopb) && ! (PTERMenterEventdbottomb)) -> UTERMstepsmoveDowndb))) && (G ((((PTERMzerodusersb && PTERMenterEventdbottomb) && PTERMenterEventdtopb) -> (UTERMstepsmoveUpdb || UTERMstepsmoveDowndb)))) && (G (((((! (PTERMzerodusersb) && X (PTERMzerodusersb)) && X (! (PTERMenterEventdtopb))) && X (! (PTERMenterEventdbottomb))) <-> X (UTERMstepsstopdb)))));
+  }
+}
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.
+

@@ -1,0 +1,43 @@
+INFO {
+  TITLE:       "Converted TSL Specification: sliderdelayed"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMcenterdposb;
+    PTERMclickeddbuttonb;
+    PTERMleftMostdposb;
+    PTERMrightMostdposb;
+  }
+
+  OUTPUTS {
+    UTERMposadddposvelb;
+    UTERMpospos;
+    UTERMpossubdposvelb;
+    UTERMscoreadddscoreonedbb;
+    UTERMscorescore;
+    UTERMscorezerodb;
+    UTERMveladddvelonedbb;
+    UTERMvelonedb;
+    UTERMvelvel;
+  }
+
+  ASSERT {
+    (! ((UTERMpospos && !(UTERMpossubdposvelb || UTERMposadddposvelb)) <-> ((! ((UTERMpossubdposvelb && !(UTERMposadddposvelb)) <-> (UTERMposadddposvelb && !(UTERMpossubdposvelb)))) && !(UTERMpospos))));
+    (! ((UTERMscorescore && !(UTERMscorezerodb || UTERMscoreadddscoreonedbb)) <-> ((! ((UTERMscorezerodb && !(UTERMscoreadddscoreonedbb)) <-> (UTERMscoreadddscoreonedbb && !(UTERMscorezerodb)))) && !(UTERMscorescore))));
+    (! ((UTERMvelonedb && !(UTERMvelvel || UTERMveladddvelonedbb)) <-> ((! ((UTERMvelvel && !(UTERMveladddvelonedbb)) <-> (UTERMveladddvelonedbb && !(UTERMvelvel)))) && !(UTERMvelonedb))));
+  }
+
+  GUARANTEE {
+    ((G ((UTERMposadddposvelb -> X (! (PTERMleftMostdposb))))) && (G ((UTERMpossubdposvelb -> X (! (PTERMrightMostdposb)))))) -> ((G ((PTERMleftMostdposb -> F (UTERMposadddposvelb)))) && (G ((PTERMrightMostdposb -> F (UTERMpossubdposvelb)))) && (G (((! (PTERMleftMostdposb) && ! (PTERMrightMostdposb)) -> F ((UTERMpossubdposvelb || UTERMposadddposvelb))))) && (G ((PTERMleftMostdposb -> (! (UTERMpossubdposvelb) W PTERMrightMostdposb)))) && (G ((PTERMrightMostdposb -> (! (UTERMposadddposvelb) W PTERMleftMostdposb)))) && (G (((X (PTERMcenterdposb) && PTERMclickeddbuttonb) <-> X ((UTERMscoreadddscoreonedbb && UTERMveladddvelonedbb))))) && (G (((X (! (PTERMcenterdposb)) && PTERMclickeddbuttonb) <-> X ((UTERMscorezerodb && UTERMvelonedb))))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

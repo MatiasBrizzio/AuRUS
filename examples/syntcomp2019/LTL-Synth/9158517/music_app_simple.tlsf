@@ -1,0 +1,35 @@
+INFO {
+  TITLE:       "Converted TSL Specification: musicappsimple"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMleaveAppdsysb;
+    PTERMpauseButtondsysb;
+    PTERMplayButtondsysb;
+    PTERMresumeAppdsysb;
+  }
+
+  OUTPUTS {
+    UTERMmpOutmpOut;
+    UTERMmpOutpausedmpInb;
+    UTERMmpOutplaydtrtrackPosdmpInbb;
+  }
+
+  ASSERT {
+    (! ((UTERMmpOutpausedmpInb && !(UTERMmpOutplaydtrtrackPosdmpInbb || UTERMmpOutmpOut)) <-> ((! ((UTERMmpOutplaydtrtrackPosdmpInbb && !(UTERMmpOutmpOut)) <-> (UTERMmpOutmpOut && !(UTERMmpOutplaydtrtrackPosdmpInbb)))) && !(UTERMmpOutpausedmpInb))));
+  }
+
+  GUARANTEE {
+    ((G ((PTERMleaveAppdsysb -> (! (PTERMplayButtondsysb) && ! (PTERMpauseButtondsysb))))) && (G (! ((PTERMplayButtondsysb && PTERMpauseButtondsysb)))) && (G (! ((PTERMleaveAppdsysb && PTERMresumeAppdsysb))))) -> ((G ((PTERMplayButtondsysb -> UTERMmpOutplaydtrtrackPosdmpInbb))) && (G ((PTERMpauseButtondsysb -> UTERMmpOutpausedmpInb))) && (G ((UTERMmpOutpausedmpInb -> (PTERMleaveAppdsysb || PTERMpauseButtondsysb)))) && (G ((UTERMmpOutplaydtrtrackPosdmpInbb -> ! (PTERMleaveAppdsysb)))) && (G ((((UTERMmpOutpausedmpInb && PTERMpauseButtondsysb) -> ! (UTERMmpOutplaydtrtrackPosdmpInbb)) W PTERMplayButtondsysb))) && (G ((! (PTERMleaveAppdsysb) W (PTERMleaveAppdsysb && ((UTERMmpOutplaydtrtrackPosdmpInbb && (! (UTERMmpOutpausedmpInb) U PTERMleaveAppdsysb)) -> (UTERMmpOutpausedmpInb && (! (! (PTERMleaveAppdsysb)) W (! (PTERMleaveAppdsysb) && (! (PTERMpauseButtondsysb) -> UTERMmpOutplaydtrtrackPosdmpInbb))))))))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

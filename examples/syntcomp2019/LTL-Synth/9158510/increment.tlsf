@@ -1,0 +1,31 @@
+INFO {
+  TITLE:       "Converted TSL Specification: increment"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMeventdclickb;
+  }
+
+  OUTPUTS {
+    UTERMcountcount;
+    UTERMcountincrementdcountb;
+  }
+
+  ASSERT {
+    (! ((UTERMcountcount && !(UTERMcountincrementdcountb)) <-> (UTERMcountincrementdcountb && !(UTERMcountcount))));
+  }
+
+  GUARANTEE {
+    (G ((PTERMeventdclickb <-> UTERMcountincrementdcountb)));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

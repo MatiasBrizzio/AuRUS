@@ -1,0 +1,39 @@
+INFO {
+  TITLE:       "Converted TSL Specification: escalatorcountinginit"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMenterEventdbottomb;
+    PTERMexitEventdtopb;
+    PTERMzerodusersb;
+  }
+
+  OUTPUTS {
+    UTERMstepsmovedb;
+    UTERMstepssteps;
+    UTERMstepsstopdb;
+    UTERMusersdecdusersb;
+    UTERMusersincdusersb;
+    UTERMusersresetToZerodb;
+    UTERMusersusers;
+  }
+
+  ASSERT {
+    (! ((UTERMstepssteps && !(UTERMstepsstopdb || UTERMstepsmovedb)) <-> ((! ((UTERMstepsstopdb && !(UTERMstepsmovedb)) <-> (UTERMstepsmovedb && !(UTERMstepsstopdb)))) && !(UTERMstepssteps))));
+    (! (((! ((UTERMusersresetToZerodb && !(UTERMusersdecdusersb)) <-> (UTERMusersdecdusersb && !(UTERMusersresetToZerodb)))) && !(UTERMusersusers || UTERMusersincdusersb)) <-> ((! ((UTERMusersusers && !(UTERMusersincdusersb)) <-> (UTERMusersincdusersb && !(UTERMusersusers)))) && !(UTERMusersresetToZerodb || UTERMusersdecdusersb))));
+  }
+
+  GUARANTEE {
+    (UTERMusersresetToZerodb) && (X (G (! (UTERMusersresetToZerodb)))) && (X[ 1] G (((PTERMenterEventdbottomb && ! (PTERMexitEventdtopb)) <-> UTERMusersincdusersb))) && (X[ 1] G (((PTERMexitEventdtopb && ! (PTERMenterEventdbottomb)) <-> UTERMusersdecdusersb))) && (X[ 1] G (((PTERMzerodusersb && PTERMenterEventdbottomb) <-> UTERMstepsmovedb))) && (X[ 1] G ((((! (PTERMzerodusersb) && X (PTERMzerodusersb)) && X (! (PTERMenterEventdbottomb))) <-> X (UTERMstepsstopdb))));
+  }
+}
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.
+

@@ -1,0 +1,33 @@
+INFO {
+  TITLE:       "Converted TSL Specification: sliderdefault"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMleftMostdposb;
+    PTERMrightMostdposb;
+  }
+
+  OUTPUTS {
+    UTERMposadddposvelb;
+    UTERMpospos;
+    UTERMpossubdposvelb;
+  }
+
+  ASSERT {
+    (! ((UTERMpospos && !(UTERMpossubdposvelb || UTERMposadddposvelb)) <-> ((! ((UTERMpossubdposvelb && !(UTERMposadddposvelb)) <-> (UTERMposadddposvelb && !(UTERMpossubdposvelb)))) && !(UTERMpospos))));
+  }
+
+  GUARANTEE {
+    ((G ((UTERMposadddposvelb -> X (! (PTERMleftMostdposb))))) && (G ((UTERMpossubdposvelb -> X (! (PTERMrightMostdposb)))))) -> ((G ((PTERMleftMostdposb -> F (UTERMposadddposvelb)))) && (G ((PTERMrightMostdposb -> F (UTERMpossubdposvelb)))) && (G (((! (PTERMleftMostdposb) && ! (PTERMrightMostdposb)) -> F ((UTERMpossubdposvelb || UTERMposadddposvelb))))) && (G ((PTERMleftMostdposb -> (! (UTERMpossubdposvelb) W PTERMrightMostdposb)))) && (G ((PTERMrightMostdposb -> (! (UTERMposadddposvelb) W PTERMleftMostdposb)))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

@@ -1,0 +1,37 @@
+INFO {
+  TITLE:       "Converted TSL Specification: torcsaccelerating"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMclearAheaddtrackb;
+    PTERMslowdspeedb;
+  }
+
+  OUTPUTS {
+    UTERMaccelaccel;
+    UTERMacceldeacceldb;
+    UTERMaccelspeedUpdb;
+    UTERMbrakesbrakes;
+    UTERMbrakeshitBrakesdb;
+    UTERMbrakesoffBrakesdb;
+  }
+
+  ASSERT {
+    (! ((UTERMacceldeacceldb && !(UTERMaccelspeedUpdb || UTERMaccelaccel)) <-> ((! ((UTERMaccelspeedUpdb && !(UTERMaccelaccel)) <-> (UTERMaccelaccel && !(UTERMaccelspeedUpdb)))) && !(UTERMacceldeacceldb))));
+    (! ((UTERMbrakeshitBrakesdb && !(UTERMbrakesoffBrakesdb || UTERMbrakesbrakes)) <-> ((! ((UTERMbrakesoffBrakesdb && !(UTERMbrakesbrakes)) <-> (UTERMbrakesbrakes && !(UTERMbrakesoffBrakesdb)))) && !(UTERMbrakeshitBrakesdb))));
+  }
+
+  GUARANTEE {
+    (G (((UTERMacceldeacceldb && UTERMbrakeshitBrakesdb) W (PTERMslowdspeedb || PTERMclearAheaddtrackb)))) && (G ((PTERMclearAheaddtrackb -> (UTERMaccelspeedUpdb && UTERMbrakesoffBrakesdb))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

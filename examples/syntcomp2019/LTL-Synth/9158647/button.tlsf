@@ -1,0 +1,34 @@
+INFO {
+  TITLE:       "Converted TSL Specification: button"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMeventdclickb;
+  }
+
+  OUTPUTS {
+    UTERMcountcount;
+    UTERMcountincrementdcountb;
+    UTERMpicpic;
+    UTERMpicrenderButtondcountb;
+  }
+
+  ASSERT {
+    (! ((UTERMcountcount && !(UTERMcountincrementdcountb)) <-> (UTERMcountincrementdcountb && !(UTERMcountcount))));
+    (! ((UTERMpicpic && !(UTERMpicrenderButtondcountb)) <-> (UTERMpicrenderButtondcountb && !(UTERMpicpic))));
+  }
+
+  GUARANTEE {
+    (G ((PTERMeventdclickb <-> UTERMcountincrementdcountb))) && (G (UTERMpicrenderButtondcountb));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

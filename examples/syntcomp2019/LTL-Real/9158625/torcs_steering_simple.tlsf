@@ -1,0 +1,35 @@
+INFO {
+  TITLE:       "Converted TSL Specification: torcssteeringsimple"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMleftOfCenterdtrackPosb;
+    PTERMrightOfCenterdtrackPosb;
+    PTERMturningLeftdangleb;
+    PTERMturningRightdangleb;
+  }
+
+  OUTPUTS {
+    UTERMsteersteer;
+    UTERMsteersteerLeftdb;
+    UTERMsteersteerRightdb;
+  }
+
+  ASSERT {
+    (! ((UTERMsteersteerLeftdb && !(UTERMsteersteerRightdb || UTERMsteersteer)) <-> ((! ((UTERMsteersteerRightdb && !(UTERMsteersteer)) <-> (UTERMsteersteer && !(UTERMsteersteerRightdb)))) && !(UTERMsteersteerLeftdb))));
+  }
+
+  GUARANTEE {
+    ((G ((PTERMrightOfCenterdtrackPosb -> ! (PTERMleftOfCenterdtrackPosb)))) && (G ((PTERMleftOfCenterdtrackPosb -> ! (PTERMrightOfCenterdtrackPosb)))) && (G ((PTERMturningLeftdangleb -> ! (PTERMturningRightdangleb)))) && (G ((PTERMturningRightdangleb -> ! (PTERMturningLeftdangleb))))) -> ((G ((PTERMrightOfCenterdtrackPosb -> UTERMsteersteerLeftdb))) && (G ((PTERMleftOfCenterdtrackPosb -> UTERMsteersteerRightdb))) && (G (((! (PTERMrightOfCenterdtrackPosb) && ! (PTERMleftOfCenterdtrackPosb)) -> ((PTERMturningLeftdangleb <-> UTERMsteersteerLeftdb) && (PTERMturningRightdangleb <-> UTERMsteersteerRightdb))))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

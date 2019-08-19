@@ -1,0 +1,41 @@
+INFO {
+  TITLE:       "Converted TSL Specification: torcssimple"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMgtdrpmcon5500dbb;
+    PTERMltdrpmcon3000dbb;
+    PTERMltdspeedsubdtargetSpeedmultpdabsdsteerbcon1888dbbbb;
+  }
+
+  OUTPUTS {
+    UTERMaccelaccel;
+    UTERMaccelcon0db;
+    UTERMaccelcon0p8db;
+    UTERMgeargear;
+    UTERMgearmaxdcon1dbsubdgearcon1dbbb;
+    UTERMgearmindcon6dbadddgearcon1dbbb;
+    UTERMsteersteer;
+    UTERMsteersteeringdangletrackposb;
+  }
+
+  ASSERT {
+    (! ((UTERMaccelcon0db && !(UTERMaccelcon0p8db || UTERMaccelaccel)) <-> ((! ((UTERMaccelcon0p8db && !(UTERMaccelaccel)) <-> (UTERMaccelaccel && !(UTERMaccelcon0p8db)))) && !(UTERMaccelcon0db))));
+    (! ((UTERMgearmaxdcon1dbsubdgearcon1dbbb && !(UTERMgearmindcon6dbadddgearcon1dbbb || UTERMgeargear)) <-> ((! ((UTERMgearmindcon6dbadddgearcon1dbbb && !(UTERMgeargear)) <-> (UTERMgeargear && !(UTERMgearmindcon6dbadddgearcon1dbbb)))) && !(UTERMgearmaxdcon1dbsubdgearcon1dbbb))));
+    (! ((UTERMsteersteer && !(UTERMsteersteeringdangletrackposb)) <-> (UTERMsteersteeringdangletrackposb && !(UTERMsteersteer))));
+  }
+
+  GUARANTEE {
+    ((G (! ((PTERMgtdrpmcon5500dbb && PTERMltdrpmcon3000dbb)))) && (G (! ((PTERMgtdrpmcon5500dbb && PTERMltdrpmcon3000dbb))))) -> ((G (UTERMsteersteeringdangletrackposb)) && (G ((PTERMltdspeedsubdtargetSpeedmultpdabsdsteerbcon1888dbbbb -> UTERMaccelcon0p8db))) && (G ((! (PTERMltdspeedsubdtargetSpeedmultpdabsdsteerbcon1888dbbbb) -> UTERMaccelcon0db))) && (G ((PTERMgtdrpmcon5500dbb -> UTERMgearmindcon6dbadddgearcon1dbbb))) && (G ((PTERMltdrpmcon3000dbb -> UTERMgearmaxdcon1dbsubdgearcon1dbbb))) && (G (((! (PTERMgtdrpmcon5500dbb) && ! (PTERMltdrpmcon3000dbb)) -> UTERMgeargear))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

@@ -1,0 +1,42 @@
+INFO {
+  TITLE:       "Converted TSL Specification: zoo0"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMactivateddtoggleb;
+    PTERMclickeddcounterButtonb;
+    PTERMclickeddtoggleButtonb;
+  }
+
+  OUTPUTS {
+    UTERMcounterButtoncounterButton;
+    UTERMcounterButtonsetLabeldcounterButtonminusOnedbb;
+    UTERMcounterButtonsetLabeldcounterButtonvalueb;
+    UTERMtoggleoffdb;
+    UTERMtoggleondb;
+    UTERMtoggletoggle;
+    UTERMvalueincdvalueb;
+    UTERMvaluevalue;
+    UTERMvaluezerodb;
+  }
+
+  ASSERT {
+    (! ((UTERMcounterButtonsetLabeldcounterButtonminusOnedbb && !(UTERMcounterButtonsetLabeldcounterButtonvalueb || UTERMcounterButtoncounterButton)) <-> ((! ((UTERMcounterButtonsetLabeldcounterButtonvalueb && !(UTERMcounterButtoncounterButton)) <-> (UTERMcounterButtoncounterButton && !(UTERMcounterButtonsetLabeldcounterButtonvalueb)))) && !(UTERMcounterButtonsetLabeldcounterButtonminusOnedbb))));
+    (! ((UTERMtoggleondb && !(UTERMtoggletoggle || UTERMtoggleoffdb)) <-> ((! ((UTERMtoggletoggle && !(UTERMtoggleoffdb)) <-> (UTERMtoggleoffdb && !(UTERMtoggletoggle)))) && !(UTERMtoggleondb))));
+    (! ((UTERMvaluevalue && !(UTERMvaluezerodb || UTERMvalueincdvalueb)) <-> ((! ((UTERMvaluezerodb && !(UTERMvalueincdvalueb)) <-> (UTERMvalueincdvalueb && !(UTERMvaluezerodb)))) && !(UTERMvaluevalue))));
+  }
+
+  GUARANTEE {
+    (((! (PTERMactivateddtoggleb) W UTERMtoggleondb)) && (G (! ((PTERMclickeddtoggleButtonb && PTERMclickeddcounterButtonb)))) && (G ((UTERMtoggleondb -> X ((PTERMactivateddtoggleb W UTERMtoggleoffdb))))) && (G ((UTERMtoggleoffdb -> X ((! (PTERMactivateddtoggleb) W UTERMtoggleondb)))))) -> ((G ((! (PTERMactivateddtoggleb) <-> UTERMcounterButtonsetLabeldcounterButtonvalueb))) && (G ((PTERMactivateddtoggleb <-> UTERMcounterButtonsetLabeldcounterButtonminusOnedbb))) && (G ((PTERMclickeddtoggleButtonb <-> (PTERMactivateddtoggleb <-> X (! (PTERMactivateddtoggleb)))))) && (G ((PTERMclickeddcounterButtonb <-> UTERMvalueincdvalueb))) && (G (((PTERMactivateddtoggleb && PTERMclickeddtoggleButtonb) <-> UTERMvaluezerodb))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

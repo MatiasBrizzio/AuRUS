@@ -1,0 +1,39 @@
+INFO {
+  TITLE:       "Converted TSL Specification: torcssteeringsmart"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMatSidedtrackPosb;
+    PTERMclearRoaddtrackb;
+    PTERMcloseToBenddtrackb;
+    PTERMstraightdangleb;
+  }
+
+  OUTPUTS {
+    UTERMsteersteer;
+    UTERMsteersteerSidedtrackb;
+    UTERMsteerstraightendangleb;
+    UTERMsteerturnModdtrackb;
+    UTERMxturningdb;
+    UTERMxx;
+  }
+
+  ASSERT {
+    (! (((! ((UTERMsteerstraightendangleb && !(UTERMsteersteer)) <-> (UTERMsteersteer && !(UTERMsteerstraightendangleb)))) && !(UTERMsteerturnModdtrackb || UTERMsteersteerSidedtrackb)) <-> ((! ((UTERMsteerturnModdtrackb && !(UTERMsteersteerSidedtrackb)) <-> (UTERMsteersteerSidedtrackb && !(UTERMsteerturnModdtrackb)))) && !(UTERMsteerstraightendangleb || UTERMsteersteer))));
+    (! ((UTERMxturningdb && !(UTERMxx)) <-> (UTERMxx && !(UTERMxturningdb))));
+  }
+
+  GUARANTEE {
+    ((! (UTERMxturningdb) W ! (PTERMclearRoaddtrackb))) && (G (((! (UTERMxturningdb) && X (! (PTERMclearRoaddtrackb))) -> X ((((UTERMxturningdb && UTERMsteersteerSidedtrackb) W PTERMatSidedtrackPosb) && (F (PTERMatSidedtrackPosb) -> (! (PTERMatSidedtrackPosb) U (PTERMatSidedtrackPosb && (((UTERMxturningdb && UTERMsteerstraightendangleb) W PTERMstraightdangleb) && (F (PTERMstraightdangleb) -> (! (PTERMstraightdangleb) U (PTERMstraightdangleb && (((UTERMxturningdb && UTERMsteersteer) W PTERMcloseToBenddtrackb) && (F (PTERMcloseToBenddtrackb) -> (! (PTERMcloseToBenddtrackb) U (PTERMcloseToBenddtrackb && (((UTERMxturningdb && UTERMsteerturnModdtrackb) W PTERMclearRoaddtrackb) && (F (PTERMclearRoaddtrackb) -> (! (PTERMclearRoaddtrackb) U (PTERMclearRoaddtrackb && (! (UTERMxturningdb) W ! (PTERMclearRoaddtrackb))))))))))))))))))))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

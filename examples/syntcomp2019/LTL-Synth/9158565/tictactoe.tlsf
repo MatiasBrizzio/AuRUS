@@ -1,0 +1,101 @@
+INFO {
+  TITLE:       "Tic Tac Toe"
+  DESCRIPTION: "Infinite Duration Tic Tac Toe Game
+
+The benchmark describes an infinite duration Tic Tac Toe game. The
+input player sets crosses and the output player circles. We use a
+Boolean variable for each field and each player, which signals whether
+the field is marked by a cross or a circle, respectively. Initially,
+all fields are empty. Players then alternate between picking a free
+field and filling it up by their marker. The game is over whenever the
+grid is completely filled up. Afterwards it is restarted by clearing
+all positions. The system player does not need to win the game, he
+also can produce a draw. It only must be ensured that the input player
+never wins."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+GLOBAL {
+  DEFINITIONS {
+    // field positions
+    nw = 0; // north west field
+    n  = 1; // north field
+    ne = 2; // north east field
+    w  = 3; // west field
+    c  = 4; // center field
+    e  = 5; // east field
+    sw = 6; // south west field
+    s  = 7; // south field
+    se = 8; // south east field
+  }
+}
+
+MAIN {
+  INPUTS {
+    cross[9];
+  }
+
+  OUTPUTS {
+    circle[9];
+  }
+
+  INITIALLY {
+    &&[0 <= i <= 8]
+      ! cross[i];
+  }
+
+  PRESET {
+    &&[0 <= i <= 8]
+      ! circle[i];
+  }
+
+  REQUIRE {
+    // the input player can only choose one field per round
+    &&[0 <= i <= 8]
+      ((!cross[i] && X cross[i])
+       -> (  (&&[0 <= j < i] (cross[i] <-> X cross[i]))
+          && (&&[i < j <= 8] (cross[i] <-> X cross[i]))));
+
+    // the input player has to choose a single free field per round
+    // until the  game is over
+    (||[0 <= i <= 8] (!cross[i] && !circle[i] && X cross[i]))
+      U (&&[0 <= i <= 8] ! (cross[i] <-> circle[i]));
+
+    // reset after the game has finished
+    (&&[0 <= i <= 8] ! (cross[i] <-> circle[i]))
+      -> (X &&[0 <= i <= 8] ! cross[i]);
+  }
+
+  ASSERT {
+    // the output player can only choose one field per round
+    &&[0 <= i <= 8]
+      ((!circle[i] && X circle[i])
+       -> (  (&&[0 <= j < i] (circle[i] <-> X circle[i]))
+          && (&&[i < j <= 8] (circle[i] <-> X circle[i]))));
+
+    // the input player has to choose a single free field per round
+    // until the  game is over
+    (||[0 <= i <= 8] (!circle[i] && !cross[i] && X circle[i]))
+      U (&&[0 <= i <= 8] ! (cross[i] <-> circle[i]));
+
+    // reset after the game has finished
+    (&&[0 <= i <= 8] ! (cross[i] <-> circle[i]))
+      -> (X &&[0 <= i <= 8] ! circle[i]);
+
+    // the input player never wins
+    ! ( (cross[nw] && cross[n] && cross[ne]) ||
+        (cross[w]  && cross[c] && cross[e])  ||
+        (cross[sw] && cross[s] && cross[se]) ||
+        (cross[nw] && cross[w] && cross[sw]) ||
+        (cross[n]  && cross[c] && cross[s])  ||
+        (cross[ne] && cross[e] && cross[se]) ||
+        (cross[nw] && cross[c] && cross[se]) ||
+        (cross[sw] && cross[c] && cross[ne]) );
+  }
+}
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

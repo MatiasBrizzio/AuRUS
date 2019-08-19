@@ -1,0 +1,32 @@
+INFO {
+  TITLE:       "Converted TSL Specification: torcsgearing"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMaccelingdaccelbrakesb;
+  }
+
+  OUTPUTS {
+    UTERMgeargear;
+    UTERMgearshiftByRPMdgearrpmb;
+    UTERMgearshiftBySpeeddgearspeedb;
+  }
+
+  ASSERT {
+    (! ((UTERMgearshiftByRPMdgearrpmb && !(UTERMgearshiftBySpeeddgearspeedb || UTERMgeargear)) <-> ((! ((UTERMgearshiftBySpeeddgearspeedb && !(UTERMgeargear)) <-> (UTERMgeargear && !(UTERMgearshiftBySpeeddgearspeedb)))) && !(UTERMgearshiftByRPMdgearrpmb))));
+  }
+
+  GUARANTEE {
+    (G ((! (PTERMaccelingdaccelbrakesb) -> UTERMgeargear))) && (G (((! (PTERMaccelingdaccelbrakesb) && X (PTERMaccelingdaccelbrakesb)) -> X (UTERMgearshiftBySpeeddgearspeedb)))) && (G (((PTERMaccelingdaccelbrakesb && X (PTERMaccelingdaccelbrakesb)) -> X (UTERMgearshiftByRPMdgearrpmb))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

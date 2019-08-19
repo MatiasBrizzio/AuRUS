@@ -1,0 +1,41 @@
+INFO {
+  TITLE:       "Converted TSL Specification: torcssteeringimproved"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMleftOfCenterdtrackPosb;
+    PTERMrightOfCenterdtrackPosb;
+    PTERMturningLeftdangleb;
+    PTERMturningRightdangleb;
+  }
+
+  OUTPUTS {
+    UTERMmodecenteringdb;
+    UTERMmodekeepdb;
+    UTERMmodemode;
+    UTERMmodestraightendb;
+    UTERMsteersteer;
+    UTERMsteersteerLeftdangleb;
+    UTERMsteersteerRightdangleb;
+    UTERMsteersteerStraightdb;
+  }
+
+  ASSERT {
+    (! (((! ((UTERMmodemode && !(UTERMmodecenteringdb)) <-> (UTERMmodecenteringdb && !(UTERMmodemode)))) && !(UTERMmodestraightendb || UTERMmodekeepdb)) <-> ((! ((UTERMmodestraightendb && !(UTERMmodekeepdb)) <-> (UTERMmodekeepdb && !(UTERMmodestraightendb)))) && !(UTERMmodemode || UTERMmodecenteringdb))));
+    (! (((! ((UTERMsteersteerRightdangleb && !(UTERMsteersteer)) <-> (UTERMsteersteer && !(UTERMsteersteerRightdangleb)))) && !(UTERMsteersteerStraightdb || UTERMsteersteerLeftdangleb)) <-> ((! ((UTERMsteersteerStraightdb && !(UTERMsteersteerLeftdangleb)) <-> (UTERMsteersteerLeftdangleb && !(UTERMsteersteerStraightdb)))) && !(UTERMsteersteerRightdangleb || UTERMsteersteer))));
+  }
+
+  GUARANTEE {
+    ((G ((PTERMrightOfCenterdtrackPosb -> ! (PTERMleftOfCenterdtrackPosb)))) && (G ((PTERMleftOfCenterdtrackPosb -> ! (PTERMrightOfCenterdtrackPosb)))) && (G ((PTERMturningLeftdangleb -> ! (PTERMturningRightdangleb)))) && (G ((PTERMturningRightdangleb -> ! (PTERMturningLeftdangleb))))) -> ((G (((UTERMmodecenteringdb || UTERMmodestraightendb) || UTERMmodekeepdb))) && (G ((UTERMmodecenteringdb -> (((((UTERMmodecenteringdb W (! (PTERMrightOfCenterdtrackPosb) && ! (PTERMleftOfCenterdtrackPosb))) && (PTERMrightOfCenterdtrackPosb -> UTERMsteersteerLeftdangleb)) && (PTERMleftOfCenterdtrackPosb -> UTERMsteersteerRightdangleb)) && (X (! (PTERMrightOfCenterdtrackPosb)) && X (! (PTERMleftOfCenterdtrackPosb)))) -> X (UTERMmodestraightendb))))) && (G ((UTERMmodestraightendb -> (((((UTERMmodestraightendb W (! (PTERMturningLeftdangleb) && ! (PTERMturningRightdangleb))) && (PTERMturningLeftdangleb -> UTERMsteersteerRightdangleb)) && (PTERMturningRightdangleb -> UTERMsteersteerLeftdangleb)) && (X (! (PTERMturningLeftdangleb)) && X (! (PTERMturningRightdangleb)))) -> X (UTERMmodekeepdb))))) && (G ((UTERMmodekeepdb -> (UTERMsteersteerStraightdb && ((X (PTERMleftOfCenterdtrackPosb) || X (PTERMrightOfCenterdtrackPosb)) -> X (UTERMmodecenteringdb)))))));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

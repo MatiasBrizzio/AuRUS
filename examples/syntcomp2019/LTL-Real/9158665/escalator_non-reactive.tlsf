@@ -1,0 +1,28 @@
+INFO {
+  TITLE:       "Converted TSL Specification: escalatornon-reactive"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+
+  OUTPUTS {
+    UTERMstepsmovedb;
+    UTERMstepssteps;
+  }
+
+  ASSERT {
+    (! ((UTERMstepsmovedb && !(UTERMstepssteps)) <-> (UTERMstepssteps && !(UTERMstepsmovedb))));
+  }
+
+  GUARANTEE {
+    (G (UTERMstepsmovedb));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.

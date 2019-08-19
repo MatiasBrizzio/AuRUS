@@ -1,0 +1,33 @@
+INFO {
+  TITLE:       "Converted TSL Specification: escalatornon-counting"
+  DESCRIPTION: "TSL specification, which has been converted to TLSF."
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    PTERMenterEventdbottomb;
+    PTERMexitEventdtopb;
+  }
+
+  OUTPUTS {
+    UTERMstepsmovedb;
+    UTERMstepssteps;
+    UTERMstepsstopdb;
+  }
+
+  ASSERT {
+    (! ((UTERMstepssteps && !(UTERMstepsstopdb || UTERMstepsmovedb)) <-> ((! ((UTERMstepsstopdb && !(UTERMstepsmovedb)) <-> (UTERMstepsmovedb && !(UTERMstepsstopdb)))) && !(UTERMstepssteps))));
+  }
+
+  GUARANTEE {
+    (G (((PTERMenterEventdbottomb && ! (PTERMexitEventdtopb)) <-> UTERMstepsmovedb))) && (G (((PTERMexitEventdtopb && ! (PTERMenterEventdbottomb)) <-> UTERMstepsstopdb)));
+  }
+}
+
+
+//#!SYNTCOMP
+//STATUS : realizable
+//REF_SIZE : -1
+//#.
