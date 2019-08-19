@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import geneticalgorithm.Settings;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
@@ -30,6 +31,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-MR=")){
 				mutationRate = Integer.parseInt(args[i].replace("-MR=", ""));
+			}
+			else if(args[i].startsWith("-no-docker")){
+				Settings.USE_DOCKER = false;
 			}
 			else if(args[i].startsWith("-") || !args[i].endsWith(".tlsf")){
 				correctUssage();

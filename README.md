@@ -4,18 +4,18 @@ This README would normally document whatever steps are necessary to get your app
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Tool to generate "repair" unrealizable specifications
 
 ### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* Install Docker
+* Move to lib and run: `docker build -t strix_image .`
+* Run: `docker-machine create default`
+* Run: `docker-machine env --shell cmd default`
+
+
+### How do I run the tool? ###
+* Run: `./unreal-repair-docker.sh`
 
 ### Contribution guidelines ###
 

@@ -13,33 +13,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import geneticalgorithm.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.tlsf.Tlsf.Semantics;
+import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 
-public class StrixHelper {
+public class StrixDockerHelper {
 
 	private static FileWriter writer;
 	private static int TIMEOUT = 100;
 	
-	
-	public static enum RealizabilitySolverResult {
-		REALIZABLE,
-		UNREALIZABLE,
-		TIMEOUT,
-		ERROR;
-		public boolean inconclusive () { return this == TIMEOUT || this == ERROR; }
-	}
-	
+
 	/**
 	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
 	 * @param tlsf a TLSF File containing all tlsf specifiaction
-	 * @return {@link solvers.StrixHelper.RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
+	 * @return {@link solvers.StrixDockerHelper.RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
@@ -72,18 +64,10 @@ public class StrixHelper {
 		//Writes the tlsf object into file...
 		
 		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF((tlsf)));
-		String spec_string = null;
-		if (Settings.USE_DOCKER)
-			spec_string = tlsf2.toFormula().toString();
-		else
-			spec_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
+		LabelledFormula formula = tlsf2.toFormula();
+		String formula_string = formula.toString();
 		//System.out.println(tlsf_string);
-		File file = null;
-		
-		if (Settings.USE_DOCKER)
-			file = new File("docker/formula.ltl");
-		else
-			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
+		File file = new File("docker/formula.ltl");
 		//Create the file
 		try {
 			if (file.createNewFile()){
@@ -96,7 +80,7 @@ public class StrixHelper {
 		}
 		try {
 			writer = new FileWriter(file);
-			writer.write(spec_string);
+			writer.write(formula_string);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -112,11 +96,7 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
-		Process pr = null;
-		if (Settings.USE_DOCKER)
-			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh"});
-		else
-			pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
+		Process pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh"});
 		boolean timeout = false;
 		if(!pr.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
