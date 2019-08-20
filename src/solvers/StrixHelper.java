@@ -25,7 +25,7 @@ import tlsf.TLSF_Utils;
 public class StrixHelper {
 
 	private static FileWriter writer;
-	private static int TIMEOUT = 100;
+	private static int TIMEOUT = 180;
 	
 	
 	public static enum RealizabilitySolverResult {

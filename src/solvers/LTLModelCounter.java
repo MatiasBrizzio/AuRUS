@@ -27,7 +27,7 @@ public class LTLModelCounter {
 	public static int numOfTimeout = 0;
 	public static int numOfError = 0;
 	public static int numOfCalls = 0;
-	public static int TIMEOUT = 10;
+	public static int TIMEOUT = 30;
 	
 	public static String getCommand(){
 		String cmd = "";
