@@ -106,7 +106,7 @@ public class SpecificationGeneticAlgorithm {
 						// If fitness is satisfying 
 						if (best.status == SPEC_STATUS.REALIZABLE && bestFit >= threshold) {
 							// we save the best solutions as one in the boundary
-							if (!solutions.contains(best.spec))
+							if (!solutions.contains(best))
 								solutions.add(best);
 							// we can stop Genetic algorithm
 //							ga.terminate(); 
