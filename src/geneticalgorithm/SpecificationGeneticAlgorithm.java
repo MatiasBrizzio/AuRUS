@@ -23,7 +23,7 @@ public class SpecificationGeneticAlgorithm {
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	
-	public static List<Tlsf> solutions = new LinkedList<>();
+	public static List<SpecificationChromosome> solutions = new LinkedList<>();
 	public static List<Tlsf> bestSolutions = new LinkedList<>();
 	
 	public void run(Tlsf spec) throws IOException, InterruptedException{
@@ -48,9 +48,12 @@ public class SpecificationGeneticAlgorithm {
 		long finalTime = System.currentTimeMillis();
 		
 		System.out.println("Realizable Specifications:" );
-		for (Tlsf tlsf : solutions)
-			System.out.println(TLSF_Utils.toTLSF(tlsf));
-		
+		for (int i = 0; i < solutions.size(); i++) {
+			SpecificationChromosome s = solutions.get(i);
+			System.out.println();
+			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
+			System.out.println(TLSF_Utils.toTLSF(s.spec));
+		}
 		long totalTime = finalTime-initialTime;
 		int min = (int) (totalTime)/60000;
 		int sec = (int) (totalTime - min*60000)/1000;
@@ -104,7 +107,7 @@ public class SpecificationGeneticAlgorithm {
 						if (best.status == SPEC_STATUS.REALIZABLE && bestFit >= threshold) {
 							// we save the best solutions as one in the boundary
 							if (!solutions.contains(best.spec))
-								solutions.add(best.spec);
+								solutions.add(best);
 							// we can stop Genetic algorithm
 //							ga.terminate(); 
 						}
