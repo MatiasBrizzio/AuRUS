@@ -1,5 +1,3 @@
-import "../patterns/DwyerPatterns.spectra"
-
 // basic alur example
 
 module Alur

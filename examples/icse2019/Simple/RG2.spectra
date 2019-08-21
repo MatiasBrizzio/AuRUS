@@ -1,4 +1,3 @@
-import "../patterns/DwyerPatterns.spectra"
 module Chatt
 
 env boolean r;
