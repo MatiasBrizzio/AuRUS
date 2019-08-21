@@ -3,14 +3,22 @@ package solvers;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import owl.ltl.Formula;
+import owl.ltl.LabelledFormula;
+import owl.ltl.parser.SpectraParser;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
+import owl.ltl.spectra.*;
 
 class StrixHelperTest {
 	 private static final String TLSFFULL = "INFO {\n" 
@@ -251,5 +259,18 @@ class StrixHelperTest {
 	void testCheckRealizabilit95() throws IOException, InterruptedException {
 		assertTrue(StrixHelper.checkRealizability(new File("examples/tictactoe.tlsf")).equals(RealizabilitySolverResult.REALIZABLE));
 	}
+	
+	 @Test
+	void testSpectra() throws IOException, InterruptedException {
+		 Spectra spectra = SpectraParser.parse(new FileReader("examples/HumanoidLTL_458_Humanoid_fixed_unrealizable.spectra"));	 
+		 assertTrue(StrixHelper.checkRealizability(spectra).equals(RealizabilitySolverResult.UNREALIZABLE));
+	}
+	 
+	void testSpectra2() throws IOException, InterruptedException {
+		 Spectra spectra = SpectraParser.parse(new FileReader("examples/PCarLTL_Unrealizable_V_2_unrealizable.0_888_PCar_fixed_unrealizable.spectra"));	 
+		 assertTrue(StrixHelper.checkRealizability(spectra).equals(RealizabilitySolverResult.UNREALIZABLE));
+	}
+	 
+
 
 }
