@@ -19,7 +19,9 @@ import java.util.Set;
 
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
+import owl.ltl.FOperator;
 import owl.ltl.Formula;
+import owl.ltl.GOperator;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.SpectraParser;
 import owl.ltl.parser.TlsfParser;
@@ -154,7 +156,7 @@ public class TLSF_Utils {
 			Tlsf tlsf = TLSF_Utils.fromSpectra(spectra);
 			String tlsf_name = spec.getAbsolutePath().replace(".spectra", ".tlsf");
 			FileWriter out = new FileWriter(tlsf_name);
-			out.write(tlsf.toString());
+			out.write(toTLSF(tlsf));
 			out.close();
 			spec = new File(tlsf_name);
 		}
@@ -1214,7 +1216,7 @@ public class TLSF_Utils {
 		if (!spec.psiE().isEmpty()) {
 			new_tlsf_spec += "  REQUIRE {\n"
 				+ "    "
-			    + LabelledFormula.of(Conjunction.of(spec.psiE()),spec.variables()) + ";\n"
+			    + LabelledFormula.of(GOperator.of(Conjunction.of(spec.psiE())),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
@@ -1222,7 +1224,7 @@ public class TLSF_Utils {
 		if (!spec.psiS().isEmpty()) {
 			new_tlsf_spec += "  ASSERT {\n"
 			+ "    "
-			+LabelledFormula.of(Conjunction.of(spec.psiS()),spec.variables()) + ";\n"
+			+LabelledFormula.of(GOperator.of(Conjunction.of(spec.psiS())),spec.variables()) + ";\n"
 			+"  }\n"
 			+ '\n';
 		}
@@ -1230,7 +1232,7 @@ public class TLSF_Utils {
 		if (!spec.phiE().isEmpty()) {
 			new_tlsf_spec += "  ASSUMPTIONS {\n";
 		    for(Formula a : spec.phiE())
-		    	new_tlsf_spec += "    " + LabelledFormula.of(a,spec.variables()) + ";\n";
+		    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(a)),spec.variables()) + ";\n";
 			new_tlsf_spec += "  }\n"
 							+ '\n';
 		}
@@ -1239,7 +1241,7 @@ public class TLSF_Utils {
 			new_tlsf_spec += "  GUARANTEES {\n";
 			
 		    for (Formula f : spec.phiS()) {
-		    	new_tlsf_spec += "    " + LabelledFormula.of(f,spec.variables()) + ";\n"	;
+		    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(f)),spec.variables()) + ";\n"	;
 		    }
 		    new_tlsf_spec += "  }\n";
 		}
