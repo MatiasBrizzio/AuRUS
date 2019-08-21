@@ -22,6 +22,7 @@ package tlsf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,9 +51,12 @@ import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaMutator;
 import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
+import solvers.StrixHelper;
+import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
 import owl.ltl.rewriter.NormalForms;
+import owl.ltl.spectra.Spectra;
 
 class TlsfParserTest {
 	
@@ -433,7 +438,12 @@ class TlsfParserTest {
 //	    Tlsf tlsf = TlsfParser.parse(f);
 	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 //	  Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
-	  System.out.println(TLSF_Utils.toTLSF(tlsf));
+	  System.out.println(tlsf.toFormula());
+	  
+	  System.out.println(tlsf.assert_());
+	  System.out.println(tlsf.guarantee());
+	  System.out.println(tlsf.toAssertGuaranteeConjuncts());
+	  System.out.println(tlsf.toFormula());
 	  
   }
   
@@ -478,7 +488,7 @@ class TlsfParserTest {
   @Test
   void testFormulas() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("G ( (a | b) & (a | c))",vars);
+	  LabelledFormula f =  LtlParser.parse(" G(false)",vars);
 	  System.out.println(f);
 	  System.out.println(f.formula().subformulas(TemporalOperator.class));
       System.out.println(Formula_Utils.subformulas(f));
@@ -489,11 +499,17 @@ class TlsfParserTest {
   @Test
   void testSplitConjunction() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("F (true)",vars);
+	  LabelledFormula f =  LtlParser.parse("a && G(a)",vars);
 	  System.out.println(f);
 	  System.out.println(f.nnf());
       System.out.println(NormalForms.toCnf(f.formula()));
   }
   
-  
+	@Test
+	void testSpectra1() throws IOException, InterruptedException {
+		 Spectra spectra = SpectraParser.parse(new FileReader("examples/HumanoidLTL_458_Humanoid_fixed_unrealizable.spectra"));	 
+		 Tlsf spec = TLSF_Utils.fromSpectra(spectra);
+		 System.out.println(spec);
+	}
+	 
 }

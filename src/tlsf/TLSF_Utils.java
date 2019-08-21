@@ -18,8 +18,10 @@ import java.util.Map;
 import java.util.Set;
 
 import owl.ltl.BooleanConstant;
+import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
+import owl.ltl.parser.SpectraParser;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
@@ -142,9 +144,21 @@ public class TLSF_Utils {
     	aux = bufferedreader.readLine();
     	return aux.length() == 0;
 	}
+	
+	
 
 	public static Tlsf toBasicTLSF(File spec) throws IOException, InterruptedException {
 //		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) + "File: " + spec.getPath() );
+		if (spec.getAbsolutePath().endsWith("spectra")) {
+			Spectra spectra = SpectraParser.parse(new FileReader(spec));
+			Tlsf tlsf = TLSF_Utils.fromSpectra(spectra);
+			String tlsf_name = spec.getAbsolutePath().replace(".spectra", ".tlsf");
+			FileWriter out = new FileWriter(tlsf_name);
+			out.write(tlsf.toString());
+			out.close();
+			spec = new File(tlsf_name);
+		}
+		
 		if (hasSyfcoSintax(spec)) {
 			if (isBasic(spec)) 
 				return TlsfParser.parse(new FileReader(spec));
@@ -167,6 +181,7 @@ public class TLSF_Utils {
 		String tlsf =  adaptTLSFSpec(TlsfParser.parse(new FileReader(new File(tlsfBasic))));
 		return TlsfParser.parse(tlsf);
 	}
+
 	
 	public static String toTLSF(Tlsf spec) {
 		String tlsf_spec = "INFO {\n"
@@ -1180,21 +1195,61 @@ public class TLSF_Utils {
 		new_tlsf_spec += "\n"
 			    + "  }\n"
 			    + '\n';
+		//init
 		
-		new_tlsf_spec += "  ASSUMPTIONS {\n";
-	   	new_tlsf_spec += "    " + "true"+ ";\n";
-	   	new_tlsf_spec += "  }\n";
-		new_tlsf_spec += "  GUARANTEES {\n";
-		   	new_tlsf_spec += "    " + toSolverSyntax(spec.toFormula()) + ";\n";
-		
-		new_tlsf_spec += "  }\n";
+		if (!spec.thetaE().isEmpty()) {
+			new_tlsf_spec += "  INITIALLY {\n"
+				+ "    "
+			    + LabelledFormula.of(Conjunction.of(spec.thetaE()),spec.variables()) + ";\n"
+			    + "  }\n"
+			    + '\n';
+		}
+		if (!spec.thetaS().isEmpty()) {
+			new_tlsf_spec += "  PRESET {\n"
+				+ "    "
+			    + LabelledFormula.of(Conjunction.of(spec.thetaS()),spec.variables()) + ";\n"
+			    + "  }\n"
+			    + '\n';
+		}
+		if (!spec.psiE().isEmpty()) {
+			new_tlsf_spec += "  REQUIRE {\n"
+				+ "    "
+			    + LabelledFormula.of(Conjunction.of(spec.psiE()),spec.variables()) + ";\n"
+			    + "  }\n"
+			    + '\n';
+		}
+			  
+		if (!spec.psiS().isEmpty()) {
+			new_tlsf_spec += "  ASSERT {\n"
+			+ "    "
+			+LabelledFormula.of(Conjunction.of(spec.psiS()),spec.variables()) + ";\n"
+			+"  }\n"
+			+ '\n';
+		}
+
+		if (!spec.phiE().isEmpty()) {
+			new_tlsf_spec += "  ASSUMPTIONS {\n";
+		    for(Formula a : spec.phiE())
+		    	new_tlsf_spec += "    " + LabelledFormula.of(a,spec.variables()) + ";\n";
+			new_tlsf_spec += "  }\n"
+							+ '\n';
+		}
+
+		if (!spec.phiS().isEmpty()) {
+			new_tlsf_spec += "  GUARANTEES {\n";
+			
+		    for (Formula f : spec.phiS()) {
+		    	new_tlsf_spec += "    " + LabelledFormula.of(f,spec.variables()) + ";\n"	;
+		    }
+		    new_tlsf_spec += "  }\n";
+		}
+		else {
+			new_tlsf_spec += "  GUARANTEES {\n    true; \n}\n";
+		}
 		
 		new_tlsf_spec += '}';
 		
-		for (String v : spec.variables()) 
-			new_tlsf_spec = new_tlsf_spec.replaceAll(v, v.toLowerCase());	
-		System.out.println(new_tlsf_spec);
-		return TlsfParser.parse((new_tlsf_spec));
+		return TlsfParser.parse(new_tlsf_spec);
 	}
 	
 	
