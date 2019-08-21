@@ -12,7 +12,7 @@ sys boolean v;
 
 
 gar
-pRespondsToS(r, next(g));
+	G(r -> F(next(g)));
 	
 gar ungrant:
 	G ((c | g) ->next(!g));

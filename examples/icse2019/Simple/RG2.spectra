@@ -6,7 +6,7 @@ env boolean c;
 sys boolean g;
 
 gar
-	pRespondsToS(r, next(g));
+	G(r -> F(next(g)));
 	
 gar
 	G ((c | g) -> next(!g));
