@@ -209,9 +209,9 @@ public class StrixHelper {
 	 */
 	private static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
 		Process pr = null;
-		//if (Settings.USE_DOCKER)
-			//pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh"});
-		//else
+		if (Settings.USE_DOCKER)
+			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh"});
+		else
 			pr = Runtime.getRuntime().exec( new String[]{"lib/new_strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
 		boolean timeout = false;
 		if(!pr.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
