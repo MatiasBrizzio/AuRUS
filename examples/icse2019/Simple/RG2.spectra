@@ -1,3 +1,4 @@
+import "../patterns/DwyerPatterns.spectra"
 module Chatt
 
 env boolean r;
@@ -5,7 +6,7 @@ env boolean c;
 sys boolean g;
 
 gar
-	G(r -> F(next(g)));
+	pRespondsToS(r, next(g));
 	
 gar
 	G ((c | g) -> next(!g));
