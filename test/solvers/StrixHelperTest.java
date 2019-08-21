@@ -213,7 +213,7 @@ class StrixHelperTest {
 			"  }\n" + 
 			"}";
 	
-	@Test
+	/*@Test
 	void testCheckRealizability() throws IOException, InterruptedException {
 		 assertTrue(StrixHelper.checkRealizability(TLSFFULL).equals(RealizabilitySolverResult.REALIZABLE));
 	}
@@ -269,6 +269,12 @@ class StrixHelperTest {
 	void testSpectra2() throws IOException, InterruptedException {
 		 Spectra spectra = SpectraParser.parse(new FileReader("examples/PCarLTL_Unrealizable_V_2_unrealizable.0_888_PCar_fixed_unrealizable.spectra"));	 
 		 assertTrue(StrixHelper.checkRealizability(spectra).equals(RealizabilitySolverResult.UNREALIZABLE));
+	}*/
+	
+	@Test
+	void testSpectra3() throws IOException, InterruptedException {
+		 Spectra spectra = SpectraParser.parse(new FileReader("examples/HumanoidLTL_458_Humanoid_fixed_unrealizable.spectra"));	 
+		 assertTrue(StrixHelper.checkRealizability(TLSF_Utils.fromSpectra(spectra)).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 	 
 

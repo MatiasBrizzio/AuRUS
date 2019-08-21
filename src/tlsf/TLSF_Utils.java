@@ -21,6 +21,7 @@ import owl.ltl.BooleanConstant;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
+import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.tlsf.Tlsf.Semantics;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
@@ -1151,5 +1152,50 @@ public class TLSF_Utils {
 	        line = line.replace(key, replacements.get(key));    
 		return line;
 	}
+	
+	public static Tlsf fromSpectra(Spectra spec) {
+		String new_tlsf_spec = "INFO {\n"
+			    + "  TITLE:       " + "\"" + spec.title() + "\"" + "\n"
+			    + "  DESCRIPTION: " + "\""+ "empty description" + "\""+ "\n";			    
+					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
+					new_tlsf_spec += "  TARGET:   Mealy\n";
+				new_tlsf_spec += "}\n"
+			    + '\n'
+			    + "MAIN {\n"
+			    + "  INPUTS {\n"
+			    + "    ";
+		int i = 0;
+		while (spec.inputs().get(i)) {
+			new_tlsf_spec += spec.variables().get(i) + ";";
+			i++;
+		}
+		new_tlsf_spec += "\n"
+			    + "  }\n"
+			    + "  OUTPUTS {\n"
+			    + "    ";
+		while (spec.outputs().get(i)) {
+			new_tlsf_spec += spec.variables().get(i) + ";";
+			i++;
+		}
+		new_tlsf_spec += "\n"
+			    + "  }\n"
+			    + '\n';
+		
+		new_tlsf_spec += "  ASSUMPTIONS {\n";
+	   	new_tlsf_spec += "    " + "true"+ ";\n";
+	   	new_tlsf_spec += "  }\n";
+		new_tlsf_spec += "  GUARANTEES {\n";
+		   	new_tlsf_spec += "    " + toSolverSyntax(spec.toFormula()) + ";\n";
+		
+		new_tlsf_spec += "  }\n";
+		
+		new_tlsf_spec += '}';
+		
+		for (String v : spec.variables()) 
+			new_tlsf_spec = new_tlsf_spec.replaceAll(v, v.toLowerCase());	
+		System.out.println(new_tlsf_spec);
+		return TlsfParser.parse((new_tlsf_spec));
+	}
+	
 	
 }
