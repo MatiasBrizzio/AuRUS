@@ -35,7 +35,7 @@ public class Main {
 			else if(args[i].startsWith("-no-docker")){
 				Settings.USE_DOCKER = false;
 			}
-			else if(args[i].startsWith("-") || !args[i].endsWith(".tlsf") || !args[i].endsWith(".spectra")){
+			else if(args[i].startsWith("-") || (!args[i].endsWith(".tlsf") && !args[i].endsWith(".spectra"))){
 				correctUssage();
 				return;
 			}
