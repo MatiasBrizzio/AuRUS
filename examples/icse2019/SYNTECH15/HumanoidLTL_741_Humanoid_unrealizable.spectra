@@ -1,0 +1,216 @@
+module Humanoid
+		env {CLEAR, BLOCKED} Obstacle ;
+		env {QUIET, NOISE} Noise ;
+		env {N,SO} Heading;
+		env {FREE, PRESSED} Button ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} LeftMotor ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} RightMotor ;
+		sys {FWD, BWD, STOP} HeadMotor ;
+		sys {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2} nextMoveMode ;
+		sys {Q0,Q1,Q2,Q3} spec_state ;
+		sys {M0,M1} search ;
+		sys {N,SO} next_head ;
+		
+////////////////////////////////////////////////////////////////
+/*
+ * initial state
+ */
+ ////////////////////////////////////////////////////////////////
+guarantee
+	search = M0 & spec_state = Q0;
+
+guarantee
+	G (next_head = N);
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * goals 
+ */
+ ////////////////////////////////////////////////////////////////
+guarantee
+  GF ((nextMoveMode=FWD)&(search=M0));
+	
+//LTLSPEC
+	//G F (search = M0); // finally head to the right direction
+////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * to prevant robot from going FWD<-->BWD indefinitely 
+ */
+ ////////////////////////////////////////////////////////////////
+guarantee 
+	//G((Y(spec_state = Q0) & Y(nextMoveMode = FWD) & nextMoveMode = BWD) -> spec_state = Q1);
+	G((spec_state = Q0 & nextMoveMode = FWD & next(nextMoveMode = BWD)) -> next(spec_state = Q1));
+	
+guarantee 
+	//G(Y((spec_state = Q1) & Y(nextMoveMode = BWD) & nextMoveMode = FWD) -> spec_state = Q2);
+	G((spec_state = Q1 & nextMoveMode = BWD & next(nextMoveMode = FWD)) -> next(spec_state = Q2));
+	
+guarantee
+	//G(!(Y(spec_state = Q2) & Y(nextMoveMode = FWD) & nextMoveMode = BWD));
+	G(!(spec_state = Q2 & nextMoveMode = FWD & next(nextMoveMode = BWD)));
+	//check if needed
+/*LTLSPEC 
+	G((Y(spec_state = Q1) & nextMoveMode = BWD) -> (spec_state = Q1));
+	
+LTLSPEC 
+	G((Y(spec_state = Q2) & nextMoveMode = FWD) -> (spec_state = Q2));
+	*/
+guarantee
+	G(((nextMoveMode = TURN_LEFT_1) | (nextMoveMode = TURN_LEFT_2)) -> next(spec_state = Q0));
+////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * automaton for searching direction
+ */
+ ////////////////////////////////////////////////////////////////
+ guarantee 
+	G ((Y(search = M0) & Noise = NOISE & Heading != next_head & Button != PRESSED) -> 
+		(search = M1));
+
+guarantee
+	G((Y(search = M1) & Heading = next_head) -> search = M0);
+ 
+ guarantee
+ 	G((Y(search = M1) & Heading != next_head) -> search = M1);
+ ////////////////////////////////////////////////////////////////
+ 	
+ 	
+ 	
+ 	
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * determine heading
+ */	
+ ////////////////////////////////////////////////////////////////
+/*LTLSPEC 
+	G ((Button = PRESSED & Y(search = M0)) -> (next(next_head) =  Heading));
+
+LTLSPEC 
+	G ((Button = FREE | Y(search = M1)) -> (next(next_head) = next_head));*/
+////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * 
+ */
+ ////////////////////////////////////////////////////////////////
+guarantee
+	//G((Obstacle = BLOCKED) -> (!(nextMoveMode = FWD)));
+	
+	G((next(Obstacle = BLOCKED) & !((Y(nextMoveMode = TURN_LEFT_2)))) -> next(!(nextMoveMode = FWD)));
+	
+guarantee
+	G(((nextMoveMode = BWD) & next(nextMoveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
+
+guarantee
+	G(((nextMoveMode = FWD) & next(nextMoveMode = BWD)) <-> next(LeftMotor = BWD & RightMotor = FWD));
+	
+guarantee //Going backward can only start from a calibrated FWD movement
+	G (next(nextMoveMode = BWD) -> ((nextMoveMode = FWD) | (nextMoveMode = BWD)));
+	
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * 						MOVEMENT - TURNNING
+ * 
+ * 
+ * Some technical limitations on the movement
+ * Turn movement is an atomic movement of 2 steps, turn_left_1 to turn_left_2, can't do 1 without doing 2 right after, and 2 can come only after 1
+ * Starting to turn and stoping needs a calibration from FWD movement
+ */
+ ////////////////////////////////////////////////////////////////
+
+
+guarantee
+	G ((nextMoveMode = TURN_LEFT_1) -> next(LeftMotor = FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	G ((nextMoveMode = TURN_LEFT_2) -> next(LeftMotor = BWD & RightMotor = TURN_BWD));
+	
+guarantee
+	G ((nextMoveMode = TURN_LEFT_1) <-> next(nextMoveMode = TURN_LEFT_2));
+	
+guarantee //This motor movements can only be used in turning
+	G (!((nextMoveMode = TURN_LEFT_1) | (nextMoveMode = TURN_LEFT_2)) -> next(!(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD)));	
+	
+guarantee // calibration movement to start turning
+	G  (((nextMoveMode = FWD) & next(nextMoveMode = TURN_LEFT_1)) <-> next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+	
+guarantee // Calibration at the end of turning
+	G  (((nextMoveMode = FWD) & (Y(nextMoveMode = TURN_LEFT_2))) <-> next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+	
+guarantee //Cant start turning from backward movement
+	G ( ((nextMoveMode = BWD)) -> next(nextMoveMode != TURN_LEFT_1));
+
+
+////////////////////////////////////////////////////////////////
+/*
+ * 						ENVIRONMENT - ASSUMPTIONS
+ * 
+ */
+ ////////////////////////////////////////////////////////////////
+
+assumption
+  respondsTo((search=M1),(Heading=next_head));
+
+assumption
+	G(((nextMoveMode = FWD | nextMoveMode = BWD) & Heading != next_head) -> next(Heading) != next_head);
+
+assumption
+	G ((nextMoveMode = FWD & Obstacle = BLOCKED) -> next(Obstacle = BLOCKED));
+	//G((nextMoveMode != FWD) -> F(Obstacle = CLEAR));
+
+assumption
+	G((nextMoveMode = BWD & Obstacle = CLEAR) -> (next(Obstacle != BLOCKED)));
+	
+assumption
+	//G((Y(Y(spec_nextMoveMode = TURN_LEFT_2)) & Y(spec_nextMoveMode = FWD)) -> Obstacle = CLEAR);
+  respondsTo((nextMoveMode=TURN_LEFT_2),(nextMoveMode=TURN_LEFT_2&Obstacle=CLEAR));
+ 
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

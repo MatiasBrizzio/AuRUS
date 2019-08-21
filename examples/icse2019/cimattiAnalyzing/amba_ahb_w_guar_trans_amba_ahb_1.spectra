@@ -1,0 +1,204 @@
+module amba_ahb_w_guar_trans_amba_ahb_1
+		env boolean hready;
+		env boolean hbusreq0 ;
+		env boolean hlock0 ;
+		env boolean hburst0 ;
+		env boolean hburst1 ;
+		sys boolean hmaster0 ;
+		sys boolean hmastlock ;
+		sys boolean start ;
+		sys boolean decide ;
+		sys boolean hlocked ;
+		sys boolean hgrant0 ;
+		sys boolean stateA1_0 ;
+		sys boolean stateG2_0 ;
+		sys boolean stateG3_0 ;
+		sys boolean stateG3_1 ;
+		sys boolean stateG3_2 ;
+
+
+assumption
+	hready=false;
+
+assumption
+	hbusreq0=false;
+
+assumption
+	hlock0=false;
+
+assumption
+	hburst0=false;
+
+assumption
+	hburst1=false;
+
+assumption
+	G (( hlock0 -> hbusreq0 ));
+
+assumption
+  GF (((stateA1_0=false)));
+
+assumption
+  GF ((hready));
+
+
+
+guarantee
+	hmaster0=false;
+
+guarantee
+	hmastlock=false;
+
+guarantee
+	start;
+
+guarantee
+	decide;
+
+guarantee
+	hlocked=false;
+
+guarantee
+	hgrant0;
+
+guarantee
+	stateA1_0=false;
+
+guarantee
+	stateG2_0=false;
+
+guarantee
+	stateG3_0=false;
+
+guarantee
+	stateG3_1=false;
+
+guarantee
+	stateG3_2=false;
+
+guarantee
+	G (!next(stateA1_0=false & hburst0));
+
+guarantee
+	G ((((stateA1_0=false)&((hmastlock=false)|((hburst0)|(hburst1)))) ->  next((stateA1_0=false))));
+
+guarantee
+	G ((((stateA1_0=false)&((hmastlock)&((hmaster0=false))&((hburst0=false)&(hburst1=false)))) -> next((stateA1_0))));
+
+guarantee
+	G ((((stateA1_0)&(hbusreq0)) -> next((stateA1_0))));
+
+guarantee
+	G ((((stateA1_0)&(hbusreq0=false)) -> next((stateA1_0=false))));
+
+guarantee
+	G (((hready=false) -> next(start=false)));
+
+guarantee
+	G ((((stateG2_0=false)&(hmastlock=false))->next(stateG2_0=false)));
+
+guarantee
+	G ((((stateG2_0=false)&(start=false))    ->next(stateG2_0=false)));
+
+guarantee
+	G ((((stateG2_0=false)&(hburst0))  ->next(stateG2_0=false)));
+
+guarantee
+	G ((((stateG2_0=false)&(hburst1))  ->next(stateG2_0=false)));
+
+guarantee
+	G ((((stateG2_0=false)&!((hmaster0=false)))->next(stateG2_0=false)));
+
+guarantee
+	G ((((stateG2_0=false)&(hmastlock)&(start)&(hburst0=false)&(hburst1=false)&((hmaster0=false)))->next(stateG2_0)));
+
+guarantee
+	G ((((stateG2_0)&(start=false)&(hbusreq0))->next(stateG2_0)));
+
+guarantee
+	G ((((stateG2_0)&(start))->FALSE));
+
+guarantee
+	G ((((stateG2_0)&(start=false)&(hbusreq0=false))  ->next(stateG2_0=false)));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1=false)&(stateG3_2=false)&  ((hmastlock=false)|(start=false)|((hburst0)|(hburst1=false)))) -> next((stateG3_0=false)&(stateG3_1=false)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1=false)&(stateG3_2=false)&  ((hmastlock)&(start)&((hburst0=false)&(hburst1))&(hready=false))) ->  next((stateG3_0)&(stateG3_1=false)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1=false)&(stateG3_2=false)&  ((hmastlock)&(start)&((hburst0=false)&(hburst1))&(hready))) ->  next((stateG3_0=false)&(stateG3_1)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0)&(stateG3_1=false)&(stateG3_2=false)&((start=false)&(hready=false))) ->  next((stateG3_0)&(stateG3_1=false)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0)&(stateG3_1=false)&(stateG3_2=false)&((start=false)&(hready))) ->  next((stateG3_0=false)&(stateG3_1)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0)&(stateG3_1=false)&(stateG3_2=false)&((start))) -> FALSE));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1)&(stateG3_2=false)&((start=false)&(hready=false))) ->  next((stateG3_0=false)&(stateG3_1)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1)&(stateG3_2=false)&((start=false)&(hready))) ->  next((stateG3_0)&(stateG3_1)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1)&(stateG3_2=false)&((start))) -> FALSE));
+
+guarantee
+	G ((((stateG3_0)&(stateG3_1)&(stateG3_2=false)&((start=false)&(hready=false))) ->  next((stateG3_0)&(stateG3_1)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0)&(stateG3_1)&(stateG3_2=false)&((start=false)&(hready))) ->  next((stateG3_0=false)&(stateG3_1=false)&(stateG3_2))));
+
+guarantee
+	G ((((stateG3_0)&(stateG3_1)&(stateG3_2=false)&((start))) -> FALSE));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1=false)&(stateG3_2)&((start=false)&(hready=false))) ->  next((stateG3_0=false)&(stateG3_1=false)&(stateG3_2))));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1=false)&(stateG3_2)&((start=false)&(hready))) ->  next((stateG3_0=false)&(stateG3_1=false)&(stateG3_2=false))));
+
+guarantee
+	G ((((stateG3_0=false)&(stateG3_1=false)&(stateG3_2)&((start))) -> FALSE));
+
+guarantee
+	G (((hready) -> ((hgrant0) <-> next((hmaster0=false)))));
+
+guarantee
+	G (((hready) -> (hlocked=false <-> next(hmastlock=false))));
+
+guarantee
+	G ((next(start=false) -> (((hmaster0=false)) <-> (next((hmaster0=false))))));
+
+guarantee
+	G ((((next(start=false))) -> ((hmastlock) <-> next(hmastlock))));
+
+guarantee
+	G (((decide & hlock0 & next(hgrant0))->next(hlocked)));
+
+guarantee
+	G (((decide & hlock0=false & next(hgrant0))->next(hlocked=false)));
+
+guarantee
+	G (((decide & hbusreq0=false) -> next(hgrant0)));
+
+guarantee
+	G (((decide=false)->(((hgrant0=false)<->next(hgrant0=false)))));
+
+guarantee
+	G (((decide=false)->(hlocked=false <-> next(hlocked=false))));
+
+guarantee
+  GF ((stateG2_0=false));
+
+guarantee
+  GF (((stateG3_0=false)&(stateG3_1=false)&(stateG3_2=false)));
+
+guarantee
+  GF ((((hmaster0=false))|hbusreq0=false));
+

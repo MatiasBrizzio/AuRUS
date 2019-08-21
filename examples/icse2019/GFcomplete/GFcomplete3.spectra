@@ -1,0 +1,12 @@
+module GFcomplete
+
+env Int(1..3) kval;
+
+gar gf1:
+GF kval=1;
+
+gar gf2:
+GF kval=2;
+
+gar gf3:
+GF kval=3;

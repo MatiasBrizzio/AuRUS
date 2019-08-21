@@ -1,0 +1,65 @@
+module Humanoid
+		env {CLEAR, BLOCKED} Obstacle ;
+		env {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2, DANCE} InputMoveMode ;
+		env {FREE, PRESSED} Button ;
+		env {QUIET, NOISE} Noise ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD, DANCE} LeftMotor ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD, DANCE} RightMotor ;
+		sys {FWD, BWD, STOP, DANCE} HeadMotor ;
+		sys {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2, DANCE} spec_OutputMoveMode ;
+
+guarantee 
+	G((InputMoveMode = FWD & Obstacle = BLOCKED) -> (spec_OutputMoveMode = TURN_LEFT_1 & LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+
+guarantee 
+	G((InputMoveMode = BWD & Obstacle = CLEAR) -> ((spec_OutputMoveMode = FWD & LeftMotor = FWD & RightMotor = BWD)));
+
+
+guarantee
+	G  ((InputMoveMode = FWD & Button = FREE & Y (InputMoveMode = TURN_LEFT_2)) -> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+
+guarantee
+	G  ((InputMoveMode = FWD & Obstacle = CLEAR & Button = FREE & Y (InputMoveMode != TURN_LEFT_2)) -> (LeftMotor = FWD & RightMotor = FWD));
+
+guarantee
+	G ((Obstacle = BLOCKED) -> !(spec_OutputMoveMode = FWD));
+
+guarantee//for turning sequence (step 1 and then 2
+	G ((InputMoveMode = TURN_LEFT_1) <-> (spec_OutputMoveMode = TURN_LEFT_2));
+
+guarantee
+	G ((InputMoveMode = TURN_LEFT_1) -> (LeftMotor = FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	G ((InputMoveMode = TURN_LEFT_2) -> (LeftMotor = BWD & RightMotor = TURN_BWD));
+	
+guarantee
+	G (!(InputMoveMode = TURN_LEFT_1 | InputMoveMode = TURN_LEFT_2) -> !(LeftMotor = TURN_BWD | RightMotor = TURN_BWD |LeftMotor = TURN_FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	G ((InputMoveMode = TURN_LEFT_1 | InputMoveMode = TURN_LEFT_2) -> (HeadMotor = STOP));
+
+guarantee
+	G  ((InputMoveMode = TURN_LEFT_2 & Obstacle = CLEAR) -> (spec_OutputMoveMode = FWD));
+
+--DANCING
+guarantee
+	G ((InputMoveMode = DANCE & spec_OutputMoveMode = DANCE ) -> (RightMotor = STOP & LeftMotor = DANCE & HeadMotor = DANCE) | (RightMotor = STOP & LeftMotor = STOP & HeadMotor = STOP));
+
+guarantee
+  GF ((LeftMotor=DANCE));
+	
+guarantee
+	G ((Button = FREE) -> (spec_OutputMoveMode = InputMoveMode | InputMoveMode != DANCE));	
+	
+guarantee
+	G ((Button = PRESSED & InputMoveMode = FWD & Obstacle = CLEAR) -> (spec_OutputMoveMode = DANCE  & LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+
+guarantee
+	G ((Button = PRESSED & InputMoveMode = DANCE & Obstacle = CLEAR) -> spec_OutputMoveMode = FWD  & LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD);
+
+guarantee
+	G (!(Button = PRESSED | InputMoveMode = DANCE) -> !(spec_OutputMoveMode = DANCE));
+
+assumption
+	G((InputMoveMode = FWD & Y (InputMoveMode = TURN_LEFT_2)) -> (Obstacle = CLEAR));

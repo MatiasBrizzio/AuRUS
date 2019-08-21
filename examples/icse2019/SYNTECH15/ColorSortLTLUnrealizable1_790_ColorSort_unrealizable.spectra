@@ -1,0 +1,154 @@
+module ColorSort
+		env {GREEN, BLACK, RED, BLUE,  YELLOW , WHITE} color ;
+		env {GREEN, BLACK, RED, BLUE,  YELLOW , WHITE} detect ;
+		env {MOVE, SLEEP} ack_ver ;
+		env {MOVE, SLEEP} ack_hor ;
+		env {MOVE, SLEEP} ack_bot ;
+		env {YES, NO} starting_pos ;
+		
+		env {PRESS, RELEASE} speedButton;
+		sys {MOVE, SLEEP} verMot ;
+		sys {MOVE, SLEEP} horMot ;
+		sys {SEEK, STOP, RETURN} botMot ;
+		
+		sys {LEVEL1, LEVEL2, LEVEL3} motSpeed;
+		
+		sys {GREEN, BLACK, RED, BLUE,  YELLOW , WHITE} spec_currentColor;
+		sys boolean spec_dropping ;
+		
+		sys boolean spec_speedButtonValidPressed ;
+		
+	define
+		allsleep := verMot = SLEEP & horMot = SLEEP & botMot = STOP;
+	define
+		nonemove := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP;
+	define
+		verhor_dontmove := ack_ver = SLEEP & ack_hor = SLEEP;
+	define
+		onlybotmoves := verhor_dontmove & ack_bot = MOVE;
+
+guarantee -- only one motors moves at a time
+	G (verMot = MOVE -> (botMot = STOP & horMot = SLEEP));
+	
+guarantee 
+	G (horMot = MOVE -> (botMot = STOP & verMot = SLEEP));
+	
+guarantee 
+	G (botMot != STOP -> (verMot = SLEEP & horMot = SLEEP));
+	
+guarantee -- if a motor is in the middle of moving, all the other motors stop
+	G (ack_ver = MOVE | ack_hor = MOVE -> allsleep);
+
+-- currentColor keeps its value unless a new cube is kicked
+guarantee 
+	G (verMot = SLEEP <-> spec_currentColor = next(spec_currentColor));
+	
+guarantee
+	G (spec_dropping = next(spec_dropping) <-> verMot = SLEEP & horMot = SLEEP);
+	
+-- attempt at creating a working robot
+
+guarantee
+	!spec_dropping & motSpeed = LEVEL1;
+
+guarantee
+	G (!spec_dropping & starting_pos = NO & verhor_dontmove <-> botMot = RETURN);
+		
+guarantee
+	G (!spec_dropping & starting_pos = YES & color = BLACK -> allsleep);
+	
+guarantee
+	G (color = BLACK | spec_dropping -> verMot = SLEEP);
+	
+guarantee
+	G (!spec_dropping & starting_pos = YES & nonemove & color != BLACK <-> verMot = MOVE & color = next(spec_currentColor));
+	
+guarantee
+	G (spec_dropping & detect != spec_currentColor & verhor_dontmove <-> botMot = SEEK);
+
+guarantee
+	G (spec_dropping & detect = spec_currentColor & verhor_dontmove <-> horMot = MOVE);
+	
+-- the speed button
+	
+guarantee
+	motSpeed = LEVEL1 & !spec_dropping;
+
+guarantee
+	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
+
+
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (spec_speedButtonValidPressed & motSpeed = LEVEL1 -> next(motSpeed = LEVEL2));
+	
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (spec_speedButtonValidPressed & motSpeed = LEVEL2 -> next(motSpeed = LEVEL3));
+	
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (spec_speedButtonValidPressed & motSpeed = LEVEL3 -> next(motSpeed = LEVEL1));
+	 
+	 
+guarantee -- if the speed button is released, the speed remains the same
+	G (!spec_speedButtonValidPressed -> motSpeed = next(motSpeed));
+
+	
+-- environment specifications
+ 
+  sys boolean spec_waiting_ack_ver_mot;
+  sys boolean spec_waiting_ack_hor_mot;
+
+guarantee -- initial state
+  !spec_waiting_ack_ver_mot; -- not waiting for acknowledgement (only sleeping is allowed)
+  
+guarantee -- transitions
+  G(!spec_waiting_ack_ver_mot & verMot!=MOVE -> next(!spec_waiting_ack_ver_mot));
+guarantee
+  G (!spec_waiting_ack_ver_mot & verMot=MOVE -> next(spec_waiting_ack_ver_mot));
+guarantee
+  G (spec_waiting_ack_ver_mot & ack_ver=SLEEP -> next(!spec_waiting_ack_ver_mot));
+guarantee
+  G (spec_waiting_ack_ver_mot & ack_ver!=SLEEP -> next(spec_waiting_ack_ver_mot));
+
+assumption -- while we are not waiting motor can only acknowledge sleeping
+  G(!spec_waiting_ack_ver_mot -> ack_ver=SLEEP);
+assumption -- if we are waiting motor has to eventually acknowledge finishing
+  respondsTo(spec_waiting_ack_ver_mot,(ack_ver=SLEEP));
+  
+  
+guarantee -- initial state
+  !spec_waiting_ack_hor_mot; -- not waiting for acknowledgement (only sleeping is allowed)
+  
+guarantee -- transitions
+  G(!spec_waiting_ack_hor_mot & horMot!=MOVE -> next(!spec_waiting_ack_hor_mot));
+guarantee
+  G (!spec_waiting_ack_hor_mot & horMot=MOVE -> next(spec_waiting_ack_hor_mot));
+guarantee
+  G (spec_waiting_ack_hor_mot & ack_hor=SLEEP -> next(!spec_waiting_ack_hor_mot));
+guarantee
+  G (spec_waiting_ack_hor_mot & ack_hor!=SLEEP -> next(spec_waiting_ack_hor_mot));
+
+assumption -- while we are not waiting motor can only acknowledge sleeping
+  G(!spec_waiting_ack_hor_mot -> ack_hor=SLEEP);
+assumption -- if we are waiting motor has to eventually acknowledge finishing
+  respondsTo(spec_waiting_ack_hor_mot,(ack_hor=SLEEP));
+
+assumption -- there will always be a cube
+  GF (color!=BLACK);
+	
+assumption
+  GF (ack_hor=MOVE);
+	
+-- some interesting guarantees
+
+guarantee
+  respondsTo(color!=BLACK,(horMot=MOVE&detect=spec_currentColor));
+ 
+guarantee
+  GF (horMot=MOVE);
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

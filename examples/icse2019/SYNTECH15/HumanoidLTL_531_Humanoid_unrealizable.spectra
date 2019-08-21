@@ -1,0 +1,81 @@
+module Humanoid
+		env {CLEAR, BLOCKED} Obstacle ;
+		//ext Button : {FREE, PRESSED};
+		//ext Noise : {QUIET, NOISE};
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} LeftMotor ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} RightMotor ;
+		sys {FWD, BWD, STOP} HeadMotor ;
+		sys {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2} moveMode ;
+		sys {Q0,Q1,Q2,Q3} state ;
+		
+//to prevant robot from going FWD<-->BWD indefinitely 
+//////////////////////////////////////////////
+guarantee 
+	G((state = Q0 & moveMode = FWD & next(moveMode = BWD)) -> next(state = Q1));
+
+guarantee 
+	G((state = Q1 & moveMode = BWD & next(moveMode = FWD)) -> next(state = Q2));
+	
+guarantee
+	G((state = Q2 & moveMode = FWD & next(moveMode = BWD)) -> next(state = Q3));
+
+guarantee 
+	G((state = Q1 & next(moveMode = BWD)) -> (next(state = Q1)));
+
+guarantee 
+	G((state = Q2 & next(moveMode = FWD)) -> (next(state = Q2)));
+	
+guarantee
+	G(!(state = Q3));
+//////////////////////////////////////////////
+
+guarantee
+	G((moveMode = FWD & Obstacle = BLOCKED) -> !(next(moveMode = FWD)));
+	
+guarantee
+	G(((moveMode = FWD & next(moveMode = BWD)) | (moveMode = BWD & next(moveMode = FWD))) <-> ((LeftMotor = FWD & RightMotor = BWD) | (LeftMotor = BWD & RightMotor = FWD)));
+
+
+guarantee
+  GF (moveMode=FWD);
+
+//LTLSPEC
+	//G ((moveMode = TURN_LEFT_2 & Obstacle = BLOCKED) -> next(moveMode = TURN_LEFT_1));
+//calibrate before turn
+//LTLSPEC
+	//G ((moveMode = BWD) -> (Y(moveMode = FWD) | Y(moveMode = BWD)));
+
+guarantee
+	G (moveMode = TURN_LEFT_2 -> !(next(moveMode = BWD)));
+guarantee
+	G  ((moveMode = FWD & next(moveMode = TURN_LEFT_1)) <-> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+//calibrate after turn
+guarantee
+	G  ((moveMode = FWD & Y(moveMode = TURN_LEFT_2)) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+
+
+guarantee//for turning sequence (step 1 and then 2
+	G ((moveMode = TURN_LEFT_1) <-> (next(moveMode) = TURN_LEFT_2));
+
+guarantee
+	G ((moveMode = TURN_LEFT_1) -> (LeftMotor = FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	G ((moveMode = TURN_LEFT_2) -> (LeftMotor = BWD & RightMotor = TURN_BWD));
+	
+guarantee
+	G (!(moveMode = TURN_LEFT_1 | moveMode = TURN_LEFT_2) -> !(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD));
+	
+
+assumption
+  respondsTo((moveMode=BWD|moveMode=TURN_LEFT_1|moveMode=TURN_LEFT_2),(Obstacle=CLEAR));
+
+assumption
+  GF (Obstacle=CLEAR);
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

@@ -1,0 +1,236 @@
+module ColorSort
+		env {RED, GREEN, BLUE, BLACK, YELLOW , WHITE} color ;
+		env {RED, GREEN, BLUE, BLACK, YELLOW , WHITE} detect ;
+		env {MOVE, SLEEP} ack_ver ;
+		env {MOVE, SLEEP} ack_hor ;
+		env {MOVE, SLEEP} ack_bot ;
+		
+		//ext haltButton: {PRESS, RELEASE};
+		env {PRESS, RELEASE} speedButton;
+		sys {MOVE, SLEEP} verMot ;
+		sys {MOVE, SLEEP} horMot ;
+		sys {SEEK, STOP, RETURN} botMot ;
+		
+		sys {LEVEL1, LEVEL2, LEVEL3} motSpeed;
+		
+		sys { S0, S1, S2, S3} spec_state_seek ;
+		sys { S0, S1, S2} spec_state_return ;
+		
+		sys {RED, GREEN, BLUE, BLACK, YELLOW , WHITE} spec_currentColor;
+		sys boolean spec_dropping ;
+		
+		sys boolean spec_speedButtonValidPressed ;
+		/*ext spec_haltButtonValidPressed : boolean;
+		
+		ext spec_pausing : {PAUSE, GO};*/
+		
+		
+define -- allsleep is true iff all motors sleep
+	allsleep := verMot = SLEEP  & horMot = SLEEP & botMot = STOP;
+define -- nonemove is true iff no motor moves
+	nonemove := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP;
+define -- nonemove is true iff no motor moves
+	onlybotmoves := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE;
+
+guarantee
+	G (spec_prevBotMotReturn<->PREV(botMot = RETURN));
+guarantee
+	G (spec_prevBotMotSeek<->PREV(botMot = SEEK));
+  
+  sys boolean spec_prevBotMotReturn ;
+  sys boolean spec_prevBotMotSeek ;
+
+guarantee -- only one motors moves at a time
+	G (verMot = MOVE -> (botMot = STOP & horMot = SLEEP));
+	
+guarantee 
+	G (horMot = MOVE -> (botMot = STOP & verMot = SLEEP));
+	
+guarantee 
+	G (botMot != STOP -> (verMot = SLEEP & horMot = SLEEP));
+
+guarantee
+	G (verMot = SLEEP -> spec_currentColor = next(spec_currentColor));
+	
+guarantee
+	G (spec_dropping = next(spec_dropping) <-> verMot = SLEEP & !(spec_prevBotMotReturn & ack_bot = SLEEP));
+
+guarantee
+	G (ack_ver = MOVE | ack_hor = MOVE -> allsleep);
+/*	
+LTLSPECENV
+	G (!spec_dropping -> nonemove);
+	*/ 
+guarantee
+  respondsTo(color!=BLACK,(horMot=MOVE&detect=spec_currentColor));
+
+guarantee
+  GF (horMot=MOVE);
+	
+-- running the robot
+
+guarantee
+	G (color = BLACK & !spec_dropping -> allsleep);
+	
+guarantee
+	G (color != BLACK & !spec_dropping -> verMot = MOVE & next(spec_currentColor) = color);
+
+guarantee
+	G (nonemove & spec_dropping & PREV(ack_ver = MOVE)-> botMot = SEEK);
+ 
+-- P19
+-- (spec_dropping & detect != spec_currentColor -> botMot = SEEK) is true between (spec_prevBotMotSeek & ack_bot = MOVE) and (spec_prevBotMotSeek & detect = spec_currentColor)
+guarantee -- initial assignments: initial spec_state_seek
+  spec_state_seek=S0;
+
+guarantee -- safety this and next spec_state_seek
+  G ((spec_state_seek=S0 & ((!(spec_prevBotMotSeek & ack_bot = MOVE)) | ((spec_prevBotMotSeek & detect = spec_currentColor) & (spec_prevBotMotSeek & ack_bot = MOVE))) & next(spec_state_seek=S0)) |
+  (spec_state_seek=S0 & (!(spec_prevBotMotSeek & detect = spec_currentColor) & (spec_dropping & detect != spec_currentColor -> botMot = SEEK) & (spec_prevBotMotSeek & ack_bot = MOVE)) & next(spec_state_seek=S1)) |
+  (spec_state_seek=S0 & (!(spec_prevBotMotSeek & detect = spec_currentColor) & !(spec_dropping & detect != spec_currentColor -> botMot = SEEK) & (spec_prevBotMotSeek & ack_bot = MOVE)) & next(spec_state_seek=S3)) |
+  (spec_state_seek=S1 & ((spec_prevBotMotSeek & detect = spec_currentColor)) & next(spec_state_seek=S0)) |
+  (spec_state_seek=S1 & (!(spec_prevBotMotSeek & detect = spec_currentColor) & (spec_dropping & detect != spec_currentColor -> botMot = SEEK)) & next(spec_state_seek=S1)) |
+  (spec_state_seek=S1 & (!(spec_prevBotMotSeek & detect = spec_currentColor) & !(spec_dropping & detect != spec_currentColor -> botMot = SEEK)) & next(spec_state_seek=S3)) |
+  (spec_state_seek=S2 & next(spec_state_seek=S2)) |
+  (spec_state_seek=S3 & ((spec_prevBotMotSeek & detect = spec_currentColor)) & next(spec_state_seek=S2)) |
+  (spec_state_seek=S3 & (!(spec_prevBotMotSeek & detect = spec_currentColor)) & next(spec_state_seek=S3)));
+
+guarantee -- equivalence of satisfaction
+  GF (spec_state_seek=S0|spec_state_seek=S1|spec_state_seek=S3);
+
+guarantee
+	G (spec_dropping & onlybotmoves & detect = spec_currentColor & PREV(botMot = SEEK) <-> horMot = MOVE);
+ 	
+guarantee
+	G (nonemove & PREV(ack_hor = MOVE) & spec_dropping -> botMot = RETURN);
+-- P20
+-- (spec_dropping & onlybotmoves -> botMot = RETURN) is true after (spec_prevBotMotReturn & ack_bot = MOVE) until (spec_prevBotMotReturn & ack_bot = SLEEP)
+guarantee -- initial assignments: initial spec_state_return
+  spec_state_return=S0;
+
+guarantee -- safety this and next spec_state_return
+  G ((spec_state_return=S0 & ((!(spec_prevBotMotReturn & ack_bot = MOVE) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) | ((spec_prevBotMotReturn & ack_bot = SLEEP))) & next(spec_state_return=S0)) |
+  (spec_state_return=S0 & ((spec_prevBotMotReturn & ack_bot = MOVE) & !(spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S1)) |
+  (spec_state_return=S0 & ((spec_prevBotMotReturn & ack_bot = MOVE) & (spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S2)) |
+  (spec_state_return=S1 & next(spec_state_return=S1)) |
+  (spec_state_return=S2 & ((spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S0)) |
+  (spec_state_return=S2 & (!(spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S1)) |
+  (spec_state_return=S2 & ((spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S2)));
+
+guarantee -- equivalence of satisfaction
+  GF (spec_state_return=S0|spec_state_return=S2);
+ 
+guarantee
+	G (spec_prevBotMotReturn & ack_bot = SLEEP -> allsleep);
+
+-- speed button
+
+guarantee
+	motSpeed = LEVEL1 & !spec_dropping;
+
+guarantee
+	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
+
+
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL2);
+	
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL3);
+	
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL1);
+	 
+	 
+guarantee -- if the speed button is released, the speed remains the same
+	G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL1);
+	
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL2);
+	
+guarantee -- if the speed button is pressed, increase the speed by one level
+	G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL3);
+/* 
+-- pause button
+
+LTLSPEC
+	G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_haltButtonValidPressed);
+
+LTLSPEC
+	G ((spec_haltButtonValidPressed & spec_pausing = GO) | (!spec_haltButtonValidPressed & spec_pausing = PAUSE)
+		-> next(spec_pausing) = PAUSE);
+	
+LTLSPEC
+	G ((!spec_haltButtonValidPressed & spec_pausing = GO) | (spec_haltButtonValidPressed & spec_pausing = PAUSE)
+		-> next(spec_pausing) = GO);
+
+LTLSPECENV -- no pause is eternal
+	G (spec_pausing = PAUSE -> F (spec_pausing = GO));
+*/
+-- Some environment specifications
+
+  sys boolean spec_waiting_ack_ver_mot;
+  sys boolean spec_waiting_ack_hor_mot;
+
+guarantee -- initial state
+  !spec_waiting_ack_ver_mot; -- not waiting for acknowledgement (only sleeping is allowed)
+  
+guarantee -- transitions
+  G(!spec_waiting_ack_ver_mot & verMot!=MOVE -> next(!spec_waiting_ack_ver_mot));
+guarantee
+  G (!spec_waiting_ack_ver_mot & verMot=MOVE -> next(spec_waiting_ack_ver_mot));
+guarantee
+  G (spec_waiting_ack_ver_mot & ack_ver=SLEEP -> next(!spec_waiting_ack_ver_mot));
+guarantee
+  G (spec_waiting_ack_ver_mot & ack_ver!=SLEEP -> next(spec_waiting_ack_ver_mot));
+
+assumption -- while we are not waiting motor can only acknowledge sleeping
+  G(!spec_waiting_ack_ver_mot -> ack_ver=SLEEP);
+assumption -- on move command acknowledge moving
+  G(verMot=MOVE -> next(ack_ver=MOVE));
+assumption -- if we are waiting motor has to eventually acknowledge finishing
+  respondsTo(spec_waiting_ack_ver_mot,(ack_ver=SLEEP));
+  
+  
+guarantee -- initial state
+  !spec_waiting_ack_hor_mot; -- not waiting for acknowledgement (only sleeping is allowed)
+  
+guarantee -- transitions
+  G(!spec_waiting_ack_hor_mot & horMot!=MOVE -> next(!spec_waiting_ack_hor_mot));
+guarantee
+  G (!spec_waiting_ack_hor_mot & horMot=MOVE -> next(spec_waiting_ack_hor_mot));
+guarantee
+  G (spec_waiting_ack_hor_mot & ack_hor=SLEEP -> next(!spec_waiting_ack_hor_mot));
+guarantee
+  G (spec_waiting_ack_hor_mot & ack_hor!=SLEEP -> next(spec_waiting_ack_hor_mot));
+
+assumption -- while we are not waiting motor can only acknowledge sleeping
+  G(!spec_waiting_ack_hor_mot -> ack_hor=SLEEP);
+assumption -- on move command acknowledge moving
+  G(horMot=MOVE -> next(ack_hor=MOVE));
+assumption -- if we are waiting motor has to eventually acknowledge finishing
+  respondsTo(spec_waiting_ack_hor_mot,(ack_hor=SLEEP));
+  
+/*   
+LTLSPECENV
+	G (ack_ver = MOVE -> F (ack_ver = SLEEP));
+LTLSPECENV
+	G (ack_hor = MOVE -> F (ack_hor = SLEEP));*/
+assumption
+  respondsTo(ack_bot=MOVE,(ack_bot=SLEEP));
+	/* 
+LTLSPECENV -- unfinisheds
+	G (botMot = SEEK );
+*/
+/* 
+LTLSPECENV
+	G F (ack_hor = MOVE);
+*/	
+assumption -- there will always be a cube
+  GF (color!=BLACK);
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

@@ -1,0 +1,13 @@
+import "../patterns/DwyerPatterns.spectra"
+module Chatt
+
+env boolean r;
+env boolean c;
+sys boolean g;
+
+gar
+	pRespondsToS(r, next(g));
+	
+gar
+	G ((c | g) -> next(!g));
+	

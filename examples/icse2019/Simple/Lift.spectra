@@ -1,0 +1,46 @@
+module Cavezza
+
+env boolean b1;
+env boolean b2;
+env boolean b3;
+
+sys boolean f1;
+sys boolean f2;
+sys boolean f3;
+
+// phi init
+asm !b1 and !b2 and !b3;
+
+// phi1
+asm G ( (b1 and f1) -> next(!b1));
+asm G ( (b2 and f2) -> next(!b2));
+asm G ( (b3 and f3) -> next(!b3));
+
+// phi2
+asm G ( (b1 and !f1) -> next(b1));
+asm G ( (b2 and !f2) -> next(b2));
+asm G ( (b3 and !f3) -> next(b3));
+
+// phi init
+gar f1 and !f2 and !f3;
+
+// phi1
+gar G (!(f1 and f2) and !(f1 and f3) and !(f2 and f3));
+
+// phi2
+gar G (f1 -> (next(f1) or next(f2)));
+gar G (f2 -> (next(f1) or next(f2) or next(f3)));
+gar G (f3 -> (next(f2) or next(f3)));
+
+// phi3
+gar G ((f1 and next(f2)) or (f2 and next(f3)) or (f2 and next(f1)) or (f3 and next(f2))) ->(b1 or b2 or b3);
+
+// phi4
+gar GF (b1 -> f1);
+gar GF (b2 -> f2);
+gar GF (b3 -> f3);
+
+// phi5
+gar GF f1;
+gar GF f2;
+gar GF f3;

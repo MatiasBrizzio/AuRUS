@@ -1,0 +1,66 @@
+module Humanoid
+		env {CLEAR, BLOCKED} Obstacle ;
+		env {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2} InputMoveMode ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} LeftMotor ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} RightMotor ;
+		sys {FWD, BWD, STOP} HeadMotor ;
+		sys {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2} OutputMoveMode ;
+
+guarantee 
+	G((InputMoveMode = FWD & Obstacle = BLOCKED) -> (OutputMoveMode = TURN_LEFT_1 & LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+
+guarantee 
+	G((InputMoveMode = BWD & Obstacle = CLEAR) -> ((OutputMoveMode = FWD & LeftMotor = FWD & RightMotor = BWD)));
+
+guarantee
+	G  ((InputMoveMode = FWD & Obstacle = CLEAR ) -> (LeftMotor = FWD & RightMotor = FWD));
+
+guarantee
+	G ((Obstacle = BLOCKED) -> !(OutputMoveMode = FWD));
+////////////////////////////	
+
+guarantee//for turning sequence (step 1 and then 2
+	G ((InputMoveMode = TURN_LEFT_1) <-> (OutputMoveMode = TURN_LEFT_2));
+
+guarantee
+	G ((InputMoveMode = TURN_LEFT_1) -> (LeftMotor = FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	G ((InputMoveMode = TURN_LEFT_2) -> (LeftMotor = BWD & RightMotor = TURN_BWD));
+	
+guarantee
+	G (!(InputMoveMode = TURN_LEFT_1 | InputMoveMode = TURN_LEFT_2) -> !(LeftMotor = TURN_BWD | RightMotor = TURN_BWD |LeftMotor = TURN_FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	G ((InputMoveMode = TURN_LEFT_1 | InputMoveMode = TURN_LEFT_2) -> (HeadMotor = STOP));
+	
+guarantee
+	G ((InputMoveMode = TURN_LEFT_2 & OutputMoveMode != TURN_LEFT_1) -> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+
+guarantee
+	G  ((InputMoveMode = TURN_LEFT_2 & Obstacle = CLEAR) -> (OutputMoveMode = FWD));
+
+--LTLSPEC//for turning sequence (step 1 and then 2
+	--G (!(InputMoveMode = TURN_LEFT_1) -> !(OutputMoveMode = TURN_LEFT_2));
+	
+--LTLSPEC//for turning sequence (step 1 and then 2
+	--G ((InputMoveMode = TURN_LEFT_1) -> (OutputMoveMode = TURN_LEFT_2 & LeftMotor = TURN_FWD & RightMotor = TURN_FWD));
+	
+--LTLSPEC
+	--G ((InputMoveMode = TURN_LEFT_2) -> !(OutputMoveMode = TURN_LEFT_2));
+
+--LTLSPEC
+	--G ((InputMoveMode = TURN_LEFT_2 & Obstacle = BLOCKED) -> OutputMoveMode = TURN_LEFT_1);
+	
+--LTLSPEC
+	--G ((Obstacle = CLEAR) -> !(OutputMoveMode = TURN_LEFT_1));
+	
+--LTLSPEC
+	--G ((OutputMoveMode = TURN_LEFT_1 & (InputMoveMode = TURN_LEFT_2)) -> (LeftMotor = TURN_BWD & RightMotor = TURN_BWD));
+	
+--LTLSPECENV
+	--G ((OutputMoveMode = TURN_LEFT_1 | OutputMoveMode = TURN_LEFT_2) -> F(Obstacle = CLEAR));
+
+--LTLSPECENV
+	--G F(InputMoveMode = FWD);
+	

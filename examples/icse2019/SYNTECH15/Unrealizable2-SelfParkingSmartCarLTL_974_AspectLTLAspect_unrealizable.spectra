@@ -1,0 +1,436 @@
+// Initial file contents for AspectLTL aspect file (*.altl)
+module AspectLTLAspect
+ 
+		env {CLEAR, BLOCKED} obstacle ;
+		env {	TOO_CLOSE,
+							TOO_FAR,
+							CENTERED,
+							PS_TOO_FAR,
+							PS_TOO_CLOSE,
+							PS_CENTERED
+							} sideSensor ;
+	
+		sys {MAX_RIGHT, MAX_LEFT, CENTER, ALIGN_RIGHT, ALIGN_LEFT} steeringMot ;
+		sys {FWD, BWD} sensorMot ;
+		sys {FWD, BWD, STOP, PARKING_BWD, PARKING_FWD} engineMot ;
+		
+		sys {SEEKING_FOR_PS, 
+								MEASURE_PARKING,
+								PREPARE_FOR_PARALLEL_PARKING,
+								PARALLEL,
+								PERPENDICULAR
+						} spec_carStatus ;
+
+		sys Int(0..5) spec_blankSpotsCounter ;
+		
+		sys Int(0..1) spec_prepareParallelCounter ;
+		
+		sys {PHASE_NONE,FIRST_PHASE,SECOND_PHASE,PARKING_FAILURE,PARKING_SUCCESS} spec_parkingParallelPhase ;
+		
+		sys {PHASE_NONE,FIRST_PHASE,SECOND_PHASE,THIRD_PHASE,PARKING_FAILURE,PARKING_SUCCESS} spec_parkingPerpendicularPhase ;
+		
+		sys {STATE_CENTERED, STATE_TOOFAR, STATE_TOOCLOSE, ALIGNMENT_FAILURE} spec_alignmentStates ;
+		
+		sys {YES, NO} spec_capablePerpendicular ;
+		
+	define
+		weGotSideSensorSeekingValues := (sideSensor = TOO_CLOSE | sideSensor = TOO_FAR | sideSensor = CENTERED);
+		
+	define
+		weGotSideSensorMeasuringValues := (sideSensor = PS_TOO_CLOSE | sideSensor = PS_TOO_FAR | sideSensor = PS_CENTERED);	
+	
+	define
+		Stop := (engineMot != FWD & engineMot != PARKING_FWD & engineMot != PARKING_BWD & engineMot != BWD);
+	
+	define
+		suitableParallelPS := 5;
+		
+	define
+		suitablePerpendicularPS := 2;
+		
+	define
+		preparingParallelSteps := 1;
+		
+	define
+		keepCarStatus := (next(spec_carStatus) = spec_carStatus);
+		
+	define
+		keepBlankSpotsCounterValue := (next(spec_blankSpotsCounter) = spec_blankSpotsCounter);
+		
+	define
+		keepParallelParkingPhase := (next(spec_parkingParallelPhase) = spec_parkingParallelPhase);
+		
+	define
+		keepPerpendicularParkingPhase := (next(spec_parkingPerpendicularPhase) = spec_parkingPerpendicularPhase);
+
+	define
+		movingFwd := (engineMot = FWD | engineMot = PARKING_FWD);
+		
+	define
+		movingBwd := (engineMot = BWD | engineMot = PARKING_BWD);
+		
+	/*init state*/
+	guarantee
+		(spec_carStatus = SEEKING_FOR_PS & sensorMot = FWD & spec_blankSpotsCounter = 0);
+
+	//LTLSPEC
+	//	(spec_carStatus = SEEKING_FOR_PS & spec_blankSpotsCounter = 0);
+		
+	//LTLSPEC
+	//	G(sensorMot=spec_carStatus );
+	
+	
+	/*safety! do not run into obstacles*/
+	guarantee
+		G ((obstacle = BLOCKED) -> 
+			(Stop)
+		);
+		
+	guarantee
+		G ((obstacle = BLOCKED) -> 
+			(keepCarStatus & 
+				keepBlankSpotsCounterValue & 
+				keepParallelParkingPhase
+			)
+		);
+	
+	/*Safety! look where you are going to */
+//	LTLSPEC
+//		G(engineMot!=STOP -> (engineMot = sensorMot) );
+	
+	/*Safety! look where you are going to */
+	guarantee
+		G(movingBwd -> sensorMot = BWD);
+		
+	/*Safety! look where you are going to */
+	guarantee
+		G(movingFwd -> sensorMot = FWD);
+		
+	assumption
+		(sideSensor = CENTERED);
+
+	
+/**********************************************************************************/
+/******************************** wall alignment **********************************/
+/**********************************************************************************/
+	
+	/* set of options available while seeking for parking spot */
+	guarantee
+		G((spec_carStatus = SEEKING_FOR_PS)-> 
+			((steeringMot = ALIGN_RIGHT | steeringMot = CENTER | steeringMot = ALIGN_LEFT) & 
+				(engineMot = FWD | engineMot = STOP)
+			)
+		);
+	
+	/* bad behaviour */
+	guarantee
+	G( ((spec_carStatus = SEEKING_FOR_PS | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING)& 
+		((spec_alignmentStates = STATE_TOOCLOSE & steeringMot != ALIGN_LEFT) | 
+			(spec_alignmentStates = STATE_TOOFAR & steeringMot != ALIGN_RIGHT) | 
+			(spec_alignmentStates = STATE_CENTERED & steeringMot != CENTER)
+		)) -> 
+		(spec_alignmentStates = ALIGNMENT_FAILURE)
+	);
+	
+	guarantee
+	/* 1st good behaviour */
+		
+	G( ((spec_carStatus = SEEKING_FOR_PS | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING)  & sideSensor = TOO_CLOSE) -> 
+		(spec_alignmentStates = STATE_TOOCLOSE)
+	);
+	
+	guarantee
+	/* 2nd good behaviour */
+		
+	G( ((spec_carStatus = SEEKING_FOR_PS | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING) & sideSensor = TOO_FAR) -> 
+		(spec_alignmentStates = STATE_TOOFAR)
+	);
+	
+	guarantee
+	/* 3rd good behaviour */
+		
+	G( ((spec_carStatus = SEEKING_FOR_PS | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING) & sideSensor = CENTERED) -> 
+		(spec_alignmentStates = STATE_CENTERED)
+	);
+
+	guarantee
+	G(spec_alignmentStates != ALIGNMENT_FAILURE);
+	
+	/* if potential parking spot not found and obstacle is clear - keep seeking */
+	guarantee
+		G((spec_carStatus = SEEKING_FOR_PS & (weGotSideSensorSeekingValues) & obstacle = CLEAR) -> 
+			(keepCarStatus)
+		);
+	
+	guarantee
+		G((spec_carStatus = SEEKING_FOR_PS & (weGotSideSensorMeasuringValues) & obstacle = CLEAR)
+			 -> (
+			 	(engineMot = STOP) &
+			 	(next(spec_carStatus = MEASURE_PARKING)) & 
+			 	(next(spec_blankSpotsCounter) = 1)
+			)
+		);
+		
+	/*TODO */
+	/*temporary - if we blocked eventually we will be cleared */
+	assumption
+  respondsTo(obstacle=BLOCKED,(obstacle=CLEAR));
+		
+//	LTLSPECENV
+//		G((spec_carStatus = SEEKING_FOR_PS & engineMot = FWD & obstacle=CLEAR) -> F(weGotSideSensorMeasuringValues));
+		
+/**********************************************************************************/
+/************************** end of wall alignment *********************************/
+/**********************************************************************************/
+
+/**********************************************************************************/
+/********************** measure parking spaces specs ******************************/
+/**********************************************************************************/
+	guarantee
+		G((spec_carStatus = MEASURE_PARKING & obstacle = CLEAR) -> (engineMot != STOP));
+		
+	/* set of options available while measuring for parking spot */
+	guarantee
+		G((spec_carStatus = MEASURE_PARKING)-> 
+			((steeringMot = ALIGN_RIGHT | steeringMot = CENTER | steeringMot = ALIGN_LEFT) & 
+			(engineMot = FWD | engineMot = STOP))
+		);
+		
+	/* bad behaviour when alignning*/
+	guarantee
+	G( ((spec_carStatus = MEASURE_PARKING | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING)& 
+		((spec_alignmentStates = STATE_TOOCLOSE & steeringMot != ALIGN_LEFT) | 
+			(spec_alignmentStates = STATE_TOOFAR & steeringMot != ALIGN_RIGHT) |
+			(spec_alignmentStates = STATE_CENTERED & steeringMot != CENTER))) 
+			-> (spec_alignmentStates = ALIGNMENT_FAILURE)	
+	);
+	
+	
+	/*moving between alignment stages*/
+	guarantee
+		
+	G( ((spec_carStatus = MEASURE_PARKING | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING) & sideSensor = PS_TOO_CLOSE) -> 
+		(spec_alignmentStates = STATE_TOOCLOSE)
+	);
+	
+	/*moving between alignment stages*/
+	guarantee
+		
+	G( ((spec_carStatus = MEASURE_PARKING | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING) & sideSensor = PS_TOO_FAR) -> 
+		(spec_alignmentStates = STATE_TOOFAR)
+	);
+	
+	/*moving between alignment stages*/
+	guarantee
+		
+	G( ((spec_carStatus = MEASURE_PARKING | spec_carStatus = PREPARE_FOR_PARALLEL_PARKING) & sideSensor = PS_CENTERED) -> 
+		(spec_alignmentStates = STATE_CENTERED)
+	);	
+	
+	/*if we are measuring a parking spot and we didn't measure enough space, keep measuring */
+	guarantee
+		G((spec_carStatus = MEASURE_PARKING & 
+			(weGotSideSensorMeasuringValues) & 
+			(spec_blankSpotsCounter < suitableParallelPS)
+		) -> 
+			(keepCarStatus)
+		);
+	
+	/*do not count over the limit */
+	guarantee
+		G((spec_blankSpotsCounter <= suitableParallelPS));
+		
+	/*if the parking spot ended and there is no sufficient parking spot space, keep seeking for another parking spot. */
+	guarantee
+		G((spec_carStatus = MEASURE_PARKING & 
+			(weGotSideSensorSeekingValues) & obstacle = CLEAR & spec_blankSpotsCounter < suitableParallelPS & spec_capablePerpendicular = NO
+		) -> 
+			(next(spec_carStatus = SEEKING_FOR_PS)) 
+		);
+		
+	/*if the parking spot ended and we can park perpendicular, move to park perpendicular */
+	guarantee
+		G((spec_carStatus = MEASURE_PARKING & 
+			(weGotSideSensorSeekingValues) & obstacle = CLEAR & spec_blankSpotsCounter < suitableParallelPS & spec_capablePerpendicular = YES
+		) -> 
+			(next(spec_carStatus = PERPENDICULAR) &
+				next(spec_parkingPerpendicularPhase = FIRST_PHASE)
+			) 
+		);
+	
+	/*increase counter if needed */
+	guarantee
+		G((spec_carStatus = MEASURE_PARKING & obstacle = CLEAR & engineMot = FWD & spec_blankSpotsCounter < suitableParallelPS) ->
+			(next(spec_blankSpotsCounter) = (spec_blankSpotsCounter + 1))
+		);
+	
+	/*  */
+	guarantee
+		G ((spec_carStatus = MEASURE_PARKING & spec_blankSpotsCounter = suitableParallelPS  & obstacle = CLEAR
+		) -> 
+			(
+				(next(engineMot) = STOP) &
+				(next(spec_carStatus) = PREPARE_FOR_PARALLEL_PARKING) &
+				(next(spec_prepareParallelCounter) = 0)
+				));
+				
+	/* Goal for this stage */		
+	guarantee //HERE
+  respondsTo(spec_carStatus=MEASURE_PARKING,(spec_carStatus=PREPARE_FOR_PARALLEL_PARKING|spec_carStatus=PERPENDICULAR));
+		
+	/* How to achieve the goal above */
+	assumption 
+  respondsTo(engineMot=FWD,(spec_blankSpotsCounter=suitableParallelPS|spec_blankSpotsCounter=suitablePerpendicularPS));
+		
+//	/* How to achieve the goal above */
+//	LTLSPECENV 
+//		G(engineMot = FWD -> F(spec_blankSpotsCounter = suitableParallelPS | spec_capablePerpendicular = YES)); //HERE
+//	
+	/* If we are not measuring ps, we are not capable of parking perpendicular */	
+	guarantee
+		G((spec_carStatus != MEASURE_PARKING) -> (spec_capablePerpendicular = NO));
+		
+	/* If we are measuring ps, and we have enough space for perpendicular (but for now not enough to park parallel), set spec_capablePerpendicular to true */
+	guarantee
+		G((
+			(spec_carStatus = MEASURE_PARKING) & 
+			(spec_blankSpotsCounter >= suitablePerpendicularPS) & 
+			(spec_blankSpotsCounter < suitableParallelPS)
+		) 
+			-> (spec_capablePerpendicular = YES)
+		);
+	
+	/* If we are measuring ps, and we don't have enough space for perpendicular, set spec_capablePerpendicular to false */
+	
+	guarantee
+		G((
+			(spec_carStatus = MEASURE_PARKING) & 
+			(spec_blankSpotsCounter < suitablePerpendicularPS)
+		) 
+			-> (spec_capablePerpendicular = NO)
+		);
+	
+//		
+//	LTLSPECENV
+//		G((spec_carStatus = MEASURE_PARKING & obstacle=CLEAR & engineMot = FWD) -> F(spec_blankSpotsCounter = suitableParallelPS));
+
+
+
+/**********************************************************************************/
+/*************************** Preparing for parallel parking************************/
+/**********************************************************************************/
+		
+	
+	/* set of options available while preparing for parking */
+	guarantee
+		G((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING)-> 
+			((steeringMot = ALIGN_RIGHT | steeringMot = CENTER | steeringMot = ALIGN_LEFT) & 
+			(engineMot = FWD | engineMot = STOP))
+		);
+		
+	
+	guarantee
+		G((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & obstacle = CLEAR & engineMot = FWD 
+			& spec_prepareParallelCounter < preparingParallelSteps
+		) ->
+			(next(spec_prepareParallelCounter) = (spec_prepareParallelCounter + 1))
+		);
+		
+	guarantee
+		G((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & 
+			(spec_prepareParallelCounter < preparingParallelSteps)
+		) -> 
+			(keepCarStatus)
+		);
+		
+	guarantee
+		G ((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & spec_prepareParallelCounter = preparingParallelSteps & obstacle = CLEAR
+		) -> 
+			( 
+				(next(spec_carStatus) = PARALLEL) &
+				(next(spec_parkingParallelPhase) = FIRST_PHASE)
+				));
+
+    /* Liveness: Perform the necessary actions in order to reach the suitable number of steps before parking */
+	guarantee
+  respondsTo(spec_carStatus=PREPARE_FOR_PARALLEL_PARKING,(spec_prepareParallelCounter=preparingParallelSteps));
+		
+	assumption 
+  respondsTo((engineMot=FWD&spec_carStatus=PREPARE_FOR_PARALLEL_PARKING),(spec_prepareParallelCounter=preparingParallelSteps));
+		
+/**********************************************************************************/
+/******************************** parking parallel ********************************/
+/**********************************************************************************/
+		
+	/* set of options available while parking parallel */
+	guarantee
+		G((spec_carStatus = PARALLEL) ->
+			((steeringMot = MAX_RIGHT | steeringMot = CENTER | steeringMot = MAX_LEFT) & 
+			(engineMot = PARKING_BWD | engineMot = STOP))
+		);
+	
+	/*we are not in parking phase if we are not in parking mode */
+	guarantee
+		G((spec_carStatus != PARALLEL) <-> (spec_parkingParallelPhase = PHASE_NONE));
+		
+	guarantee
+		G((spec_carStatus = PARALLEL & spec_parkingParallelPhase = FIRST_PHASE & obstacle = CLEAR) ->
+			(engineMot = PARKING_BWD  & (keepCarStatus)& steeringMot = MAX_RIGHT & next(spec_parkingParallelPhase = SECOND_PHASE))
+		);
+	
+	guarantee
+		G((spec_carStatus = PARALLEL & spec_parkingParallelPhase = SECOND_PHASE & obstacle = CLEAR) ->
+			(engineMot = PARKING_BWD & (keepCarStatus) & steeringMot = MAX_LEFT & next(spec_parkingParallelPhase = PARKING_SUCCESS))
+		);
+		
+	guarantee
+		G((spec_carStatus = PARALLEL & spec_parkingParallelPhase = PARKING_SUCCESS) ->
+			((Stop) & (keepCarStatus) & steeringMot = CENTER & (keepParallelParkingPhase))
+		);
+
+		
+/**********************************************************************************/
+/****************************** parking perpendicular *****************************/
+/**********************************************************************************/
+
+	/* set of options available while parking perpendicular */
+	guarantee
+		G((spec_carStatus = PERPENDICULAR) ->
+			((steeringMot = MAX_RIGHT | steeringMot = CENTER | steeringMot = MAX_LEFT) & 
+			(engineMot = PARKING_BWD | engineMot = PARKING_FWD | engineMot = STOP | engineMot = BWD))
+		);
+	
+	/*we are not in parking phase if we are not in parking mode */
+	guarantee
+		G((spec_carStatus != PERPENDICULAR) <-> (spec_parkingPerpendicularPhase = PHASE_NONE));
+		
+	guarantee
+		G((spec_carStatus = PERPENDICULAR & spec_parkingPerpendicularPhase = FIRST_PHASE & obstacle = CLEAR) ->
+			(engineMot = BWD  & (keepCarStatus) & steeringMot = CENTER & next(spec_parkingPerpendicularPhase = SECOND_PHASE))
+		);	
+	
+	guarantee
+		G((spec_carStatus = PERPENDICULAR & spec_parkingPerpendicularPhase = SECOND_PHASE & obstacle = CLEAR) ->
+			(engineMot = PARKING_FWD  & (keepCarStatus) & steeringMot = MAX_LEFT & next(spec_parkingPerpendicularPhase = THIRD_PHASE))
+		);
+		
+	guarantee
+		G((spec_carStatus = PERPENDICULAR & spec_parkingPerpendicularPhase = THIRD_PHASE & obstacle = CLEAR) ->
+			(engineMot = PARKING_BWD & (keepCarStatus) & steeringMot = MAX_RIGHT & next(spec_parkingPerpendicularPhase = PARKING_SUCCESS))
+		);
+		
+	guarantee
+		G((spec_carStatus = PERPENDICULAR & spec_parkingPerpendicularPhase = PARKING_SUCCESS) ->
+			((Stop) & (keepCarStatus) & steeringMot = CENTER & (keepPerpendicularParkingPhase))
+		);
+		
+	/*final goal! */
+	guarantee
+  GF ((spec_carStatus=PERPENDICULAR&spec_parkingPerpendicularPhase=PARKING_SUCCESS)|(spec_carStatus=PARALLEL&spec_parkingParallelPhase=PARKING_SUCCESS));
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

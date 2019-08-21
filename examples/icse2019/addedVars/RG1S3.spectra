@@ -1,0 +1,24 @@
+import "../patterns/DwyerPatterns.spectra"
+
+// basic alur example
+
+module Alur
+env boolean r;
+env	boolean c;
+
+sys boolean g;
+sys boolean v;
+
+sys boolean s1;
+sys boolean s2;
+sys boolean s3;
+
+gar
+pRespondsToS(r, next(g));
+	
+gar ungrant:
+	G ((c | g) ->next(!g));
+gar cnv:
+	G (c -> !v);
+gar gnv:
+	GF g & v;
