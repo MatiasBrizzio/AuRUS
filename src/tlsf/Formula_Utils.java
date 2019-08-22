@@ -4,11 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ConsoleErrorListener;
-
 import owl.grammar.LTLLexer;
 import owl.grammar.LTLParser;
 import owl.ltl.BooleanConstant;

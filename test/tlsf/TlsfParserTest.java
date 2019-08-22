@@ -511,5 +511,12 @@ class TlsfParserTest {
 		 Tlsf spec = TLSF_Utils.fromSpectra(spectra);
 		 System.out.println(spec);
 	}
+	
+	@Test
+	void testSpectra2() throws IOException, InterruptedException {
+		 Spectra spectra = SpectraParser.parse(new FileReader("examples/icse2019/Simple/RG1.spectra"));	 
+		 Tlsf spec = TLSF_Utils.fromSpectra(spectra);
+		 System.out.println(spec);
+	}
 	 
 }

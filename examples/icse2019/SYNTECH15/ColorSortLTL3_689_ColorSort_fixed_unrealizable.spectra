@@ -25,12 +25,12 @@ module ColorSort
 		ext spec_pausing : {PAUSE, GO};*/
 		
 		
-define -- allsleep is true iff all motors sleep
-	allsleep := verMot = SLEEP  & horMot = SLEEP & botMot = STOP;
-define -- nonemove is true iff no motor moves
-	nonemove := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP;
-define -- nonemove is true iff no motor moves
-	onlybotmoves := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE;
+--define -- allsleep is true iff all motors sleep
+--	allsleep := verMot = SLEEP  & horMot = SLEEP & botMot = STOP;
+--define -- nonemove is true iff no motor moves
+--	nonemove := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP;
+--define -- nonemove is true iff no motor moves
+--	onlybotmoves := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE;
 
 guarantee
 	G (spec_prevBotMotReturn<->PREV(botMot = RETURN));
@@ -56,10 +56,10 @@ guarantee
 	G (spec_dropping = next(spec_dropping) <-> verMot = SLEEP & !(spec_prevBotMotReturn & ack_bot = SLEEP));
 
 guarantee
-	G (ack_ver = MOVE | ack_hor = MOVE -> allsleep);
+	G (ack_ver = MOVE | ack_hor = MOVE -> (verMot = SLEEP  & horMot = SLEEP & botMot = STOP));
 /*	
 LTLSPECENV
-	G (!spec_dropping -> nonemove);
+	G (!spec_dropping -> ( ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP));
 	*/ 
 guarantee
   respondsTo(color!=BLACK,(horMot=MOVE&detect=spec_currentColor));
@@ -70,13 +70,13 @@ guarantee
 -- running the robot
 
 guarantee
-	G (color = BLACK & !spec_dropping -> allsleep);
+	G (color = BLACK & !spec_dropping -> (verMot = SLEEP  & horMot = SLEEP & botMot = STOP));
 	
 guarantee
 	G (color != BLACK & !spec_dropping -> verMot = MOVE & next(spec_currentColor) = color);
 
 guarantee
-	G (nonemove & spec_dropping & PREV(ack_ver = MOVE)-> botMot = SEEK);
+	G (( ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP) & spec_dropping & PREV(ack_ver = MOVE)-> botMot = SEEK);
  
 -- P19
 -- (spec_dropping & detect != spec_currentColor -> botMot = SEEK) is true between (spec_prevBotMotSeek & ack_bot = MOVE) and (spec_prevBotMotSeek & detect = spec_currentColor)
@@ -98,29 +98,29 @@ guarantee -- equivalence of satisfaction
   GF (spec_state_seek=S0|spec_state_seek=S1|spec_state_seek=S3);
 
 guarantee
-	G (spec_dropping & onlybotmoves & detect = spec_currentColor & PREV(botMot = SEEK) <-> horMot = MOVE);
+	G (spec_dropping & (ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE) & detect = spec_currentColor & PREV(botMot = SEEK) <-> horMot = MOVE);
  	
 guarantee
-	G (nonemove & PREV(ack_hor = MOVE) & spec_dropping -> botMot = RETURN);
+	G (( ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = SLEEP) & PREV(ack_hor = MOVE) & spec_dropping -> botMot = RETURN);
 -- P20
--- (spec_dropping & onlybotmoves -> botMot = RETURN) is true after (spec_prevBotMotReturn & ack_bot = MOVE) until (spec_prevBotMotReturn & ack_bot = SLEEP)
+-- (spec_dropping & (ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE) -> botMot = RETURN) is true after (spec_prevBotMotReturn & ack_bot = MOVE) until (spec_prevBotMotReturn & ack_bot = SLEEP)
 guarantee -- initial assignments: initial spec_state_return
   spec_state_return=S0;
 
 guarantee -- safety this and next spec_state_return
   G ((spec_state_return=S0 & ((!(spec_prevBotMotReturn & ack_bot = MOVE) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) | ((spec_prevBotMotReturn & ack_bot = SLEEP))) & next(spec_state_return=S0)) |
-  (spec_state_return=S0 & ((spec_prevBotMotReturn & ack_bot = MOVE) & !(spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S1)) |
-  (spec_state_return=S0 & ((spec_prevBotMotReturn & ack_bot = MOVE) & (spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S2)) |
+  (spec_state_return=S0 & ((spec_prevBotMotReturn & ack_bot = MOVE) & !(spec_dropping & (ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE) -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S1)) |
+  (spec_state_return=S0 & ((spec_prevBotMotReturn & ack_bot = MOVE) & (spec_dropping & (ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE) -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S2)) |
   (spec_state_return=S1 & next(spec_state_return=S1)) |
   (spec_state_return=S2 & ((spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S0)) |
-  (spec_state_return=S2 & (!(spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S1)) |
-  (spec_state_return=S2 & ((spec_dropping & onlybotmoves -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S2)));
+  (spec_state_return=S2 & (!(spec_dropping & (ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE) -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S1)) |
+  (spec_state_return=S2 & ((spec_dropping & (ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE) -> botMot = RETURN) & !(spec_prevBotMotReturn & ack_bot = SLEEP)) & next(spec_state_return=S2)));
 
 guarantee -- equivalence of satisfaction
   GF (spec_state_return=S0|spec_state_return=S2);
  
 guarantee
-	G (spec_prevBotMotReturn & ack_bot = SLEEP -> allsleep);
+	G (spec_prevBotMotReturn & ack_bot = SLEEP -> (verMot = SLEEP  & horMot = SLEEP & botMot = STOP));
 
 -- speed button
 
