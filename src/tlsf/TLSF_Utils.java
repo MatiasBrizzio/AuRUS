@@ -1215,17 +1215,21 @@ public class TLSF_Utils {
 		}
 		if (!spec.psiE().isEmpty()) {
 			new_tlsf_spec += "  REQUIRE {\n"
-				+ "    "
-			    + LabelledFormula.of(GOperator.of(Conjunction.of(spec.psiE())),spec.variables()) + ";\n"
-			    + "  }\n"
+				+ "    ";
+				for (Formula f : spec.psiE()) {
+					new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(f),spec.variables()) + ";\n"	;
+				}
+				new_tlsf_spec += "  }\n"
 			    + '\n';
 		}
 			  
 		if (!spec.psiS().isEmpty()) {
 			new_tlsf_spec += "  ASSERT {\n"
-			+ "    "
-			+LabelledFormula.of(GOperator.of(Conjunction.of(spec.psiS())),spec.variables()) + ";\n"
-			+"  }\n"
+			+ "    ";
+			for (Formula f : spec.psiS()) {
+				new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(f),spec.variables()) + ";\n"	;
+			}
+			new_tlsf_spec += "  }\n"
 			+ '\n';
 		}
 

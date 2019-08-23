@@ -433,7 +433,7 @@ class TlsfParserTest {
   
   @Test
   void testTlsfMinepump() throws IOException, InterruptedException {
-	  String filename = "examples/minepump.tlsf";
+	  String filename = "examples/minepump_basic.tlsf";
 //	  FileReader f = new FileReader(filename);
 //	    Tlsf tlsf = TlsfParser.parse(f);
 	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
@@ -514,7 +514,7 @@ class TlsfParserTest {
 	
 	@Test
 	void testSpectra2() throws IOException, InterruptedException {
-		 Spectra spectra = SpectraParser.parse(new FileReader("examples/icse2019/Simple/RG1.spectra"));	 
+		 Spectra spectra = SpectraParser.parse(new FileReader("examples/icse2019/SYNTECH15/ColorSortLTLUnrealizable2_791_ColorSort_unrealizable.spectra"));	 
 		 Tlsf spec = TLSF_Utils.fromSpectra(spectra);
 		 System.out.println(spec);
 	}
