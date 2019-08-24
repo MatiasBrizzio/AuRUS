@@ -134,6 +134,11 @@ public class StrixHelper {
 		    		realizable = RealizabilitySolverResult.REALIZABLE;
 		    		break;
 		    	}
+		    	if (aux.contains("Error")){
+			    	System.out.println("ERR: " + aux);
+			    	realizable = RealizabilitySolverResult.ERROR;
+			    	break;
+			    }
 		    }
 
 			//read program's error
@@ -237,6 +242,11 @@ public class StrixHelper {
 		    		realizable = RealizabilitySolverResult.REALIZABLE;
 		    		break;
 		    	}
+		    	if (aux.contains("Error")){
+			    	System.out.println("ERR: " + aux);
+			    	realizable = RealizabilitySolverResult.ERROR;
+			    	break;
+			    }
 		    }
 
 			//read program's error

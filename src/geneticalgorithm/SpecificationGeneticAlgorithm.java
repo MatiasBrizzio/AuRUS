@@ -52,7 +52,7 @@ public class SpecificationGeneticAlgorithm {
 			SpecificationChromosome s = solutions.get(i);
 			System.out.println();
 			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
-			System.out.println(TLSF_Utils.toTLSF(s.spec));
+			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
 		}
 		long totalTime = finalTime-initialTime;
 		int min = (int) (totalTime)/60000;
