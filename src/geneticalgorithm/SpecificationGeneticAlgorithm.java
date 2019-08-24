@@ -62,7 +62,7 @@ public class SpecificationGeneticAlgorithm {
 		PreciseModelCountingSpecificationFitness.print_config();
 	}
 	
-	private void print_config() {
+	public void print_config() {
 		System.out.println(String.format("GEN: %s, Pop:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, MUTATION_RATE, CROSSOVER_RATE));
 	}
 	private static Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
