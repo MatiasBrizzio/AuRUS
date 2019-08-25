@@ -1,11 +1,14 @@
 package main;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import geneticalgorithm.Settings;
+import geneticalgorithm.SpecificationChromosome;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
@@ -55,7 +58,23 @@ public class Main {
 		if (mutationRate > 0) ga.MUTATION_RATE = mutationRate;
 		if (generations > 0) ga.GENERATIONS = generations;
 		ga.run(tlsf);
-
+		
+		if (ga.solutions.isEmpty())
+			return;
+		
+		String directoryName = filename.substring(0, filename.lastIndexOf('.'));
+		File outfolder = new File(directoryName);
+		if (!outfolder.exists())
+			outfolder.mkdir();
+		for (int i = 0; i < ga.solutions.size(); i++) {
+			SpecificationChromosome sol = ga.solutions.get(i);
+			File file = new File(directoryName + "/spec"+i+".tlsf");
+	        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+	        BufferedWriter bw = new BufferedWriter(fw);
+	        bw.write(TLSF_Utils.adaptTLSFSpec(sol.spec));
+	        bw.write("\n//fitness: " + sol.fitness);
+	        bw.close(); 
+		}
 	}
 	
 	private static void correctUssage(){
