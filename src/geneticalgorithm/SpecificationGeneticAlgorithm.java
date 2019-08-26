@@ -62,6 +62,39 @@ public class SpecificationGeneticAlgorithm {
 		PreciseModelCountingSpecificationFitness.print_config();
 	}
 	
+	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
+		long initialTime = System.currentTimeMillis();
+		//create random population
+		Population<SpecificationChromosome> population = new Population<>();
+		SpecificationChromosome init = new SpecificationChromosome(spec);
+		population.addChromosome(init);
+		for (int i = 0; i < POPULATION_SIZE; i++) {
+			SpecificationChromosome c = init.mutate();
+			population.addChromosome(c);
+		}
+		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
+		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
+		for (SpecificationChromosome c : ga.getPopulation()) {
+			if (c.status == SPEC_STATUS.REALIZABLE) {
+				solutions.add(c);
+			}
+		}
+		System.out.println("Realizable Specifications:" );
+		for (int i = 0; i < solutions.size(); i++) {
+			SpecificationChromosome s = solutions.get(i);
+			System.out.println();
+			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
+			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
+		}
+		long finalTime = System.currentTimeMillis();
+		long totalTime = finalTime-initialTime;
+		int min = (int) (totalTime)/60000;
+		int sec = (int) (totalTime - min*60000)/1000;
+		System.out.println(String.format("Time: %s m  %s s",min, sec));
+		print_config();
+		PreciseModelCountingSpecificationFitness.print_config();
+	}
+	
 	public void print_config() {
 		System.out.println(String.format("GEN: %s, Pop:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, MUTATION_RATE, CROSSOVER_RATE));
 	}
@@ -77,6 +110,7 @@ public class SpecificationGeneticAlgorithm {
 //		}
 		return population;
 	}
+	
 	
 	private static void addListener(GeneticAlgorithm<SpecificationChromosome,Double> ga) {
 		// just for pretty print

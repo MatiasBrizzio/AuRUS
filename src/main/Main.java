@@ -21,6 +21,7 @@ public class Main {
 		int crossoverRate = 0;
 		int mutationRate = 0;
 		int generations = 0;
+		boolean randomGen = false;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
 			if(args[i].startsWith("-Gen=")){
@@ -37,6 +38,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-no-docker")){
 				Settings.USE_DOCKER = false;
+			}
+			else if(args[i].startsWith("-random")){
+				randomGen = true;
 			}
 			else if(args[i].startsWith("-") || (!args[i].endsWith(".tlsf") && !args[i].endsWith(".spectra"))){
 				correctUssage();
@@ -57,7 +61,11 @@ public class Main {
 		if (crossoverRate > 0) ga.CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) ga.MUTATION_RATE = mutationRate;
 		if (generations > 0) ga.GENERATIONS = generations;
-		ga.run(tlsf);
+		
+		if (randomGen)
+			ga.runRandom(tlsf);
+		else
+			ga.run(tlsf);
 		
 		if (ga.solutions.isEmpty())
 			return;
