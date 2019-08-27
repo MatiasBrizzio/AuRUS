@@ -1,0 +1,432 @@
+before: true random: 0 after: false
+before: true random: 1 after: p0
+before: true random: 0 after: false
+before: Fp4 random: 0 after: p4
+before: !p4 random: 3 after: p3
+before: true random: 1 after: p3
+before: !p3 random: 0 after: true
+before: G!p0 random: 2 after: F!p0
+before: G!p4 random: 2 after: F!p4
+before: Fp0 random: 2 after: Gp0
+before: (FG!p3|FG!p2|FG!p1|FG!p0) random: 1 after: (FG!p3|FG!p2|FG!p1|FG!p0)
+before: p2 random: 2 after: !p2
+before: true random: 1 after: p2
+before: true random: 0 after: false
+before: !p3 random: 2 after: p3
+before: G!p4 random: 1 after: Fp4
+before: G(!p2|!p1|G!p4) random: 0 after: false
+before: true random: 0 after: false
+before: !p2 random: 2 after: G!p2
+before: !p0 random: 0 after: false
+before: FG!p2 random: 2 after: XG!p2
+before: ((FG!p4&(FG!p3|FG!p2|FG!p1|FG!p0))|(GFp0&GFp1&GFp2&GFp3&GFp4)) random: 0 after: false
+before: true random: 0 after: false
+before: !p3 random: 0 after: false
+before: G(!p2|!p1|G!p4) random: 1 after: (G!p2|G!p1|G!p4)
+before: G!p4 random: 0 after: false
+before: (!p3|!p1|G!p4) random: 3 after: (!p3W(G!p4|!p1))
+before: !p0 random: 3 after: p2
+before: FG!p0 random: 2 after: XG!p0
+before: G!p4 random: 2 after: X!p4
+before: FG!p0 random: 2 after: G!p0
+before: FG!p4 random: 5 after: FG!p4
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: (!p2|!p1|G!p4) random: 1 after: (!p2&!p1&G!p4)
+before: true random: 0 after: false
+before: true random: 1 after: p1
+before: FG!p1 random: 1 after: G!p1
+before: FG!p0 random: 1 after: GFp0
+before: p1 random: 1 after: false
+before: G(!p2|!p1|G!p4) random: 4 after: false
+before: !p4 random: 3 after: p4
+before: FG!p1 random: 1 after: GFp1
+before: p3 random: 2 after: !p3
+before: p3 random: 2 after: !p3
+before: !p1 random: 3 after: !p2
+before: true random: 1 after: p0
+before: true random: 0 after: false
+before: true random: 1 after: !p0
+before: true random: 0 after: false
+before: !p1 random: 2 after: p1
+before: FG!p3 random: 2 after: G!p3
+before: G!p4 random: 0 after: false
+before: true random: 0 after: false
+before: true random: 1 after: !p3
+before: !p3 random: 1 after: false
+before: !p1 random: 2 after: p1
+before: !p1 random: 2 after: p1
+before: G(G!p4|!p2|!p0) random: 1 after: (G!p2|G!p0|G!p4)
+before: true random: 1 after: p0
+before: G(G!p4|!p3|!p0) random: 1 after: F(p0&p3&Fp4)
+before: G!p4 random: 0 after: !p4
+before: G!p1 random: 2 after: X!p1
+before: true random: 1 after: !p3
+before: FG!p1 random: 2 after: XG!p1
+before: GFp3 random: 0 after: Fp3
+before: Fp4 random: 0 after: p4
+before: !p0 random: 1 after: (!p2&!p0)
+before: GFp2 random: 3 after: false
+before: G(!p3|!p2|G!p4) random: 1 after: (G!p3|G!p2|G!p4)
+before: !p0 random: 2 after: p0
+before: GFp2 random: 1 after: FG!p2
+before: p3 random: 3 after: p2
+before: !p4 random: 1 after: (!p4&!p3)
+before: G(G!p4|!p2|!p0) random: 2 after: false
+before: (G!p4|!p3|!p0) random: 1 after: (G!p4&!p3&!p0)
+before: !p4 random: 0 after: false
+before: FG!p2 random: 6 after: FG!p2
+before: GFp0 random: 1 after: false
+before: !p1 random: 0 after: false
+before: GFp1 random: 1 after: false
+before: (G!p4|!p3|!p0) random: 2 after: (G!p4|!p3|!p0)
+before: GFp0 random: 1 after: false
+before: G!p4 random: 1 after: false
+before: !p2 random: 3 after: !p4
+before: G!p4 random: 1 after: Fp4
+before: G!p1 random: 0 after: !p1
+before: true random: 1 after: p0
+before: GFp3 random: 0 after: false
+before: true random: 0 after: false
+before: G(!p3|!p2|G!p4) random: 0 after: (!p3|!p2|G!p4)
+before: Fp1 random: 2 after: Xp1
+before: true random: 0 after: false
+before: true random: 1 after: p3
+before: true random: 1 after: p2
+before: true random: 1 after: !p0
+before: G!p4 random: 1 after: false
+before: !p0 random: 1 after: (!p2&!p0)
+before: true random: 1 after: !p2
+before: (G!p4|!p3|!p0) random: 2 after: (G!p4|!p3|!p0)
+before: !p4 random: 0 after: true
+before: G!p1 random: 2 after: F!p1
+before: ((FG!p4&(FG!p3|FG!p2|FG!p1|FG!p0))|(GFp0&GFp1&GFp2&GFp3&GFp4)) random: 1 after: ((FG!p4&(F!p1|FG!p3|FG!p2|FG!p0))|(GFp0&GFp1&GFp2&GFp3&GFp4))
+before: (!p3|!p1|G!p4) random: 1 after: (!p3|!p1|G!p4)
+before: FG!p1 random: 2 after: G!p1
+before: G!p0 random: 2 after: X!p0
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: true random: 1 after: p2
+before: true random: 1 after: !p3
+before: p1 random: 2 after: Gp1
+before: true random: 0 after: false
+before: G(G!p4|!p1|!p0) random: 2 after: false
+before: G(!p3|!p1|G!p4) random: 1 after: F(p1&p3&Fp4)
+before: !p1 random: 2 after: p1
+before: G(!p2|!p1|G!p4) random: 2 after: false
+before: true random: 0 after: false
+before: p1 random: 2 after: Gp1
+before: !p3 random: 3 after: p0
+before: Fp1 random: 1 after: G!p1
+before: !p2 random: 1 after: false
+before: !p3 random: 1 after: false
+before: FG!p3 random: 0 after: false
+before: p1 random: 2 after: !p1
+before: (G!p4|!p3|!p0) random: 0 after: (p0&p3&Fp4)
+before: (G!p4|!p1|!p0) random: 1 after: (G!p4|!p1|!p0)
+before: (G(!p3|!p2|G!p4)&G(!p3|!p1|G!p4)&G(G!p4|!p3|!p0)&G(!p2|!p1|G!p4)&G(G!p4|!p2|!p0)&G(G!p4|!p1|!p0)&((FG!p4&(FG!p3|FG!p2|FG!p1|FG!p0))|(GFp0&GFp1&GFp2&GFp3&GFp4))) random: 0 after: (F(p0&p1&Fp4)|F(p0&p2&Fp4)|F(p1&p2&Fp4)|F(p1&p3&Fp4)|F(p2&p3&Fp4)|F!p3|((FG!p3|FG!p2|FG!p1|FG!p0|FG!p4)&(GFp4|(GFp1&GFp2&GFp3&GFp0)))|FG!p4|F!p0)
+before: true random: 0 after: false
+before: G!p4 random: 2 after: F!p4
+before: !p2 random: 0 after: false
+before: p2 random: 2 after: Gp2
+before: (!p3|!p2|G!p4) random: 1 after: (!p3&!p2&G!p4)
+before: true random: 1 after: p0
+before: (G!p4|!p1|!p0) random: 0 after: (p0&p1&Fp4)
+before: p3 random: 0 after: true
+before: !p1 random: 0 after: true
+before: !p4 random: 0 after: true
+before: G(G!p4|!p1|!p0) random: 0 after: false
+before: Fp0 random: 0 after: p0
+before: Fp1 random: 0 after: p1
+before: !p0 random: 2 after: G!p0
+before: G!p4 random: 4 after: false
+before: p2 random: 2 after: Gp2
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: !p1 random: 1 after: (!p4&!p1)
+before: true random: 1 after: p3
+before: p4 random: 2 after: !p4
+before: !p2 random: 0 after: false
+before: !p4 random: 2 after: G!p4
+before: G!p3 random: 1 after: false
+before: p4 random: 1 after: p4
+before: true random: 0 after: false
+before: FG!p3 random: 5 after: FG!p3
+before: GFp0 random: 4 after: false
+before: true random: 1 after: !p3
+before: G!p4 random: 0 after: !p4
+before: true random: 1 after: !p1
+before: !p4 random: 1 after: (!p4&!p0)
+before: !p3 random: 2 after: G!p3
+before: G!p4 random: 1 after: Fp4
+before: Fp3 random: 1 after: G!p3
+before: G!p1 random: 0 after: false
+before: GFp3 random: 4 after: false
+before: !p4 random: 2 after: G!p4
+before: FG!p4 random: 1 after: G!p4
+before: GFp2 random: 4 after: false
+before: true random: 1 after: !p3
+before: p0 random: 0 after: true
+before: G!p4 random: 3 after: false
+before: true random: 0 after: false
+before: !p2 random: 0 after: true
+before: G!p4 random: 1 after: Fp4
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: !p4 random: 2 after: p4
+before: true random: 1 after: !p1
+before: !p2 random: 1 after: (!p2&!p1)
+before: G!p4 random: 0 after: false
+before: G!p4 random: 4 after: false
+before: !p3 random: 0 after: false
+before: !p0 random: 1 after: (p2&!p0)
+before: FG!p2 random: 2 after: XG!p2
+before: GFp3 random: 4 after: false
+before: G!p4 random: 2 after: false
+before: G(G!p4|!p2|!p0) random: 2 after: (F!p0|F!p2|FG!p4)
+before: true random: 0 after: false
+before: (!p3|!p2|G!p4) random: 0 after: (p2&p3&Fp4)
+before: !p1 random: 1 after: false
+before: !p4 random: 2 after: p4
+before: p2 random: 1 after: false
+..s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,65 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,65 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 .s0,72 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,65 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,63 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,65 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,65 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,63 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,63 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,65 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,69 -1.0 +1.0 .s1,00 .s0,72 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,94 -1.0 +1.0 Realizable Specifications:
+
+Solution N: 0	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+     G ((!r_0 || !r_1 ||  F ( G (!g))));
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+    ( F ( G (!g)) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3)) &&  G ( F (g))));
+  }
+}
+
+Solution N: 1	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+    ( F ( G (!g)) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3)) &&  G ( F (g))));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 2	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+    ( F ( G (!g)) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3)) &&  G ( F (g))));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 3	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+    ( F ( G (!g)) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3)) &&  G ( F (g))));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 4	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+    ( F ( G (!g)) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3)) &&  G ( F (g))));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 5	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+    (( F ( G (!g)) && ( F ( G (!r_0)) ||  F ( G (!r_1)) ||  F ( G (!r_2)) ||  F ( G (!r_3)))) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  X ( G ( F (r_3)))));
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 6	Fitness: 0,98
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+    (( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3)) &&  G ( F (!g))) || ( F ( G (!g)) && ( F ( G (!r_0)) ||  F ( G (!r_1)) ||  F ( G (!r_2)) ||  F ( G (!r_3)))));
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 7	Fitness: 0,98
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+     G ((!r_2 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_3 ||  G (!g)));
+     G ((!r_0 || !r_3 ||  G (!g)));
+     G ((!r_1 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_2 ||  G (!g)));
+     G ((!r_0 || !r_1 ||  G (!g)));
+  }
+}
+
+Solution N: 8	Fitness: 0,98
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+
+  GUARANTEES {
+    ( F (!r_0) ||  F (!r_3) ||  F ( G (!g)) ||  F ((r_0 && r_1 &&  F (g))) ||  F ((r_0 && r_2 &&  F (g))) ||  F ((r_1 && r_2 &&  F (g))) ||  F ((r_1 && r_3 &&  F (g))) ||  F ((r_2 && r_3 &&  F (g))) || (( F ( G (!r_0)) ||  F ( G (!r_1)) ||  F ( G (!r_2)) ||  F ( G (!r_3)) ||  F ( G (!g))) && ( G ( F (g)) || ( G ( F (r_0)) &&  G ( F (r_1)) &&  G ( F (r_2)) &&  G ( F (r_3))))));
+  }
+}
+Time: 8 m  19 s
+GEN: 10, Pop:300 MR: 100, COR: 10
+status: 0.75, lost0.1, won: 0.1, syn: 0.05

@@ -1,0 +1,440 @@
+.iter	fit	chromosome	#Pop	#Sol
+GEN: 10, Pop:30 MR: 100, COR: 10
+before: !p3 random: 1 after: false
+.s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 
+0	0,93	geneticalgorithm.SpecificationChromosome@38eb2fb0	22	0
+before: p3 random: 3 after: !p4
+before: !p3 random: 0 after: true
+before: Xp3 random: 2 after: Gp3
+before: G(FXp4|F!p2) random: 0 after: (FXp4|F!p2)
+before: (FXp4|F!p2) random: 2 after: (!p4|FXp4|F!p2)
+before: !p1 random: 2 after: p1
+before: !p1 random: 1 after: !p1
+before: G(FXp3|F!p1) random: 0 after: (FXp3|F!p1)
+before: !p2 random: 3 after: p0
+before: G(FXp4|F!p2) random: 0 after: (FXp4|Fp0)
+before: !p1 random: 1 after: (p0&!p1)
+before: G(FXp4|F!p2) random: 3 after: false
+before: Xp3 random: 0 after: p3
+.s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,80 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,84 -1.0 +1.0 
+1	0,93	geneticalgorithm.SpecificationChromosome@99407c2	30	0
+before: (FXp3|F!p1) random: 0 after: (GX!p3&Gp1)
+before: G(FXp3|F!p1) random: 0 after: (GX!p3&Gp1)
+before: Xp4 random: 2 after: Fp4
+before: G(FXp3|F!p1) random: 0 after: (FXp3|F!p1)
+before: !p2 random: 2 after: G!p2
+before: p0 random: 1 after: (p3&p0)
+before: GX((!p1&!p0)U(!p1&p0)) random: 0 after: false
+before: !p0 random: 2 after: G!p0
+before: !p1 random: 0 after: true
+before: X(p4|p3) random: 2 after: false
+before: G(FXp3|F!p1) random: 0 after: (FXp3|F!p1)
+before: G(FXp3|F!p1) random: 1 after: F(GX!p3&Gp1)
+before: !p2 random: 1 after: false
+before: (G(FXp4|F!p2)&G(FXp3|F!p1)) random: 1 after: (G(FXp3|F!p1)&GFXp4)
+before: p0 random: 0 after: true
+before: G(FXp4|F!p2) random: 4 after: false
+before: !p3 random: 1 after: false
+before: (X((!p1&!p0)U(!p1&p0))|X!p3) random: 1 after: ((!p1&!p0)U(p0&!p1))
+.s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,97 .s0,86 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,82 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,88 .s0,91 -1.0 +1.0 
+2	1,00	geneticalgorithm.SpecificationChromosome@3f50b680	30	0
+before: Xp0 random: 1 after: Gp0
+before: X!p3 random: 2 after: false
+before: !p1 random: 2 after: G!p1
+before: p4 random: 0 after: false
+before: Xp4 random: 2 after: false
+before: (FXp4|F!p2) random: 2 after: !p2
+before: FXFp4 random: 0 after: XFp4
+before: G(Xp0|!p0|X(p4|p3)) random: 0 after: false
+before: Xp4 random: 1 after: Gp4
+before: F!p1 random: 7 after: (p1U!p1)
+before: FXFp4 random: 7 after: (!p2UXFp4)
+before: FXp3 random: 4 after: FXXp3
+before: !p1 random: 1 after: !p1
+before: !p0 random: 0 after: false
+before: p0 random: 2 after: !p0
+before: (p4|p3) random: 3 after: (p3Wp4)
+before: ((!p1&!p0)U(!p1&p0)) random: 1 after: ((p1|p0)R(p1|!p0))
+before: X(p4|p3) random: 1 after: X(!p4&!p3)
+before: X((!p1&!p0)U(!p1&p0)) random: 1 after: X((p1|p0)R(p1|!p0))
+.s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,87 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,87 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,80 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,88 -1.0 +1.0 
+3	1,00	geneticalgorithm.SpecificationChromosome@2e2b9f53	30	1
+before: ((!p1&!p0)U(!p1&p0)) random: 0 after: (!p1&!p0)
+before: Fp0 random: 2 after: Gp0
+before: F!p1 random: 1 after: Gp1
+before: p0 random: 1 after: (p2&p0)
+before: !p1 random: 2 after: G!p1
+before: F!p1 random: 4 after: FXG!p1
+before: (FXp4|F!p2) random: 3 after: G(FXp4|F!p2)
+before: F!p1 random: 7 after: (!p4U!p1)
+before: (G(FXp4|F!p2)&G(FXp3|F!p1)) random: 1 after: (G(FXp3|(!p4U!p1))&p2&G(FXp4|F!p2))
+before: FXp4 random: 0 after: Xp4
+before: p0 random: 1 after: false
+before: p0 random: 2 after: Gp0
+before: Xp4 random: 1 after: Gp4
+before: (G(FXp4|F!p2)&G(F!p1|Fp3)) random: 0 after: false
+before: (!p1&!p0) random: 1 after: (p0&!p1&!p0)
+before: Fp1 random: 6 after: GFp1
+before: p4 random: 0 after: false
+before: !p3 random: 0 after: false
+before: G(X((!p1&!p0)U(!p1&p0))|X!p3) random: 1 after: false
+before: p4 random: 0 after: true
+.s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,76 .s0,74 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,83 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,88 -1.0 +1.0 
+4	1,00	geneticalgorithm.SpecificationChromosome@2e2b9f53	30	2
+before: (!p1&p0) random: 0 after: (p1|!p0)
+before: FXp4 random: 0 after: Xp4
+before: p4 random: 2 after: Gp4
+before: FXp4 random: 1 after: GX!p4
+before: (FXp3|F!p1) random: 1 after: (FXp3|F!p1)
+before: p3 random: 0 after: true
+before: X(p4|p3) random: 1 after: false
+before: p0 random: 3 after: p1
+before: X(p4|p3) random: 2 after: (Fp3|Fp4)
+before: X((!p1&!p0)U(!p1&p0)) random: 1 after: X((p1|p0)R(p1|!p0))
+before: (G(FXp4|F!p2)&G(FXp3|F!p1)) random: 0 after: false
+before: (FXp4|F!p2) random: 1 after: (FXp4&F!p2)
+before: (FXp4|F!p2) random: 3 after: (FXp4&F!p2)
+before: G(FXp4|F!p2) random: 0 after: (FXp4&F!p2)
+before: Xp0 random: 2 after: Gp0
+before: (G(FXp3|F!p1)&X(FXp4|F!p2)) random: 2 after: (p0&X(FXp4|F!p2)&G(FXp3|F!p1))
+before: !p2 random: 1 after: false
+before: !p3 random: 3 after: !p0
+before: (FXp3|F!p1) random: 0 after: false
+before: (G(XFp4|F!p2)&G(FXp3|F!p1)) random: 2 after: false
+.s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,83 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,87 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,80 -1.0 +1.0 
+5	1,00	geneticalgorithm.SpecificationChromosome@543ba2e1	30	2
+before: Xp4 random: 2 after: false
+before: X(p4|p3) random: 2 after: G(p4|p3)
+before: (GX((!p1&!p0)U(!p1&p0))&GFp0&G(X(p3&p0)|!p0|X(p4|p3))) random: 2 after: (G(X(p3&p0)|!p0|G(p4|p3))&GX((!p1&!p0)U(p0&!p1))&GFp0&p4)
+before: !p1 random: 0 after: true
+before: (G(FXp3|F!p1)&G(FXp4|F!p2)) random: 1 after: (FXp4|F!p2)
+before: Xp4 random: 0 after: false
+before: G(FXp4|F!p2) random: 2 after: FG!p2
+before: !p1 random: 2 after: G!p1
+before: !p2 random: 1 after: (!p3&!p2)
+before: G(FXp3|F!p1) random: 1 after: (GFXp3|GF!p1)
+before: (FXp4|F!p2) random: 3 after: G(FXp4|F!p2)
+before: !p2 random: 0 after: false
+before: FXp4 random: 3 after: GXp4
+before: p4 random: 2 after: !p4
+before: F!p2 random: 2 after: G!p2
+before: !p0 random: 2 after: p0
+before: ((!p1&!p0)U(!p1&p0)) random: 2 after: (!p1&p0)
+before: !p0 random: 3 after: p2
+before: GFp0 random: 0 after: Fp0
+before: (FXp4|F!p2) random: 1 after: (FXp4&F!p2)
+before: Fp0 random: 1 after: p0
+.s0,64 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,89 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,61 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,63 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,36 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,20 -1.0 +1.0 .s0,63 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,83 -1.0 +1.0 
+6	1,00	geneticalgorithm.SpecificationChromosome@3c55e9d4	30	3
+before: X(p3&p0) random: 0 after: (p3&p0)
+before: !p1 random: 1 after: (p2&!p1)
+before: p3 random: 0 after: false
+before: !p1 random: 1 after: (p4&!p1)
+before: p0 random: 2 after: !p0
+before: (FXp3|F!p1) random: 2 after: (!p4|F!p1|FXp3)
+before: FXp4 random: 2 after: XXp4
+before: (FXp3|F!p1) random: 2 after: (FXp3|!p0|F!p1)
+before: G(FXp3|F!p1) random: 0 after: (FXp3|!p0|F!p1)
+before: FXp3 random: 1 after: Xp3
+before: FXp4 random: 1 after: GX!p4
+before: !p1 random: 0 after: false
+before: Xp4 random: 1 after: X!p4
+before: !p1 random: 3 after: !p0
+before: G(FXp3|F!p1) random: 1 after: F(GX!p3&Gp0)
+before: p1 random: 1 after: (p1&!p0)
+before: !p2 random: 0 after: false
+.s1,00 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 
+7	1,00	geneticalgorithm.SpecificationChromosome@3446ab40	30	4
+before: (G(X(p3&p0)|!p0|G(p4|p3))&GFp0&GX((!p1&!p0)U(!p1&p0))&p4) random: 1 after: (G(X(p3&p0)|!p0|G(p4|p3))&GFp0&GX((!p1&!p0)U(p0&!p1))&p4)
+before: G(!p4|F!p1|FXp3) random: 1 after: F(Gp1&GX!p3&p4)
+before: (G(!p4|F!p1|FXp3)&G(F!p2|XXp4)) random: 0 after: (F(XX!p4&Gp2)|G(!p4|F!p1|FXp3))
+before: !p2 random: 0 after: true
+before: Xp3 random: 1 after: X!p3
+before: p3 random: 0 after: true
+before: G(X(p3&p0)|!p0|X(p4|p3)) random: 1 after: F(p0&X(!p4&!p3)&X!p0)
+before: X(p3&p0) random: 2 after: false
+before: FXp4 random: 2 after: XXp4
+before: (FXp3|F!p1) random: 0 after: (GX!p3&Gp1)
+before: F!p1 random: 0 after: false
+before: (G(FXp3|F!p1)&G(F!p2|GX!p4)) random: 0 after: false
+before: F!p1 random: 1 after: Gp1
+before: Xp4 random: 0 after: false
+before: !p2 random: 1 after: (!p3&!p2)
+before: G(FXp4|F!p2) random: 1 after: (GF(!p3&!p2)|GFXp4)
+before: FXp4 random: 0 after: Xp4
+before: G(FXp4|F!p2) random: 2 after: X(Xp4|F!p2)
+.s0,89 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,83 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 .s0,91 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s1,00 -1.0 +1.0 
+8	1,00	geneticalgorithm.SpecificationChromosome@513babf3	30	5
+before: XXp4 random: 0 after: false
+before: F!p1 random: 3 after: G!p1
+before: p3 random: 0 after: false
+before: Xp4 random: 2 after: Fp4
+before: !p2 random: 0 after: false
+before: G(FXp4|F!p2) random: 1 after: false
+before: X(p3&p0) random: 1 after: (Gp3&Gp0)
+before: !p0 random: 3 after: !p1
+before: !p2 random: 2 after: p2
+before: FXp4 random: 4 after: FXXp4
+before: p3 random: 1 after: (p4&p3)
+before: G(FXp3|F!p1) random: 0 after: false
+before: Xp3 random: 2 after: Fp3
+before: p2 random: 0 after: false
+before: (p3&p0) random: 1 after: (p0&p1&p3)
+before: X(p4|p3) random: 1 after: G(p4|p3)
+before: G(X(p3&p0)|!p0|X(p4|p3)) random: 0 after: false
+before: !p1 random: 2 after: p1
+before: p3 random: 1 after: (p3&!p0)
+before: G(FXp3|F!p1) random: 1 after: (GFX(p3&!p0)|GF!p1)
+before: Xp3 random: 0 after: false
+before: FXp3 random: 0 after: Xp3
+.s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,80 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,95 -1.0 +1.0 
+9	1,00	geneticalgorithm.SpecificationChromosome@18f9c19c	30	6
+Realizable Specifications:
+
+Solution N: 0	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((idle && grant_0)) ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 1	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((idle && grant_0)) ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 2	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((idle && grant_0)) ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 3	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((idle && grant_0)) ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_1) ||  F ( X (grant_1))));
+    ( G ( F (!request_0)) ||  G ( F ( X (grant_0))));
+  }
+}
+
+Solution N: 4	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    (grant_1 &&  G ( F (idle)) &&  G ((!idle ||  G ((grant_0 || grant_1)) ||  X ((idle && grant_0)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_1) ||  F ( X (grant_1))));
+     G (( F (!request_0) ||  F ( X (grant_0))));
+  }
+}
+
+Solution N: 5	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((idle && grant_0)) ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G ((!grant_1 ||  F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  X ( X (grant_1))));
+  }
+}
+
+Solution N: 6	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((idle && grant_0)) ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G ((!grant_1 ||  F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  X ( X (grant_1))));
+  }
+}
+Time: 17 m  46 s
+GEN: 10, Pop:30 MR: 100, COR: 10
+status: 0.75, lost0.075, won: 0.075, syn: 0.1

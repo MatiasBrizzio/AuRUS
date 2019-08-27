@@ -1,0 +1,838 @@
+before: p4 random: 0 after: true
+before: p4 random: 3 after: p2
+before: !p0 random: 2 after: p0
+before: F!p2 random: 0 after: false
+before: F!p1 random: 4 after: FX!p1
+before: (FXp3|F!p1) random: 1 after: (FXp3&FX!p1)
+before: Xp3 random: 0 after: p3
+before: !p1 random: 0 after: true
+before: Xp4 random: 1 after: X!p4
+before: F!p2 random: 2 after: X!p2
+before: p0 random: 1 after: false
+before: (p3|p4) random: 2 after: (p3|p4)
+before: !p0 random: 2 after: p0
+before: p0 random: 1 after: (p0&!p3)
+before: (Xp0|X(p3|p4)|!p0) random: 1 after: (Xp0&X(p3|p4)&!p0)
+before: (FXp3|F!p1) random: 2 after: (FXp3|F!p1)
+before: p4 random: 0 after: false
+before: X((!p0&!p1)U(p0&!p1)) random: 0 after: ((!p0&!p1)U(p0&!p1))
+before: (X((!p0&!p1)U(p0&!p1))|X!p3) random: 3 after: (((!p0&!p1)U(p0&!p1))&X!p3)
+before: p0 random: 2 after: !p0
+before: !p1 random: 1 after: false
+before: (p3|p4) random: 0 after: (!p3&!p4)
+before: p3 random: 2 after: Gp3
+before: (!p0&!p1) random: 0 after: false
+before: p0 random: 2 after: Gp0
+before: p3 random: 2 after: Gp3
+before: FXp3 random: 3 after: GXGp3
+before: Xp3 random: 2 after: false
+before: F!p2 random: 7 after: (p2U!p2)
+before: F!p1 random: 1 after: Gp1
+before: (FXp3|F!p1) random: 0 after: (GX!p3&F!p1)
+before: Xp4 random: 0 after: p4
+before: F!p2 random: 1 after: Gp2
+before: !p1 random: 1 after: (!p0&!p1)
+before: p4 random: 1 after: false
+before: Xp4 random: 1 after: true
+before: (FXp4|F!p2) random: 0 after: false
+before: G(FXp4|F!p2) random: 2 after: false
+before: (G(FXp3|F!p1)&G(FXp4|F!p2)) random: 2 after: false
+before: p0 random: 3 after: p3
+before: GFp0 random: 0 after: Fp3
+before: X(p3|p4) random: 1 after: X(!p3&!p4)
+before: (X((!p0&!p1)U(p0&!p1))|X!p3) random: 0 after: (Xp3&X((p0|p1)R(!p0|p1)))
+before: Fp0 random: 0 after: p0
+before: Xp4 random: 0 after: false
+before: p3 random: 2 after: !p3
+before: (FXp4|F!p2) random: 3 after: (FXp4&F!p2)
+before: Xp0 random: 0 after: false
+before: p4 random: 2 after: Gp4
+before: (Xp0|X(p3|p4)|!p0) random: 2 after: (Xp0|X(p3|Gp4)|!p0)
+before: F!p1 random: 0 after: false
+before: (FXp3|F!p1) random: 2 after: Xp3
+before: FXp4 random: 6 after: GFXp4
+before: !p2 random: 3 after: !p0
+before: (p0&!p1) random: 0 after: false
+before: FXp3 random: 5 after: FGXp3
+before: (G(FXp3|F!p1)&G(FXp4|F!p2)) random: 1 after: (G(F!p1|FGXp3)&G(FXp4|F!p2)&p4)
+before: X((!p0&!p1)U(p0&!p1)) random: 0 after: ((!p0&!p1)U(p0&!p1))
+before: G(FXp3|F!p1) random: 0 after: false
+before: (p0&!p1) random: 1 after: (p0&!p1)
+before: !p0 random: 0 after: true
+before: p0 random: 2 after: !p0
+before: (GFp0&G(Xp0|X(p3|p4)|!p0)&G(X((!p0&!p1)U(p0&!p1))|X!p3)) random: 2 after: (G(X(!p0&!p1)|X!p3)&G(Xp0|X(p3|p4)|!p0)&GFp0&!p2)
+before: !p0 random: 0 after: true
+before: p0 random: 0 after: true
+before: G(FXp4|F!p2) random: 1 after: F(Gp2&GX!p4)
+before: !p1 random: 2 after: G!p1
+before: p3 random: 3 after: p2
+before: (FXp3|F!p1) random: 3 after: (F!p1&FXp2)
+before: p4 random: 1 after: false
+before: G(X((!p0&!p1)U(p0&!p1))|X!p3) random: 2 after: X(X((!p0&!p1)U(p0&!p1))|X!p3)
+before: Xp3 random: 2 after: Fp3
+before: F!p1 random: 0 after: false
+before: (FXp3|F!p1) random: 2 after: Xp3
+before: !p2 random: 0 after: false
+before: !p1 random: 0 after: false
+before: Fp0 random: 7 after: (p1Up0)
+before: p0 random: 0 after: false
+before: F!p1 random: 2 after: X!p1
+before: p4 random: 2 after: !p4
+before: p4 random: 2 after: Gp4
+before: FXp3 random: 1 after: GX!p3
+before: (FXp3|F!p1) random: 2 after: (!p4|GX!p3|F!p1)
+before: (G(FXp3|F!p1)&G(FXp4|F!p2)) random: 1 after: (G(!p4|GX!p3|F!p1)&G(FXp4|F!p2))
+before: FXp3 random: 1 after: Xp3
+before: X(p3|p4) random: 1 after: G(p3|p4)
+before: FXp3 random: 7 after: (!p4UXp3)
+before: (FXp3|F!p1) random: 0 after: false
+before: F!p1 random: 2 after: X!p1
+before: G(FXp4|F!p2) random: 0 after: (FXp4|F!p2)
+before: F!p1 random: 0 after: !p1
+before: G(FXp3|F!p1) random: 2 after: (FXp3|F!p1)
+before: (Xp0|X(p3|p4)|!p0) random: 1 after: (Xp0&X(p3|p4)&!p0)
+before: ((!p0&!p1)U(p0&!p1)) random: 2 after: (X((!p0&!p1)U(p0&!p1))&(!p0|p1)&!p0&!p1)
+before: (X((!p0&!p1)U(p0&!p1))|X!p3) random: 3 after: G(X(X((!p0&!p1)U(p0&!p1))&(!p0|p1)&!p0&!p1)|X!p3)
+before: !p2 random: 2 after: G!p2
+before: !p1 random: 0 after: false
+before: X(p3|p4) random: 2 after: false
+before: !p3 random: 0 after: false
+before: (FXp3|F!p1) random: 0 after: (Gp1&GX!p3)
+before: (FXp4|F!p2) random: 0 after: (Gp2&GX!p4)
+before: Fp0 random: 6 after: GFp0
+before: !p1 random: 1 after: (!p1&p0)
+before: FXp4 random: 1 after: GX!p4
+before: G(FXp4|F!p2) random: 1 after: F(FXp4&Gp2)
+before: !p3 random: 1 after: false
+before: p4 random: 0 after: false
+before: Fp0 random: 1 after: G!p0
+before: (!p0&!p1) random: 0 after: (p0|p1)
+before: F!p1 random: 5 after: FG!p1
+before: !p1 random: 0 after: false
+before: X((!p0&!p1)U(p0&!p1)) random: 2 after: G((!p0&!p1)U(p0&!p1))
+before: !p0 random: 0 after: true
+before: ((!p0&!p1)U(p0&!p1)) random: 1 after: (p1R(!p0|p1))
+before: GFp0 random: 2 after: XFp0
+before: Fp0 random: 0 after: p0
+before: G(Xp0|X(p3|p4)|!p0) random: 3 after: false
+before: p3 random: 0 after: false
+before: F!p2 random: 0 after: !p2
+before: !p1 random: 0 after: false
+before: G(FXp3|F!p1) random: 1 after: (GF!p1|GFXp3)
+before: !p1 random: 1 after: (!p0&!p1)
+before: X!p3 random: 0 after: false
+before: Xp3 random: 1 after: X!p3
+before: FXp4 random: 2 after: XXp4
+before: (FXp4|F!p2) random: 0 after: (Gp2&XX!p4)
+before: (FXp3|F!p1) random: 0 after: (Gp1&GX!p3)
+before: (p3|p4) random: 0 after: false
+before: (GFp0&G(Xp0|X(p3|p4)|!p0)&G(X((!p0&!p1)U(p0&!p1))|X!p3)) random: 1 after: (p1&G(!p0|Xp0)&GFp0&G(X((!p0&!p1)U(p0&!p1))|X!p3))
+before: G(FXp3|F!p1) random: 1 after: F(Gp1&GX!p3)
+before: X((!p0&!p1)U(p0&!p1)) random: 0 after: ((!p0&!p1)U(p0&!p1))
+before: Xp3 random: 1 after: X!p3
+before: G(FXp3|F!p1) random: 1 after: F(Gp1&GXp3)
+before: Xp3 random: 0 after: false
+before: G(FXp4|F!p2) random: 0 after: false
+before: p0 random: 2 after: Gp0
+before: !p1 random: 1 after: false
+before: X((!p0&!p1)U(p0&!p1)) random: 2 after: (Gp0&G!p1)
+before: p4 random: 1 after: false
+before: Fp0 random: 2 after: Xp0
+before: p3 random: 2 after: Gp3
+before: Xp0 random: 2 after: Gp0
+before: !p1 random: 2 after: p1
+before: G(FXp3|F!p1) random: 4 after: false
+before: FXp3 random: 0 after: Xp3
+before: G(FXp3|F!p1) random: 2 after: X(Xp3|F!p1)
+before: p4 random: 1 after: (!p4&p4)
+before: !p2 random: 0 after: false
+before: (FXp4|F!p2) random: 3 after: GFXp4
+before: FXp3 random: 1 after: GX!p3
+before: (X((!p0&!p1)U(p0&!p1))|X!p3) random: 2 after: (X((!p0&!p1)U(p0&!p1))|X!p3|p2)
+before: p3 random: 1 after: false
+before: FXp3 random: 0 after: false
+before: !p1 random: 1 after: false
+before: FXp3 random: 0 after: Xp3
+before: FXp3 random: 1 after: GX!p3
+before: FXp4 random: 1 after: GX!p4
+before: (FXp4|F!p2) random: 2 after: (F!p2|p0|GX!p4)
+before: p3 random: 0 after: false
+before: ((!p0&!p1)U(p0&!p1)) random: 1 after: (p0&!p1)
+before: (p3|p4) random: 0 after: false
+before: (X((!p0&!p1)U(p0&!p1))|X!p3) random: 2 after: (X((!p0&!p1)U(p0&!p1))|X!p3)
+before: (p3|p4) random: 1 after: (p3|p4)
+before: X!p3 random: 0 after: !p3
+before: (FXp3|F!p1) random: 0 after: false
+before: Fp0 random: 0 after: false
+before: !p3 random: 2 after: G!p3
+before: p3 random: 0 after: true
+before: p3 random: 2 after: !p3
+before: !p2 random: 3 after: p1
+before: p0 random: 3 after: p0
+before: G(X((!p0&!p1)U(p0&!p1))|X!p3) random: 0 after: (X((!p0&!p1)U(p0&!p1))|X!p3)
+before: p3 random: 0 after: false
+before: !p1 random: 1 after: false
+before: G(FXp4|F!p2) random: 0 after: (FXp4|F!p2)
+before: p4 random: 0 after: true
+before: (G(FXp3|F!p1)&G(FXp4|F!p2)) random: 3 after: G(FXp3|F!p1)
+before: p3 random: 2 after: !p3
+before: !p3 random: 2 after: p3
+before: Fp0 random: 2 after: Gp0
+before: (Xp0|X(p3|p4)|!p0) random: 2 after: (p2|Xp0|X(p3|p4)|!p0)
+before: GFp0 random: 3 after: false
+before: (Xp0|X(p3|p4)|!p0) random: 1 after: (Xp0|X(p3|p4)|!p0)
+before: ((!p0&!p1)U(p0&!p1)) random: 1 after: ((p0|p1)R(!p0|p1))
+before: (FXp3|F!p1) random: 1 after: (FXp3|F!p1)
+before: G(FXp3|F!p1) random: 0 after: (FXp3|F!p1)
+before: FXp4 random: 2 after: XXp4
+before: FXp4 random: 1 after: GX!p4
+before: Xp0 random: 2 after: false
+before: X!p3 random: 0 after: false
+before: p0 random: 2 after: Gp0
+before: (GFp0&G(Xp0|X(p3|p4)|!p0)&G(X((!p0&!p1)U(p0&!p1))|X!p3)) random: 2 after: (FGp0&G(Xp0|X(p3|p4)|!p0)&G(X((!p0&!p1)U(p0&!p1))|X!p3))
+before: G(FXp4|F!p2) random: 1 after: F(Gp2&GX!p4)
+before: (X((!p0&!p1)U(p0&!p1))|X!p3) random: 0 after: (Xp3&X((p0|p1)R(!p0|p1)))
+before: F!p1 random: 1 after: Gp1
+before: (Xp0|X(p3|p4)|!p0) random: 1 after: (Xp0&X(p3|p4)&!p0)
+before: G(Xp0|X(p3|p4)|!p0) random: 3 after: false
+before: (FXp3|F!p1) random: 2 after: (p3|FXp3|F!p1)
+before: (GFp0&G(Xp0|X(p3|p4)|!p0)&G(X((!p0&!p1)U(p0&!p1))|X!p3)) random: 1 after: (GFp0&G(Xp0|X(p3|p4)|!p0)&G(X((!p0&!p1)U(p0&!p1))|X!p3))
+before: p0 random: 2 after: Gp0
+before: (FXp4|F!p2) random: 0 after: false
+before: !p1 random: 1 after: false
+before: p0 random: 2 after: Gp0
+before: !p1 random: 2 after: G!p1
+..s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,72 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 .s0,95 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,95 .s0,91 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,89 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 .s0,91 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,95 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,97 .s1,00 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,93 -1.0 +1.0 .s1,00 .s1,00 -1.0 +1.0 .s0,84 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 Realizable Specifications:
+
+Solution N: 0	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))) &&  G (( X (!grant_0) ||  G ((((!idle && !request_0))  U  ((idle && !request_0)))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 1	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G (( X (!grant_0) || (((!idle && !request_0))  U  ((idle && !request_0))))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 2	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G (((request_0)  U  (idle))) &&  G ((!idle ||  X ((grant_0 || grant_1)))) &&  G (( X (!grant_0) ||  X ((((!idle && !request_0))  U  ((idle && !request_0)))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 3	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))) &&  G (( X (!grant_0) ||  X ((((!idle && !request_0))  U  ((idle && !idle && !request_0)))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 4	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G (!idle) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))) &&  G (( X (!grant_0) ||  X ((((idle || request_0))  U  ((idle && !request_0)))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 5	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G (( X (!grant_0) || (((!idle && !request_0))  U  ((idle && !request_0))))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 6	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ( X (!grant_0)) &&  G ((((!idle && !request_0))  U  ((idle && !request_0)))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 7	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((grant_0 || grant_1)))) &&  G (( X (!grant_0) ||  X ((((!idle && !request_0))  U  ((idle && !request_0)))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 8	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F ((idle && !grant_0))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))) &&  G (( X (!grant_0) ||  X ((((!idle && !request_0))  U  ((idle && !request_0)))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 9	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    (!request_1 &&  G ( F (idle)) &&  G (( X (!grant_0) ||  X ((!idle && !request_0)))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 10	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G (( X (!grant_0) || ( G (idle) &&  G (!request_0)))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 11	Fitness: 1,00
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ((!idle ||  X ((grant_0 || grant_1)))) &&  G ( X ((((!idle && !request_0))  U  ((idle && !request_0))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 12	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( F (grant_0) &&  G ( X (grant_0)) &&  G ((!idle ||  X (idle) ||  X ((!grant_0 && !grant_1)))) &&  G ( X (( G ((!idle || request_0)) || (((!idle || request_0))  U  (((idle || request_0) && (!idle || request_0))))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 13	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ( X (grant_0)) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))) &&  G ( X (( G ((!idle || request_0)) || (((!idle || request_0))  U  (((idle || request_0) && (!idle || request_0))))))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 14	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ( X (!grant_0)) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 15	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ( X (!grant_0)) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 16	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ( X (!grant_0)) &&  G ((!idle ||  X (!idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+
+Solution N: 17	Fitness: 0,99
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G ( X (!grant_0)) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+Time: 8 m  39 s
+GEN: 10, Pop:300 MR: 100, COR: 10
+status: 0.75, lost0.1, won: 0.1, syn: 0.05

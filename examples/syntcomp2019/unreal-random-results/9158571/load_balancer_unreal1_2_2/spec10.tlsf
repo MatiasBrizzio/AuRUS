@@ -1,0 +1,34 @@
+INFO {
+  TITLE:       "Parameterized Load Balancer, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Load Balancer (generalized version of the Acacia+ benchmark)"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    idle;request_0;request_1;
+  }
+  OUTPUTS {
+    grant_0;grant_1;
+  }
+
+  ASSERT {
+     X ((!grant_0 || !grant_1));
+    (request_0 ||  X (!grant_0));
+    (request_1 ||  X (!grant_1));
+    (!request_0 || grant_1);
+    (idle ||  X ((!grant_0 && !grant_1)));
+    (!request_0 ||  X (!request_1) ||  X ( X ((grant_0 && grant_1))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (idle)) &&  G (( X (!grant_0) || ( G (idle) &&  G (!request_0)))) &&  G ((!idle ||  X (idle) ||  X ((grant_0 || grant_1)))));
+  }
+
+  GUARANTEES {
+     G (( F (!request_0) ||  F ( X (grant_0))));
+     G (( F (!request_1) ||  F ( X (grant_1))));
+  }
+}
+//fitness: 0.9980263157894738

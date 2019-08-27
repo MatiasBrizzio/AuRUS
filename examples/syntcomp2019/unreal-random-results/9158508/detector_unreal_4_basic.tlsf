@@ -1,0 +1,22 @@
+INFO {
+  TITLE:       "Parameterized Input Monitor, unrealizable variant"
+  DESCRIPTION: "Checks whether all input signals are eventually true"
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;
+    r_1;
+    r_2;
+    r_3;
+  }
+  OUTPUTS {
+    g;
+  }
+  GUARANTEE {
+    (((((G (F (r_0))) && (G (F (r_1)))) && (G (F (r_2)))) && (G (F (r_3)))) <-> (G (F (g))));
+    (G ((((((((r_0) && (r_1)) -> (G (! (g)))) && (((r_0) && (r_2)) -> (G (! (g))))) && (((r_0) && (r_3)) -> (G (! (g))))) && (((r_1) && (r_2)) -> (G (! (g))))) && (((r_1) && (r_3)) -> (G (! (g))))) && (((r_2) && (r_3)) -> (G (! (g))))));
+  }
+}

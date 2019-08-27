@@ -1,0 +1,30 @@
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X ((r_1 && !r_1)))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+//fitness: 0.9984126984126984

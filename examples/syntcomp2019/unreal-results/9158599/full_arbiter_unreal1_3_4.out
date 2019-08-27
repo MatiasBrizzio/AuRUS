@@ -1,0 +1,552 @@
+.iter	fit	chromosome	#Pop	#Sol
+GEN: 10, Pop:30 MR: 100, COR: 10
+.s0,76 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 
+0	0,92	geneticalgorithm.SpecificationChromosome@1b5bc39d	22	0
+before: G(Fp5|!p2) random: 3 after: false
+before: true random: 1 after: p2
+before: !p5 random: 0 after: true
+before: true random: 0 after: false
+before: (G!p5|(!p5U(!p5&p2))) random: 2 after: ((!p5U(!p5&p2))|G!p5|p2)
+before: G!p3 random: 1 after: Fp3
+before: !p0 random: 3 after: p1
+before: (Fp4|!p1) random: 3 after: (Fp4&!p1)
+before: !p3 random: 2 after: p3
+before: true random: 1 after: !p5
+before: true random: 1 after: p5
+before: !p1 random: 1 after: false
+before: true random: 1 after: !p3
+.s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,77 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,82 -1.0 +1.0 
+1	0,97	geneticalgorithm.SpecificationChromosome@41200e0c	30	0
+before: p5 random: 0 after: true
+before: true random: 1 after: p0
+before: true random: 1 after: !p1
+before: !p0 random: 1 after: (!p2&!p0)
+before: !p5 random: 2 after: G!p5
+before: Fp5 random: 0 after: false
+before: G(Fp4|!p1) random: 4 after: false
+before: !p5 random: 2 after: p5
+before: !p3 random: 1 after: false
+before: (G!p5|(!p5U(!p5&p2))) random: 1 after: (G!p5|(!p5U(!p5&p2)))
+before: G(Fp3|!p0) random: 2 after: X(Fp3|!p0)
+before: !p5 random: 0 after: true
+before: true random: 1 after: p4
+before: true random: 1 after: p0
+before: !p3 random: 0 after: true
+before: (!p5&p2) random: 0 after: false
+before: !p2 random: 2 after: G!p2
+before: (!p5&p2) random: 1 after: (p3&!p5&p2)
+before: true random: 0 after: false
+.s0,80 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,79 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,80 -1.0 +1.0 
+2	0,97	geneticalgorithm.SpecificationChromosome@2fb68ec6	30	1
+before: !p5 random: 2 after: G!p5
+before: p4 random: 0 after: true
+before: !p3 random: 1 after: !p3
+before: p5 random: 0 after: true
+before: true random: 1 after: !p5
+before: true random: 0 after: false
+before: Fp5 random: 1 after: G!p5
+before: p0 random: 2 after: !p0
+before: true random: 1 after: !p1
+before: true random: 1 after: p1
+before: true random: 1 after: p0
+before: true random: 1 after: !p1
+before: (!p3U(!p3&p0)) random: 1 after: (!p3&p0)
+before: true random: 0 after: false
+.s0,86 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,77 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,71 -1.0 +1.0 .s0,71 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,58 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,82 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,85 -1.0 +1.0 
+3	1,00	geneticalgorithm.SpecificationChromosome@14ac77b9	30	2
+before: G!p4 random: 0 after: false
+before: !p4 random: 0 after: false
+before: Fp4 random: 6 after: GFp4
+before: !p5 random: 0 after: false
+before: !p3 random: 0 after: true
+before: !p0 random: 1 after: (p0&!p0)
+before: !p3 random: 0 after: true
+before: !p5 random: 1 after: (p5&!p5)
+before: G!p3 random: 1 after: Fp3
+before: true random: 1 after: !p3
+before: true random: 0 after: false
+before: true random: 0 after: false
+before: p2 random: 3 after: !p5
+before: (!p3&p0) random: 1 after: (!p3&p0)
+before: !p5 random: 0 after: true
+.s0,82 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,70 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,71 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,72 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,59 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,86 -1.0 +1.0 
+4	1,00	geneticalgorithm.SpecificationChromosome@5cbe2654	30	3
+before: !p5 random: 1 after: (!p5&!p3)
+before: !p5 random: 3 after: p2
+before: Fp5 random: 7 after: (!p0Up5)
+before: G!p5 random: 3 after: false
+before: !p0 random: 2 after: G!p0
+before: !p5 random: 1 after: (!p5&!p4)
+before: p5 random: 3 after: !p0
+before: p4 random: 0 after: true
+before: !p4 random: 1 after: (!p5&!p4)
+before: p1 random: 1 after: (p3&p1)
+before: (Fp5|!p2) random: 0 after: false
+before: !p3 random: 3 after: !p0
+before: !p2 random: 1 after: false
+before: (G(Fp4|!p1)&G(Fp5|!p2)&G(Fp3|!p0)&(G!p5|(!p5U(!p5&p2)))&(G!p3|(!p3U(!p3&p0)))&(G!p4|(!p4U(!p4&p1)))) random: 2 after: (G(Fp3|!p0)&G(Fp4|!p1)&G(G!p5|(!p5U(!p5&p2)))&G(G!p3|(!p3U(!p3&p0)))&G(G!p4|(!p4U(!p4&p1)))&G(Fp5|!p2))
+before: (G!p3|(!p3U(!p3&p0))) random: 2 after: (G!p3|(!p3U(!p3&p0))|!p2)
+before: p4 random: 0 after: true
+before: p5 random: 2 after: !p5
+before: G!p5 random: 0 after: !p5
+before: !p3 random: 2 after: p3
+before: !p3 random: 0 after: false
+.s0,83 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,71 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,58 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,72 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,71 -1.0 +1.0 .s0,97 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,74 -1.0 +1.0 
+5	1,00	geneticalgorithm.SpecificationChromosome@378cfecf	30	4
+before: !p1 random: 2 after: p1
+before: !p3 random: 0 after: false
+before: !p5 random: 0 after: false
+before: !p5 random: 1 after: false
+before: !p2 random: 2 after: p2
+before: !p1 random: 1 after: false
+before: (Fp4|!p1) random: 3 after: (!p1RFp4)
+before: !p5 random: 2 after: G!p5
+before: !p5 random: 2 after: p5
+before: !p1 random: 0 after: false
+before: p4 random: 2 after: Gp4
+before: !p3 random: 2 after: G!p3
+before: (p4|!p3) random: 3 after: G(G!p3|Gp4)
+before: !p5 random: 1 after: false
+before: (!p5&p2) random: 0 after: (p5|!p2)
+before: G!p4 random: 0 after: !p4
+before: (!p4U(!p4&p1)) random: 0 after: !p4
+before: p0 random: 0 after: true
+before: !p5 random: 0 after: false
+before: !p3 random: 2 after: p3
+before: p4 random: 0 after: false
+before: (!p3U(!p3&p0)) random: 0 after: (!p3&p0)
+before: G(Fp5|!p2) random: 0 after: (Fp5|!p2)
+before: !p5 random: 0 after: true
+before: p2 random: 1 after: false
+.s0,98 -1.0 +1.0 .s0,69 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,85 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,77 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,66 -1.0 +1.0 .s0,80 -1.0 +1.0 .s0,62 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,83 .s0,74 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,73 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,75 -1.0 +1.0 .s0,71 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,67 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,74 -1.0 +1.0 .s0,83 -1.0 +1.0 
+6	1,00	geneticalgorithm.SpecificationChromosome@6920b0bc	30	5
+before: p5 random: 1 after: (p5&p0)
+before: !p2 random: 0 after: false
+before: p5 random: 0 after: false
+before: Fp5 random: 7 after: false
+before: !p5 random: 3 after: !p3
+before: !p5 random: 2 after: G!p5
+before: !p5 random: 1 after: (!p5&!p1)
+before: !p5 random: 0 after: true
+before: !p3 random: 0 after: true
+before: (!p5&!p3) random: 3 after: true
+before: !p1 random: 2 after: G!p1
+before: (Fp5|!p2) random: 3 after: G(Fp5|!p2)
+before: p5 random: 1 after: (p5&!p1)
+before: Fp5 random: 5 after: F(G!p1&Gp5)
+before: F!p5 random: 3 after: G!p5
+before: G!p5 random: 2 after: X!p5
+before: G!p5 random: 1 after: Fp5
+before: !p3 random: 0 after: true
+before: (!p4&p1) random: 2 after: (!p0&!p4&p1)
+before: (!p4U(!p4&p1)) random: 0 after: !p4
+before: !p3 random: 1 after: false
+.s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,86 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,78 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 .s0,89 -1.0 +1.0 .s0,76 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,83 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,84 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,87 -1.0 +1.0 .s0,98 -1.0 +1.0 
+7	1,00	geneticalgorithm.SpecificationChromosome@42383cb0	30	6
+before: Fp5 random: 4 after: FXp5
+before: G(Fp5|!p2) random: 4 after: false
+before: p5 random: 2 after: Gp5
+before: G(Fp5|!p2) random: 1 after: (FGp5|G!p2)
+before: XG(Fp5|!p2) random: 1 after: G(FGp5|G!p2)
+before: p5 random: 1 after: false
+before: !p2 random: 3 after: p4
+before: F!p1 random: 0 after: !p1
+before: Fp4 random: 2 after: Gp4
+before: (F!p1|Fp4) random: 3 after: (F!p1RFp4)
+before: !p3 random: 3 after: p2
+before: F!p3 random: 0 after: p2
+before: !p3 random: 2 after: G!p3
+before: !p5 random: 2 after: G!p5
+before: !p5 random: 2 after: G!p5
+before: !p3 random: 3 after: p4
+before: G(Fp5|!p2) random: 2 after: (F!p2|Fp5)
+before: !p1 random: 0 after: true
+before: !p5 random: 0 after: true
+before: !p5 random: 1 after: !p5
+before: F!p5 random: 7 after: !p5
+before: p4 random: 0 after: false
+before: G!p1 random: 0 after: !p1
+.s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,96 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 
+8	1,00	geneticalgorithm.SpecificationChromosome@57a6a933	30	7
+before: (FGp5|G!p2) random: 1 after: (FGp5|G!p2)
+before: !p5 random: 0 after: false
+before: G(Fp5|!p2) random: 0 after: (Fp5|!p2)
+before: !p3 random: 0 after: false
+before: !p3 random: 0 after: false
+before: Fp5 random: 0 after: p5
+before: (Fp5|p2) random: 0 after: (G!p5&!p2)
+before: !p3 random: 1 after: (p4&!p3)
+before: !p3 random: 0 after: false
+before: GFp4 random: 1 after: FG!p4
+before: !p3 random: 1 after: false
+before: !p2 random: 2 after: G!p2
+before: p4 random: 2 after: !p4
+before: !p3 random: 0 after: false
+before: G(Fp4|!p1) random: 1 after: (GFp4|G!p1)
+before: G(Fp5|!p2) random: 0 after: false
+before: (G(Fp5|!p2)&G(Fp4|!p1)) random: 0 after: false
+before: Fp4 random: 2 after: Xp4
+before: p4 random: 0 after: false
+before: !p3 random: 3 after: !p2
+before: !p3 random: 2 after: p3
+.s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,93 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,96 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 
+9	1,00	geneticalgorithm.SpecificationChromosome@fe09383	30	8
+Realizable Specifications:
+
+Solution N: 0	Fitness: 0,97
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    g_2;
+  }
+
+  GUARANTEES {
+    ( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))));
+     G ((!r_0 ||  F (g_0)));
+    ( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))));
+     G ((!r_1 ||  F (g_1)));
+    ( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))));
+     G ((!r_2 ||  F (g_2)));
+  }
+}
+
+Solution N: 1	Fitness: 0,97
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    g_2;
+  }
+
+  GUARANTEES {
+    ( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_1 ||  F (g_1)));
+    ( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))));
+    ( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))));
+     G ((!r_0 ||  F (g_0)));
+  }
+}
+
+Solution N: 2	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    !g_2;
+  }
+
+  GUARANTEES {
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 3	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    !g_0;
+  }
+
+  GUARANTEES {
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 4	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    !g_0;
+  }
+
+  GUARANTEES {
+     G ((!r_2 ||  F (g_2)));
+  }
+}
+
+Solution N: 5	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    !g_0;
+  }
+
+  GUARANTEES {
+     G ( F (g_1));
+     G ((r_2 ||  F (g_2)));
+  }
+}
+
+Solution N: 6	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    !g_0;
+  }
+
+  GUARANTEES {
+     X ( G ((!r_2 ||  F (g_2))));
+  }
+}
+
+Solution N: 7	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    !g_0;
+  }
+
+  GUARANTEES {
+     G (( G (!r_2) ||  F ( G (g_2))));
+  }
+}
+
+Solution N: 8	Fitness: 1,00
+INFO {
+  TITLE:       "Full Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    (!g_0 ||  F (r_0) ||  F (!g_0));
+    (!g_0 ||  X ((r_0 || g_0)) ||  X (( G (!g_0) || ((!g_0)  U  ((r_0 && !g_0))))));
+    (!g_1 ||  F (r_1) ||  F (!g_1));
+    (!g_1 ||  X ((r_1 || g_1)) ||  X (( G (!g_1) || ((!g_1)  U  ((r_1 && !g_1))))));
+    (!g_2 ||  F (r_2) ||  F (!g_2));
+    (!g_2 ||  X ((r_2 || g_2)) ||  X (( G (!g_2) || ((!g_2)  U  ((r_2 && !g_2))))));
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+    (!g_0 &&  F (!g_2));
+  }
+
+  GUARANTEES {
+    ( F (!r_1) ||  F (g_1));
+  }
+}
+Time: 22 m  9 s
+GEN: 10, Pop:30 MR: 100, COR: 10
+status: 0.75, lost0.075, won: 0.075, syn: 0.1

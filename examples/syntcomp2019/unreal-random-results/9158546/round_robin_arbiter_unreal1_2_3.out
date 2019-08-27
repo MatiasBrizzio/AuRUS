@@ -1,0 +1,1243 @@
+before: F!p0 random: 2 after: X!p0
+before: !p1 random: 0 after: false
+before: G(X!p1|p1|!p3) random: 4 after: false
+before: p2 random: 2 after: Gp2
+before: G(Fp3|!p1) random: 4 after: false
+before: p2 random: 0 after: false
+before: p3 random: 2 after: Gp3
+before: G(Fp3|!p1) random: 0 after: false
+before: G(!p0|Xp0|p2) random: 4 after: false
+before: G(Fp3|!p1) random: 0 after: (Fp3|!p1)
+before: Fp2 random: 4 after: FXp2
+before: !p1 random: 0 after: false
+before: !p0 random: 2 after: p0
+before: (G(!p0|Xp0|p2)&G(!p1|p3|Xp1)&G(X!p1|p1|!p3)&G(X!p0|p0|!p2)&G(F!p3|F!p1)&G(F!p2|F!p0)) random: 0 after: false
+before: Fp2 random: 5 after: FGp2
+before: p3 random: 2 after: Gp3
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 1 after: (G(Fp2|!p0)&G(Fp3|!p1))
+before: !p0 random: 3 after: !p2
+before: p3 random: 1 after: false
+before: Fp3 random: 0 after: false
+before: G(Fp3|!p1) random: 1 after: Fp1
+before: !p3 random: 2 after: G!p3
+before: p2 random: 0 after: false
+before: p1 random: 0 after: false
+before: G(F!p3|F!p1) random: 0 after: false
+before: G(Fp3|!p1) random: 2 after: false
+before: !p0 random: 2 after: G!p0
+before: Xp1 random: 2 after: false
+before: F!p2 random: 2 after: X!p2
+before: G(Fp3|!p1) random: 0 after: false
+before: p1 random: 1 after: (p1&!p1)
+before: !p3 random: 2 after: p3
+before: G(!p1|p3|Xp1) random: 3 after: false
+before: (Fp2|!p0) random: 2 after: (!p0|Fp2|!p3)
+before: G(Fp2|!p0) random: 1 after: (G!p0|GFp2)
+before: (Fp3|!p1) random: 3 after: G(Fp3|!p1)
+before: (Fp2|!p0) random: 1 after: (Fp2&!p0)
+before: !p1 random: 1 after: (!p3&!p1)
+before: G(Fp2|!p0) random: 4 after: false
+before: (X!p1|p1|!p3) random: 2 after: (X!p1|p1|!p3)
+before: (X!p0|p0|!p2) random: 1 after: (X!p0&p0&!p2)
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 2 after: (G(Fp2|!p0)&G(Fp3|!p1))
+before: Fp2 random: 0 after: p2
+before: !p1 random: 1 after: false
+before: Fp2 random: 1 after: G!p2
+before: G(X!p0|p0|!p2) random: 4 after: false
+before: Fp2 random: 3 after: Gp2
+before: p3 random: 1 after: (p3&p1)
+before: G(Fp2|!p0) random: 1 after: F(G!p2&p0)
+before: (Fp3|!p1) random: 3 after: (!p1RFp3)
+before: (X!p1|p1|!p3) random: 1 after: (X!p1|p1|!p3)
+before: Fp2 random: 0 after: p2
+before: (Fp2|!p0) random: 1 after: (p2|!p0)
+before: Fp3 random: 2 after: Gp3
+before: !p0 random: 2 after: p0
+before: G(!p0|Xp0|p2) random: 2 after: X(!p0|Xp0|p2)
+before: p0 random: 3 after: !p1
+before: !p3 random: 3 after: !p3
+before: p1 random: 1 after: false
+before: p0 random: 1 after: (p3&p0)
+before: Xp1 random: 1 after: X!p1
+before: !p1 random: 1 after: false
+before: p3 random: 1 after: (p3&!p1)
+before: !p2 random: 2 after: G!p2
+before: (F!p2|F!p0) random: 3 after: G(FG!p2|F!p0)
+before: G(X!p1|p1|!p3) random: 1 after: (Gp1|G!p3|GX!p1)
+before: Xp1 random: 1 after: Gp1
+before: p0 random: 1 after: p0
+before: (Fp2|!p0) random: 2 after: (Fp2|!p0)
+before: G(Fp2|!p0) random: 3 after: false
+before: !p3 random: 1 after: false
+before: G(Fp3|!p1) random: 1 after: (G!p1|GFp3)
+before: p0 random: 2 after: Gp0
+before: F!p0 random: 4 after: FX!p0
+before: (!p1|p3|Xp1) random: 1 after: (!p1&p3&Xp1)
+before: X!p1 random: 2 after: false
+before: F!p3 random: 1 after: !p3
+before: !p1 random: 3 after: p0
+before: !p0 random: 3 after: p0
+before: (!p1|p3|Xp1) random: 3 after: (Xp1M(p3|!p1))
+before: Fp3 random: 1 after: G!p3
+before: !p0 random: 0 after: true
+before: (F!p2|F!p0) random: 1 after: (F!p2|F!p0)
+before: (X!p1|p1|!p3) random: 2 after: (X!p1|p1|!p3)
+before: !p0 random: 0 after: true
+before: !p1 random: 2 after: p1
+before: !p0 random: 0 after: false
+before: p2 random: 0 after: false
+before: p1 random: 1 after: p1
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 0 after: false
+before: p0 random: 3 after: !p2
+before: Fp2 random: 1 after: G!p2
+before: G(Fp3|!p1) random: 0 after: (Fp3|!p1)
+before: p2 random: 0 after: true
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 0 after: F(G!p3&p1)
+before: G(Fp3|!p1) random: 0 after: (Fp3|!p1)
+before: p2 random: 0 after: true
+before: p3 random: 3 after: !p3
+before: !p1 random: 0 after: false
+before: !p1 random: 1 after: false
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 0 after: false
+before: (Fp2|!p0) random: 3before: Fp3 random: 1 after: G!p3
+before: p2 random: 1 after: false
+before: !p1 random: 1 after: false
+before: p0 random: 1 after: (p2&p0)
+before: p3 random: 2 after: !p3
+before: G(F!p2|F!p0) random: 0 after: (F!p2|F!p0)
+before: Fp3 random: 1 after: G!p3
+before: !p1 random: 3 after: p1
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 1 after: (G(Fp2|!p0)&G(G!p3|p1))
+before: p2 random: 1 after: (p2&!p2)
+before: !p3 random: 1 after: (p3&!p3)
+before: !p1 random: 2 after: G!p1
+before: Fp3 random: 5 after: FGp3
+before: !p1 random: 1 after: !p1
+before: p2 random: 2 after: !p2
+before: Fp2 random: 6 after: GFp2
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 2 after: (G(Fp3|!p1)&G(Fp2|!p0)&!p2)
+before: G(Fp2|!p0) random: 2 after: false
+before: p1 random: 1 after: false
+before: !p0 random: 3 after: !p1
+before: G(F!p3|F!p1) random: 1 after: F(Gp3&Gp1)
+before: (!p0|Xp0|p2) random: 0 after: false
+before: p2 random: 0 after: false
+before: p3 random: 2 after: Gp3
+before: (X!p0|p0|!p2) random: 3 after: G(X!p0|p0|!p2)
+before: p3 random: 2 after: Gp3
+before: Fp3 random: 1 after: G!p3
+before: G(!p0|Xp0|p2) random: 3 after: false
+before: p2 random: 3 after: !p1
+before: Fp3 random: 1 after: G!p3
+before: !p0 random: 1 after: false
+before: G(X!p1|p1|!p3) random: 1 after: F(!p1&p3&Xp1)
+before: p3 random: 0 after: false
+before: (F!p2|F!p0) random: 3 after: (F!p2WF!p0)
+before: p3 random: 1 after: false
+before: G(Fp3|!p1) random: 1 after: Fp1
+before: G(Fp3|!p1) random: 0 after: (Fp3|!p1)
+before: !p1 random: 0 after: false
+before: (F!p3|F!p1) random: 1 after: (F!p3&F!p1)
+before: p2 random: 2 after: !p2
+before: Fp2 random: 1 after: Gp2
+before: !p1 random: 3 after: !p3
+before: Fp3 random: 2 after: Xp3
+before: p2 random: 0 after: true
+before: p1 random: 0 after: false
+before: Xp1 random: 0 after: false
+before: !p2 random: 0 after: false
+before: !p2 random: 1 after: false
+before: G(!p0|Xp0|p2) random: 0 after: (!p0|Xp0|p2)
+before: (G(!p0|Xp0|p2)&G(!p1|p3|Xp1)&G(X!p1|p1|!p3)&G(X!p0|p0|!p2)&G(F!p3|F!p1)&G(F!p2|F!p0)) random: 1 after: (G(!p1|p3|Xp1)&(!p0|Xp0|p2)&G(X!p1|p1|!p3)&G(X!p0|p0|!p2)&G(F!p3|F!p1)&G(F!p2|F!p0))
+before: (X!p1|p1|!p3) random: 0 after: (!p1&p3&Xp1)
+before: !p3 random: 1 after: false
+before: (Fp2|!p0) random: 0 after: false
+before: !p1 random: 2 after: G!p1
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 0 after: false
+before: (Fp2|!p0) random: 3 after: G(Fp2|!p0)
+before: Xp1 random: 1 after: Gp1
+before: G(Fp2|!p0) random: 1 after: (G!p0|GFp2)
+before: Fp2 random: 4 after: FXp2
+before: (X!p0|p0|!p2) random: 0 after: (!p0&Xp0&p2)
+before: p3 random: 1 after: (p3&p0)
+before: X!p1 random: 0 after: false
+before: !p1 random: 3 after: p0
+before: G(Fp3|!p1) random: 1 after: F(G!p3&!p0)
+before: p3 random: 2 after: !p3
+before: F!p3 random: 2 after: G!p3
+before: !p1 random: 1 after: false
+before: F!p0 random: 1 after: Gp0
+before: Fp3 random: 2 after: Xp3
+before: p0 random: 0 after: false
+before: G(Fp2|!p0) random: 0 after: false
+before: Fp3 random: 0 after: p3
+before: p2 random: 0 after: false
+before: (Fp2|!p0) random: 1 after: !p0
+before: G(Fp2|!p0) random: 4 after: false
+before: !p3 random: 1 after: !p3
+before: !p1 random: 1 after: (p0&!p1)
+before: (F!p3|F!p1) random: 1 after: (F!p3&F(p0&!p1))
+before: Xp1 random: 2 after: false
+before: F!p3 random: 2 after: X!p3
+before: !p0 random: 2 after: p0
+before: Xp0 random: 0 after: false
+before: !p1 random: 2 after: G!p1
+before: p1 random: 0 after: false
+before: !p0 random: 0 after: false
+before: G(X!p0|p0|!p2) random: 2 after: false
+before: !p0 random: 0 after: false
+before: X!p1 random: 2 after: F!p1
+before: (Fp3|!p1) random: 3 after: (Fp3R!p1)
+before: Fp2 random: 6 after: GFp2
+before: G(Fp2|!p0) random: 1 after: (G!p0|GFp2)
+before: !p3 random: 0 after: true
+before: p3 random: 0 after: true
+before: G(Fp3|!p1) random: 1 after: false
+before: p1 random: 0 after: true
+before: G(F!p3|F!p1) random: 1 after: F(Gp3&Gp1)
+before: Fp2 random: 6 after: GFp2
+before: (Fp2|!p0) random: 1 after: (GFp2&!p0)
+before: G(Fp2|!p0) random: 0 after: false
+before: G(!p1|p3|Xp1) random: 2 after: false
+before: p2 random: 3 after: !p0
+before: Fp2 random: 1 after: Gp0
+before: G(Fp3|!p1) random: 0 after: (Fp3|!p1)
+before: (!p1|p3|Xp1) random: 1 after: (!p1|p3|Xp1)
+before: X!p1 random: 2 after: G!p1
+before: (Fp2|!p0) random: 0 after: (G!p2&p0)
+before: Fp3 random: 0 after: p3
+before: G(Fp3|!p1) random: 0 after: (p3|!p1)
+before: !p0 random: 2 after: p0
+before: (G(Fp2|!p0)&G(Fp3|!p1)) random: 0 after: (F(G!p2&!p0)|F(G!p3&p1))
+before: !p1 random: 3 after: p1
+before: (Fp3|!p1) random: 1 after: (Fp3|p1)
+before: !p0 random: 2 after: G!p0
+before: G(Fp3|!p1) random: 3 after: false
+before: p2 random: 0 after: false
+..s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,81 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,98 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,81 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,81 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,90 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,92 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 Realizable Specifications:
+
+Solution N: 0	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 1	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_1 || !g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((!r_1 || (r_0 && g_1) ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 2	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  G (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 3	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (!g_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 4	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  G (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 5	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!g_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 6	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_0 ||  X (r_0))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 7	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    (( F (!r_0) ||  F (!g_0)) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || !g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 8	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( F ((!r_1 && g_1 &&  X (r_1))) &&  G ((g_0 ||  X (r_0))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 9	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_0 ||  X (r_0))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 10	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_1 || g_1)) &&  G (( F (!r_0) ||  X (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 11	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_1 || g_1)) &&  F (( G (r_1) &&  G (g_1))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G ((r_0 || !g_0 ||  X (!r_1))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 12	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_1 || !g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 13	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X ((r_1 && !r_1)))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 14	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_1 || g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  X (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 15	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    (( G (r_1) ||  G (!g_1) ||  G ( X (!r_1))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 16	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_0 || !g_0)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 17	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (!g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))) &&  G ( F ((r_0 && !r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 18	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_1 || !g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((!r_1 || g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 19	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))) &&  G ((!r_0 || g_0 ||  X ((r_0 && g_1)))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 20	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_1 || g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || g_0 ||  X (r_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ( F ( X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 21	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_1 || !g_1)) &&  G ( F (!r_1)) &&  G ( F (!g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 22	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_1 || g_1)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 23	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))) &&  G ((!r_0 || g_0 ||  X ((r_0 && g_0)))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 24	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_0 || g_0)) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 25	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((!r_1 || g_1)) &&  G ((r_0 ||  X (!r_0))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 26	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_1 || !g_1)) &&  G ((!g_1 ||  F (!r_1))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 27	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ( F (!r_0)) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 28	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_1) ||  F (!g_1))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || (!r_1 && g_1) ||  X (r_1))) &&  G (( F (!r_0) ||  F ( G (!g_0)))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 29	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (!g_1) &&  G (( F (!g_0) ||  G (r_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || !g_1 ||  X (r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 30	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G ((r_0 || !g_0)) &&  G ((!r_0 || g_0)) &&  G ((g_1 ||  G (!r_1))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G (( F (!r_1) ||  F (!g_1))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 31	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( G (( F (!r_0) ||  F (!g_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || (g_0 && !g_0) ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))) &&  G ((!r_1 || g_1 ||  X (r_1))) &&  G (( F ((g_1 && !g_1)) ||  F ( G (!r_1)))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+
+Solution N: 32	Fitness: 1,00
+INFO {
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_0;r_1;
+  }
+  OUTPUTS {
+    g_0;g_1;
+  }
+
+  ASSERT {
+    (!g_0 || !g_1);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ((g_0 && g_1)))));
+  }
+
+  ASSUMPTIONS {
+    ( F (( G (r_1) &&  G (g_1))) &&  G (( F (!r_0) ||  F (!g_0))) &&  G ((r_0 || !g_0 ||  X (!r_0))) &&  G ((!r_0 || g_0 ||  X (r_0))) &&  G ((r_1 || !g_1 ||  X (!r_1))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+  }
+}
+Time: 10 m  21 s
+GEN: 10, Pop:300 MR: 100, COR: 10
+status: 0.75, lost0.1, won: 0.1, syn: 0.05

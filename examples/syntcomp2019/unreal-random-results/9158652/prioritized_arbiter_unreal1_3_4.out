@@ -1,0 +1,597 @@
+before: p5 random: 2 after: Gp5
+before: (X((!p7&!p6&!p5)Up4)|!p0) random: 0 after: false
+before: GF!p0 random: 1 after: false
+before: !p0 random: 0 after: true
+before: GF!p0 random: 2 after: true
+before: !p0 random: 1 after: (p4&!p0)
+before: F!p0 random: 3 after: (Gp4&G!p0)
+before: GF!p0 random: 2 after: false
+before: (Fp5|!p1) random: 1 after: (Fp5|!p1)
+before: G(Fp6|!p2) random: 2 after: X(Fp6|!p2)
+before: !p6 random: 1 after: false
+before: !p0 random: 0 after: true
+before: F!p0 random: 0 after: true
+before: !p0 random: 2 after: G!p0
+before: F!p0 random: 7 after: (p5UG!p0)
+before: !p0 random: 2 after: G!p0
+before: F!p0 random: 6 after: FG!p0
+before: G(Fp5|!p1) random: 0 after: false
+before: F!p0 random: 2 after: G!p0
+before: GF!p0 random: 0 after: G!p0
+before: (X((!p7&!p6&!p5)Up4)|!p0) random: 3 after: (X((!p7&!p6&!p5)Up4)M!p0)
+before: Fp7 random: 0 after: false
+before: F!p0 random: 4 after: FX!p0
+before: p4 random: 1 after: (p4&!p0)
+before: !p0 random: 0 after: false
+before: F!p0 random: 6 after: false
+before: GF!p0 random: 3 after: false
+before: !p0 random: 1 after: (!p6&!p0)
+before: F!p0 random: 0 after: !p0
+before: F!p0 random: 2 after: G!p0
+before: GF!p0 random: 2 after: XG!p0
+before: !p5 random: 2 after: p5
+before: GF!p0 random: 3 after: false
+before: !p0 random: 1 after: (p1&!p0)
+before: F!p0 random: 1 after: Gp0
+before: GF!p0 random: 0 after: Gp0
+before: F!p0 random: 2 after: G!p0
+before: GF!p0 random: 0 after: G!p0
+before: F!p0 random: 2 after: G!p0
+before: !p0 random: 3 after: p5
+before: F!p0 random: 2 after: Xp5
+before: !p2 random: 1 after: (!p4&!p2)
+before: (Fp5|!p1) random: 3 after: (Fp5R!p1)
+before: !p2 random: 3 after: p0
+before: p4 random: 1 after: false
+before: !p1 random: 0 after: true
+before: !p3 random: 3 after: !p1
+before: (Fp6|!p2) random: 1 after: (Fp6&!p2)
+before: G(Fp7|!p3) random: 2 after: X(Fp7|!p3)
+before: !p1 random: 2 after: p1
+before: (!p7&!p6&!p5) random: 0 after: (p5|p6|p7)
+before: Fp7 random: 3 after: Gp7
+before: !p1 random: 3 after: p4
+before: !p6 random: 1 after: false
+before: p6 random: 0 after: false
+before: (G(Fp5|!p1)&G(Fp6|!p2)&G(Fp7|!p3)&G(X((!p7&!p6&!p5)Up4)|!p0)) random: 2 after: (G!p2&G(Fp5|!p1)&G(Fp7|!p3)&G(X((!p7&!p6&!p5)Up4)|!p0))
+before: !p0 random: 3 after: !p6
+before: GF!p0 random: 0 after: F!p6
+before: !p0 random: 1 after: false
+before: !p1 random: 3 after: !p3
+before: Fp6 random: 0 after: p6
+before: !p0 random: 0 after: true
+before: !p0 random: 0 after: false
+before: Fp5 random: 0 after: false
+before: G(Fp7|!p3) random: 2 after: false
+before: !p0 random: 2 after: G!p0
+before: GF!p0 random: 0 after: false
+before: !p7 random: 0 after: true
+before: GF!p0 random: 4 after: false
+before: !p0 random: 3 after: !p7
+before: F!p0 random: 1 after: Gp7
+before: GF!p0 random: 0 after: Gp7
+before: F!p0 random: 0 after: !p0
+before: p4 random: 0 after: true
+before: GF!p0 random: 0 after: false
+before: G(Fp6|!p2) random: 1 after: (G!p2|GFp6)
+before: !p0 random: 0 after: false
+before: GF!p0 random: 3 after: false
+before: GF!p0 random: 1 after: false
+before: F!p0 random: 1 after: Gp0
+before: GF!p0 random: 0 after: Gp0
+before: (X((!p7&!p6&!p5)Up4)|!p0) random: 3 after: G(X((!p7&!p6&!p5)Up4)|!p0)
+before: !p0 random: 2 after: G!p0
+before: F!p0 random: 6 after: FG!p0
+before: !p0 random: 2 after: G!p0
+before: (Fp6|!p2) random: 1 after: (Fp6&!p2)
+before: !p0 random: 0 after: true
+before: F!p0 random: 0 after: true
+before: GF!p0 random: 0 after: true
+before: F!p0 random: 5 after: FG!p0
+before: Fp5 random: 2 after: Gp5
+before: G(X((!p7&!p6&!p5)Up4)|!p0) random: 1 after: F(X((p5|p6|p7)R!p4)&p0)
+before: (!p7&!p6&!p5) random: 0 after: false
+before: (Fp7|!p3) random: 0 after: (G!p7&p3)
+before: F!p0 random: 2 after: G!p0
+before: !p0 random: 1 after: (p7&!p0)
+before: !p0 random: 1 after: (!p7&!p0)
+before: !p3 random: 1 after: !p3
+before: !p0 random: 1 after: (p4&!p0)
+before: Fp6 random: 0 after: p6
+before: F!p0 random: 0 after: !p0
+before: !p2 random: 1 after: !p2
+before: G(Fp6|!p2) random: 1 after: (G!p2|GFp6)
+before: (!p7&!p6&!p5) random: 0 after: false
+before: !p0 random: 1 after: (!p4&!p0)
+before: F!p0 random: 4 after: FX(!p4&!p0)
+before: (!p7&!p6&!p5) random: 2 after: (!p7&!p6&!p5&p7)
+before: !p0 random: 3 after: p6
+before: !p0 random: 2 after: p0
+before: F!p0 random: 2 after: Xp0
+before: !p0 random: 1 after: false
+before: F!p0 random: 1 after: true
+before: F!p0 random: 2 after: G!p0
+before: (X((!p7&!p6&!p5)Up4)|!p0) random: 0 after: (X((p5|p6|p7)R!p4)&p0)
+before: G(X((!p7&!p6&!p5)Up4)|!p0) random: 0 after: (X((p5|p6|p7)R!p4)&p0)
+before: !p0 random: 1 after: (!p7&!p0)
+before: !p7 random: 3 after: p3
+before: (Fp7|!p3) random: 1 after: (Fp7|!p3)
+before: (Fp7|!p3) random: 1 after: (Fp7&!p3)
+before: (Fp5|!p1) random: 3 after: G(Fp5|!p1)
+before: GF!p0 random: 1 after: false
+before: Fp5 random: 4 after: FXp5
+before: (Fp6|!p2) random: 1 after: (Fp6&!p2)
+before: !p5 random: 2 after: G!p5
+before: ((!p7&!p6&!p5)Up4) random: 0 after: false
+before: GF!p0 random: 0 after: F!p0
+before: (Fp7|!p3) random: 2 after: (Fp7|!p3)
+before: !p7 random: 1 after: (!p7&!p6)
+before: GF!p0 random: 1 after: FGp0
+before: GF!p0 random: 1 after: FGp0
+before: p5 random: 2 after: Gp5
+before: !p0 random: 0 after: false
+before: !p0 random: 3 after: !p7
+before: !p0 random: 3 after: !p1
+before: F!p0 random: 0 after: !p1
+before: (!p7&!p6&!p5) random: 2 after: (!p7&!p6&!p5)
+before: (X((!p7&!p6&!p5)Up4)|!p0) random: 2 after: (!p0|!p6|X((!p7&!p6&!p5)Up4))
+before: !p0 random: 1 after: false
+before: F!p0 random: 2 after: false
+before: (Fp5|!p1) random: 2 after: (Fp5|!p1)
+before: (Fp7|!p3) random: 3 after: G(Fp7|!p3)
+before: (!p7&!p6&!p5) random: 1 after: (!p7&!p6&!p5&p3)
+before: !p3 random: 0 after: true
+before: !p2 random: 2 after: G!p2
+before: !p1 random: 1 after: (p0&!p1)
+before: (Fp5|!p1) random: 0 after: false
+before: !p0 random: 2 after: p0
+before: F!p0 random: 5 after: FG!p0
+before: GF!p0 random: 2 after: FG!p0
+before: !p0 random: 2 after: G!p0
+before: GF!p0 random: 2 after: FG!p0
+before: !p0 random: 1 after: false
+before: !p0 random: 0 after: false
+before: F!p0 random: 7 after: (p3U!p0)
+before: GF!p0 random: 4 after: false
+before: Fp6 random: 1 after: G!p6
+before: X((!p7&!p6&!p5)Up4) random: 1 after: X((p5|p6|p7)R!p4)
+before: F!p0 random: 2 after: X!p0
+before: p7 random: 1 after: (p7&!p7)
+before: !p0 random: 2 after: G!p0
+before: F!p0 random: 4 after: FXG!p0
+before: GF!p0 random: 3 after: false
+before: !p0 random: 0 after: false
+before: !p0 random: 1 after: (!p5&!p0)
+before: GF!p0 random: 0 after: false
+before: !p0 random: 1 after: false
+before: F!p0 random: 0 after: !p0
+before: GF!p0 random: 1 after: Fp0
+before: GF!p0 random: 0 after: false
+before: !p0 random: 1 after: (!p5&!p0)
+before: F!p0 random: 2 after: X!p0
+before: GF!p0 random: 2 after: false
+before: !p0 random: 1 after: false
+before: GF!p0 random: 1 after: true
+before: GF!p0 random: 2 after: FG!p0
+..s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,88 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,88 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,92 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,91 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,90 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,97 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,98 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,99 -1.0 +1.0 .s0,94 -1.0 +1.0 .s1,00 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,95 -1.0 +1.0 .s0,98 -1.0 +1.0 .s0,89 -1.0 +1.0 .s0,97 -1.0 +1.0 .s0,99 -1.0 +1.0 Realizable Specifications:
+
+Solution N: 0	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F (!g_2));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 1	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F (g_1));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 2	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( X (g_0));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 3	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     F (!g_1);
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 4	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G (g_2);
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 5	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F ((!r_m && !g_1)));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 6	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F ((!r_m && g_2)));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 7	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F ((!r_m && !g_0)));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 8	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F ((!r_m && !g_2)));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 9	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F ((!r_m && !g_2)));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+
+Solution N: 10	Fitness: 1,00
+INFO {
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    r_m;r_0;r_1;r_2;
+  }
+  OUTPUTS {
+    g_m;g_0;g_1;g_2;
+  }
+
+  ASSERT {
+    ((!g_0 && !g_1) || (!g_2 && (!g_0 || !g_1)));
+    (!g_m || !g_0);
+    (!g_m || !g_1);
+    (!g_m || !g_2);
+    (!r_0 ||  X (!r_1) ||  X ( X ( X ( X ((g_0 && g_1))))));
+    (!r_0 ||  X (!r_2) ||  X ( X ( X ( X ((g_0 && g_2))))));
+    (!r_1 ||  X (!r_2) ||  X ( X ( X ( X ((g_1 && g_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ( F ( X ((!r_m && !g_m))));
+  }
+
+  GUARANTEES {
+     G ((!r_0 ||  F (g_0)));
+     G ((!r_1 ||  F (g_1)));
+     G ((!r_2 ||  F (g_2)));
+     G ((!r_m ||  X ((((!g_0 && !g_1 && !g_2))  U  (g_m)))));
+  }
+}
+Time: 7 m  47 s
+GEN: 10, Pop:300 MR: 100, COR: 10
+status: 0.75, lost0.1, won: 0.1, syn: 0.05
