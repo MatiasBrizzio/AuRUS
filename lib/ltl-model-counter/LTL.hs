@@ -574,12 +574,12 @@ main = do
                 satString = (sat2string toSAT) 
             in
               --(trace ("bc " ++ show bc))
-              writeFile (outfile++"-k"++(show bound)++".sat") satString 
+              writeFile (outfile++"-k"++(show bound)++".pl") satString 
          else
             let toSAT = (bltl2sat form alphabet bound) ;
                 satString = (sat2string toSAT) 
             in
-              writeFile (outfile++"-k"++(show bound)++".sat") satString 
+              writeFile (outfile++"-k"++(show bound)++".pl") satString 
         
          putStrLn "Done"
 
