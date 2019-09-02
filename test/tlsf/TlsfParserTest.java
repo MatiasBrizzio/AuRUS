@@ -24,10 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -433,7 +430,7 @@ class TlsfParserTest {
   
   @Test
   void testTlsfMinepump() throws IOException, InterruptedException {
-	  String filename = "examples/minepump_basic.tlsf";
+	  String filename = "examples/minepump.tlsf";
 //	  FileReader f = new FileReader(filename);
 //	    Tlsf tlsf = TlsfParser.parse(f);
 	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
@@ -518,5 +515,15 @@ class TlsfParserTest {
 		 Tlsf spec = TLSF_Utils.fromSpectra(spectra);
 		 System.out.println(spec);
 	}
-	 
+
+	@Test
+	void testLTL2PL() throws IOException, InterruptedException {
+		BufferedReader br = new BufferedReader(new FileReader("lib/ltl-model-counter/result/numofmodels-k3.pl"));
+		String formula = br.readLine();
+		System.out.println(formula);
+		Formula f = LtlParser.syntax(formula);
+
+		System.out.println(f);
+		System.out.println(NormalForms.toCnf(f));
+	}
 }

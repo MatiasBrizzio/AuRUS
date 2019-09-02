@@ -1,34 +1,43 @@
 package solvers;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import owl.ltl.BooleanConstant;
+import owl.ltl.Conjunction;
+import owl.ltl.Disjunction;
 import owl.ltl.Formula;
+import owl.ltl.parser.LtlParser;
+import owl.ltl.rewriter.NormalForms;
 import solvers.LTLSolver.SolverResult;
 
 public class LTLModelCounter {
-	
+	public static int BOUND = 5;
 	public static final String BASENAME = "lib/ltl-model-counter/result/numofmodels";
 	public static final String INFILE = BASENAME+".ltl";
-	public static int BOUND = 5;
-	
+	public static final String PROP_FILE = BASENAME+"-k"+BOUND+".pl";
+	public static final String PROP_CNF_FILE = BASENAME+"-k"+BOUND+".sat";
+
 	public static int numOfTimeout = 0;
 	public static int numOfError = 0;
 	public static int numOfCalls = 0;
-	public static int TIMEOUT = 30;
-	
+	public static int TIMEOUT = 60;
+
+	public static String getCommandLTL2PL(){
+		String cmd = "";
+		String currentOS = System.getProperty("os.name");
+		if (currentOS.startsWith("Mac"))
+			cmd = "./lib/ltl-model-counter/ltl2pl_mac.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+		else
+			cmd = "./lib/ltl-model-counter/ltl2pl.sh"+ INFILE + " " + BASENAME + " " + BOUND;
+		return cmd;
+	}
+
 	public static String getCommand(){
 		String cmd = "";
 		String currentOS = System.getProperty("os.name");
@@ -54,14 +63,8 @@ public class LTLModelCounter {
     	
 		// make formula file 
 		if (formula != null && variables != null) {
-			File f = new File(INFILE);
-			FileWriter fw = new FileWriter(f);
-			for (String v : variables)
-				fw.append(v + "\n");
-			fw.append("###\n");
-			fw.append(formula + "\n");
-			fw.close();
-		
+			toCNF(formula, variables);
+
 			// run counting command
 			String cmd = getCommand();
 			p = Runtime.getRuntime().exec(cmd);
@@ -92,9 +95,9 @@ public class LTLModelCounter {
 	    	InputStreamReader inread = new InputStreamReader(in);
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 		    while ((aux = bufferedreader.readLine()) != null) {
-		    	if (aux.startsWith("Number of solutions:")){
-//		    		System.out.println(aux);
-		    		String val = aux.replace("Number of solutions: ", "");
+		    	if (aux.startsWith("s ")){
+		    		System.out.println(aux);
+		    		String val = aux.replace("s ", "");
 		    		numOfModels = new BigInteger(val);
 		    		break;
 		    	}
@@ -136,5 +139,37 @@ public class LTLModelCounter {
    		}
 		
 		return numOfModels;
+	}
+
+
+	private static void toCNF(String formula, List<String> variables) throws IOException, InterruptedException {
+		File f = new File(INFILE);
+		FileWriter fw = new FileWriter(f);
+		for (String v : variables)
+			fw.append(v + "\n");
+		fw.append("###\n");
+		fw.append(formula + "\n");
+		fw.close();
+
+		// run ltl2pl command
+		String cmdltl2pl = getCommandLTL2PL();
+		Process p = Runtime.getRuntime().exec(cmdltl2pl);
+		p.waitFor(TIMEOUT, TimeUnit.SECONDS);
+
+		BufferedReader br = new BufferedReader(new FileReader(PROP_FILE));
+		String prop_str = br.readLine();
+		br.close();
+		System.out.println(prop_str);
+		Formula prop_formula = LtlParser.syntax(prop_str);
+		Formula cnf_formula = BooleanConstant.TRUE;
+		for (Set<Formula> clause : NormalForms.toCnf(prop_formula)) {
+			Formula or_clause = Disjunction.of(clause);
+			cnf_formula = Conjunction.of(cnf_formula, or_clause);
+		}
+
+		System.out.println(cnf_formula.toString());
+		fw = new FileWriter(new File(PROP_CNF_FILE));
+		fw.append(cnf_formula.toString());
+		fw.close();
 	}
 }
