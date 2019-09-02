@@ -46,4 +46,16 @@ class PreciseModelCountingSpecificationFitnessTest {
 		System.out.println(fitnessFunc.calculate(chromosome));
 		
 	}
+
+	@Test
+	void testExample() throws IOException, InterruptedException {
+		FileReader f = new FileReader("examples/syntcomp2019/unreal-results/9158546/round_robin_arbiter_unreal1_2_3_basic.tlsf");
+		Tlsf spec1 = TlsfParser.parse(f);
+		f = new FileReader("examples/example.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f);
+		PreciseModelCountingSpecificationFitness fitnessFunc = new PreciseModelCountingSpecificationFitness(spec1);
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.println(fitnessFunc.calculate(chromosome));
+
+	}
 }
