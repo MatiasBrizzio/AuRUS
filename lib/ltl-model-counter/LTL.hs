@@ -339,7 +339,7 @@ sat2string expr = case expr of
                         PAnd e e' -> "("++ (sat2string e) ++ ")"++"&"++"("++ (sat2string e') ++")"
                         POr e e' -> "("++ (sat2string e) ++ ")"++"|"++"("++ (sat2string e') ++")"
                         PImp e e' -> "("++ (sat2string e) ++ ")"++"->"++"("++ (sat2string e') ++")"
-                        PEquiv e e' -> "("++ (sat2string e) ++ ")"++"="++"("++ (sat2string e') ++")"
+                        PEquiv e e' -> "("++ (sat2string e) ++ ")"++"<->"++"("++ (sat2string e') ++")"
                         PF -> "0"
                         PT -> "1"
 
