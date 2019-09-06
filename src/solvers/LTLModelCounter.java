@@ -8,20 +8,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import owl.ltl.BooleanConstant;
-import owl.ltl.Conjunction;
-import owl.ltl.Disjunction;
-import owl.ltl.Formula;
+import owl.ltl.*;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.NormalForms;
+import owl.ltl.rewriter.SyntacticSimplifier;
 import solvers.LTLSolver.SolverResult;
 
 public class LTLModelCounter {
 	public static int BOUND = 5;
 	public static final String BASENAME = "lib/ltl-model-counter/result/numofmodels";
 	public static final String INFILE = BASENAME+".ltl";
-	public static final String PROP_FILE = BASENAME+"-k"+BOUND+".pl";
-	public static final String PROP_CNF_FILE = BASENAME+"-k"+BOUND+".sat";
+	public static final String PROP_FILE = BASENAME+"-k"+BOUND+".sat";
+	public static final String PROP_CNF_FILE = BASENAME+"-k"+BOUND+".cnf";
 
 	public static int numOfTimeout = 0;
 	public static int numOfError = 0;
@@ -32,7 +30,7 @@ public class LTLModelCounter {
 		String cmd = "";
 		String currentOS = System.getProperty("os.name");
 		if (currentOS.startsWith("Mac"))
-			cmd = "./lib/ltl-model-counter/ltl2pl_mac.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+			cmd = "./lib/ltl-model-counter/ltl2pl_macos.sh "+ INFILE + " " + BASENAME + " " + BOUND;
 		else
 			cmd = "./lib/ltl-model-counter/ltl2pl.sh"+ INFILE + " " + BASENAME + " " + BOUND;
 		return cmd;
@@ -64,7 +62,13 @@ public class LTLModelCounter {
 		// make formula file 
 		if (formula != null && variables != null) {
 			toCNF(formula, variables);
-
+//			File f = new File(INFILE);
+//			FileWriter fw = new FileWriter(f);
+//			for (String v : variables)
+//				fw.append(v + "\n");
+//			fw.append("###\n");
+//			fw.append(formula + "\n");
+//			fw.close();
 			// run counting command
 			String cmd = getCommand();
 			p = Runtime.getRuntime().exec(cmd);
@@ -156,20 +160,47 @@ public class LTLModelCounter {
 		Process p = Runtime.getRuntime().exec(cmdltl2pl);
 		p.waitFor(TIMEOUT, TimeUnit.SECONDS);
 
+		//read all CNF clauses
+		List<String> vars = new LinkedList<>(); //BMC variables
+		for(String v : variables){
+			for(int i = 0; i < BOUND+1; i++)
+				vars.add(v+i);
+		}
+		for(int i = 0; i < BOUND; i++)
+			vars.add("l"+i);
+
+		List<Formula> clauses = new LinkedList<>();
 		BufferedReader br = new BufferedReader(new FileReader(PROP_FILE));
 		String prop_str = br.readLine();
-		br.close();
-		System.out.println(prop_str);
-		Formula prop_formula = LtlParser.syntax(prop_str);
-		Formula cnf_formula = BooleanConstant.TRUE;
-		for (Set<Formula> clause : NormalForms.toCnf(prop_formula)) {
-			Formula or_clause = Disjunction.of(clause);
-			cnf_formula = Conjunction.of(cnf_formula, or_clause);
+		while (prop_str != null && prop_str != ""){
+			Formula clause = LtlParser.syntax(prop_str,vars);
+			clauses.add(clause);
+			prop_str = br.readLine();
 		}
-
-		System.out.println(cnf_formula.toString());
+		br.close();
+//		System.out.println(prop_str);
 		fw = new FileWriter(new File(PROP_CNF_FILE));
-		fw.append(cnf_formula.toString());
+		fw.append("p cnf " + vars.size() + " " + clauses.size() + "\n");
+		for (Formula clause : clauses)
+			fw.append(cnfStr(clause) + "\n");
+//		System.out.println(cnf_formula.toString());
+//
+//		fw.append(cnf_formula.toString());
 		fw.close();
+	}
+
+	private static String cnfStr (Formula f){
+		if (!(f instanceof Disjunction))
+			throw new IllegalArgumentException("LTLModelCounter: formula is not in cnf format");
+		Disjunction clause = (Disjunction) f;
+		String cnf = "";
+		for(Formula c : clause.children()){
+			Literal l = (Literal) c;
+			if(l.isNegated()) cnf += "-";
+			cnf += l.getAtom()+1;
+			cnf += " ";
+		}
+		cnf += "0";
+		return cnf;
 	}
 }

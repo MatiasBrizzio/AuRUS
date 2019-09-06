@@ -18,23 +18,23 @@ instance Exception MyException
 --LEXER
 
 data TokenLTL = PROP String
-		       | TRUE
-		       | FALSE
-           | NEG 
-           | AND
-           | OR
-           | IMP
-           | EQUIV
-           | NEXT
-           | UNTIL
-           | WUNTIL
-           | REL
-           | MREL
-           | DIAM
-           | BOX
-           | LPAR
-           | RPAR
-           deriving(Show)
+  		       | TRUE
+  		       | FALSE
+             | NEG 
+             | AND
+             | OR
+             | IMP
+             | EQUIV
+             | NEXT
+             | UNTIL
+             | WUNTIL
+             | REL
+             | MREL
+             | DIAM
+             | BOX
+             | LPAR
+             | RPAR
+             deriving(Show)
 
 
 lexLTL [] = []
@@ -331,6 +331,39 @@ data ExpSAT  =  PF
                | PEquiv (ExpSAT ) (ExpSAT )
                deriving(Show,Eq)
 
+nnf :: ExpSAT -> ExpSAT
+nnf (PF) = PF
+nnf (PT) = PT
+nnf (PPVar a) = PPVar a
+nnf (PNVar a) = PNVar a
+nnf (PNeg  expr) = case expr of 
+                          PF -> PT
+                          PT -> PF
+                          PPVar a -> PNeg (PPVar a)
+                          PNVar a -> PPVar a
+                          PNeg  e -> nnf e
+                          PAnd e e' -> POr (nnf (PNeg e)) (nnf (PNeg e'))
+                          POr e e' -> PAnd (nnf (PNeg e)) (nnf (PNeg e'))
+                          PImp e e' -> PAnd (nnf e) (nnf (PNeg e'))
+                          PEquiv e e' -> POr (nnf (PAnd e (PNeg e'))) (nnf (PAnd (PNeg e) e'))
+                          
+nnf (PAnd e e') = PAnd (nnf e) (nnf e')
+nnf (POr e e')  = POr (nnf e) (nnf e')
+nnf (PImp e e') = POr (nnf (PNeg e)) (nnf e')
+nnf (PEquiv e e') = nnf (PAnd (PImp e e') (PImp e' e))
+
+distCD :: ExpSAT -> ExpSAT
+distCD (PAnd e e') = PAnd (distCD e) (distCD e')
+distCD (POr (PAnd a a') e')  = PAnd (distCD (POr a e')) (distCD (POr a' e'))
+distCD (POr e (PAnd a a'))  = PAnd (distCD (POr e a)) (distCD (POr e a'))
+distCD x = x
+
+cnf :: ExpSAT -> ExpSAT
+cnf expr = distCD (nnf expr)
+
+splitCNFclauses :: ExpSAT -> [ExpSAT]
+splitCNFclauses (PAnd e e') = (splitCNFclauses e) ++ (splitCNFclauses e')
+splitCNFclauses x = [x]
 
 sat2string expr = case expr of 
                         PPVar a -> a
@@ -339,7 +372,7 @@ sat2string expr = case expr of
                         PAnd e e' -> "("++ (sat2string e) ++ ")"++"&"++"("++ (sat2string e') ++")"
                         POr e e' -> "("++ (sat2string e) ++ ")"++"|"++"("++ (sat2string e') ++")"
                         PImp e e' -> "("++ (sat2string e) ++ ")"++"->"++"("++ (sat2string e') ++")"
-                        PEquiv e e' -> "("++ (sat2string e) ++ ")"++"<->"++"("++ (sat2string e') ++")"
+                        PEquiv e e' -> "("++ (sat2string e) ++ ")"++"="++"("++ (sat2string e') ++")"
                         PF -> "0"
                         PT -> "1"
 
@@ -558,6 +591,9 @@ unfoldBC bc n = let next = unfoldBC bc (n-1) ;
                 in
                   And (curr, Next next)
 
+genCNFClauses :: [ExpSAT] -> String
+genCNFClauses [] = ""
+genCNFClauses (x:xs) = (sat2string x) ++ "\n" ++ (genCNFClauses xs)
 
 main = do
          args <- getArgs;
@@ -571,15 +607,18 @@ main = do
             let bc = unfoldBC (Data.List.last formulas) bound ;
                 phi = And (form,bc) ;
                 toSAT = bltl2sat phi alphabet bound ;
-                satString = (sat2string toSAT) 
+                cnfSAT = cnf toSAT ;
+                satString = (sat2string cnfSAT) 
             in
               --(trace ("bc " ++ show bc))
-              writeFile (outfile++"-k"++(show bound)++".pl") satString 
+              writeFile (outfile++"-k"++(show bound)++".sat") satString 
          else
             let toSAT = (bltl2sat form alphabet bound) ;
-                satString = (sat2string toSAT) 
+                cnfSAT = cnf toSAT ;
+                cnfClauses = splitCNFclauses cnfSAT ;
+                satString = genCNFClauses cnfClauses 
             in
-              writeFile (outfile++"-k"++(show bound)++".pl") satString 
+              writeFile (outfile++"-k"++(show bound)++".sat") satString 
         
          putStrLn "Done"
 
