@@ -339,7 +339,7 @@ nnf (PNVar a) = PNVar a
 nnf (PNeg  expr) = case expr of 
                           PF -> PT
                           PT -> PF
-                          PPVar a -> PNeg (PPVar a)
+                          PPVar a -> PNVar a
                           PNVar a -> PPVar a
                           PNeg  e -> nnf e
                           PAnd e e' -> POr (nnf (PNeg e)) (nnf (PNeg e'))
@@ -352,14 +352,73 @@ nnf (POr e e')  = POr (nnf e) (nnf e')
 nnf (PImp e e') = POr (nnf (PNeg e)) (nnf e')
 nnf (PEquiv e e') = nnf (PAnd (PImp e e') (PImp e' e))
 
+deleteEquiv :: ExpSAT -> ExpSAT
+deleteEquiv expr = case expr of 
+                          PEquiv e e' -> PAnd (PImp e e') (PImp e' e)
+                          PF -> PF
+                          PT -> PT
+                          PPVar a -> PPVar a
+                          PNVar a -> PNVar a
+                          PNeg  e -> PNeg (deleteEquiv e)
+                          PAnd e e' -> PAnd (deleteEquiv e) (deleteEquiv e)
+                          POr e e' -> POr (deleteEquiv e) (deleteEquiv e')   
+                          PImp e e' -> PImp (deleteEquiv e) (deleteEquiv e')
+
+deleteImp :: ExpSAT -> ExpSAT
+deleteImp expr = case expr of 
+                          PF -> PF
+                          PT -> PT
+                          PPVar a -> PPVar a
+                          PNVar a -> PNVar a
+                          PNeg  e -> PNeg (deleteImp e)
+                          PAnd e e' -> PAnd (deleteImp e) (deleteImp e)
+                          POr e e' -> POr (deleteImp e) (deleteImp e')   
+                          PImp e e' -> POr (PNeg (deleteImp e)) (deleteImp e')
+                          _ -> error "deleteImp assumes that Equiv have been previously removed."
+
+pushNegation :: ExpSAT -> ExpSAT
+pushNegation (PF) = PF
+pushNegation (PT) = PT
+pushNegation (PPVar a) = PPVar a
+pushNegation (PNVar a) = PNVar a
+pushNegation (PNeg  expr) = case expr of 
+                          PF -> PT
+                          PT -> PF
+                          PPVar a -> PNVar a
+                          PNVar a -> PPVar a
+                          PNeg  e -> pushNegation e
+                          PAnd e e' -> POr (pushNegation (PNeg e)) (pushNegation (PNeg e'))
+                          POr e e' -> PAnd (pushNegation (PNeg e)) (pushNegation (PNeg e'))
+                          _ -> error "deleteImp assumes that Imp and Equiv have been previously removed."
+pushNegation (PAnd e e') = PAnd (pushNegation e) (pushNegation e')
+pushNegation (POr e e') = POr (pushNegation e) (pushNegation e')
+pushNegation (PImp _ _) = error "deleteImp assumes that Imp have been previously removed."
+pushNegation (PEquiv _ _) = error "deleteImp assumes that Equiv have been previously removed."
+
 distCD :: ExpSAT -> ExpSAT
 distCD (PAnd e e') = PAnd (distCD e) (distCD e')
 distCD (POr (PAnd a a') e')  = PAnd (distCD (POr a e')) (distCD (POr a' e'))
-distCD (POr e (PAnd a a'))  = PAnd (distCD (POr e a)) (distCD (POr e a'))
+distCD (POr e (PAnd a a'))  = distCD (POr (PAnd a a') e)
+distCD (POr (POr a a') e') = distCD (POr (distCD (POr a a')) e')
+distCD (POr e (POr a a')) = distCD (POr e (distCD (POr a a')))
 distCD x = x
 
+removeTrueFalse :: ExpSAT -> ExpSAT
+removeTrueFalse (PAnd PT e') = removeTrueFalse e'
+removeTrueFalse (PAnd e PT) = removeTrueFalse e
+removeTrueFalse (PAnd PF e') = PF
+removeTrueFalse (PAnd e PF) = PF
+removeTrueFalse (PAnd e e') = PAnd (removeTrueFalse e) (removeTrueFalse e')
+removeTrueFalse (POr PT e') = PT
+removeTrueFalse (POr e PT) = PT
+removeTrueFalse (POr PF e') = removeTrueFalse e'
+removeTrueFalse (POr e PF) = removeTrueFalse e
+removeTrueFalse (POr e e') = POr (removeTrueFalse e) (removeTrueFalse e) 
+removeTrueFalse x = x
+
+
 cnf :: ExpSAT -> ExpSAT
-cnf expr = distCD (nnf expr)
+cnf expr = removeTrueFalse (distCD (pushNegation (deleteImp (deleteEquiv expr))))
 
 splitCNFclauses :: ExpSAT -> [ExpSAT]
 splitCNFclauses (PAnd e e') = (splitCNFclauses e) ++ (splitCNFclauses e')
