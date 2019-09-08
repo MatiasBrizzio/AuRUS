@@ -360,7 +360,7 @@ deleteEquiv expr = case expr of
                           PPVar a -> PPVar a
                           PNVar a -> PNVar a
                           PNeg  e -> PNeg (deleteEquiv e)
-                          PAnd e e' -> PAnd (deleteEquiv e) (deleteEquiv e)
+                          PAnd e e' -> PAnd (deleteEquiv e) (deleteEquiv e')
                           POr e e' -> POr (deleteEquiv e) (deleteEquiv e')   
                           PImp e e' -> PImp (deleteEquiv e) (deleteEquiv e')
 
@@ -371,7 +371,7 @@ deleteImp expr = case expr of
                           PPVar a -> PPVar a
                           PNVar a -> PNVar a
                           PNeg  e -> PNeg (deleteImp e)
-                          PAnd e e' -> PAnd (deleteImp e) (deleteImp e)
+                          PAnd e e' -> PAnd (deleteImp e) (deleteImp e')
                           POr e e' -> POr (deleteImp e) (deleteImp e')   
                           PImp e e' -> POr (PNeg (deleteImp e)) (deleteImp e')
                           _ -> error "deleteImp assumes that Equiv have been previously removed."
@@ -399,8 +399,8 @@ distCD :: ExpSAT -> ExpSAT
 distCD (PAnd e e') = PAnd (distCD e) (distCD e')
 distCD (POr (PAnd a a') e')  = PAnd (distCD (POr a e')) (distCD (POr a' e'))
 distCD (POr e (PAnd a a'))  = distCD (POr (PAnd a a') e)
-distCD (POr (POr a a') e') = distCD (POr (distCD (POr a a')) e')
-distCD (POr e (POr a a')) = distCD (POr e (distCD (POr a a')))
+distCD (POr (POr a a') e') = distCD (POr a (POr a' e'))
+distCD (POr e (POr a a')) = POr e (distCD (POr a a'))
 distCD x = x
 
 removeTrueFalse :: ExpSAT -> ExpSAT
@@ -408,12 +408,16 @@ removeTrueFalse (PAnd PT e') = removeTrueFalse e'
 removeTrueFalse (PAnd e PT) = removeTrueFalse e
 removeTrueFalse (PAnd PF e') = PF
 removeTrueFalse (PAnd e PF) = PF
+removeTrueFalse (PAnd (PPVar a) (PNVar a')) = if (a == a') then PF else (PAnd (PPVar a) (PNVar a'))
+removeTrueFalse (PAnd (PNVar a) (PPVar a')) = if (a == a') then PF else (PAnd (PNVar a) (PPVar a'))
 removeTrueFalse (PAnd e e') = PAnd (removeTrueFalse e) (removeTrueFalse e')
 removeTrueFalse (POr PT e') = PT
 removeTrueFalse (POr e PT) = PT
 removeTrueFalse (POr PF e') = removeTrueFalse e'
 removeTrueFalse (POr e PF) = removeTrueFalse e
-removeTrueFalse (POr e e') = POr (removeTrueFalse e) (removeTrueFalse e) 
+removeTrueFalse (POr (PPVar a) (PNVar a')) = if (a == a') then PT else (POr (PPVar a) (PNVar a'))
+removeTrueFalse (POr (PNVar a) (PPVar a')) = if (a == a') then PT else (POr (PNVar a) (PPVar a'))
+removeTrueFalse (POr e e') = POr (removeTrueFalse e) (removeTrueFalse e') 
 removeTrueFalse x = x
 
 
