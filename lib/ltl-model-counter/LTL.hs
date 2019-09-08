@@ -392,15 +392,20 @@ pushNegation (PNeg  expr) = case expr of
                           _ -> error "deleteImp assumes that Imp and Equiv have been previously removed."
 pushNegation (PAnd e e') = PAnd (pushNegation e) (pushNegation e')
 pushNegation (POr e e') = POr (pushNegation e) (pushNegation e')
-pushNegation (PImp _ _) = error "deleteImp assumes that Imp have been previously removed."
-pushNegation (PEquiv _ _) = error "deleteImp assumes that Equiv have been previously removed."
+pushNegation (PImp _ _) = error "deleteImp assumes that Imp has been previously removed."
+pushNegation (PEquiv _ _) = error "deleteImp assumes that Equiv has been previously removed."
 
 distCD :: ExpSAT -> ExpSAT
 distCD (PAnd e e') = PAnd (distCD e) (distCD e')
-distCD (POr (PAnd a a') e')  = PAnd (distCD (POr a e')) (distCD (POr a' e'))
-distCD (POr e (PAnd a a'))  = distCD (POr (PAnd a a') e)
-distCD (POr (POr a a') e') = distCD (POr a (POr a' e'))
-distCD (POr e (POr a a')) = POr e (distCD (POr a a'))
+distCD (POr e e')  =  let new_e = distCD e ;
+                          new_e' = distCD e' 
+                      in
+                        case new_e of
+                          PAnd a a' -> PAnd (distCD (POr a new_e')) (distCD (POr a' new_e'))
+                          _ -> case new_e' of 
+                                  PAnd a a' -> PAnd (distCD (POr new_e a)) (distCD (POr new_e a'))
+                                  _ -> POr new_e new_e'
+distCD (PNeg e) = error "distCD assumes that PNeg has been previously removed."
 distCD x = x
 
 removeTrueFalse :: ExpSAT -> ExpSAT
