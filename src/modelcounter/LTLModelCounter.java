@@ -11,6 +11,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+
+import javax.management.RuntimeErrorException;
 
 import automata.fsa.FSAToRegularExpressionConverter;
 import automata.fsa.FSATransition;
@@ -38,23 +41,39 @@ import scala.collection.immutable.VectorIterator;
 
 public class LTLModelCounter {
 
+	public static int TIMEOUT = 60;
+	
 	private static void writeFile(String fname,String text) throws IOException{
-		BufferedWriter output = null;
+		
         try {
             File file = new File(fname);
-            output = new BufferedWriter(new FileWriter(file));
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter output = new BufferedWriter(fw);
             output.write(text);
+            output.flush();
+            output.close();
+            fw.close();
         } catch ( IOException e ) {
             e.printStackTrace();
-        } finally {
-          if ( output != null ) {
-            output.close();
-          }
-        }
+        } 
 	}
 	
 	private static void runCommand(String cmd) throws IOException, InterruptedException{
+		
 		Process p = Runtime.getRuntime().exec(cmd);
+		
+		boolean timeout = false;
+		if(!p.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
+		    timeout = true; //kill the process. 
+			p.destroy(); // consider using destroyForcibly instead
+		}
+		
+		if (timeout)
+			throw new IllegalStateException("rltlconv timeout exception.");
+		
+		//empty out file
+		Process p1 = Runtime.getRuntime().exec("rm rltlconv-out.txt");
+		p1.waitFor(TIMEOUT, TimeUnit.SECONDS);
 		
 		InputStream in = p.getInputStream();
     	InputStreamReader inread = new InputStreamReader(in);
@@ -66,7 +85,8 @@ public class LTLModelCounter {
 	    }
 	    if(out!="")
 	    	writeFile("rltlconv-out.txt",out);
-	    
+	    else
+	    	throw new IllegalStateException("rltlconv error: out empty file");
 	 // Leer el error del programa.
     	InputStream err = p.getErrorStream();
     	InputStreamReader errread = new InputStreamReader(err);
@@ -107,7 +127,9 @@ public class LTLModelCounter {
 		
 		//write results to file
 		String fname = "rltlconv.txt";
-		
+		//empty rltlconv file
+		Process p0 = Runtime.getRuntime().exec("rm rltlconv.txt");
+		p0.waitFor(TIMEOUT, TimeUnit.SECONDS);
 		writeFile(fname,formula);
 		if (props)
 			runCommand("./rltlconv.sh @rltlconv.txt --formula --props --nba --min --nfa --dfa");
@@ -121,14 +143,18 @@ public class LTLModelCounter {
 	}
 	
 	public static Nba ltl2nba(String formula) throws IOException, InterruptedException{
+		
 //		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(), Conversion.NBA(), Conversion.MIN()};
 //		String [] conv = {"--props", "--formula", "--apa", "--nba", "--min", "--nfa", "--dfa"};
 //		Object res = RltlConv.convert(formula, conv);
 //		Nba nba = (Nba) res;
 		
+//		labelIDs.clear();
 		//write results to file
 		String fname = "rltlconv.txt";
-		
+		//empty rltlconv file
+		Process p0 = Runtime.getRuntime().exec("rm rltlconv.txt");
+		p0.waitFor(TIMEOUT, TimeUnit.SECONDS);
 		writeFile(fname,formula);
 		
 		if (props)
@@ -251,10 +277,10 @@ public class LTLModelCounter {
 	}
 	
 	//Map labels to ids
-	static java.util.Map<String,String> labelIDs = new HashMap<>();
+	public static java.util.Map<String,String> labelIDs = new HashMap<>();
 	
 public static String automata2RE(Nba ltl_ba){
-		
+
 		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
 	
 		//Map nodes to states ids
@@ -340,8 +366,10 @@ public static String automata2RE(Nba ltl_ba){
 			automata.State as = fsa.getStateWithID(ID);
 			fsa.addFinalState(as);
 		}
-
+		System.out.println("lablesID: "+ labelIDs.size());
+		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
 		FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
+		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
 //		System.out.println(fsa.toString());
 		return FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
 	}

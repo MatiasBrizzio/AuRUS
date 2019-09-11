@@ -13,7 +13,7 @@ public class ABC {
   public static DriverProxy abcDriver = new DriverProxy();
   public static boolean result = false;
   
-  public static BigInteger count(LinkedList<String> formulas, long bound) {
+  public static BigInteger count(LinkedList<String> formulas, long bound, boolean positive) {
 
     
 //    abcDriver.setOption(Option.ENABLE_IMPLICATIONS);
@@ -24,7 +24,11 @@ public class ABC {
 		+ "(declare-fun x () String)\n";
     
     for(String f : formulas){
-    	constraint+= "(assert (in x /"+f+"/))\n";
+    	if (positive)
+    		constraint+= "(assert (in x /"+f+"/))\n";
+    	else
+    		constraint+= "(assert (not (in x /"+f+"/)))\n";
+    		
     }
 //    constraint += "(assert (= (len x) "+bound+"))\n";
     constraint += "(check-sat)\n";
@@ -78,6 +82,11 @@ public class ABC {
 	  }
 	  return count;
 	  
+  }
+  
+  public static void reset() {
+	  abcDriver.dispose();
+	  abcDriver = new DriverProxy();
   }
   
 }

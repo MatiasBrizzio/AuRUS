@@ -19,9 +19,10 @@ class ModelCountingSpecificationFitnessTest {
 		String filename = "examples/minepump.tlsf";
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
+		Settings.USE_DOCKER = false;
 		SpecificationChromosome chromosome = new SpecificationChromosome(tlsf);
 		Fitness<SpecificationChromosome, Double> fitnessFunc = new ModelCountingSpecificationFitness(tlsf);
-		System.out.println(fitnessFunc.calculate(chromosome));
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 	}
 
 	@Test
@@ -30,8 +31,23 @@ class ModelCountingSpecificationFitnessTest {
 		Tlsf spec1 = TlsfParser.parse(f);
 		f = new FileReader("examples/minepump-2.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f);
+		Settings.USE_DOCKER = false;
 		Fitness<SpecificationChromosome, Double> fitnessFunc = new ModelCountingSpecificationFitness(spec1);
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
-		System.out.println(fitnessFunc.calculate(chromosome));
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 	}
+	
+	@Test
+	void testMinePump3() throws IOException, InterruptedException {
+		FileReader f = new FileReader("examples/minepump.tlsf");
+		Tlsf spec1 = TlsfParser.parse(f);
+		f = new FileReader("examples/minepump-3.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f);
+		Settings.USE_DOCKER = false;
+		ModelCountingSpecificationFitness fitnessFunc = new ModelCountingSpecificationFitness(spec1);
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
+		
+	}
+
 }

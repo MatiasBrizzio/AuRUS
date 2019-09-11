@@ -10,6 +10,7 @@ import java.util.List;
 import com.lagodiuk.ga.Fitness;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
+import modelcounter.ABC;
 import modelcounter.Count;
 import owl.ltl.*;
 import owl.ltl.tlsf.Tlsf;
@@ -22,24 +23,38 @@ import tlsf.Formula_Utils;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public static final int BOUND = 5;
+	public static final int BOUND = 1000;
+	public static boolean EXHAUSTIVE = false;
 	public static final double STATUS_FACTOR = 0.75d;
 	public static final double LOST_MODELS_FACTOR = 0.1d;
 	public static final double WON_MODELS_FACTOR = 0.1d;
 	//	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.05d;
 	public static Tlsf originalSpecification = null;
+	public static List<String> alphabet = null;
 	public static SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	public static BigInteger originalNumOfModels;
 	public static BigInteger originalNegationNumOfModels;
 	
 	public ModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
+		generateAlphabet();
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
-		originalNumOfModels = countModels(originalSpecification.toFormula().formula());
-		originalNegationNumOfModels = countModels(originalSpecification.toFormula().formula().not());
+		originalNumOfModels = countModels(originalSpecification.toFormula().formula(), true);
+		originalNegationNumOfModels = countModels(originalSpecification.toFormula().formula().not(), true);
+	}
+	
+	private static void generateAlphabet () {
+		if (originalSpecification.variables().size() <= 26) {
+			alphabet = new LinkedList();
+			for (int i = 0; i < originalSpecification.variables().size(); i++) {
+				String v = ""+Character.toChars(97+i)[0];
+				alphabet.add(v);
+			}
+			System.out.println(alphabet);
+		}
 	}
 	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
@@ -177,18 +192,31 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		chromosome.status = status;			
 	}
 
-	private BigInteger countModels (Formula formula) throws IOException, InterruptedException {
+	private BigInteger countModels (Formula formula, boolean positive) throws IOException, InterruptedException {
 		List<String> formulas = new LinkedList<String>();
 		formulas.add(toLambConvSyntax(formula));
-		BigInteger numOfModels = Count.count(formulas, null, this.BOUND, false);
+		String alph = null;
+		if (this.alphabet != null)
+			alph = this.alphabet.toString();
+		BigInteger numOfModels = Count.count(formulas, alph, this.BOUND, this.EXHAUSTIVE, positive);
+		
 		return numOfModels;
 	}
 
-	private BigInteger countModels (List<Formula> constraints) throws IOException, InterruptedException {
+	private BigInteger countModels (List<Formula> constraints, boolean positive) throws IOException, InterruptedException {
 		List<String> formulas = new LinkedList<String>();
 		for (Formula f : constraints)
 			formulas.add(toLambConvSyntax(f));
-		BigInteger numOfModels = Count.count(formulas, null, this.BOUND, false);
+//		String alph = "[";
+//		for (int i = 0; i < originalSpecification.variables().size()-1; i++) {
+//			alph += "p"+i+",";
+//		}
+//		alph += "p"+(originalSpecification.variables().size()-1)+"]";
+		String alph = null;
+		if (this.alphabet != null)
+			alph = this.alphabet.toString();
+		BigInteger numOfModels = Count.count(formulas, alph, this.BOUND, this.EXHAUSTIVE, positive);
+
 		return numOfModels;
 	}
 
@@ -209,7 +237,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
 
-		BigDecimal numOfLostModels = new BigDecimal(countModels(lostModels));
+		BigDecimal numOfLostModels = new BigDecimal(countModels(lostModels, true));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
@@ -224,7 +252,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (originalNegationNumOfModels == BigInteger.ZERO)
 			return 1.0d;
 		int numOfVars = original.variables().size();
-		Formula refined_negated_formula = refined.toFormula().formula().not();
+		Formula refined_negated_formula = refined.toFormula().formula().not().nnf();
 		if (refined_negated_formula == BooleanConstant.TRUE)
 			return 1.0d;
 		if (refined_negated_formula == BooleanConstant.FALSE)
@@ -235,7 +263,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
 
-		BigDecimal numOfWonModels = new BigDecimal(countModels(wonModels));
+		BigDecimal numOfWonModels = new BigDecimal(countModels(wonModels, true));
 
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 
@@ -261,7 +289,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 	
 	private String toLambConvSyntax(Formula f) {
-		String LTLFormula = f.toString();
+		String LTLFormula = LabelledFormula.of(f, this.alphabet).toString();
 		LTLFormula = LTLFormula.replaceAll("&", "&&");
 		LTLFormula = LTLFormula.replaceAll("\\|", "||");
 		return new String(LTLFormula); 

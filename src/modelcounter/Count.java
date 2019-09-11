@@ -10,7 +10,7 @@ import de.uni_luebeck.isp.rltlconv.automata.Nba;
 
 public class Count {
 
-	public static BigInteger count(List<String> formulas, String alphStr, int k, boolean exhaustive) throws IOException, InterruptedException{
+	public static BigInteger count(List<String> formulas, String alphStr, int k, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
 		long bound = 1;
 		if(!exhaustive)
 			bound = k;
@@ -26,7 +26,9 @@ public class Count {
 			double time = 0;
 			if (first){
 				double iTime = System.currentTimeMillis();
-				count = count(formulas, alphStr, bound);
+				ABC.reset();
+				LTLModelCounter.labelIDs.clear();
+				count = count(formulas, alphStr, bound, positive);
 				time = getTimeInSecond(iTime,System.currentTimeMillis());
 //				System.out.println("Time: " + time); 
 				first = false;
@@ -64,7 +66,7 @@ public class Count {
 		return res;
 	}
 	
-	private static BigInteger count(List<String> formulas, String alph, long bound) throws IOException, InterruptedException{
+	private static BigInteger count(List<String> formulas, String alph, long bound, boolean positive) throws IOException, InterruptedException{
 		
 		LinkedList<String> abcStrs = new LinkedList<>();
 		for(String f: formulas){
@@ -82,11 +84,11 @@ public class Count {
 //		System.out.println("Model Counting...");
 		BigInteger count = BigInteger.ZERO;
 		if(LTLModelCounter.encoded_alphabet==0)
-			count = ABC.count(abcStrs,bound*2);//each state is characterised by 2 characters
+			count = ABC.count(abcStrs,bound*2, positive);//each state is characterised by 2 characters
 		else if(LTLModelCounter.encoded_alphabet==1)
-			count = ABC.count(abcStrs,bound*3);//each state is characterised by 3 characters
+			count = ABC.count(abcStrs,bound*3, positive);//each state is characterised by 3 characters
 		else
-			count = ABC.count(abcStrs,bound);
+			count = ABC.count(abcStrs,bound, positive);
 
 
 		return count;
@@ -111,6 +113,8 @@ public class Count {
 			LTLModelCounter.encoded_alphabet = 1;
 //		System.out.println("Translating from LTL to NBA...");
 		Nba nba = LTLModelCounter.ltl2nba(form);
+		System.out.println(LTLModelCounter.encoded_alphabet);
+		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
 //		Nfa dfa = nba.toDeterministicNfa();
 //		System.out.println("Generating RE...");
 		String s = LTLModelCounter.automata2RE(nba);
