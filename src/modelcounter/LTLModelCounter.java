@@ -120,6 +120,11 @@ public class LTLModelCounter {
    		}
 	}
 	
+	public static void reset() {
+		base = 48;
+		labelIDs.clear();
+		encoded_alphabet = -1;
+	}
 	public static boolean props = true;
 	public static Nfa ltl2dfa(String formula) throws IOException, InterruptedException{
 //		ConversionVal[] conv = {Conversion.PROPS(), Conversion.FORMULA(),Conversion.APA(),Conversion.NBA(), Conversion.MIN(), Conversion.NFA(), Conversion.DFA()};
@@ -144,26 +149,26 @@ public class LTLModelCounter {
 	
 	public static Nba ltl2nba(String formula) throws IOException, InterruptedException{
 		
-//		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(), Conversion.NBA(), Conversion.MIN()};
-//		String [] conv = {"--props", "--formula", "--apa", "--nba", "--min", "--nfa", "--dfa"};
-//		Object res = RltlConv.convert(formula, conv);
-//		Nba nba = (Nba) res;
+//		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(), Conversion.NBA(), Conversion.MIN()};
+		String [] conv = { "--formula","--props", "--apa", "--nba", "--min"};
+		Object res = RltlConv.convert(formula, conv);
+		Nba nba = (Nba) res;
 		
-//		labelIDs.clear();
-		//write results to file
-		String fname = "rltlconv.txt";
-		//empty rltlconv file
-		Process p0 = Runtime.getRuntime().exec("rm rltlconv.txt");
-		p0.waitFor(TIMEOUT, TimeUnit.SECONDS);
-		writeFile(fname,formula);
-		
-		if (props)
-			runCommand("./rltlconv.sh @rltlconv.txt --formula --props --nba --min");
-		else
-			runCommand("./rltlconv.sh @rltlconv.txt --formula --nba --min");
-		Object res = Main.load("@rltlconv-out.txt");
-		
-		Nba nba = (Nba) RltlConv.convert(res, Conversion.NBA());
+////		labelIDs.clear();
+//		//write results to file
+//		String fname = "rltlconv.txt";
+//		//empty rltlconv file
+//		Process p0 = Runtime.getRuntime().exec("rm rltlconv.txt");
+//		p0.waitFor(TIMEOUT, TimeUnit.SECONDS);
+//		writeFile(fname,formula);
+//		
+//		if (props)
+//			runCommand("./rltlconv.sh @rltlconv.txt --formula --props --nba --min");
+//		else
+//			runCommand("./rltlconv.sh @rltlconv.txt --formula --nba --min");
+//		Object res = Main.load("@rltlconv-out.txt");
+//		
+//		Nba nba = (Nba) RltlConv.convert(res, Conversion.NBA());
 		return nba.toNamedNba();
 	}
 	
@@ -366,10 +371,10 @@ public static String automata2RE(Nba ltl_ba){
 			automata.State as = fsa.getStateWithID(ID);
 			fsa.addFinalState(as);
 		}
-		System.out.println("lablesID: "+ labelIDs.size());
-		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
+//		System.out.println("lablesID: "+ labelIDs.size());
+//		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
 		FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
-		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
+//		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
 //		System.out.println(fsa.toString());
 		return FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
 	}

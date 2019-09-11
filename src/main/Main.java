@@ -86,7 +86,7 @@ public class Main {
 	}
 	
 	private static void correctUssage(){
-		System.out.println("Use ./unreal-repair.sh [-Pop=population_size | -Gen=num_of_generations | -COR=crossover_rate | -MR=mutation_rate] input-file.tlsf");
+		System.out.println("Use ./unreal-repair.sh [-Pop=population_size | -Gen=num_of_generations | -COR=crossover_rate | -MR=mutation_rate | -no-docker] input-file.tlsf");
 	}
 
 }

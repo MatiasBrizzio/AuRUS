@@ -30,10 +30,11 @@ public class SpecificationGeneticAlgorithm {
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
-		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
+//		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
+		Fitness<SpecificationChromosome, Double> fitness = new ModelCountingSpecificationFitness(spec);
 		
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
-		if (PreciseModelCountingSpecificationFitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
+		if (ModelCountingSpecificationFitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
 			System.out.println("The specification is already realizable.");
 			return;
 		}
@@ -59,7 +60,7 @@ public class SpecificationGeneticAlgorithm {
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
 		print_config();
-		PreciseModelCountingSpecificationFitness.print_config();
+		ModelCountingSpecificationFitness.print_config();
 	}
 	
 	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
@@ -72,7 +73,7 @@ public class SpecificationGeneticAlgorithm {
 			SpecificationChromosome c = init.mutate();
 			population.addChromosome(c);
 		}
-		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
+		Fitness<SpecificationChromosome, Double> fitness = new ModelCountingSpecificationFitness(spec);
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		for (SpecificationChromosome c : ga.getPopulation()) {
 			if (c.status == SPEC_STATUS.REALIZABLE) {
@@ -92,7 +93,7 @@ public class SpecificationGeneticAlgorithm {
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
 		print_config();
-		PreciseModelCountingSpecificationFitness.print_config();
+		ModelCountingSpecificationFitness.print_config();
 	}
 	
 	public void print_config() {

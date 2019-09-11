@@ -21,10 +21,11 @@ class SpecificationGeneticAlgorithmTest {
 		String filename = "examples/minepump.tlsf";
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
+		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
 		ga.GENERATIONS = 20;
-		ga.POPULATION_SIZE = 50;
-		ga.MUTATION_RATE = 20;
+		ga.POPULATION_SIZE = 30;
+		ga.MUTATION_RATE = 100;
 		ga.run(tlsf);
 	}
 

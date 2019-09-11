@@ -27,7 +27,7 @@ public class Count {
 			if (first){
 				double iTime = System.currentTimeMillis();
 				ABC.reset();
-				LTLModelCounter.labelIDs.clear();
+				LTLModelCounter.reset();
 				count = count(formulas, alphStr, bound, positive);
 				time = getTimeInSecond(iTime,System.currentTimeMillis());
 //				System.out.println("Time: " + time); 
@@ -113,8 +113,8 @@ public class Count {
 			LTLModelCounter.encoded_alphabet = 1;
 //		System.out.println("Translating from LTL to NBA...");
 		Nba nba = LTLModelCounter.ltl2nba(form);
-		System.out.println(LTLModelCounter.encoded_alphabet);
-		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
+//		System.out.println(LTLModelCounter.encoded_alphabet);
+//		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
 //		Nfa dfa = nba.toDeterministicNfa();
 //		System.out.println("Generating RE...");
 		String s = LTLModelCounter.automata2RE(nba);

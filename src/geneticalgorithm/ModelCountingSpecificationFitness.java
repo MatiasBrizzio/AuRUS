@@ -23,11 +23,11 @@ import tlsf.Formula_Utils;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public static final int BOUND = 1000;
-	public static boolean EXHAUSTIVE = false;
-	public static final double STATUS_FACTOR = 0.75d;
-	public static final double LOST_MODELS_FACTOR = 0.1d;
-	public static final double WON_MODELS_FACTOR = 0.1d;
+	public static final int BOUND = 5;
+	public static boolean EXHAUSTIVE = true;
+	public static final double STATUS_FACTOR = 0.65d;
+	public static final double LOST_MODELS_FACTOR = 0.15d;
+	public static final double WON_MODELS_FACTOR = 0.15d;
 	//	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.05d;
 	public static Tlsf originalSpecification = null;
@@ -252,7 +252,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (originalNegationNumOfModels == BigInteger.ZERO)
 			return 1.0d;
 		int numOfVars = original.variables().size();
-		Formula refined_negated_formula = refined.toFormula().formula().not().nnf();
+		Formula refined_negated_formula = refined.toFormula().formula().not();
 		if (refined_negated_formula == BooleanConstant.TRUE)
 			return 1.0d;
 		if (refined_negated_formula == BooleanConstant.FALSE)
@@ -295,4 +295,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		return new String(LTLFormula); 
 	}
 
+	public static void print_config() {
+		System.out.println(String.format("status: %s, lost%s, won: %s, syn: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR));
+	}
 }
