@@ -150,7 +150,7 @@ public class LTLModelCounter {
 	public static Nba ltl2nba(String formula) throws IOException, InterruptedException{
 		
 //		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(), Conversion.NBA(), Conversion.MIN()};
-		String [] conv = { "--formula","--props", "--apa", "--nba", "--min"};
+		String [] conv = { "--formula","--props", "--apa", "--reduce", "--nba", "--min"};
 		Object res = RltlConv.convert(formula, conv);
 		Nba nba = (Nba) res;
 		

@@ -13,6 +13,7 @@ import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import modelcounter.ABC;
 import modelcounter.Count;
 import owl.ltl.*;
+import owl.ltl.rewriter.NormalForms;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
@@ -25,9 +26,9 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 
 	public static final int BOUND = 5;
 	public static boolean EXHAUSTIVE = true;
-	public static final double STATUS_FACTOR = 0.65d;
-	public static final double LOST_MODELS_FACTOR = 0.15d;
-	public static final double WON_MODELS_FACTOR = 0.15d;
+	public static final double STATUS_FACTOR = 0.75d;
+	public static final double LOST_MODELS_FACTOR = 0.1d;
+	public static final double WON_MODELS_FACTOR = 0.1d;
 	//	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.05d;
 	public static Tlsf originalSpecification = null;
@@ -194,7 +195,11 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 
 	private BigInteger countModels (Formula formula, boolean positive) throws IOException, InterruptedException {
 		List<String> formulas = new LinkedList<String>();
+//		Formula cnf = NormalForms.toCnfFormula(formula.nnf());
+//		for (Formula f : cnf.children())
+//			formulas.add(toLambConvSyntax(f));
 		formulas.add(toLambConvSyntax(formula));
+
 		String alph = null;
 		if (this.alphabet != null)
 			alph = this.alphabet.toString();
@@ -236,7 +241,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 			return 1.0d;
 		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
-
+		
 		BigDecimal numOfLostModels = new BigDecimal(countModels(lostModels, true));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
