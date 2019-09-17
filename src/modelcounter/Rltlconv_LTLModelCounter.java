@@ -39,7 +39,7 @@ import de.uni_luebeck.isp.rltlconv.cli.Conversion.ConversionVal;
 import scala.collection.immutable.VectorIterator;
 
 
-public class LTLModelCounter {
+public class Rltlconv_LTLModelCounter {
 
 	public static int TIMEOUT = 60;
 	
@@ -416,7 +416,7 @@ public static String automata2RE(Nba ltl_ba){
 			return;
 		}
 		String label = "";
-		if(LTLModelCounter.encoded_alphabet==1)
+		if(Rltlconv_LTLModelCounter.encoded_alphabet==1)
 			label += Character.toChars(state[1])[0];
 		label += Character.toChars(state[0])[0];
 		label += Character.toChars(base)[0];

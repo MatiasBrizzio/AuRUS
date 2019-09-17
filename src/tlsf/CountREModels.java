@@ -1,16 +1,18 @@
-package modelcounter;
+package tlsf;
+
+import de.uni_luebeck.isp.rltlconv.automata.Nba;
+import modelcounter.ABC;
+import owl.ltl.LabelledFormula;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.uni_luebeck.isp.rltlconv.automata.Nba;
 
+public class CountREModels{
 
-public class Count {
-
-	public static BigInteger count(List<String> formulas, String alphStr, int k, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
+	public static BigInteger count(List<LabelledFormula> formulas, int k, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
 		long bound = 1;
 		if(!exhaustive)
 			bound = k;
@@ -27,8 +29,8 @@ public class Count {
 			if (first){
 				double iTime = System.currentTimeMillis();
 				ABC.reset();
-				Rltlconv_LTLModelCounter.reset();
-				count = count(formulas, alphStr, bound, positive);
+				FormulaToRE.reset();
+				count = count(formulas, bound, positive);
 				time = getTimeInSecond(iTime,System.currentTimeMillis());
 //				System.out.println("Time: " + time); 
 				first = false;
@@ -36,9 +38,9 @@ public class Count {
 			else{
 				double iTime = System.currentTimeMillis();
 				if(ABC.result){
-					if(Rltlconv_LTLModelCounter.encoded_alphabet==0)
+					if(FormulaToRE.encoded_alphabet==0)
 						count = ABC.count(bound*2);//each state is characterised by 2 characters
-					else if(Rltlconv_LTLModelCounter.encoded_alphabet==1)
+					else if(FormulaToRE.encoded_alphabet==1)
 						count = ABC.count(bound*3);//each state is characterised by 3 characters
 					else
 						count = ABC.count(bound);
@@ -66,11 +68,11 @@ public class Count {
 		return res;
 	}
 	
-	private static BigInteger count(List<String> formulas, String alph, long bound, boolean positive) throws IOException, InterruptedException{
+	private static BigInteger count(List<LabelledFormula> formulas, long bound, boolean positive) throws IOException, InterruptedException{
 		
 		LinkedList<String> abcStrs = new LinkedList<>();
-		for(String f: formulas){
-			String abcStr = genABCString(f, alph);
+		for(LabelledFormula f: formulas){
+			String abcStr = genABCString(f);
 			abcStrs.add(abcStr);
 		}
 
@@ -83,9 +85,9 @@ public class Count {
 			
 //		System.out.println("Model Counting...");
 		BigInteger count = BigInteger.ZERO;
-		if(Rltlconv_LTLModelCounter.encoded_alphabet==0)
+		if(FormulaToRE.encoded_alphabet==0)
 			count = ABC.count(abcStrs,bound*2, positive);//each state is characterised by 2 characters
-		else if(Rltlconv_LTLModelCounter.encoded_alphabet==1)
+		else if(FormulaToRE.encoded_alphabet==1)
 			count = ABC.count(abcStrs,bound*3, positive);//each state is characterised by 3 characters
 		else
 			count = ABC.count(abcStrs,bound, positive);
@@ -102,24 +104,25 @@ public class Count {
 		return sec;
 	}
 	
-	public static String genABCString(String ltl, String alph) throws IOException, InterruptedException{
-		String form = "LTL="+ltl;
-		if(alph!=null && alph!="")
-			form += ",ALPHABET="+alph;
-//		Nfa dfa = LTLModelCounter.ltl2dfa(formula);
-		if(Rltlconv_LTLModelCounter.props && alph!=null && alph.split(",").length>5 && alph.split(",").length<12)
-			Rltlconv_LTLModelCounter.encoded_alphabet = 0;
-		else if(Rltlconv_LTLModelCounter.props && alph!=null && alph.split(",").length>=12)
-			Rltlconv_LTLModelCounter.encoded_alphabet = 1;
+	public static String genABCString(LabelledFormula ltl) throws IOException, InterruptedException{
+		int vars = ltl.variables().size();
+		if(vars>5 && vars<12)
+			FormulaToRE.encoded_alphabet = 0;
+		else if(vars>=12)
+			FormulaToRE.encoded_alphabet = 1;
 //		System.out.println("Translating from LTL to NBA...");
-		Nba nba = Rltlconv_LTLModelCounter.ltl2nba(form);
 //		System.out.println(LTLModelCounter.encoded_alphabet);
-		System.out.println();
-		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
+//		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
 //		Nfa dfa = nba.toDeterministicNfa();
 //		System.out.println("Generating RE...");
-		String s = Rltlconv_LTLModelCounter.automata2RE(nba);
-		return Rltlconv_LTLModelCounter.toABClanguage(s);
+		String s = FormulaToRE.formulaToRegularExpression(ltl);
+		return toABClanguage(s);
 	}
-	
+
+	public static String toABClanguage(String re){
+		String abcStr = "";
+		abcStr = re.replace("λ", "\"\"");
+		abcStr = abcStr.replace("+", "|");
+		return abcStr;
+	}
 }

@@ -27,7 +27,7 @@ class LTLModelCounterTest {
 			 vars.add("p"+i);
 		 System.out.println(vars);
 		 System.out.println(tlsf.toFormula().formula());
-		 BigInteger res = LTLModelCounter.count(tlsf.toFormula().formula().toString(), vars);
+		 BigInteger res = PreciseLTLModelCounter.count(tlsf.toFormula().formula().toString(), vars);
 		 System.out.println(res);
 	}
 

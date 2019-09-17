@@ -14,7 +14,7 @@ import owl.ltl.rewriter.NormalForms;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import solvers.LTLSolver.SolverResult;
 
-public class LTLModelCounter {
+public class PreciseLTLModelCounter {
 	public static int BOUND = 5;
 	public static final String BASENAME = "lib/ltl-model-counter/result/numofmodels";
 	public static final String INFILE = BASENAME+".ltl";

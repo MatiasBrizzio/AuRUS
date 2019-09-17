@@ -20,6 +20,7 @@ import solvers.LTLSolver;
 import solvers.StrixHelper;
 import solvers.LTLSolver.SolverResult;
 import solvers.StrixHelper.RealizabilitySolverResult;
+import tlsf.CountREModels;
 import tlsf.Formula_Utils;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
@@ -43,8 +44,8 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
-		originalNumOfModels = countModels(originalSpecification.toFormula().formula(), true);
-		originalNegationNumOfModels = countModels(originalSpecification.toFormula().formula().not(), true);
+		originalNumOfModels = countModels(originalSpecification.toFormula());
+		originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 	}
 	
 	private static void generateAlphabet () {
@@ -192,38 +193,44 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		}
 		chromosome.status = status;			
 	}
+	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
+		LinkedList<LabelledFormula> formulas = new LinkedList<>();
+		formulas.add(formula);
+		BigInteger numOfModels = CountREModels.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
+		return numOfModels;
+	}
 
-	private BigInteger countModels (Formula formula, boolean positive) throws IOException, InterruptedException {
-		List<String> formulas = new LinkedList<String>();
-//		Formula cnf = NormalForms.toCnfFormula(formula.nnf());
-//		for (Formula f : cnf.children())
+	private BigInteger countModels (List<LabelledFormula> formulas) throws IOException, InterruptedException {
+		BigInteger numOfModels = CountREModels.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
+		return numOfModels;
+	}
+//	private BigInteger countModels (Formula formula, boolean positive) throws IOException, InterruptedException {
+//		List<String> formulas = new LinkedList<String>();
+//		formulas.add(toLambConvSyntax(formula));
+//		String alph = null;
+//		if (this.alphabet != null)
+//			alph = this.alphabet.toString();
+//		BigInteger numOfModels = Count.count(formulas, alph, this.BOUND, this.EXHAUSTIVE, positive);
+//
+//		return numOfModels;
+//	}
+//
+//	private BigInteger countModels (List<Formula> constraints, boolean positive) throws IOException, InterruptedException {
+//		List<String> formulas = new LinkedList<String>();
+//		for (Formula f : constraints)
 //			formulas.add(toLambConvSyntax(f));
-		formulas.add(toLambConvSyntax(formula));
-
-		String alph = null;
-		if (this.alphabet != null)
-			alph = this.alphabet.toString();
-		BigInteger numOfModels = Count.count(formulas, alph, this.BOUND, this.EXHAUSTIVE, positive);
-		
-		return numOfModels;
-	}
-
-	private BigInteger countModels (List<Formula> constraints, boolean positive) throws IOException, InterruptedException {
-		List<String> formulas = new LinkedList<String>();
-		for (Formula f : constraints)
-			formulas.add(toLambConvSyntax(f));
-//		String alph = "[";
-//		for (int i = 0; i < originalSpecification.variables().size()-1; i++) {
-//			alph += "p"+i+",";
-//		}
-//		alph += "p"+(originalSpecification.variables().size()-1)+"]";
-		String alph = null;
-		if (this.alphabet != null)
-			alph = this.alphabet.toString();
-		BigInteger numOfModels = Count.count(formulas, alph, this.BOUND, this.EXHAUSTIVE, positive);
-
-		return numOfModels;
-	}
+////		String alph = "[";
+////		for (int i = 0; i < originalSpecification.variables().size()-1; i++) {
+////			alph += "p"+i+",";
+////		}
+////		alph += "p"+(originalSpecification.variables().size()-1)+"]";
+//		String alph = null;
+//		if (this.alphabet != null)
+//			alph = this.alphabet.toString();
+//		BigInteger numOfModels = Count.count(formulas, alph, this.BOUND, this.EXHAUSTIVE, positive);
+//
+//		return numOfModels;
+//	}
 
 	private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
@@ -241,8 +248,9 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 			return 1.0d;
 		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
-		
-		BigDecimal numOfLostModels = new BigDecimal(countModels(lostModels, true));
+
+		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
+		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
@@ -267,8 +275,8 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 			return 1.0d;
 		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
-
-		BigDecimal numOfWonModels = new BigDecimal(countModels(wonModels, true));
+		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
+		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
 
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 

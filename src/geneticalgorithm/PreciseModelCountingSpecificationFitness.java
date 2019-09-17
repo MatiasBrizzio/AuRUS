@@ -24,10 +24,10 @@ import owl.ltl.LabelledFormula;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import owl.util.StringUtil;
-import solvers.LTLModelCounter;
 import solvers.LTLSolver;
 import solvers.StrixHelper;
 import solvers.LTLSolver.SolverResult;
+import solvers.PreciseLTLModelCounter;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.Formula_Utils;
 
@@ -49,8 +49,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
-		originalNumOfModels = LTLModelCounter.count(originalSpecification.toFormula().formula(), originalSpecification.variables().size());
-		originalNegationNumOfModels = LTLModelCounter.count(originalSpecification.toFormula().formula().not(), originalSpecification.variables().size());
+		originalNumOfModels = PreciseLTLModelCounter.count(originalSpecification.toFormula().formula(), originalSpecification.variables().size());
+		originalNegationNumOfModels = PreciseLTLModelCounter.count(originalSpecification.toFormula().formula().not(), originalSpecification.variables().size());
 	}
 	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
@@ -204,8 +204,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			return 1.0d;
 		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
-		LTLModelCounter.BOUND = this.BOUND;
-		BigDecimal numOfLostModels = new BigDecimal(LTLModelCounter.count(lostModels, numOfVars));
+		PreciseLTLModelCounter.BOUND = this.BOUND;
+		BigDecimal numOfLostModels = new BigDecimal(PreciseLTLModelCounter.count(lostModels, numOfVars));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 		
@@ -230,8 +230,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			return 1.0d;
 		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
-		LTLModelCounter.BOUND = this.BOUND;
-		BigDecimal numOfWonModels = new BigDecimal(LTLModelCounter.count(wonModels, numOfVars));
+		PreciseLTLModelCounter.BOUND = this.BOUND;
+		BigDecimal numOfWonModels = new BigDecimal(PreciseLTLModelCounter.count(wonModels, numOfVars));
 		
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 		

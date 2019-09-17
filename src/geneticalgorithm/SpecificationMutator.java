@@ -3,12 +3,6 @@ package geneticalgorithm;
 import java.util.List;
 import java.util.Random;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ConsoleErrorListener;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import owl.grammar.LTLLexer;
 import owl.grammar.LTLParser;

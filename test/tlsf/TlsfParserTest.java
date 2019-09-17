@@ -23,36 +23,47 @@ package tlsf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import geneticalgorithm.SpecificationMerger;
+import owl.automaton.Automaton;
+import owl.automaton.acceptance.BuchiAcceptance;
+import owl.automaton.acceptance.GeneralizedBuchiAcceptance;
+import owl.automaton.acceptance.OmegaAcceptance;
+import owl.automaton.edge.Edge;
+import owl.automaton.edge.Edges;
+import owl.automaton.output.HoaPrinter;
+import owl.collections.ValuationSet;
 import owl.grammar.LTLParserBaseVisitor;
+import owl.ltl.EquivalenceClass;
 import owl.ltl.Formula;
 import owl.ltl.Formula.LogicalOperator;
 import owl.ltl.Formula.ModalOperator;
 import owl.ltl.Formula.TemporalOperator;
 import owl.ltl.LabelledFormula;
+import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaMutator;
 import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
+import owl.run.DefaultEnvironment;
+import owl.run.modules.Transformers;
+import owl.translations.LTL2DAFunction;
+import owl.translations.LTL2DAModule;
+import owl.translations.canonical.BreakpointState;
+import owl.translations.ltl2nba.SymmetricNBAConstruction;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 import owl.ltl.parser.*;
-import owl.ltl.rewriter.NormalForms;
+import owl.ltl.rewriter.*;
+
 import owl.ltl.spectra.Spectra;
 
 class TlsfParserTest {
@@ -485,12 +496,28 @@ class TlsfParserTest {
   @Test
   void testFormulas() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse(" G(false)",vars);
-	  System.out.println(f);
-	  System.out.println(f.formula().subformulas(TemporalOperator.class));
-      System.out.println(Formula_Utils.subformulas(f));
-      System.out.println(NormalForms.toCnf(f.formula()));
-      System.out.println(NormalForms.toDnf(f.formula()));
+	  LabelledFormula f0 =  LtlParser.parse("G(a -> (b))",vars);
+
+	  System.out.println(f0);
+
+//	  LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),
+//			  true, EnumSet.of(
+//			  LTL2DAFunction.Constructions.SAFETY,
+//			  LTL2DAFunction.Constructions.CO_SAFETY,
+//			  LTL2DAFunction.Constructions.BUCHI,
+//			  LTL2DAFunction.Constructions.CO_BUCHI));
+//	  LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),
+//			  false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
+	  SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
+
+	  Automaton<?, BuchiAcceptance> automaton = translator.apply(f0);
+	  System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+//	  System.out.println(automaton.initialStates());
+//	  System.out.println(automaton.acceptance().acceptanceSets());
+//	  System.out.println(automaton.acceptance().acceptingSet());
+//	  System.out.println(automaton.acceptance().booleanExpression());
+
+
   }
   
   @Test
@@ -524,6 +551,17 @@ class TlsfParserTest {
 		Formula f = LtlParser.syntax(formula);
 
 		System.out.println(f);
-		System.out.println(NormalForms.toCnf(f));
+		System.out.println(SyntacticSimplifier.INSTANCE.apply(NormalForms.toCnfFormula(f.nnf())));
+	}
+
+	@Test
+	void testLTL2PL2() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		LabelledFormula f =  LtlParser.parse(" G(a | !b)",vars);
+		System.out.println(f);
+		BitSet set = new BitSet();
+		set.set(2);
+		System.out.println(f.formula().temporalStep(set));
+		System.out.println(NormalForms.toCnf(f.formula().unfold()));
 	}
 }

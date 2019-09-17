@@ -1,22 +1,27 @@
 package tlsf;
 
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
+import automata.State;
+import automata.fsa.FiniteStateAutomaton;
+import owl.automaton.Automaton;
+import owl.automaton.acceptance.BuchiAcceptance;
+import owl.automaton.edge.Edge;
+import owl.collections.ValuationSet;
 import owl.grammar.LTLLexer;
 import owl.grammar.LTLParser;
-import owl.ltl.BooleanConstant;
-import owl.ltl.Conjunction;
-import owl.ltl.Formula;
+import owl.ltl.*;
 import owl.ltl.Formula.LogicalOperator;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.parser.TokenErrorListener;
 import owl.ltl.visitors.SubformulaReplacer;
-import owl.ltl.LabelledFormula;
+import owl.run.DefaultEnvironment;
+import owl.translations.LTL2DAFunction;
 
 public class Formula_Utils {
-	
+
 	public static List<LabelledFormula> subformulas (LabelledFormula f) {//, List<String> variables) {
 		List<LabelledFormula> s = new LinkedList();
 		
