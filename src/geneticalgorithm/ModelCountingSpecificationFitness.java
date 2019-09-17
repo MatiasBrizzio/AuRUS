@@ -26,21 +26,21 @@ import tlsf.Formula_Utils;
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public static final int BOUND = 5;
-	public static boolean EXHAUSTIVE = true;
+	public boolean EXHAUSTIVE = true;
 	public static final double STATUS_FACTOR = 0.75d;
 	public static final double LOST_MODELS_FACTOR = 0.1d;
 	public static final double WON_MODELS_FACTOR = 0.1d;
 	//	public static final double SOLUTION = 0.8d;
 	public static final double SYNTACTIC_FACTOR = 0.05d;
-	public static Tlsf originalSpecification = null;
+	public Tlsf originalSpecification = null;
 	public static List<String> alphabet = null;
 	public static SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
-	public static BigInteger originalNumOfModels;
-	public static BigInteger originalNegationNumOfModels;
+	public BigInteger originalNumOfModels;
+	public BigInteger originalNegationNumOfModels;
 	
 	public ModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
-		generateAlphabet();
+//		generateAlphabet();
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
@@ -48,16 +48,16 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 	}
 	
-	private static void generateAlphabet () {
-		if (originalSpecification.variables().size() <= 26) {
-			alphabet = new LinkedList();
-			for (int i = 0; i < originalSpecification.variables().size(); i++) {
-				String v = ""+Character.toChars(97+i)[0];
-				alphabet.add(v);
-			}
-			System.out.println(alphabet);
-		}
-	}
+//	private static void generateAlphabet () {
+//		if (originalSpecification.variables().size() <= 26) {
+//			alphabet = new LinkedList();
+//			for (int i = 0; i < originalSpecification.variables().size(); i++) {
+//				String v = ""+Character.toChars(97+i)[0];
+//				alphabet.add(v);
+//			}
+//			System.out.println(alphabet);
+//		}
+//	}
 	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
 	
@@ -196,12 +196,14 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
 		LinkedList<LabelledFormula> formulas = new LinkedList<>();
 		formulas.add(formula);
-		BigInteger numOfModels = CountREModels.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
+		CountREModels counter = new CountREModels();
+		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
 	}
 
 	private BigInteger countModels (List<LabelledFormula> formulas) throws IOException, InterruptedException {
-		BigInteger numOfModels = CountREModels.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
+		CountREModels counter = new CountREModels();
+		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
 	}
 //	private BigInteger countModels (Formula formula, boolean positive) throws IOException, InterruptedException {
@@ -249,8 +251,11 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
 
-		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
-		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
+		List<LabelledFormula> formulas = new LinkedList();
+		formulas.add(original.toFormula());
+		formulas.add(refined.toFormula());
+//		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
+		BigDecimal numOfLostModels = new BigDecimal(countModels(formulas));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
@@ -275,8 +280,13 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 			return 1.0d;
 		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
-		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
-		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
+		
+		List<LabelledFormula> formulas = new LinkedList();
+		formulas.add(original.toFormula().not());
+		formulas.add(refined.toFormula().not());
+		
+//		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
+		BigDecimal numOfWonModels = new BigDecimal(countModels(formulas));
 
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 

@@ -10,10 +10,14 @@ import vlab.cs.ucsb.edu.DriverProxy.Option;
 
 public class ABC {
 
-  public static DriverProxy abcDriver = new DriverProxy();
-  public static boolean result = false;
+  public DriverProxy abcDriver = null;
+  public boolean result = false;
   
-  public static BigInteger count(LinkedList<String> formulas, long bound, boolean positive) {
+  public ABC() {
+	  result = false;
+	  abcDriver = new DriverProxy();
+  }
+  public BigInteger count(LinkedList<String> formulas, long bound, boolean exhaustive, boolean positive) {
 
     
 //    abcDriver.setOption(Option.ENABLE_IMPLICATIONS);
@@ -40,10 +44,15 @@ public class ABC {
     
     if (result) {
 //      System.out.println("Satisfiable");
-      
-      count = abcDriver.countVariable("x",bound);
-
-//      if (count != null) {
+    	if(!exhaustive)
+    		count = abcDriver.countVariable("x",bound);
+		else{
+			for(long k = 1; k <= bound; k++) {
+				BigInteger r = abcDriver.countVariable("x",k);
+				count = count.add(r);
+			}
+		}
+      //      if (count != null) {
 //        System.out.println("Number of solutions: " + count.toString());
 //      } else {
 //        System.out.println("An error occured during counting, please contact vlab@cs.ucsb.edu");
@@ -63,11 +72,11 @@ public class ABC {
 //      System.out.println("Unsatisfiable");
     }
     
-//    abcDriver.dispose(); // release resources
+    abcDriver.dispose(); // release resources
     return count;
   }
   
-  public static BigInteger count(long bound) {
+  public BigInteger count(long bound) {
 	  BigInteger count = BigInteger.ZERO;
 //	  System.out.println("k: "+bound);
 	  if(result){
@@ -84,9 +93,13 @@ public class ABC {
 	  
   }
   
-  public static void reset() {
-	  abcDriver.dispose();
-	  abcDriver = new DriverProxy();
+  public void dispose() {
+	  abcDriver.reset();
+	  abcDriver.dispose(); // release resources
+  }
+  
+  public void reset() {
+	  abcDriver.reset();
   }
   
 }

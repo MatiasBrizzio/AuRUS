@@ -50,4 +50,16 @@ class ModelCountingSpecificationFitnessTest {
 		
 	}
 
+	@Test
+	void testMinePump4() throws IOException, InterruptedException {
+		FileReader f = new FileReader("examples/minepump.tlsf");
+		Tlsf spec1 = TlsfParser.parse(f);
+		f = new FileReader("examples/minepump-4.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f);
+		Settings.USE_DOCKER = false;
+		ModelCountingSpecificationFitness fitnessFunc = new ModelCountingSpecificationFitness(spec1);
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
+		
+	}
 }

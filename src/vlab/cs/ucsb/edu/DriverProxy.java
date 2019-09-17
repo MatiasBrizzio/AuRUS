@@ -89,6 +89,7 @@ public class DriverProxy {
 	}
 
 	public DriverProxy() {
+//		System.loadLibrary("abc");
 		initABC(0);
 	}
 

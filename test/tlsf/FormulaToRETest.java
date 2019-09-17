@@ -13,7 +13,8 @@ public class FormulaToRETest {
         List<String> vars = List.of("a", "b");
         LabelledFormula f0 =  LtlParser.parse("a & b",vars);
         System.out.println(f0);
-        String re = FormulaToRE.formulaToRegularExpression(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
 
@@ -22,7 +23,8 @@ public class FormulaToRETest {
         List<String> vars = List.of("a", "b");
         LabelledFormula f0 =  LtlParser.parse("G(a -> F(b))",vars);
         System.out.println(f0);
-        String re = FormulaToRE.formulaToRegularExpression(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
 
@@ -31,7 +33,8 @@ public class FormulaToRETest {
         List<String> vars = List.of("a", "b");
         LabelledFormula f0 =  LtlParser.parse("G(a -> X(b))",vars);
         System.out.println(f0);
-        String re = FormulaToRE.formulaToRegularExpression(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
 
@@ -40,7 +43,8 @@ public class FormulaToRETest {
         List<String> vars = List.of("a", "b");
         LabelledFormula f0 =  LtlParser.parse("G(a -> (b))",vars);
         System.out.println(f0);
-        String re = FormulaToRE.formulaToRegularExpression(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
 }

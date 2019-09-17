@@ -32,30 +32,36 @@ import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS
 public class FormulaToRE {
 
     //Map labels to ids
-    public static java.util.Map<String,String> labelIDs = new HashMap<>();
-    static int base = 48;//start with char 0
-    public static int encoded_alphabet = -1;
-    public static int[]state = {48,48};//start with char 0
-    public static int alphabetSize = 0;
-    public static void reset() {
+    public java.util.Map<String,String> labelIDs = new HashMap<>();
+    int base = 48;//start with char 0
+    public int encoded_alphabet = -1;
+    public int[]state = {48,48};//start with char 0
+    public int alphabetSize = 0;
+    public FormulaToRE() {
         base = 48;
         labelIDs.clear();
         encoded_alphabet = -1;
         alphabetSize = 0;
     }
-    public static String formulaToRegularExpression(LabelledFormula formula){
+    public <S> String formulaToRegularExpression(LabelledFormula formula){
 //        LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),
 //                false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
 //        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
         SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
-        Automaton<?, BuchiAcceptance> automaton = translator.apply(formula);
-        System.out.println(automaton.name());
-        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+        Automaton<S, BuchiAcceptance> automaton = translator.apply(formula);
+        Set<Integer> acceptanceSets = new HashSet();
+        automaton.states().forEach(s -> 
+        	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
+        			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
+        System.out.print(" size:"+automaton.size()+" ("+acceptanceSets.size()+") ");
+        
+//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
     }
 
-    public static <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
+    
+    public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
 
 
         FiniteStateAutomaton fsa = new FiniteStateAutomaton();
@@ -201,7 +207,7 @@ public class FormulaToRE {
 
 
 
-    public static void setLabel(String l) throws RuntimeException{
+    public void setLabel(String l) throws RuntimeException{
         if(labelIDs.containsKey(l)){
             return;
         }
@@ -222,7 +228,7 @@ public class FormulaToRE {
     }
 
 
-    public static void setLabelEncoded(String l) throws RuntimeException{
+    public void setLabelEncoded(String l) throws RuntimeException{
         if(labelIDs.containsKey(l)){
             return;
         }
