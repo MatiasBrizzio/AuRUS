@@ -195,13 +195,23 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
 		LinkedList<LabelledFormula> formulas = new LinkedList<>();
-		formulas.add(formula);
+//		LabelledFormula f = LabelledFormula.of(NormalForms.toCnfFormula(formula.formula().nnf()), formula.variables());
+//		formulas.add(f);
+		for(Formula f : NormalForms.toCnfFormula(formula.formula().nnf()).children())
+			formulas.add( LabelledFormula.of(f,formula.variables()));
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
 	}
 
-	private BigInteger countModels (List<LabelledFormula> formulas) throws IOException, InterruptedException {
+	private BigInteger countModels (List<LabelledFormula> constraints) throws IOException, InterruptedException {
+		LinkedList<LabelledFormula> formulas = new LinkedList<>();
+		for (LabelledFormula formula : constraints) {
+//			LabelledFormula f = LabelledFormula.of(NormalForms.toCnfFormula(formula.formula().nnf()), formula.variables());
+//			formulas.add(f);
+			for(Formula f : NormalForms.toCnfFormula(formula.formula().nnf()).children())
+				formulas.add( LabelledFormula.of(f,formula.variables()));
+		}
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
