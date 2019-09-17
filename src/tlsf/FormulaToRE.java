@@ -53,7 +53,7 @@ public class FormulaToRE {
         automaton.states().forEach(s -> 
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
-        System.out.print(" size:"+automaton.size()+" ("+acceptanceSets.size()+") ");
+        System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
         
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         alphabetSize = formula.variables().size();
@@ -81,75 +81,78 @@ public class FormulaToRE {
             Map<Edge<S>, ValuationSet> edgeMap = automaton.edgeMap(from);
             edgeMap.forEach((edge, valuationSet) -> {
                 S to = edge.successor();
-                if (valuationSet.isEmpty()) {
-                    return;
+                if (!valuationSet.isEmpty()) {
+                  
+                	valuationSet.forEach(bitSet -> {
+	                    //checks if ID exists
+	                    int ID = 0;
+	                    automata.State fromState = null;
+	                    if (ids.containsKey(from.toString())) {
+	                        ID = ids.get(from.toString());
+	                        fromState = fsa.getStateWithID(ID);
+	                    } else {
+	                        //create new state
+	                        fromState = fsa.createState(new Point());
+	                        //update ids
+	                        ids.put(from.toString(), fromState.getID());
+	                        ID = fromState.getID();
+	                    }
+	                    //get Label
+	                    List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
+	                    for (int i = 0; i < alphabetSize; i++) {
+	                        BooleanExpression<AtomLabel> atom = new BooleanExpression<>(AtomLabel.createAPIndex(i));
+	
+	                        if (bitSet.get(i)) {
+	                            conjuncts.add(atom);
+	                        } else {
+	                            conjuncts.add(atom.not());
+	                        }
+	                    }
+	                    String l = BooleanExpressions.createConjunction(conjuncts).toString();
+	                    if (encoded_alphabet == -1)
+	                        setLabel(l);
+	                    else
+	                        setLabelEncoded(l);
+	
+	                    String label = labelIDs.get(l);
+	
+	                    //check if toState exists
+	                    automata.State toState = null;
+	
+	                    if (ids.containsKey(to.toString())) {
+	                        ID = ids.get(to.toString());
+	                        toState = fsa.getStateWithID(ID);
+	                    } else {
+	                        //create new state
+	                        toState = fsa.createState(new Point());
+	                        //update ids
+	                        ids.put(to.toString(), toState.getID());
+	                        ID = toState.getID();
+	                    }
+	                    //add transition
+	                    FSATransition t = new FSATransition(fromState, toState, label);
+	                    fsa.addTransition(t);
+                	});
                 }
-                valuationSet.forEach(bitSet -> {
-                    //checks if ID exists
-                    int ID = 0;
-                    automata.State fromState = null;
-                    if (ids.containsKey(from.toString())) {
-                        ID = ids.get(from.toString());
-                        fromState = fsa.getStateWithID(ID);
-                    } else {
-                        //create new state
-                        fromState = fsa.createState(new Point());
-                        //update ids
-                        ids.put(from.toString(), fromState.getID());
-                        ID = fromState.getID();
-                    }
-                    //get Label
-                    List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
-                    for (int i = 0; i < alphabetSize; i++) {
-                        BooleanExpression<AtomLabel> atom = new BooleanExpression<>(AtomLabel.createAPIndex(i));
+            
 
-                        if (bitSet.get(i)) {
-                            conjuncts.add(atom);
-                        } else {
-                            conjuncts.add(atom.not());
-                        }
-                    }
-                    String l = BooleanExpressions.createConjunction(conjuncts).toString();
-                    if (encoded_alphabet == -1)
-                        setLabel(l);
-                    else
-                        setLabelEncoded(l);
-
-                    String label = labelIDs.get(l);
-
-                    //check if toState exists
-                    automata.State toState = null;
-
-                    if (ids.containsKey(to.toString())) {
-                        ID = ids.get(to.toString());
-                        toState = fsa.getStateWithID(ID);
-                    } else {
-                        //create new state
-                        toState = fsa.createState(new Point());
-                        //update ids
-                        ids.put(to.toString(), toState.getID());
-                        ID = toState.getID();
-                    }
-                    //add transition
-                    FSATransition t = new FSATransition(fromState, toState, label);
-                    fsa.addTransition(t);
-                });
-
-//                IntArrayList acceptanceSets = new IntArrayList();
-//                edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-
-                //add final states
-                if (edge.acceptanceSetIterator().hasNext()) {
-                    //get state
-                    int finalID = ids.get(to.toString());
-                    automata.State as = fsa.getStateWithID(finalID);
-                    fsa.addFinalState(as);
-                }
+//              IntArrayList acceptanceSets = new IntArrayList();
+//              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+	            //add final states
+	            if (edge.acceptanceSetIterator().hasNext()) {
+	                //get state
+	                int finalID = ids.get(to.toString());
+	                automata.State as = fsa.getStateWithID(finalID);
+	                fsa.addFinalState(as);
+	            }
             });
         }
-
+        System.out.print("n");
         FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
-        return FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
+        System.out.print("f");
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
+        System.out.print("r");
+        return re;
     }
 
 //    public static <S> Set<S> finalStates(Automaton<S, ?> automaton) {
