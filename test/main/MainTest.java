@@ -15,6 +15,12 @@ class MainTest {
 	}
 
 	@Test
+	void testMinePumpSafe() throws IOException, InterruptedException {
+		String [] args = {"examples/minepump-safe.tlsf"};
+		Main.main(args);
+	}
+
+	@Test
 	void testSpectra() throws IOException, InterruptedException {
 		String [] args = {"examples/icse2019/Simple/RG1.spectra"};
 		Main.main(args);
