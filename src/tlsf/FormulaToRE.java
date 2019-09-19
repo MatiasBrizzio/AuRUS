@@ -56,8 +56,7 @@ public class FormulaToRE {
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
         System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
-        
-        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
     }
