@@ -59,6 +59,8 @@ public class CountREModels{
 //		Nfa dfa = nba.toDeterministicNfa();
 //		System.out.println("Generating RE...");
 		String s = translatorLTLtoRE.formulaToRegularExpression(ltl);
+		if (s == null)
+			return null;
 		return toABClanguage(s);
 	}
 
