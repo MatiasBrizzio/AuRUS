@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
@@ -102,7 +103,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		double fitness = STATUS_FACTOR * status_fitness;
 
 		double syntactic_distance = 0.0d;
-		syntactic_distance = compute_syntactic_distance_size(originalSpecification, chromosome.spec);
+		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 
 
@@ -316,6 +317,26 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		double ref_size = Formula_Utils.formulaSize(refined.toFormula().formula());
 		double diff = Math.abs(orig_size - ref_size);
 		double syntactic_distance = (double) (1.0d - (diff / orig_size));
+		return syntactic_distance;
+	}
+
+	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
+		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
+		sub_original.remove(original.toFormula());
+		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
+		sub_refined.remove(refined.toFormula());
+
+		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
+		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
+//		String originalStr = original.toFormula().toString();
+//		String refinedStr = refined.toFormula().toString();
+//		String diffLost = StringUtils.difference(originalStr, refinedStr);
+//		System.out.println(lostSubs.size() +" " + sub_original.size());
+//		String diffWon = StringUtils.difference(refinedStr, originalStr);
+//		System.out.println(wonSubs.size()  +" " + sub_refined.size());
+		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
+		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
+		double syntactic_distance = ((double) 1.0d - (0.5d * lost + 0.5d * won));
 		return syntactic_distance;
 	}
 	
