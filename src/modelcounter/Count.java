@@ -6,92 +6,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.uni_luebeck.isp.rltlconv.automata.Nba;
+import owl.ltl.LabelledFormula;
 
 
 public class Count {
 
-	public static BigInteger count(List<String> formulas, String alphStr, int k, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
-		long bound = 1;
-		if(!exhaustive)
-			bound = k;
-		else{
-			bound = 1;
-		}
-		List<BigInteger> results = new LinkedList<>();
-		
-		boolean first = true;
-		
-		while(bound<=k){
-			BigInteger count = BigInteger.ZERO;
-			double time = 0;
-			if (first){
-				double iTime = System.currentTimeMillis();
-				ABC.reset();
-				Rltlconv_LTLModelCounter.reset();
-				count = count(formulas, alphStr, bound, positive);
-				time = getTimeInSecond(iTime,System.currentTimeMillis());
-//				System.out.println("Time: " + time); 
-				first = false;
-			}
-			else{
-				double iTime = System.currentTimeMillis();
-				if(ABC.result){
-					if(Rltlconv_LTLModelCounter.encoded_alphabet==0)
-						count = ABC.count(bound*2);//each state is characterised by 2 characters
-					else if(Rltlconv_LTLModelCounter.encoded_alphabet==1)
-						count = ABC.count(bound*3);//each state is characterised by 3 characters
-					else
-						count = ABC.count(bound);
-				}
-				else{
-//					System.out.println("Unsatisfiable constraint");
-					break;
-				}
-				time = getTimeInSecond(iTime,System.currentTimeMillis());
-//				System.out.println("Time: " + time); 
-			}
-			results.add(count);
-			bound++;
-		}
-
-		//dispose ABC 
-//		ABC.abcDriver.dispose(); // release resources
-		if(results.isEmpty())
-			return BigInteger.ZERO;
-		BigInteger avg = BigInteger.ZERO;
-		for (BigInteger c : results){
-			avg = avg.add(c);
-		}
-		BigInteger res = avg.divide(BigInteger.valueOf(results.size()));
-		return res;
-	}
-	
-	private static BigInteger count(List<String> formulas, String alph, long bound, boolean positive) throws IOException, InterruptedException{
-		
+	public static BigInteger count(List<String> formulas, String alphStr, int bound, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
+		ABC abc = new ABC();
 		LinkedList<String> abcStrs = new LinkedList<>();
 		for(String f: formulas){
-			String abcStr = genABCString(f, alph);
+			String abcStr = genABCString(f, alphStr);
 			abcStrs.add(abcStr);
 		}
-
-//		String [] arr = Discretizer.cat(s);
-//		String abcStr = "";
-//		for(int i=0; i < arr.length-1; i++){
-//			abcStr += arr[i];
-//		}
-//		abcStrs.add(abcStr);
-			
-//		System.out.println("Model Counting...");
 		BigInteger count = BigInteger.ZERO;
 		if(Rltlconv_LTLModelCounter.encoded_alphabet==0)
-			count = ABC.count(abcStrs,bound*2, positive);//each state is characterised by 2 characters
+			count = abc.count(abcStrs,bound*2, exhaustive,positive);//each state is characterised by 2 characters
 		else if(Rltlconv_LTLModelCounter.encoded_alphabet==1)
-			count = ABC.count(abcStrs,bound*3, positive);//each state is characterised by 3 characters
+			count = abc.count(abcStrs,bound*3, exhaustive,positive);//each state is characterised by 3 characters
 		else
-			count = ABC.count(abcStrs,bound, positive);
-
-
-		return count;
+			count = abc.count(abcStrs,bound, exhaustive,positive);
+		if (!exhaustive)
+			return count;
+		else {
+			BigInteger res = count.divide(BigInteger.valueOf(bound));
+			return res;
+		}
 	}
 	
 	public static double getTimeInSecond (double initialTime,double finalTime){
