@@ -21,7 +21,8 @@ public class CountREModels{
 		LinkedList<String> abcStrs = new LinkedList<>();
 		for(LabelledFormula f: formulas){
 			String abcStr = genABCString(f);
-			abcStrs.add(abcStr);
+			if (abcStr != null)
+				abcStrs.add(abcStr);
 		}
 		BigInteger count = BigInteger.ZERO;
 		if(translatorLTLtoRE.encoded_alphabet==0)
