@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.lagodiuk.ga.Fitness;
 
@@ -197,8 +198,10 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		LinkedList<LabelledFormula> formulas = new LinkedList<>();
 //		LabelledFormula f = LabelledFormula.of(NormalForms.toCnfFormula(formula.formula().nnf()), formula.variables());
 //		formulas.add(f);
-		for(Formula f : NormalForms.toCnfFormula(formula.formula().nnf()).children())
-			formulas.add( LabelledFormula.of(f,formula.variables()));
+		for(Set<Formula> clause : NormalForms.toCnf(formula.formula().nnf())) {
+			Formula f = Disjunction.of(clause);
+			formulas.add(LabelledFormula.of(f, formula.variables()));
+		}
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
@@ -209,8 +212,10 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		for (LabelledFormula formula : constraints) {
 //			LabelledFormula f = LabelledFormula.of(NormalForms.toCnfFormula(formula.formula().nnf()), formula.variables());
 //			formulas.add(f);
-			for(Formula f : NormalForms.toCnfFormula(formula.formula().nnf()).children())
-				formulas.add( LabelledFormula.of(f,formula.variables()));
+			for(Set<Formula> clause : NormalForms.toCnf(formula.formula().nnf())) {
+				Formula f = Disjunction.of(clause);
+				formulas.add(LabelledFormula.of(f, formula.variables()));
+			}
 		}
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
