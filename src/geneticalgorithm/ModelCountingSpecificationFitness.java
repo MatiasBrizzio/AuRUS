@@ -15,6 +15,7 @@ import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import modelcounter.ABC;
 import modelcounter.Count;
 import owl.ltl.*;
+import owl.ltl.Formula.TemporalOperator;
 import owl.ltl.rewriter.NormalForms;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
@@ -27,7 +28,7 @@ import tlsf.Formula_Utils;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public static final int BOUND = 5;
+	public static final int BOUND = 1000;
 	public boolean EXHAUSTIVE = true;
 	public static final double STATUS_FACTOR = 0.75d;
 	public static final double LOST_MODELS_FACTOR = 0.1d;
@@ -103,7 +104,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		double fitness = STATUS_FACTOR * status_fitness;
 
 		double syntactic_distance = 0.0d;
-		syntactic_distance = compute_syntactic_distance_ast(originalSpecification, chromosome.spec);
+		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 
 
@@ -277,7 +278,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfLostModels + " " + numOfModels + " ");
+//		System.out.print(numOfLostModels + " " + numOfModels + " ");
 		return value;
 	}
 	
@@ -308,7 +309,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 
 		BigDecimal res = numOfWonModels.divide(numOfNegationModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
+//		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
 		return value;
 	}
 
@@ -325,39 +326,43 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
     public double compute_syntactic_distance_ast(Tlsf original, Tlsf refined) {
         Formula f0 = original.toFormula().formula();
         Formula f1 = refined.toFormula().formula();
-        double d = 0;
+        double d = 3.0d;
         if (f0.height() != f1.height())
-            d++;
+            d--;
         int orig_size = Formula_Utils.formulaSize(f0);
         int ref_size = Formula_Utils.formulaSize(f1);
         if (orig_size != ref_size)
-            d++;
+            d--;
         int diff_compare = Formulas.compare(Set.of(f0), Set.of(f1));
         if (diff_compare != 0)
-            d++;
+            d--;
         double syntactic_distance = (double) (d / 3.0d);
         return syntactic_distance;
     }
 
 	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
 		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
-		sub_original.remove(original.toFormula());
+//		sub_original.remove(original.toFormula());
 		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
-		sub_refined.remove(refined.toFormula());
+//		sub_refined.remove(refined.toFormula());
 
-		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
-		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
+//		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
+//		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
+		Set<LabelledFormula> commonSubs = Sets.intersection(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
 //		String originalStr = original.toFormula().toString();
 //		String refinedStr = refined.toFormula().toString();
 //		String diffLost = StringUtils.difference(originalStr, refinedStr);
 //		System.out.println(lostSubs.size() +" " + sub_original.size());
 //		String diffWon = StringUtils.difference(refinedStr, originalStr);
 //		System.out.println(wonSubs.size()  +" " + sub_refined.size());
-		double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
-		double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
-		double syntactic_distance = ((double) 1.0d - (0.5d * lost + 0.5d * won));
+		double lost = ((double) commonSubs.size()) / ((double) sub_original.size());
+		double won = ((double) commonSubs.size()) / ((double) sub_refined.size());
+		double size = compute_syntactic_distance_size(original, refined);
+		double syntactic_distance = 0.5d * size + 0.25d * lost + 0.25d * won;
 		return syntactic_distance;
 	}
+	
+
 	
 	private String toSolverSyntax(Formula f) {
 		String LTLFormula = f.toString();
@@ -374,6 +379,6 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 
 	public static void print_config() {
-		System.out.println(String.format("status: %s, lost%s, won: %s, syn: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR));
+		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR));
 	}
 }

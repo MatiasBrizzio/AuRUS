@@ -105,6 +105,39 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		return mutated_chromosome;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(fitness);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((spec == null) ? 0 : spec.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SpecificationChromosome other = (SpecificationChromosome) obj;
+		if (Double.doubleToLongBits(fitness) != Double.doubleToLongBits(other.fitness))
+			return false;
+		if (spec == null) {
+			if (other.spec != null)
+				return false;
+		} else if (!spec.toFormula().formula().equals(other.spec.toFormula().formula()))
+			return false;
+		if (status != other.status)
+			return false;
+		return true;
+	}
+
 	
 	
 }
