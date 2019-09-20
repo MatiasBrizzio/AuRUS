@@ -33,6 +33,21 @@ public class Formula_Utils {
 		s.add(LabelledFormula.of(f.formula(),f.variables()));
 		return s;
 	}
+
+	public static Set<Formula> subformulas (Formula f) {//, List<String> variables) {
+		Set<Formula> s = new HashSet<>();
+
+		for (Formula c : f.children()) {
+			for(Formula e : subformulas(c))
+				s.add(e);
+		}
+		s.add(f);
+		return s;
+	}
+
+	public static int compare(Formula f0, Formula f1) {
+		return Formulas.compare(subformulas(f0), subformulas(f1));
+	}
 	
 	public static int formulaSize (Formula f) {//, List<String> variables) {
 		int size = 1;

@@ -103,7 +103,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		double fitness = STATUS_FACTOR * status_fitness;
 
 		double syntactic_distance = 0.0d;
-		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
+		syntactic_distance = compute_syntactic_distance_ast(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 
 
@@ -313,12 +313,31 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	}
 
 	public double compute_syntactic_distance_size(Tlsf original, Tlsf refined) {
-		double orig_size = Formula_Utils.formulaSize(original.toFormula().formula());
-		double ref_size = Formula_Utils.formulaSize(refined.toFormula().formula());
-		double diff = Math.abs(orig_size - ref_size);
-		double syntactic_distance = (double) (1.0d - (diff / orig_size));
+	    Formula f0 = original.toFormula().formula();
+	    Formula f1 = refined.toFormula().formula();
+		double orig_size = Formula_Utils.formulaSize(f0);
+		double ref_size = Formula_Utils.formulaSize(f1);
+		double size_diff = Math.abs(orig_size - ref_size);
+		double syntactic_distance = (double) (1.0d - (size_diff / orig_size));
 		return syntactic_distance;
 	}
+
+    public double compute_syntactic_distance_ast(Tlsf original, Tlsf refined) {
+        Formula f0 = original.toFormula().formula();
+        Formula f1 = refined.toFormula().formula();
+        double d = 0;
+        if (f0.height() != f1.height())
+            d++;
+        int orig_size = Formula_Utils.formulaSize(f0);
+        int ref_size = Formula_Utils.formulaSize(f1);
+        if (orig_size != ref_size)
+            d++;
+        int diff_compare = Formulas.compare(Set.of(f0), Set.of(f1));
+        if (diff_compare != 0)
+            d++;
+        double syntactic_distance = (double) (d / 3.0d);
+        return syntactic_distance;
+    }
 
 	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
 		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());

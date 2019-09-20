@@ -39,16 +39,15 @@ import owl.automaton.acceptance.OmegaAcceptance;
 import owl.automaton.edge.Edge;
 import owl.automaton.edge.Edges;
 import owl.automaton.output.HoaPrinter;
+import owl.collections.Collections3;
 import owl.collections.ValuationSet;
 import owl.grammar.LTLParserBaseVisitor;
-import owl.ltl.EquivalenceClass;
-import owl.ltl.Formula;
+import owl.ltl.*;
 import owl.ltl.Formula.LogicalOperator;
 import owl.ltl.Formula.ModalOperator;
 import owl.ltl.Formula.TemporalOperator;
-import owl.ltl.LabelledFormula;
-import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
+import owl.ltl.util.FormulaIsomorphism;
 import owl.ltl.visitors.FormulaMutator;
 import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
@@ -492,9 +491,52 @@ class TlsfParserTest {
     List<Tlsf> res = SpecificationMerger.merge(tlsf1, tlsf2);
     System.out.println(res);
   }
-  
+	@Test
+	void testIsomorphism() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("a & b | c", vars);
+		Formula f1 = LtlParser.syntax("a | b | c", vars);
+		System.out.println(f0);
+		System.out.println(f0.height());
+		System.out.println(f1);
+		int[] iso = FormulaIsomorphism.compute(f0, f1);
+		for (int i=0; i < iso.length; i++)
+			System.out.print(iso[i]+", ");
+	}
+
+	@Test
+	void testFormulas() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("G(a & b | c)", vars);
+		Formula f1 = LtlParser.syntax("a & b & c", vars);
+		System.out.println(f0);
+		System.out.println(f1);
+		int diff = Formulas.compare(Set.of(f0), Set.of(f1));
+		System.out.println(diff);
+	}
+
+	@Test
+	void testFormulasCompare() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("G(a | b)", vars);
+		Formula f1 = LtlParser.syntax("G(a | b)", vars);
+		System.out.print(f0+ " ");
+		System.out.print(f0.height()+ " ");
+		System.out.println(Formula_Utils.formulaSize(f0));
+		System.out.print(f1+ " ");
+		System.out.print(f1.height()+ " ");
+		System.out.println(Formula_Utils.formulaSize(f1));
+		int diff = Formula_Utils.compare(f0,f1);
+		System.out.println(diff);
+		int diff2 = Collections3.compare(Formula_Utils.subformulas(f0), Formula_Utils.subformulas(f1));
+		System.out.println(diff2);
+		int diffc = Formulas.compare(Set.of(f0), Set.of(f1));
+		System.out.println(diffc);
+		int diffs = Formulas.compare(Formula_Utils.subformulas(f0), Formula_Utils.subformulas(f1));
+		System.out.println(diffs);
+	}
   @Test
-  void testFormulas() throws IOException {
+  void testAutomata() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
 	  LabelledFormula f0 =  LtlParser.parse("G(a -> (b))",vars);
 
@@ -523,9 +565,9 @@ class TlsfParserTest {
   @Test
   void testSplitConjunction() throws IOException {
 	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f =  LtlParser.parse("a && G(a)",vars);
+	  LabelledFormula f =  LtlParser.parse("a",vars);
 	  System.out.println(f);
-	  System.out.println(f.nnf());
+	  System.out.println(f.formula().children());
       System.out.println(NormalForms.toCnf(f.formula()));
   }
   
