@@ -41,9 +41,15 @@ import scala.collection.immutable.VectorIterator;
 
 public class Rltlconv_LTLModelCounter {
 
-	public static int TIMEOUT = 60;
+	public int TIMEOUT = 60;
 	
-	private static void writeFile(String fname,String text) throws IOException{
+	public Rltlconv_LTLModelCounter() {
+		base = 48;
+		labelIDs.clear();
+		encoded_alphabet = -1;
+	}
+	
+	private void writeFile(String fname,String text) throws IOException{
 		
         try {
             File file = new File(fname);
@@ -58,7 +64,7 @@ public class Rltlconv_LTLModelCounter {
         } 
 	}
 	
-	private static void runCommand(String cmd) throws IOException, InterruptedException{
+	private void runCommand(String cmd) throws IOException, InterruptedException{
 		
 		Process p = Runtime.getRuntime().exec(cmd);
 		
@@ -120,13 +126,9 @@ public class Rltlconv_LTLModelCounter {
    		}
 	}
 	
-	public static void reset() {
-		base = 48;
-		labelIDs.clear();
-		encoded_alphabet = -1;
-	}
-	public static boolean props = true;
-	public static Nfa ltl2dfa(String formula) throws IOException, InterruptedException{
+	
+	public boolean props = true;
+	public Nfa ltl2dfa(String formula) throws IOException, InterruptedException{
 //		ConversionVal[] conv = {Conversion.PROPS(), Conversion.FORMULA(),Conversion.APA(),Conversion.NBA(), Conversion.MIN(), Conversion.NFA(), Conversion.DFA()};
 //		Object res = RltlConv.convert(formula, conv);
 		
@@ -147,10 +149,10 @@ public class Rltlconv_LTLModelCounter {
 		return fsa.toNamedNfa();
 	}
 	
-	public static Nba ltl2nba(String formula) throws IOException, InterruptedException{
+	public Nba ltl2nba(String formula) throws IOException, InterruptedException{
 		
-//		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(), Conversion.NBA(), Conversion.MIN()};
-		String [] conv = { "--formula","--props", "--apa", "--reduce", "--nba", "--min"};
+		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(), Conversion.NBA(), Conversion.MIN()};
+//		String [] conv = { "--formula","--props", "--apa", "--reduce", "--nba", "--min"};
 		Object res = RltlConv.convert(formula, conv);
 		Nba nba = (Nba) res;
 		
@@ -174,7 +176,7 @@ public class Rltlconv_LTLModelCounter {
 	
 
 			
-	public static String automata2RE(Nfa ltl_ba){
+	public String automata2RE(Nfa ltl_ba){
 		
 		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
 	
@@ -282,9 +284,9 @@ public class Rltlconv_LTLModelCounter {
 	}
 	
 	//Map labels to ids
-	public static java.util.Map<String,String> labelIDs = new HashMap<>();
+	public java.util.Map<String,String> labelIDs = new HashMap<>();
 	
-public static String automata2RE(Nba ltl_ba){
+	public  String automata2RE(Nba ltl_ba){
 
 		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
 	
@@ -379,15 +381,15 @@ public static String automata2RE(Nba ltl_ba){
 		return FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
 	}
 	
-	public static String toABClanguage(String re){
+	public String toABClanguage(String re){
 		String abcStr = "";
 		abcStr = re.replace("λ", "\"\"");
 		abcStr = abcStr.replace("+", "|");
 		return abcStr;
 	}
 	
-	static int base = 48;//start with char 0
-	public static void setLabel(String l) throws RuntimeException{
+	int base = 48;//start with char 0
+	public void setLabel(String l) throws RuntimeException{
 		if(labelIDs.containsKey(l)){
 			return;
 		}
@@ -407,16 +409,16 @@ public static String automata2RE(Nba ltl_ba){
 
 	}
 	
-	public static int encoded_alphabet = -1;
+	public int encoded_alphabet = -1;
 
 	
-	public static int[]state = {48,48};//start with char 0
-	public static void setLabelEncoded(String l) throws RuntimeException{
+	public int[]state = {48,48};//start with char 0
+	public void setLabelEncoded(String l) throws RuntimeException{
 		if(labelIDs.containsKey(l)){
 			return;
 		}
 		String label = "";
-		if(Rltlconv_LTLModelCounter.encoded_alphabet==1)
+		if(this.encoded_alphabet==1)
 			label += Character.toChars(state[1])[0];
 		label += Character.toChars(state[0])[0];
 		label += Character.toChars(base)[0];

@@ -31,10 +31,10 @@ public class SpecificationGeneticAlgorithm {
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 //		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
-		Fitness<SpecificationChromosome, Double> fitness = new ModelCountingSpecificationFitness(spec);
+		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
 		
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
-		if (ModelCountingSpecificationFitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
+		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
 			System.out.println("The specification is already realizable.");
 			return;
 		}
@@ -60,7 +60,7 @@ public class SpecificationGeneticAlgorithm {
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
 		print_config();
-		ModelCountingSpecificationFitness.print_config();
+		fitness.print_config();
 	}
 	
 	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
@@ -73,7 +73,7 @@ public class SpecificationGeneticAlgorithm {
 			SpecificationChromosome c = init.mutate();
 			population.addChromosome(c);
 		}
-		Fitness<SpecificationChromosome, Double> fitness = new ModelCountingSpecificationFitness(spec);
+		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		for (SpecificationChromosome c : ga.getPopulation()) {
 			if (c.status == SPEC_STATUS.REALIZABLE) {
@@ -93,7 +93,7 @@ public class SpecificationGeneticAlgorithm {
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
 		print_config();
-		ModelCountingSpecificationFitness.print_config();
+		fitness.print_config();
 	}
 	
 	public void print_config() {
@@ -113,7 +113,7 @@ public class SpecificationGeneticAlgorithm {
 	}
 	
 	
-	private static void addListener(GeneticAlgorithm<SpecificationChromosome,Double> ga) {
+	private  void addListener(GeneticAlgorithm<SpecificationChromosome,Double> ga) {
 		// just for pretty print
 				System.out.println(String.format("%s\t%s\t%s\t%s\t%s", "iter", "fit", "chromosome","#Pop","#Sol"));
 
