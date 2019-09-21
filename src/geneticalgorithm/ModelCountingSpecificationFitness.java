@@ -202,6 +202,8 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 //		formulas.add(f);
 		for(Set<Formula> clause : NormalForms.toCnf(formula.formula().nnf())) {
 			Formula f = Disjunction.of(clause);
+            if (f == BooleanConstant.FALSE)
+                return BigInteger.ZERO;
 			formulas.add(LabelledFormula.of(f, formula.variables()));
 		}
 		CountREModels counter = new CountREModels();
@@ -216,6 +218,8 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 //			formulas.add(f);
 			for(Set<Formula> clause : NormalForms.toCnf(formula.formula().nnf())) {
 				Formula f = Disjunction.of(clause);
+                if (f == BooleanConstant.FALSE)
+                    return BigInteger.ZERO;
 				formulas.add(LabelledFormula.of(f, formula.variables()));
 			}
 		}
