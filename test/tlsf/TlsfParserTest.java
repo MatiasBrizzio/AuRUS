@@ -507,19 +507,134 @@ class TlsfParserTest {
 	@Test
 	void testFormulas() throws IOException {
 		List<String> vars = List.of("a", "b", "c");
-		Formula f0 = LtlParser.syntax("G(a & b | c)", vars);
-		Formula f1 = LtlParser.syntax("a & b & c", vars);
-		System.out.println(f0);
-		System.out.println(f1);
-		int diff = Formulas.compare(Set.of(f0), Set.of(f1));
+		Formula f0 = LtlParser.syntax("F(!a & b & c)", vars);
+		Formula f1 = LtlParser.syntax("a | b & c", vars);
+		System.out.println(f0.subformulas(Formula.TemporalOperator.class));
+		System.out.println(f1.subformulas(Formula.TemporalOperator.class));
+		int diff = Formulas.compare(f0.subformulas(Formula.TemporalOperator.class), f1.subformulas(Formula.TemporalOperator.class));
 		System.out.println(diff);
+	}
+
+	@Test
+	void testFragments0() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("!a & b & c", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+	@Test
+	void testFragments1() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("G(!a & b & c)", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+
+	@Test
+	void testFragments1b() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("a U c", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+		System.out.println(SyntacticFragments.isCoSafety(Set.of(f0)));
+	}
+
+	@Test
+	void testFragments2() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("F(!a & b & c)", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+	@Test
+	void testFragments3() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("F(!a | c)", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+
+	@Test
+	void testFragments4() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("G (a -> F(c))", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+	@Test
+	void testFragments5() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("G (a  U c)", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+
+	@Test
+	void testFragments6() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("F G (a  -> c)", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
+	}
+
+	@Test
+	void testFragments7() throws IOException {
+		List<String> vars = List.of("a", "b", "c");
+		Formula f0 = LtlParser.syntax("F (a  U c)", vars);
+		System.out.println(f0);
+		System.out.println(SyntacticFragments.isAlmostAll(f0));
+		System.out.println(SyntacticFragments.isFgSafety(f0));
+		System.out.println(SyntacticFragments.isFSafety(f0));
+		System.out.println(SyntacticFragments.isInfinitelyOften(f0));
+		System.out.println(SyntacticFragments.isGCoSafety(f0));
+		System.out.println(SyntacticFragments.isSafety(Set.of(f0)));
 	}
 
 	@Test
 	void testFormulasCompare() throws IOException {
 		List<String> vars = List.of("a", "b", "c");
 		Formula f0 = LtlParser.syntax("G(a | b)", vars);
-		Formula f1 = LtlParser.syntax("G(a | b)", vars);
+		Formula f1 = LtlParser.syntax("X(a & b)", vars);
 		System.out.print(f0+ " ");
 		System.out.print(f0.height()+ " ");
 		System.out.println(Formula_Utils.formulaSize(f0));
@@ -534,6 +649,7 @@ class TlsfParserTest {
 		System.out.println(diffc);
 		int diffs = Formulas.compare(Formula_Utils.subformulas(f0), Formula_Utils.subformulas(f1));
 		System.out.println(diffs);
+		System.out.println(f0.compareTo(f1));
 	}
   @Test
   void testAutomata() throws IOException {

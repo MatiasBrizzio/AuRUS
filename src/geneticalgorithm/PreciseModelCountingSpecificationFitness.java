@@ -277,6 +277,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 	}
 	
 	public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
+		if (original.toFormula().equals(refined.toFormula()))
+			return 1.0d;
 		List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
 		sub_original.remove(original.toFormula());
 		List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());

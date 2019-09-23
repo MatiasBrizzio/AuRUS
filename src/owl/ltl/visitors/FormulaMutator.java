@@ -99,7 +99,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	@Override
 	public Formula visit(Literal literal) {
 		Formula current = literal;		    
-		if (numOfAllowedMutations > 0) { 	
+		if (numOfAllowedMutations > 0) {
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
