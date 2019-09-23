@@ -675,16 +675,17 @@ main = do
             let bc = unfoldBC (Data.List.last formulas) bound ;
                 phi = And (form,bc) ;
                 toSAT = bltl2sat phi alphabet bound ;
-                cnfSAT = cnf toSAT ;
-                satString = (sat2string cnfSAT) 
+                --cnfSAT = cnf toSAT ;
+                satString = (sat2string toSAT) 
             in
               --(trace ("bc " ++ show bc))
               writeFile (outfile++"-k"++(show bound)++".sat") satString 
          else
             let toSAT = (bltl2sat form alphabet bound) ;
-                cnfSAT = cnf toSAT ;
-                cnfClauses = splitCNFclauses cnfSAT ;
-                satString = genCNFClauses cnfClauses 
+                satString = (sat2string toSAT)
+                --cnfSAT = cnf toSAT ;
+                --cnfClauses = splitCNFclauses cnfSAT ;
+                --satString = genCNFClauses cnfClauses 
             in
               writeFile (outfile++"-k"++(show bound)++".sat") satString 
         

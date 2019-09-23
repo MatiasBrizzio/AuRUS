@@ -33,24 +33,24 @@ import tlsf.Formula_Utils;
 
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public static final int BOUND = 5;
-	public static final double STATUS_FACTOR = 0.75d;
-	public static final double LOST_MODELS_FACTOR = 0.1d;
-	public static final double WON_MODELS_FACTOR = 0.1d;
+	public final int BOUND = 5;
+	public final double STATUS_FACTOR = 0.75d;
+	public final double LOST_MODELS_FACTOR = 0.1d;
+	public final double WON_MODELS_FACTOR = 0.1d;
 //	public static final double SOLUTION = 0.8d;
-	public static final double SYNTACTIC_FACTOR = 0.05d;
-	public static Tlsf originalSpecification = null;
-	public static SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
-	public static BigInteger originalNumOfModels;
-	public static BigInteger originalNegationNumOfModels;
+	public final double SYNTACTIC_FACTOR = 0.05d;
+	public Tlsf originalSpecification = null;
+	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+	public BigInteger originalNumOfModels;
+	public BigInteger originalNegationNumOfModels;
 	
 	public PreciseModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
-		originalNumOfModels = PreciseLTLModelCounter.count(originalSpecification.toFormula().formula(), originalSpecification.variables().size());
-		originalNegationNumOfModels = PreciseLTLModelCounter.count(originalSpecification.toFormula().formula().not(), originalSpecification.variables().size());
+		originalNumOfModels = countModels(originalSpecification.toFormula());
+		originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 	}
 	
 	private SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
@@ -187,7 +187,15 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		}
 		chromosome.status = status;			
 	}
-	
+
+	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
+		PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
+		counter.BOUND = this.BOUND;
+		BigInteger numOfModels = counter.count(formula.formula(), formula.variables().size());
+
+		return numOfModels;
+	}
+
 	public double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
 		if (originalNumOfModels == BigInteger.ZERO)
@@ -204,8 +212,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			return 1.0d;
 		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
-		PreciseLTLModelCounter.BOUND = this.BOUND;
-		BigDecimal numOfLostModels = new BigDecimal(PreciseLTLModelCounter.count(lostModels, numOfVars));
+
+		BigDecimal numOfLostModels = new BigDecimal(countModels(LabelledFormula.of(lostModels,original.variables())));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 		
@@ -230,8 +238,8 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 			return 1.0d;
 		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
-		PreciseLTLModelCounter.BOUND = this.BOUND;
-		BigDecimal numOfWonModels = new BigDecimal(PreciseLTLModelCounter.count(wonModels, numOfVars));
+
+		BigDecimal numOfWonModels = new BigDecimal(countModels(LabelledFormula.of(wonModels,original.variables())));
 		
 		BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 		
@@ -305,7 +313,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 		return new String(LTLFormula); 
 	}
 
-	public static void print_config() {
+	public void print_config() {
 		System.out.println(String.format("status: %s, lost%s, won: %s, syn: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR));
 	}
 }

@@ -15,38 +15,62 @@ import owl.ltl.rewriter.SyntacticSimplifier;
 import solvers.LTLSolver.SolverResult;
 
 public class PreciseLTLModelCounter {
-	public static int BOUND = 5;
-	public static final String BASENAME = "lib/ltl-model-counter/result/numofmodels";
-	public static final String INFILE = BASENAME+".ltl";
-	public static final String PROP_FILE = BASENAME+"-k"+BOUND+".sat";
-	public static final String PROP_CNF_FILE = BASENAME+"-k"+BOUND+".cnf";
+	public int BOUND = 5;
+	public final String BASENAME = "lib/ltl-model-counter/result/numofmodels";
+	public final String INFILE = BASENAME+".ltl";
+	public final String PROP_FILE = BASENAME+"-k"+BOUND+".sat";
+	public final String PROP_CNF_FILE = BASENAME+"-k"+BOUND+".cnf";
 
-	public static int numOfTimeout = 0;
-	public static int numOfError = 0;
-	public static int numOfCalls = 0;
-	public static int TIMEOUT = 60;
+	public int numOfTimeout = 0;
+	public int numOfError = 0;
+	public int numOfCalls = 0;
+	public int TIMEOUT = 60;
+	public enum MODEL_COUNTER {RELSAT, CACHET, MINIC2D, GANAK;
+		public String toString(){
+			if (this == GANAK)	return "relsat";
+			if (this == CACHET)	return "cachet";
+			if (this == MINIC2D) return "miniC2D";
+			return "relsat";
+		}
 
-	public static String getCommandLTL2PL(){
+		public String solution(){
+			if (this == GANAK)	return "s ";
+			if (this == CACHET)	return "s ";
+			if (this == MINIC2D) return "Counting... ";
+			return "Number of solutions: ";
+		}
+
+		public String getNumber(String str){
+			if (this == GANAK)	return null;
+			if (this == CACHET)	return str.replace("s ", "");
+			if (this == MINIC2D) return str.substring(str.indexOf(" models")).replace("Counting... ","");
+			return str.replace("Number of solutions: ", "");
+		}
+
+	};
+	public MODEL_COUNTER modelcounter = MODEL_COUNTER.RELSAT;
+
+	public String getCommandLTL2PL(){
 		String cmd = "";
 		String currentOS = System.getProperty("os.name");
 		if (currentOS.startsWith("Mac"))
-			cmd = "./lib/ltl-model-counter/ltl2pl_macos.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+			cmd = "./lib/ltl-model-counter/ltl2pl_macos.sh "+ INFILE + " " + BASENAME + " " + BOUND + " " + modelcounter.toString();
 		else
-			cmd = "./lib/ltl-model-counter/ltl2pl.sh"+ INFILE + " " + BASENAME + " " + BOUND;
+			cmd = "./lib/ltl-model-counter/ltl2pl.sh"+ INFILE + " " + BASENAME + " " + BOUND + " " + modelcounter.toString();
 		return cmd;
 	}
 
-	public static String getCommand(){
+	public String getCommand(){
 		String cmd = "";
 		String currentOS = System.getProperty("os.name");
 		if (currentOS.startsWith("Mac"))
-			cmd = "./lib/ltl-model-counter/ltl-modelcountermac.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+			cmd = "./lib/ltl-model-counter/ltl-modelcountermac.sh "+ INFILE + " " + BASENAME + " " + BOUND + " " + modelcounter.toString();
 		else
-			cmd = "./lib/ltl-model-counter/ltl-modelcounterlinux.sh "+ INFILE + " " + BASENAME + " " + BOUND;
+			cmd = "./lib/ltl-model-counter/ltl-modelcounterlinux.sh "+ INFILE + " " + BASENAME + " " + BOUND + " " + modelcounter.toString();
 		return cmd;
 	}
 	
-	public static BigInteger count(Formula f, int numOfVars) throws IOException, InterruptedException {
+	public BigInteger count(Formula f, int numOfVars) throws IOException, InterruptedException {
 		String formula = f.toString().replaceAll("([A-Z])", " $1 ");
 		List<String> vars = new LinkedList<String>();
 		 for (int i = 0; i < numOfVars; i++)
@@ -54,31 +78,31 @@ public class PreciseLTLModelCounter {
 		 return count(formula, vars);
 	}
 			
-	public static BigInteger count(String formula, List<String> variables) throws IOException, InterruptedException {
+	public BigInteger count(String formula, List<String> variables) throws IOException, InterruptedException {
 		numOfCalls++;
 //		System.out.println(formula);
 		Process p = null;
     	
 		// make formula file 
 		if (formula != null && variables != null) {
-			toCNF(formula, variables);
-//			File f = new File(INFILE);
-//			FileWriter fw = new FileWriter(f);
-//			for (String v : variables)
-//				fw.append(v + "\n");
-//			fw.append("###\n");
-//			fw.append(formula + "\n");
-//			fw.close();
+//			toCNF(formula, variables);
+			File f = new File(INFILE);
+			FileWriter fw = new FileWriter(f);
+			for (String v : variables)
+				fw.append(v + "\n");
+			fw.append("###\n");
+			fw.append(formula + "\n");
+			fw.close();
 			// run counting command
 			String cmd = getCommand();
 			p = Runtime.getRuntime().exec(cmd);
-//	    	OutputStream out = p.getOutputStream();
-//	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
-//	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
-//    		bufferedwriter.write(formula);
-//	    	bufferedwriter.close();
-//	    	bufout.close();
-//	    	out.close();
+	    	OutputStream out = p.getOutputStream();
+	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
+	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
+    		bufferedwriter.write(formula);
+	    	bufferedwriter.close();
+	    	bufout.close();
+	    	out.close();
     	}
 		
 		boolean timeout = false;
@@ -99,9 +123,9 @@ public class PreciseLTLModelCounter {
 	    	InputStreamReader inread = new InputStreamReader(in);
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 		    while ((aux = bufferedreader.readLine()) != null) {
-		    	if (aux.startsWith("s ")){
-		    		System.out.println(aux);
-		    		String val = aux.replace("s ", "");
+		    	if (aux.startsWith(modelcounter.solution())){
+//		    		System.out.println(aux);
+		    		String val = modelcounter.getNumber(aux);
 		    		numOfModels = new BigInteger(val);
 		    		break;
 		    	}
@@ -146,7 +170,7 @@ public class PreciseLTLModelCounter {
 	}
 
 
-	private static void toCNF(String formula, List<String> variables) throws IOException, InterruptedException {
+	private void toCNF(String formula, List<String> variables) throws IOException, InterruptedException {
 		File f = new File(INFILE);
 		FileWriter fw = new FileWriter(f);
 		for (String v : variables)
@@ -189,7 +213,7 @@ public class PreciseLTLModelCounter {
 		fw.close();
 	}
 
-	private static String cnfStr (Formula f){
+	private String cnfStr (Formula f){
 		if (!(f instanceof Disjunction))
 			throw new IllegalArgumentException("LTLModelCounter: formula is not in cnf format");
 		Disjunction clause = (Disjunction) f;
