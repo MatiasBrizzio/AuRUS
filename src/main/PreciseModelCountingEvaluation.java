@@ -187,7 +187,7 @@ public class PreciseModelCountingEvaluation {
             formulas.add(LabelledFormula.of(f,vars));
             CountREModels counter = new CountREModels();
             BigInteger r = counter.count(formulas, k, false, true);
-            lostModels.add(r);
+            wonModels.add(r);
         }
         List<BigInteger> result = new LinkedList<>();
         for(int i = 0; i < bound; i++) {
