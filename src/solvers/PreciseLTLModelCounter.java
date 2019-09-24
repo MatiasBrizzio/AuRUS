@@ -27,21 +27,21 @@ public class PreciseLTLModelCounter {
 	public int TIMEOUT = 60;
 	public enum MODEL_COUNTER {RELSAT, CACHET, MINIC2D, GANAK;
 		public String toString(){
-			if (this == GANAK)	return "relsat";
+			if (this == GANAK)	return "ganak";
 			if (this == CACHET)	return "cachet";
 			if (this == MINIC2D) return "miniC2D";
 			return "relsat";
 		}
 
 		public String solution(){
-			if (this == GANAK)	return "s ";
+			if (this == GANAK)	return "# solutions";
 			if (this == CACHET)	return "s ";
 			if (this == MINIC2D) return "Counting... ";
 			return "Number of solutions: ";
 		}
 
 		public String getNumber(String str){
-			if (this == GANAK)	return null;
+			if (this == GANAK)	return str;
 			if (this == CACHET)	return str.replace("s ", "");
 			if (this == MINIC2D) return str.substring(str.indexOf(" models")).replace("Counting... ","");
 			return str.replace("Number of solutions: ", "");
@@ -96,13 +96,13 @@ public class PreciseLTLModelCounter {
 			// run counting command
 			String cmd = getCommand();
 			p = Runtime.getRuntime().exec(cmd);
-	    	OutputStream out = p.getOutputStream();
-	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
-	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
-    		bufferedwriter.write(formula);
-	    	bufferedwriter.close();
-	    	bufout.close();
-	    	out.close();
+//	    	OutputStream out = p.getOutputStream();
+//	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
+//	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
+//    		bufferedwriter.write(formula);
+//	    	bufferedwriter.close();
+//	    	bufout.close();
+//	    	out.close();
     	}
 		
 		boolean timeout = false;
@@ -125,6 +125,8 @@ public class PreciseLTLModelCounter {
 		    while ((aux = bufferedreader.readLine()) != null) {
 		    	if (aux.startsWith(modelcounter.solution())){
 //		    		System.out.println(aux);
+		    		if (modelcounter == MODEL_COUNTER.GANAK)
+		    			aux = bufferedreader.readLine(); //in ganak the solution appears in the next line 
 		    		String val = modelcounter.getNumber(aux);
 		    		if (val.startsWith("inf"))
 		    			numOfModels = BigInteger.valueOf(Long.MAX_VALUE);

@@ -3,6 +3,8 @@ echo "Translating LTL formula to CNF"
 infile=$1
 outfile=$2
 bound=$3
+solver=$4
+
 ./lib/ltl-model-counter/ltl2pl $infile $outfile $bound
 
 plfile=$2-k$3.sat
@@ -30,6 +32,15 @@ while read -r line; do
 		echo "$line"  >> $cnffile
 	fi
 done < "$auxfile"
-./lib/ltl-model-counter/relsat -p0 -#c -u300 -on -t3600 -v $varsfile $cnffile 
-#./lib/ltl-model-counter/cachet $cnffile
-#./lib/ltl-model-counter/miniC2D -C -c $cnffile
+if [[ $solver == cachet ]]
+then
+	./lib/ltl-model-counter/cachet $cnffile
+else
+	if [[ $solver == ganak ]]
+	then
+		./lib/ltl-model-counter/ganak -p $cnffile
+	
+	else
+		./lib/ltl-model-counter/relsat -p0 -#c -u300 -on -t3600 -v $varsfile $cnffile 
+	fi
+fi

@@ -22,7 +22,7 @@ public class PreciseModelCountingEvaluation {
         String formula = null;
         List<String> refinemets = new LinkedList<>();
         String outname = null;
-        boolean precise = true;
+        int solver = 0;
         boolean prefixes = false;
         int bound = 0;
         List<String> vars = new LinkedList<>();
@@ -38,8 +38,11 @@ public class PreciseModelCountingEvaluation {
             else if(args[i].startsWith("-out=")){
                 outname = args[i].replace("-out=","");
             }
-            else if(args[i].startsWith("-no-precise")){
-                precise = false;
+            else if(args[i].startsWith("-cachet")){
+                solver = 1;
+            }
+            else if(args[i].startsWith("-ganak")){
+                solver = 2;
             }
             else if(args[i].startsWith("-prefix")){
                 prefixes = true;
@@ -82,7 +85,7 @@ public class PreciseModelCountingEvaluation {
             System.out.println("Formula: "+ ref);
             List<BigInteger> result = null;
             if (!prefixes)
-                result = countModels(original_formula, ref, vars.size(), bound, precise);
+                result = countModels(original_formula, ref, vars.size(), bound, solver);
             else
                 result = countPrefixes(original_formula, ref, vars,bound);
             System.out.println(result);
@@ -137,13 +140,15 @@ public class PreciseModelCountingEvaluation {
             writeRanking(outname.replace(".out", "-global.out"), global_ranking);
     }
 
-    static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, boolean precise) throws IOException, InterruptedException {
+    static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
         List<BigInteger> lostModels = new LinkedList<>();
         for(int k = 1; k <= bound; k++) {
             PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
             counter.BOUND = k;
-            if (!precise)
+            if (solver==1)
                 counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
+            else if (solver == 2)
+            	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
             Formula f = Conjunction.of(original, refined.not());
             BigInteger r = counter.count(f, vars);
             lostModels.add(r);
@@ -153,8 +158,10 @@ public class PreciseModelCountingEvaluation {
         for(int k = 1; k <= bound; k++) {
             PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
             counter.BOUND = k;
-            if (!precise)
+            if (solver==1)
                 counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
+            else if (solver == 2)
+            	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
             Formula f = Conjunction.of(original.not(), refined);
             BigInteger r = counter.count(f, vars);
             wonModels.add(r);
