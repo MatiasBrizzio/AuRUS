@@ -16,7 +16,10 @@ cnffile=$2-k$3.cnf
 
 > $varsfile
 > $cnffile
-
+if [[ $solver == ganak ]]
+then
+    echo "c ind "|tr -d '\n' > $cnffile
+fi
 vars=true
 while read -r line; do
 	if $vars ;  
@@ -24,9 +27,17 @@ while read -r line; do
 		if [[ $line == p* ]] 	
 		then
 			vars=false
+            if [[ $solver == ganak ]]
+            then
+                echo "0" >> $cnffile
+            fi
 			echo "$line"  >> $cnffile
 		else
 			echo "$line"  >> $varsfile
+            if [[ $solver == ganak ]]
+            then
+                echo "${line} "|tr -d '\n' >> $cnffile
+            fi
 		fi
 	else
 		echo "$line"  >> $cnffile
@@ -38,7 +49,7 @@ then
 else
 	if [[ $solver == ganak ]]
 	then
-		./lib/ltl-model-counter/ganak -p $cnffile
+		python3 lib/ltl-model-counter/ganak.py $cnffile
 	
 	else
 		./lib/ltl-model-counter/relsat -p0 -#c -u300 -on -t3600 -v $varsfile $cnffile 
