@@ -36,9 +36,9 @@ public class FormulaMutator implements Visitor<Formula>{
 	  private final List<String> variables;
 	  private final boolean fixedVariables;
 	  private int mutation_rate;
-	  private int numOfAllowedMutations = 0;
+	  public int numOfAllowedMutations = 0;
 
-	  private boolean print_debug_info = true;
+	  private boolean print_debug_info = false;
 	  
 	  public FormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_appply) {
 			ListIterator<String> literalIterator = literals.listIterator();

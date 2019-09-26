@@ -126,7 +126,10 @@ public class PreciseLTLModelCounter {
 		    	if (aux.startsWith(modelcounter.solution())){
 //		    		System.out.println(aux);
 		    		String val = modelcounter.getNumber(aux);
-		    		numOfModels = new BigInteger(val);
+		    		if (val.startsWith("inf"))
+		    			numOfModels = BigInteger.valueOf(Long.MAX_VALUE);
+		    		else
+		    			numOfModels = new BigInteger(val);
 		    		break;
 		    	}
 		    	else if (aux.startsWith("UNSAT")){
