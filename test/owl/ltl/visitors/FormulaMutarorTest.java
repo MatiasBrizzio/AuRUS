@@ -14,6 +14,8 @@ import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.tlsf.Tlsf;
+import solvers.LTLSolver;
+import solvers.LTLSolver.SolverResult;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
@@ -50,21 +52,30 @@ class FormulaMutarorTest {
 
 	@Test
 	void testMinePump() throws IOException, InterruptedException {
-		String filename = "examples/minepump.tlsf";
+		String filename = "examples/minepump-4.tlsf";
 		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 		List<String> vars = tlsf.variables();
 		Formula f = tlsf.toFormula().formula();
 //		System.out.println("After replace subformula! "+ tlsf.toFormula() + " mutation rate=" + Formula_Utils.formulaSize(f));
 		int size = Formula_Utils.formulaSize(f);
-		int N = 10;
+		int N = 20;
 		System.out.print("\"-ltl="+ tlsf.toFormula() + "\" ");
 		int i = 0;
+		LinkedList<Formula> list = new LinkedList<>();
 		while(i < N) {
 			FormulaMutator formVisitor = new FormulaMutator(vars, size, size);
 			Formula m = f.nnf().accept(formVisitor);
-			if(formVisitor.numOfAllowedMutations < size) {
-				System.out.print("\"-ref=" + LabelledFormula.of(m, vars) + "\" ");
-				i++;
+			if(formVisitor.numOfAllowedMutations < size && m != BooleanConstant.TRUE && m != BooleanConstant.FALSE && !list.contains(m)) {
+				SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
+				Formula mutated = m.accept(visitor);
+				String LTLFormula = mutated.toString();
+				LTLFormula = LTLFormula.replaceAll("\\!", "~");
+				LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
+				SolverResult sys_sat = LTLSolver.isSAT(LTLFormula);
+				if (sys_sat == SolverResult.SAT) {
+					System.out.print("\"-ref=" + LabelledFormula.of(m, vars) + "\" ");
+					i++;
+				}
 			}
 		}
 	}

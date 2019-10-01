@@ -1,10 +1,15 @@
 package main;
 
+import modelcounter.Count;
 import modelcounter.Rltlconv_LTLModelCounter;
+import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
+import owl.ltl.Disjunction;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.LtlParser;
+import owl.ltl.rewriter.NormalForms;
+import owl.ltl.rewriter.SyntacticSimplifier;
 import solvers.PreciseLTLModelCounter;
 import tlsf.CountREModels;
 
@@ -16,6 +21,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class PreciseModelCountingEvaluation {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -126,18 +132,18 @@ public class PreciseModelCountingEvaluation {
         }
         List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
         Collections.sort(totalNumOfModels);
-        System.out.print("[");
+        String global = "[";
         for(int i = 0; i < num_of_formulas; i++){
             global_ranking[i] = total_values_copy.indexOf(totalNumOfModels.get(i));
-            System.out.print(global_ranking[i]);
+            global += ""+global_ranking[i];
             if (i < num_of_formulas-1)
-                System.out.print(", ");
+            	global +=", ";
             else
-                System.out.print("]\n");
+            	global +="]";
         }
-
+        System.out.println(global);
         if (outname != null)
-            writeRanking(outname.replace(".out", "-global.out"), global_ranking);
+            writeRanking(outname.replace(".out", "-global.out"), global);
     }
 
     static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
@@ -168,9 +174,9 @@ public class PreciseModelCountingEvaluation {
         }
         List<BigInteger> result = new LinkedList<>();
         for(int i = 0; i < bound; i++) {
-            BigInteger pos = lostModels.get(i);
-            BigInteger neg = wonModels.get(i);
-            result.add(pos.add(neg));
+            BigInteger neg = lostModels.get(i);
+            BigInteger pos = wonModels.get(i);
+            result.add(neg.add(pos));
         }
 
         return result;
@@ -179,19 +185,45 @@ public class PreciseModelCountingEvaluation {
     static List<BigInteger> countPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
         List<BigInteger> lostModels = new LinkedList<>();
         for(int k = 1; k <= bound; k++) {
-            Formula f = Conjunction.of(original, refined.not());
             LinkedList<LabelledFormula> formulas = new LinkedList<>();
-            formulas.add(LabelledFormula.of(f,vars));
+//            formulas.add(LabelledFormula.of(original,vars));
+//            formulas.add(LabelledFormula.of(refined.not(),vars));
+            Formula f = Conjunction.of(original, refined.not());
+            SyntacticSimplifier simp = new SyntacticSimplifier();
+            Formula simplified = f.accept(simp);
+            System.out.println(simplified);
+            if(simplified == BooleanConstant.FALSE) {
+            	lostModels.add(BigInteger.ZERO);
+            	continue;
+            }
+//            formulas.add(LabelledFormula.of(simplified,vars));
+            for(Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
+    			Formula c = Disjunction.of(clause);
+    			formulas.add(LabelledFormula.of(c, vars));
+    		}
             CountREModels counter = new CountREModels();
-		    BigInteger r = counter.count(formulas, k, false, true);
+            BigInteger r = counter.count(formulas, k, false, true);
             lostModels.add(r);
         }
 
         List<BigInteger> wonModels = new LinkedList<>();
         for(int k = 1; k <= bound; k++) {
-            Formula f = Conjunction.of(original.not(), refined);
             LinkedList<LabelledFormula> formulas = new LinkedList<>();
-            formulas.add(LabelledFormula.of(f,vars));
+//            formulas.add(LabelledFormula.of(original.not(),vars));
+//            formulas.add(LabelledFormula.of(refined,vars));
+            Formula f = Conjunction.of(original.not(), refined);
+            SyntacticSimplifier simp = new SyntacticSimplifier();
+            Formula simplified = f.accept(simp);
+            System.out.println(simplified);
+            if(simplified == BooleanConstant.FALSE) {
+            	wonModels.add(BigInteger.ZERO);
+            	continue;
+            }
+//            formulas.add(LabelledFormula.of(simplified,vars));
+            for(Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
+    			Formula c = Disjunction.of(clause);
+    			formulas.add(LabelledFormula.of(c, vars));
+    		}
             CountREModels counter = new CountREModels();
             BigInteger r = counter.count(formulas, k, false, true);
             wonModels.add(r);
@@ -205,6 +237,54 @@ public class PreciseModelCountingEvaluation {
 
         return result;
     }
+    
+    static List<BigInteger> countPrefixesRltl(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
+        List<BigInteger> lostModels = new LinkedList<>();
+        List<String> alphabet = genAlphabet(vars.size());
+        for(int k = 1; k <= bound; k++) {
+            LinkedList<String> formulas = new LinkedList<>();
+            formulas.add(toLambConvSyntax(original,alphabet));
+            formulas.add(toLambConvSyntax(refined.not(),alphabet));
+            String alph = alphabet.toString();
+            Count counter = new Count();
+		    BigInteger r = counter.count(formulas, alph, k, false, true);
+            lostModels.add(r);
+        }
+
+        List<BigInteger> wonModels = new LinkedList<>();
+        for(int k = 1; k <= bound; k++) {
+        	LinkedList<String> formulas = new LinkedList<>();
+            formulas.add(toLambConvSyntax(original.not(),alphabet));
+            formulas.add(toLambConvSyntax(refined,alphabet));
+            String alph = alphabet.toString();
+            Count counter = new Count();
+		    BigInteger r = counter.count(formulas, alph, k, false, true);
+            wonModels.add(r);
+        }
+        List<BigInteger> result = new LinkedList<>();
+        for(int i = 0; i < bound; i++) {
+            BigInteger pos = lostModels.get(i);
+            BigInteger neg = wonModels.get(i);
+            result.add(pos.add(neg));
+        }
+
+        return result;
+    }
+    
+    static List<String> genAlphabet(int n){
+    	List<String> alphabet = new LinkedList();
+		for (int i = 0; i < n; i++) {
+			String v = ""+Character.toChars(97+i)[0];
+			alphabet.add(v);
+		}
+		return alphabet;
+    }
+    static String toLambConvSyntax(Formula f, List<String> alphabet) {
+		String LTLFormula = LabelledFormula.of(f, alphabet).toString();
+		LTLFormula = LTLFormula.replaceAll("&", "&&");
+		LTLFormula = LTLFormula.replaceAll("\\|", "||");
+		return new String(LTLFormula); 
+	}
 
      private static void writeFile(String filename, List<BigInteger> result) throws IOException {
         File file = new File(filename);
@@ -235,16 +315,11 @@ public class PreciseModelCountingEvaluation {
         bw.close();
     }
 
-    private static void writeRanking(String filename, int[] ranking) throws IOException {
+    private static void writeRanking(String filename, String ranking) throws IOException {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
-
-        for (int i = 0; i < ranking.length; i++) {
-            bw.write(ranking[i]);
-            bw.write(", ");
-//            System.out.println((i+1) + " " + ranking[i].toString());
-        }
+        bw.write(ranking);
         bw.close();
     }
     private static void correctUssage(){

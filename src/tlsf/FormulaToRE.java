@@ -55,7 +55,7 @@ public class FormulaToRE {
         automaton.states().forEach(s -> 
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
-        System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
+//        System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
@@ -148,11 +148,11 @@ public class FormulaToRE {
 	            }
             });
         }
-        System.out.print("n");
+//        System.out.print("n");
         FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
-        System.out.print("f");
+//        System.out.print("f");
         String re = FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
-        System.out.print("r");
+//        System.out.print("r");
         return re;
     }
 

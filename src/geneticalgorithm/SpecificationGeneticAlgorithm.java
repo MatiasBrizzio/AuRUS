@@ -23,8 +23,8 @@ public class SpecificationGeneticAlgorithm {
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	
-	public static List<SpecificationChromosome> solutions = new LinkedList<>();
-	public static List<Tlsf> bestSolutions = new LinkedList<>();
+	public List<SpecificationChromosome> solutions = new LinkedList<>();
+	public List<Tlsf> bestSolutions = new LinkedList<>();
 	
 	public void run(Tlsf spec) throws IOException, InterruptedException{
 		long initialTime = System.currentTimeMillis();
@@ -99,7 +99,7 @@ public class SpecificationGeneticAlgorithm {
 	public void print_config() {
 		System.out.println(String.format("GEN: %s, Pop:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, MUTATION_RATE, CROSSOVER_RATE));
 	}
-	private static Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
+	private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		population.addChromosome(init);
@@ -121,7 +121,7 @@ public class SpecificationGeneticAlgorithm {
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
 
 					//TODO: select a reasonable threshold
-					private final double threshold = 0.95d;
+					private final double threshold = 0.85d;
 
 					@Override
 					public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {
