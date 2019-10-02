@@ -43,6 +43,10 @@ public class FormulaToRE {
         encoded_alphabet = -1;
         alphabetSize = 0;
     }
+    
+    public void generateLabels() {
+    	
+    }
     public <S> String formulaToRegularExpression(LabelledFormula formula){
 //        LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),
 //                false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
@@ -55,7 +59,8 @@ public class FormulaToRE {
         automaton.states().forEach(s -> 
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
-//        System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
+        System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
+        System.out.print(formula+" ");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
@@ -152,7 +157,7 @@ public class FormulaToRE {
         FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
 //        System.out.print("f");
         String re = FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
-//        System.out.print("r");
+        System.out.println(re);
         return re;
     }
 

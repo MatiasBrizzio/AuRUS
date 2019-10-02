@@ -24,7 +24,7 @@ public class SpecificationGeneticAlgorithm {
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	
 	public List<SpecificationChromosome> solutions = new LinkedList<>();
-	public List<Tlsf> bestSolutions = new LinkedList<>();
+	public List<SpecificationChromosome> bestSolutions = new LinkedList<>();
 	
 	public void run(Tlsf spec) throws IOException, InterruptedException{
 		long initialTime = System.currentTimeMillis();
@@ -121,7 +121,7 @@ public class SpecificationGeneticAlgorithm {
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
 
 					//TODO: select a reasonable threshold
-					private final double threshold = 0.85d;
+					private final double threshold = 0.9d;
 
 					@Override
 					public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {
@@ -129,23 +129,38 @@ public class SpecificationGeneticAlgorithm {
 						SpecificationChromosome best = ga.getBest();
 						double bestFit = ga.fitness(best);
 						int iteration = ga.getIteration();
-						
+						if (bestFit >= 1.0d && !bestSolutions.contains(best)) {
+							System.out.println(String.format("BEST Fitness: %.2f",best.fitness));
+							System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
+							bestSolutions.add(best);
+							ga.terminate();
+						}
+							
 						// put current best in the list
 //						if (!bestSolutions.contains(best.spec))
 //							bestSolutions.add(best.spec);
 
-						// Listener prints best achieved solution
-						System.out.println();
-						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize(),solutions.size()));
-
 						// If fitness is satisfying 
-						if (best.status == SPEC_STATUS.REALIZABLE && bestFit >= threshold) {
-							// we save the best solutions as one in the boundary
-							if (!solutions.contains(best))
-								solutions.add(best);
+//						if (best.status == SPEC_STATUS.REALIZABLE && bestFit >= threshold) {
+//							// we save the best solutions as one in the boundary
+//							if (!solutions.contains(best))
+//								solutions.add(best);
+//							// we can stop Genetic algorithm
+////							ga.terminate(); 
+//						}
+						
+						// save ALL the solutions
+						for (SpecificationChromosome c : ga.getPopulation()) {
+							if (c.fitness < threshold) break;
+							if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
+								solutions.add(c);
 							// we can stop Genetic algorithm
 //							ga.terminate(); 
 						}
+						
+						// Listener prints best achieved solution
+						System.out.println();
+						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize(),solutions.size()));
 					}
 				});
 	}

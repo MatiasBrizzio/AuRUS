@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import com.lagodiuk.ga.Chromosome;
+
+import owl.ltl.Formula;
 import owl.ltl.parser.TlsfParser;
+import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -18,7 +21,7 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 	// we distinguish the particular case when the specification is realizable
 	// just because the assumptions are unsatisfiable.
 	
-	public static enum SPEC_STATUS {
+	public enum SPEC_STATUS {
 		UNKNOWN, 		// UNKNOWN: the status of the specification has not been computed yet.
 		BOTTOM,			// BOTTOM: both the assumptions and goals are unsatisfiable.
 		ASSUMPTIONS, 	// ASSUMPTIONS: the assumptions are consistent, but not the goals.
@@ -66,10 +69,10 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		this.status = SPEC_STATUS.UNKNOWN;
 	}
 
-	public SpecificationChromosome(SpecificationChromosome other) {
-		this.spec = TlsfParser.parse(TLSF_Utils.toTLSF(other.spec));
-		this.status = other.status;
-	}
+//	public SpecificationChromosome(SpecificationChromosome other) {
+//		this.spec = TlsfParser.parse(TLSF_Utils.toTLSF(other.spec));
+//		this.status = other.status;
+//	}
 	
 	@Override
 	public List<SpecificationChromosome> crossover(SpecificationChromosome anotherChromosome) {
@@ -131,8 +134,13 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		if (spec == null) {
 			if (other.spec != null)
 				return false;
-		} else if (!spec.toFormula().formula().equals(other.spec.toFormula().formula()))
-			return false;
+		} else {
+			SyntacticSimplifier simp = new SyntacticSimplifier();
+			Formula thiz = spec.toFormula().formula().accept(simp);
+			Formula that = other.spec.toFormula().formula().accept(simp);
+			if (!thiz.equals(that))
+				return false;
+		}
 		if (status != other.status)
 			return false;
 		return true;

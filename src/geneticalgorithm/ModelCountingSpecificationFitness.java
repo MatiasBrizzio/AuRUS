@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -27,16 +28,17 @@ import solvers.LTLSolver.SolverResult;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.CountREModels;
 import tlsf.Formula_Utils;
+import tlsf.TLSF_Utils;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public  final int BOUND = 10;
 	public boolean EXHAUSTIVE = true;
-	public  final double STATUS_FACTOR = 0.6d;
-	public  final double LOST_MODELS_FACTOR = 0.15d;
-	public  final double WON_MODELS_FACTOR = 0.15d;
+	public  final double STATUS_FACTOR = 0.7d;
+	public  final double LOST_MODELS_FACTOR = 0.05d;
+	public  final double WON_MODELS_FACTOR = 0.05d;
 	//	public static final double SOLUTION = 0.8d;
-	public  final double SYNTACTIC_FACTOR = 0.1d;
+	public  final double SYNTACTIC_FACTOR = 0.2d;
 	public Tlsf originalSpecification = null;
 	public List<String> alphabet = null;
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
@@ -45,7 +47,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	
 	public ModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
-		generateAlphabet();
+//		generateAlphabet();
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
@@ -89,21 +91,21 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 			e.printStackTrace();
 		}
 
-		double status_fitness = 0d;
-		if (chromosome.status == SPEC_STATUS.UNKNOWN)
-			status_fitness = 0d;
+		double status_fitness = 0.0d;
+		if (chromosome.status == SPEC_STATUS.UNKNOWN || chromosome.status == SPEC_STATUS.BOTTOM)
+			status_fitness = 0.0d;
 		else if (chromosome.status == SPEC_STATUS.GUARANTEES)
-			status_fitness = 0.15d;
+			status_fitness = 0.05d;
 		else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
-			status_fitness = 0.25d;
+			status_fitness = 0.1d;
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
-			status_fitness = 0.5d;
+			status_fitness = 0.2d;
 		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 0.9d;
-		else
+			status_fitness = 0.5d;
+		else if (chromosome.status == SPEC_STATUS.REALIZABLE)
 			status_fitness = 1.0d;
 
-		double fitness = STATUS_FACTOR * status_fitness;
+		
 
 		double syntactic_distance = 0.0d;
 		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
@@ -114,7 +116,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		//if the specifications are not syntactically equivalent
 		// Second, compute the portion of loosing models with respect to the original specification
 		double lost_models_fitness = 0.0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
-		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
+		if (syntactic_distance < 1.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
 			try {
 				lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
@@ -125,7 +127,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 
 		// Third, compute the portion of winning models with respect to the original specification
 		double won_models_fitness = 0.0d;
-		if (originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
+		if (syntactic_distance < 1.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
 			try {
 				won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
@@ -133,11 +135,16 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 			}
 			catch (Exception e) { e.printStackTrace(); }
 		}
-
-		fitness += LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness + SYNTACTIC_FACTOR * syntactic_distance;
+		double fitness = (STATUS_FACTOR * status_fitness) + (LOST_MODELS_FACTOR * lost_models_fitness) + (WON_MODELS_FACTOR * won_models_fitness) + (SYNTACTIC_FACTOR * syntactic_distance);
 //		}
-
+		System.out.printf("f%.2f ",fitness);
 		chromosome.fitness = fitness;
+		if (fitness > 1.0d) {
+			System.out.println(String.format("BEST Fitness: %.2f",fitness));
+			System.out.println(TLSF_Utils.adaptTLSFSpec(chromosome.spec));
+			throw new RuntimeException();
+		}
+			
 		return fitness;
 	}
 	
@@ -186,6 +193,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 							RealizabilitySolverResult rel = StrixHelper.checkRealizability(spec);
 							if (!rel.inconclusive()) {
 								if (rel == RealizabilitySolverResult.REALIZABLE) {
+									System.out.print("R" );
 									status = SPEC_STATUS.REALIZABLE;
 								}
 								else
@@ -208,12 +216,20 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
         if(simplified == BooleanConstant.FALSE) {
         	return BigInteger.ZERO;
         }
-		for(Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
-			Formula f = Disjunction.of(clause);
+        for (Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
+        	List<Formula> ordered_clause = new LinkedList();
+        	for(Formula d : clause) {
+        		if (d != BooleanConstant.FALSE)
+        			ordered_clause.add(d);
+        	}
+        	ordered_clause.sort((x,y) -> x.compareTo(y));
+			Formula f = Disjunction.of(ordered_clause);
             if (f == BooleanConstant.FALSE)
                 return BigInteger.ZERO;
 			formulas.add(LabelledFormula.of(f, formula.variables()));
 		}
+        formulas.sort((x,y) -> x.formula().compareTo(y.formula()));
+		System.out.println("S("+formulas.size()+") ");
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
