@@ -48,6 +48,7 @@ public class CountREModels{
 	}
 	
 	public String genABCString(LabelledFormula ltl) throws IOException, InterruptedException{
+//		translatorLTLtoRE = new FormulaToRE();
 		int vars = ltl.variables().size();
 		if(vars>5 && vars<12)
 			translatorLTLtoRE.encoded_alphabet = 0;
@@ -58,7 +59,7 @@ public class CountREModels{
 //		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
 //		Nfa dfa = nba.toDeterministicNfa();
 //		System.out.println("Generating RE...");
-		translatorLTLtoRE.generateLabels(ltl);
+		translatorLTLtoRE.generateLabels(ltl.variables());
 		String s = translatorLTLtoRE.formulaToRegularExpression(ltl);
 		if (s == null)
 			return null;

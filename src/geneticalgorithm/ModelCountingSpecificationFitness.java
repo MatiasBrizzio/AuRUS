@@ -33,7 +33,7 @@ import tlsf.TLSF_Utils;
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
 	public  final int BOUND = 10;
-	public boolean EXHAUSTIVE = true;
+	public boolean EXHAUSTIVE = false;
 	public  final double STATUS_FACTOR = 0.7d;
 	public  final double LOST_MODELS_FACTOR = 0.05d;
 	public  final double WON_MODELS_FACTOR = 0.05d;
@@ -222,13 +222,13 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
         		if (d != BooleanConstant.FALSE)
         			ordered_clause.add(d);
         	}
-        	ordered_clause.sort((x,y) -> x.compareTo(y));
+//        	ordered_clause.sort((x,y) -> x.compareTo(y));
 			Formula f = Disjunction.of(ordered_clause);
             if (f == BooleanConstant.FALSE)
                 return BigInteger.ZERO;
 			formulas.add(LabelledFormula.of(f, formula.variables()));
 		}
-        formulas.sort((x,y) -> x.formula().compareTo(y.formula()));
+//        formulas.sort((x,y) -> x.formula().compareTo(y.formula()));
 		System.out.println("S("+formulas.size()+") ");
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);

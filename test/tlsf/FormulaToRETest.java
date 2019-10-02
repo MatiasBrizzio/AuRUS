@@ -1,9 +1,15 @@
 package tlsf;
 
 import org.junit.jupiter.api.Test;
+
+import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.LtlParser;
+import owl.ltl.rewriter.SyntacticSimplifier;
+import owl.ltl.tlsf.Tlsf;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class FormulaToRETest {
@@ -24,7 +30,7 @@ public class FormulaToRETest {
         LabelledFormula f0 =  LtlParser.parse("G(a -> F(b))",vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
-        translatorLTLtoRE.generateLabels(f0);
+        translatorLTLtoRE.generateLabels(f0.variables());
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
@@ -35,7 +41,7 @@ public class FormulaToRETest {
         LabelledFormula f0 =  LtlParser.parse("G(a -> X(b))",vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
-        translatorLTLtoRE.generateLabels(f0);
+        translatorLTLtoRE.generateLabels(f0.variables());
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
@@ -46,8 +52,25 @@ public class FormulaToRETest {
         LabelledFormula f0 =  LtlParser.parse("G(a -> (b))",vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
-        translatorLTLtoRE.generateLabels(f0);
+        translatorLTLtoRE.generateLabels(f0.variables());
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
+        System.out.println(re);
+    }
+    
+    @Test
+    public void testMinepump0() throws IOException, InterruptedException{
+    	String filename = "examples/minepump-2.tlsf";
+  	  	Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+        List<String> vars = tlsf.variables();
+        LabelledFormula f0 =  tlsf.toFormula();
+        SyntacticSimplifier simp = new SyntacticSimplifier();
+        LabelledFormula simplified = LabelledFormula.of(f0.formula().accept(simp),vars);
+        System.out.println(vars);
+        System.out.println(f0.variables());
+        System.out.println(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE.generateLabels(vars);
+        String re = translatorLTLtoRE.formulaToRegularExpression(simplified);
         System.out.println(re);
     }
 }

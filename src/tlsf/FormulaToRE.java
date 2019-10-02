@@ -46,13 +46,13 @@ public class FormulaToRE {
         alphabetSize = 0;
     }
     
-    public void generateLabels(LabelledFormula formula) {
+    public void generateLabels(List<String> variables) {
         if (!labelIDs.isEmpty())
             return;
         Environment env = DefaultEnvironment.standard();
         FactorySupplier factorySupplier = env.factorySupplier();
-        ValuationSetFactory vsFactory = factorySupplier.getValuationSetFactory(formula.variables());
-        alphabetSize = formula.variables().size();
+        ValuationSetFactory vsFactory = factorySupplier.getValuationSetFactory(variables);
+        alphabetSize = variables.size();
         vsFactory.universe().forEach(bitSet -> {
             //get Label
             List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
@@ -71,6 +71,7 @@ public class FormulaToRE {
             else
                 setLabelEncoded(l);
         });
+        System.out.println(labelIDs);
     }
 
     public <S> String formulaToRegularExpression(LabelledFormula formula){
