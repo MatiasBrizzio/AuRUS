@@ -58,6 +58,7 @@ public class CountREModels{
 //		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
 //		Nfa dfa = nba.toDeterministicNfa();
 //		System.out.println("Generating RE...");
+		translatorLTLtoRE.generateLabels(ltl);
 		String s = translatorLTLtoRE.formulaToRegularExpression(ltl);
 		if (s == null)
 			return null;

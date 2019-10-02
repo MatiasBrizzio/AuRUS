@@ -15,10 +15,12 @@ import owl.automaton.edge.Edge;
 import owl.automaton.output.HoaPrinter;
 import owl.automaton.transformations.RabinDegeneralization;
 import owl.collections.ValuationSet;
+import owl.factories.FactorySupplier;
 import owl.factories.ValuationSetFactory;
 import owl.ltl.EquivalenceClass;
 import owl.ltl.LabelledFormula;
 import owl.run.DefaultEnvironment;
+import owl.run.Environment;
 import owl.translations.LTL2DAFunction;
 import owl.translations.ltl2nba.SymmetricNBAConstruction;
 
@@ -44,9 +46,33 @@ public class FormulaToRE {
         alphabetSize = 0;
     }
     
-    public void generateLabels() {
-    	
+    public void generateLabels(LabelledFormula formula) {
+        if (!labelIDs.isEmpty())
+            return;
+        Environment env = DefaultEnvironment.standard();
+        FactorySupplier factorySupplier = env.factorySupplier();
+        ValuationSetFactory vsFactory = factorySupplier.getValuationSetFactory(formula.variables());
+        alphabetSize = formula.variables().size();
+        vsFactory.universe().forEach(bitSet -> {
+            //get Label
+            List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
+            for (int i = 0; i < alphabetSize; i++) {
+                BooleanExpression<AtomLabel> atom = new BooleanExpression<>(AtomLabel.createAPIndex(i));
+
+                if (bitSet.get(i)) {
+                    conjuncts.add(atom);
+                } else {
+                    conjuncts.add(atom.not());
+                }
+            }
+            String l = BooleanExpressions.createConjunction(conjuncts).toString();
+            if (encoded_alphabet == -1)
+                setLabel(l);
+            else
+                setLabelEncoded(l);
+        });
     }
+
     public <S> String formulaToRegularExpression(LabelledFormula formula){
 //        LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),
 //                false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
@@ -62,7 +88,7 @@ public class FormulaToRE {
         System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
         System.out.print(formula+" ");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
-        alphabetSize = formula.variables().size();
+//        alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
     }
 
@@ -115,10 +141,10 @@ public class FormulaToRE {
 	                        }
 	                    }
 	                    String l = BooleanExpressions.createConjunction(conjuncts).toString();
-	                    if (encoded_alphabet == -1)
-	                        setLabel(l);
-	                    else
-	                        setLabelEncoded(l);
+//	                    if (encoded_alphabet == -1)
+//	                        setLabel(l);
+//	                    else
+//	                        setLabelEncoded(l);
 	
 	                    String label = labelIDs.get(l);
 

@@ -24,6 +24,7 @@ public class FormulaToRETest {
         LabelledFormula f0 =  LtlParser.parse("G(a -> F(b))",vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE.generateLabels(f0);
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
@@ -34,6 +35,7 @@ public class FormulaToRETest {
         LabelledFormula f0 =  LtlParser.parse("G(a -> X(b))",vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE.generateLabels(f0);
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
@@ -44,6 +46,7 @@ public class FormulaToRETest {
         LabelledFormula f0 =  LtlParser.parse("G(a -> (b))",vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE.generateLabels(f0);
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
