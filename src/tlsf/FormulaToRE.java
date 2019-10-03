@@ -91,7 +91,7 @@ public class FormulaToRE {
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
         System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
-        System.out.print(formula+" ");
+//        System.out.println(formula+" ");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
@@ -101,7 +101,7 @@ public class FormulaToRE {
     public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
 
 
-        automata.Automaton fsa = new automata.Automaton();
+        automata.Automaton fsa = new FiniteStateAutomaton();
 
         //Map nodes to states ids
         java.util.Map<String,Integer> ids = new HashMap<>();
@@ -191,12 +191,12 @@ public class FormulaToRE {
             });
         }
 //        System.out.print("n");
-        NFAToDFA determinizer = new NFAToDFA();
-        automata.Automaton dfa = determinizer.convertToDFA(fsa);
-        FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa);
+        //NFAToDFA determinizer = new NFAToDFA();
+        //automata.Automaton dfa = determinizer.convertToDFA(fsa);
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
 //        System.out.print("f");
-        String re = FSAToRegularExpressionConverter.convertToRegularExpression(dfa);
-        System.out.println(re);
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
+//        System.out.println(re);
         return re;
     }
 

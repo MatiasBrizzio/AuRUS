@@ -35,10 +35,10 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	public  final int BOUND = 10;
 	public boolean EXHAUSTIVE = false;
 	public  final double STATUS_FACTOR = 0.7d;
-	public  final double LOST_MODELS_FACTOR = 0.05d;
-	public  final double WON_MODELS_FACTOR = 0.05d;
+	public  final double LOST_MODELS_FACTOR = 0.1d;
+	public  final double WON_MODELS_FACTOR = 0.1d;
 	//	public static final double SOLUTION = 0.8d;
-	public  final double SYNTACTIC_FACTOR = 0.2d;
+	public  final double SYNTACTIC_FACTOR = 0.1d;
 	public Tlsf originalSpecification = null;
 	public List<String> alphabet = null;
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
@@ -210,26 +210,26 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
 		LinkedList<LabelledFormula> formulas = new LinkedList<>();
 //		LabelledFormula f = LabelledFormula.of(NormalForms.toCnfFormula(formula.formula().nnf()), formula.variables());
-//		formulas.add(f);
+//		formulas.add(formula);
 		SyntacticSimplifier simp = new SyntacticSimplifier();
         Formula simplified = formula.formula().accept(simp);
         if(simplified == BooleanConstant.FALSE) {
         	return BigInteger.ZERO;
         }
         for (Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
-        	List<Formula> ordered_clause = new LinkedList();
-        	for(Formula d : clause) {
-        		if (d != BooleanConstant.FALSE)
-        			ordered_clause.add(d);
-        	}
+//        	List<Formula> ordered_clause = new LinkedList();
+//        	for(Formula d : clause) {
+//        		if (d != BooleanConstant.FALSE)
+//        			ordered_clause.add(d);
+//        	}
 //        	ordered_clause.sort((x,y) -> x.compareTo(y));
-			Formula f = Disjunction.of(ordered_clause);
+			Formula f = Disjunction.of(clause);
             if (f == BooleanConstant.FALSE)
                 return BigInteger.ZERO;
 			formulas.add(LabelledFormula.of(f, formula.variables()));
 		}
 //        formulas.sort((x,y) -> x.formula().compareTo(y.formula()));
-		System.out.println("S("+formulas.size()+") ");
+//		System.out.println("S("+formulas.size()+") ");
 		CountREModels counter = new CountREModels();
 		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 		return numOfModels;
