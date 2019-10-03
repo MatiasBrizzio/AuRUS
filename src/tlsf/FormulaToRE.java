@@ -23,6 +23,7 @@ import owl.run.DefaultEnvironment;
 import owl.run.Environment;
 import owl.translations.LTL2DAFunction;
 import owl.translations.ltl2nba.SymmetricNBAConstruction;
+import owl.translations.nba2ldba.NBA2LDBA;
 
 import java.awt.*;
 import java.util.*;
@@ -79,7 +80,9 @@ public class FormulaToRE {
 //                false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
 //        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
         SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
-        Automaton<S, BuchiAcceptance> automaton = translator.apply(formula);
+        Automaton<S, BuchiAcceptance> nba = translator.apply(formula);
+        NBA2LDBA nba2dba = new NBA2LDBA();
+        Automaton<S, BuchiAcceptance> automaton = (Automaton<S, BuchiAcceptance>) nba2dba.apply(nba);
         if (automaton.size() == 0)
             return null;
         Set<Integer> acceptanceSets = new HashSet();
