@@ -81,9 +81,9 @@ public class FormulaToRE {
 //                false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
 //        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
         SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
-        Automaton<S, BuchiAcceptance> nba = translator.apply(formula);
-        NBA2LDBA nba2dba = new NBA2LDBA();
-        Automaton<S, BuchiAcceptance> automaton = (Automaton<S, BuchiAcceptance>) nba2dba.apply(nba);
+        Automaton<S, BuchiAcceptance> automaton = translator.apply(formula);
+//        NBA2LDBA nba2dba = new NBA2LDBA();
+//        Automaton<S, BuchiAcceptance> automaton = (Automaton<S, BuchiAcceptance>) nba2dba.apply(nba);
         if (automaton.size() == 0)
             return null;
         Set<Integer> acceptanceSets = new HashSet();
@@ -105,13 +105,19 @@ public class FormulaToRE {
 
         //Map nodes to states ids
         java.util.Map<String,Integer> ids = new HashMap<>();
+
+        //create one unique initial state
+        automata.State is = fsa.createState(new Point());
+        fsa.setInitialState(is);
+
         //get initial nodes
         for(S in : automaton.initialStates()) {
             //create and set initial state
-            automata.State is = fsa.createState(new Point());
-            fsa.setInitialState(is);
+            automata.State ais = fsa.createState(new Point());
             //initial node ids
-            ids.put(in.toString(), is.getID());
+            FSATransition t = new FSATransition(is, ais,"");
+            fsa.addTransition(t);
+            ids.put(in.toString(), ais.getID());
         }
 
         for (S from : automaton.states()) {

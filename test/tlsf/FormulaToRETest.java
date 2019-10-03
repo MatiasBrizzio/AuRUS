@@ -63,14 +63,10 @@ public class FormulaToRETest {
   	  	Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         List<String> vars = tlsf.variables();
         LabelledFormula f0 =  tlsf.toFormula();
-        SyntacticSimplifier simp = new SyntacticSimplifier();
-        LabelledFormula simplified = LabelledFormula.of(f0.formula().accept(simp),vars);
-        System.out.println(vars);
-        System.out.println(f0.variables());
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
         translatorLTLtoRE.generateLabels(vars);
-        String re = translatorLTLtoRE.formulaToRegularExpression(simplified);
+        String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
     }
 }
