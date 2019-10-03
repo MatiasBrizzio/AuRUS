@@ -3,6 +3,7 @@ package tlsf;
 import automata.fsa.FSAToRegularExpressionConverter;
 import automata.fsa.FSATransition;
 import automata.fsa.FiniteStateAutomaton;
+import automata.fsa.NFAToDFA;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import jhoafparser.ast.AtomLabel;
@@ -72,7 +73,7 @@ public class FormulaToRE {
             else
                 setLabelEncoded(l);
         });
-        System.out.println(labelIDs);
+//        System.out.println(labelIDs);
     }
 
     public <S> String formulaToRegularExpression(LabelledFormula formula){
@@ -100,7 +101,7 @@ public class FormulaToRE {
     public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
 
 
-        FiniteStateAutomaton fsa = new FiniteStateAutomaton();
+        automata.Automaton fsa = new automata.Automaton();
 
         //Map nodes to states ids
         java.util.Map<String,Integer> ids = new HashMap<>();
@@ -184,9 +185,11 @@ public class FormulaToRE {
             });
         }
 //        System.out.print("n");
-        FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
+        NFAToDFA determinizer = new NFAToDFA();
+        automata.Automaton dfa = determinizer.convertToDFA(fsa);
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa);
 //        System.out.print("f");
-        String re = FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(dfa);
         System.out.println(re);
         return re;
     }
