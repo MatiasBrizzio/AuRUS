@@ -1,9 +1,7 @@
 package tlsf;
 
-import automata.fsa.FSAToRegularExpressionConverter;
-import automata.fsa.FSATransition;
-import automata.fsa.FiniteStateAutomaton;
-import automata.fsa.NFAToDFA;
+import automata.fsa.*;
+import gui.environment.Universe;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import jhoafparser.ast.AtomLabel;
@@ -73,7 +71,7 @@ public class FormulaToRE {
             else
                 setLabelEncoded(l);
         });
-//        System.out.println(labelIDs);
+        System.out.println(labelIDs);
     }
 
     public <S> String formulaToRegularExpression(LabelledFormula formula){
@@ -90,9 +88,9 @@ public class FormulaToRE {
         automaton.states().forEach(s -> 
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
-//        System.out.print(automaton.size()+"("+acceptanceSets.size()+"/"+automaton.initialStates().size()+") ");
+        System.out.print(automaton.size()+"("+acceptanceSets.size()+"/"+automaton.initialStates().size()+") ");
 //        System.out.println(formula+" ");
-//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
     }
@@ -115,15 +113,18 @@ public class FormulaToRE {
             //create and set initial state
             automata.State ais = fsa.createState(new Point());
             //initial node ids
-            FSATransition t = new FSATransition(is, ais,"");
+            FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA_DISPLAY);
             fsa.addTransition(t);
             ids.put(in.toString(), ais.getID());
+            System.out.println("initial: "+ in.toString());
         }
 
         for (S from : automaton.states()) {
+
             Map<Edge<S>, ValuationSet> edgeMap = automaton.edgeMap(from);
             edgeMap.forEach((edge, valuationSet) -> {
                 S to = edge.successor();
+
                 if (!valuationSet.isEmpty()) {
 
                 	valuationSet.forEach(bitSet -> {
@@ -152,6 +153,7 @@ public class FormulaToRE {
 	                        }
 	                    }
 	                    String l = BooleanExpressions.createConjunction(conjuncts).toString();
+
 //	                    if (encoded_alphabet == -1)
 //	                        setLabel(l);
 //	                    else
@@ -159,6 +161,7 @@ public class FormulaToRE {
 	
 	                    String label = labelIDs.get(l);
 
+                        System.out.println("from: "+ from.toString() + " label:"+ l + "("+label+") to:" + to.toString());
 	                    //check if toState exists
 	                    automata.State toState = null;
 
@@ -191,11 +194,13 @@ public class FormulaToRE {
             });
         }
 //        System.out.print("n");
-        //NFAToDFA determinizer = new NFAToDFA();
-        //automata.Automaton dfa = determinizer.convertToDFA(fsa);
-        FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
+        NFAToDFA determinizer = new NFAToDFA();
+        automata.Automaton dfa = determinizer.convertToDFA(fsa);
+        Minimizer min = new Minimizer();
+        automata.Automaton minimized = min.getMinimizeableAutomaton(dfa);
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(minimized);
 //        System.out.print("f");
-        String re = FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(minimized);
 //        System.out.println(re);
         return re;
     }
