@@ -88,13 +88,13 @@ public class PreciseModelCountingEvaluation {
         int index = 0;
         System.out.println("Counting...");
         for(Formula ref : refined_formulas) {
-            System.out.println("Formula: "+ ref);
+            System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
             List<BigInteger> result = null;
             if (!prefixes)
                 result = countModels(original_formula, ref, vars.size(), bound, solver);
             else
                 result = countPrefixes(original_formula, ref, vars,bound);
-            System.out.println(result);
+//            System.out.println(result);
             if (outname != null) {
                 String filename = outname.replace(".out", index + ".out");
                 writeFile(filename, result);
@@ -126,8 +126,13 @@ public class PreciseModelCountingEvaluation {
         List<BigInteger> totalNumOfModels = new LinkedList<>();
         for(int i = 0; i < num_of_formulas; i++){
             BigInteger f_result = BigInteger.ZERO;
-            for(BigInteger v : solutions[i])
-                f_result = f_result.add(v);
+            if (!prefixes) {
+            	for(BigInteger v : solutions[i])
+            		f_result = f_result.add(v);
+            }
+            else {
+            	f_result = solutions[i].get(bound-1);
+            }
             totalNumOfModels.add(f_result);
         }
         List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
@@ -191,7 +196,7 @@ public class PreciseModelCountingEvaluation {
             Formula f = Conjunction.of(original, refined.not());
             SyntacticSimplifier simp = new SyntacticSimplifier();
             Formula simplified = f.accept(simp);
-            System.out.println(simplified);
+//            System.out.println(simplified);
             if(simplified == BooleanConstant.FALSE) {
             	lostModels.add(BigInteger.ZERO);
             	continue;
@@ -203,6 +208,10 @@ public class PreciseModelCountingEvaluation {
     		}
             CountREModels counter = new CountREModels();
             BigInteger r = counter.count(formulas, k, false, true);
+            if (k > 1) {
+            	BigInteger previous = lostModels.get(k-2);
+            	r = r.subtract(previous);
+            }
             lostModels.add(r);
         }
 
@@ -214,7 +223,7 @@ public class PreciseModelCountingEvaluation {
             Formula f = Conjunction.of(original.not(), refined);
             SyntacticSimplifier simp = new SyntacticSimplifier();
             Formula simplified = f.accept(simp);
-            System.out.println(simplified);
+//            System.out.println(simplified);
             if(simplified == BooleanConstant.FALSE) {
             	wonModels.add(BigInteger.ZERO);
             	continue;
@@ -226,6 +235,10 @@ public class PreciseModelCountingEvaluation {
     		}
             CountREModels counter = new CountREModels();
             BigInteger r = counter.count(formulas, k, false, true);
+            if (k > 1) {
+            	BigInteger previous = wonModels.get(k-2);
+            	r = r.subtract(previous);
+            }
             wonModels.add(r);
         }
         List<BigInteger> result = new LinkedList<>();

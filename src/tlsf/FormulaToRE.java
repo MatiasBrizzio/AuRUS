@@ -90,7 +90,7 @@ public class FormulaToRE {
         automaton.states().forEach(s -> 
         	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
         			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
-        System.out.print(automaton.size()+"("+acceptanceSets.size()+") ");
+//        System.out.print(automaton.size()+"("+acceptanceSets.size()+"/"+automaton.initialStates().size()+") ");
 //        System.out.println(formula+" ");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        alphabetSize = formula.variables().size();
