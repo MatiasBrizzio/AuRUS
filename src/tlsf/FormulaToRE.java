@@ -1,9 +1,12 @@
 package tlsf;
 
 import automata.fsa.*;
+import com.google.common.base.Preconditions;
 import gui.environment.Universe;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import jhoafparser.ast.AtomLabel;
 import jhoafparser.ast.BooleanExpression;
 import owl.automaton.Automaton;
@@ -24,6 +27,7 @@ import owl.translations.LTL2DAFunction;
 import owl.translations.ltl2nba.SymmetricNBAConstruction;
 import owl.translations.nba2ldba.NBA2LDBA;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -84,63 +88,70 @@ public class FormulaToRE {
 //        Automaton<S, BuchiAcceptance> automaton = (Automaton<S, BuchiAcceptance>) nba2dba.apply(nba);
         if (automaton.size() == 0)
             return null;
-        Set<Integer> acceptanceSets = new HashSet();
-        automaton.states().forEach(s -> 
-        	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
-        			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
-        System.out.print(automaton.size()+"("+acceptanceSets.size()+"/"+automaton.initialStates().size()+") ");
+        BitSet acceptanceSets = automaton.acceptance().acceptingSet(); //new HashSet();
+//        automaton.states().forEach(s ->
+//        	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
+//        			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
+        System.out.print(automaton.size()+"("+acceptanceSets+"/"+automaton.initialStates().size()+") ");
 //        System.out.println(formula+" ");
-        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
     }
+    Object2IntMap stateNumbers = new Object2IntOpenHashMap();
+    private <S> int getStateId(@Nullable S state) {
+        Preconditions.checkState(state != null);
+        int id = this.stateNumbers.computeIntIfAbsent(state, (k) -> {
+            return this.stateNumbers.size();
+        });
+        return id;
+    }
 
-    
     public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
 
 
         automata.Automaton fsa = new FiniteStateAutomaton();
 
         //Map nodes to states ids
-        java.util.Map<String,Integer> ids = new HashMap<>();
+//        java.util.Map<String,Integer> ids = new HashMap<>();
 
         //create one unique initial state
-        automata.State is = fsa.createState(new Point());
+        automata.State is = fsa.createStateWithId(new Point(),-1);
         fsa.setInitialState(is);
 
         //get initial nodes
         for(S in : automaton.initialStates()) {
             //create and set initial state
-            automata.State ais = fsa.createState(new Point());
+            automata.State ais = fsa.createStateWithId(new Point(),getStateId(in));
             //initial node ids
             FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA_DISPLAY);
             fsa.addTransition(t);
-            ids.put(in.toString(), ais.getID());
-            System.out.println("initial: "+ in.toString());
+//            ids.put(in.toString(), ais.getID());
+            System.out.println("initial: "+ getStateId(in));
         }
 
         for (S from : automaton.states()) {
-
             Map<Edge<S>, ValuationSet> edgeMap = automaton.edgeMap(from);
             edgeMap.forEach((edge, valuationSet) -> {
                 S to = edge.successor();
-
                 if (!valuationSet.isEmpty()) {
 
                 	valuationSet.forEach(bitSet -> {
 	                    //checks if ID exists
 //	                    int ID = 0;
-	                    automata.State fromState = null;
-	                    if (ids.containsKey(from.toString())) {
-	                        int ID = ids.get(from.toString());
-	                        fromState = fsa.getStateWithID(ID);
-	                    } else {
-	                        //create new state
-	                        fromState = fsa.createState(new Point());
-	                        //update ids
-	                        ids.put(from.toString(), fromState.getID());
-//	                        ID = fromState.getID();
-	                    }
+	                    automata.State fromState = fsa.getStateWithID(getStateId(from));
+	                    if (fromState == null)
+	                        fromState = fsa.createStateWithId(new Point(),getStateId(from));
+//	                    if (ids.containsKey(from.toString())) {
+//	                        int ID = ids.get(from.toString());
+//	                        fromState = fsa.getStateWithID(ID);
+//	                    } else {
+//	                        //create new state
+//	                        fromState = fsa.createState(new Point());
+//	                        //update ids
+//	                        ids.put(from.toString(), fromState.getID());
+////	                        ID = fromState.getID();
+//	                    }
 	                    //get Label
 	                    List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
 	                    for (int i = 0; i < alphabetSize; i++) {
@@ -161,20 +172,23 @@ public class FormulaToRE {
 	
 	                    String label = labelIDs.get(l);
 
-                        System.out.println("from: "+ from.toString() + " label:"+ l + "("+label+") to:" + to.toString());
+                        System.out.println("from: "+ getStateId(from) + " label:"+ l + "("+label+") to:" + getStateId(to));
 	                    //check if toState exists
-	                    automata.State toState = null;
+	                    automata.State toState = fsa.getStateWithID(getStateId(to));
+                        if (toState == null)
+                            toState = fsa.createStateWithId(new Point(),getStateId(to));
 
-	                    if (ids.containsKey(to.toString())) {
-	                        int ID = ids.get(to.toString());
-	                        toState = fsa.getStateWithID(ID);
-	                    } else {
-	                        //create new state
-	                        toState = fsa.createState(new Point());
-	                        //update ids
-	                        ids.put(to.toString(), toState.getID());
-//	                        ID = toState.getID();
-	                    }
+//	                    if (ids.containsKey(to.toString())) {
+//	                        int ID = ids.get(to.toString());
+//	                        toState = fsa.getStateWithID(ID);
+//	                    } else {
+//	                        //create new state
+//	                        toState = fsa.createState(new Point());
+//	                        //update ids
+//	                        ids.put(to.toString(), toState.getID());
+////	                        ID = toState.getID();
+//	                    }
+
 	                    //add transition
 	                    FSATransition t = new FSATransition(fromState, toState, label);
 	                    fsa.addTransition(t);
@@ -187,8 +201,8 @@ public class FormulaToRE {
 	            //add final states
 	            if (edge.acceptanceSetIterator().hasNext()) {
 	                //get state
-	                int finalID = ids.get(to.toString());
-	                automata.State as = fsa.getStateWithID(finalID);
+//	                int finalID = ids.get(to.toString());
+	                automata.State as = fsa.getStateWithID(getStateId(to));
 	                fsa.addFinalState(as);
 	            }
             });
