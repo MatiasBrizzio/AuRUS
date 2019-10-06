@@ -118,16 +118,20 @@ public class FormulaToRE {
         //create one unique initial state
         automata.State is = fsa.createStateWithId(new Point(),-1);
         fsa.setInitialState(is);
-
+        
+        //create one unique final state
+        automata.State fs = fsa.createStateWithId(new Point(),-2);
+        fsa.addFinalState(fs);
+        
         //get initial nodes
         for(S in : automaton.initialStates()) {
             //create and set initial state
             automata.State ais = fsa.createStateWithId(new Point(),getStateId(in));
             //initial node ids
-            FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA_DISPLAY);
+            FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA);
             fsa.addTransition(t);
 //            ids.put(in.toString(), ais.getID());
-            System.out.println("initial: "+ getStateId(in));
+//            System.out.println("initial: "+ getStateId(in));
         }
 
         for (S from : automaton.states()) {
@@ -172,7 +176,7 @@ public class FormulaToRE {
 	
 	                    String label = labelIDs.get(l);
 
-                        System.out.println("from: "+ getStateId(from) + " label:"+ l + "("+label+") to:" + getStateId(to));
+//                        System.out.println("from: "+ getStateId(from) + " label:"+ l + "("+label+") to:" + getStateId(to));
 	                    //check if toState exists
 	                    automata.State toState = fsa.getStateWithID(getStateId(to));
                         if (toState == null)
@@ -203,16 +207,22 @@ public class FormulaToRE {
 	                //get state
 //	                int finalID = ids.get(to.toString());
 	                automata.State as = fsa.getStateWithID(getStateId(to));
-	                fsa.addFinalState(as);
+	              //add transition
+                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
+                    fsa.addTransition(t);
+//	                fsa.addFinalState(as);
 	            }
             });
         }
 //        System.out.print("n");
+//        System.out.println(fsa.toString());
         NFAToDFA determinizer = new NFAToDFA();
         automata.Automaton dfa = determinizer.convertToDFA(fsa);
+//        System.out.println(dfa.toString());
         Minimizer min = new Minimizer();
         automata.Automaton minimized = min.getMinimizeableAutomaton(dfa);
         FSAToRegularExpressionConverter.convertToSimpleAutomaton(minimized);
+//        System.out.println(minimized.toString());
 //        System.out.print("f");
         String re = FSAToRegularExpressionConverter.convertToRegularExpression(minimized);
 //        System.out.println(re);
