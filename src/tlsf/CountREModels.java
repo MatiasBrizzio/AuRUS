@@ -48,7 +48,7 @@ public class CountREModels{
 	}
 	
 	public String genABCString(LabelledFormula ltl) throws IOException, InterruptedException{
-//		translatorLTLtoRE = new FormulaToRE();
+		translatorLTLtoRE = new FormulaToRE();
 		int vars = ltl.variables().size();
 		if(vars>5 && vars<12)
 			translatorLTLtoRE.encoded_alphabet = 0;

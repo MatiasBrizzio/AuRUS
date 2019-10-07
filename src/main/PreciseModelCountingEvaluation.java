@@ -255,23 +255,29 @@ public class PreciseModelCountingEvaluation {
         List<BigInteger> lostModels = new LinkedList<>();
         List<String> alphabet = genAlphabet(vars.size());
         for(int k = 1; k <= bound; k++) {
-            LinkedList<String> formulas = new LinkedList<>();
-            formulas.add(toLambConvSyntax(original,alphabet));
-            formulas.add(toLambConvSyntax(refined.not(),alphabet));
+//            LinkedList<String> formulas = new LinkedList<>();
+//            formulas.add(toLambConvSyntax(original,alphabet));
+//            formulas.add(toLambConvSyntax(refined.not(),alphabet));
+        	LinkedList<LabelledFormula> formulas = new LinkedList<>();
+        	formulas.add(LabelledFormula.of(original, alphabet));
+        	formulas.add(LabelledFormula.of(refined.not(), alphabet));
             String alph = alphabet.toString();
             Count counter = new Count();
-		    BigInteger r = counter.count(formulas, alph, k, false, true);
+		    BigInteger r = counter.count(formulas, k, false, true);
             lostModels.add(r);
         }
 
         List<BigInteger> wonModels = new LinkedList<>();
         for(int k = 1; k <= bound; k++) {
-        	LinkedList<String> formulas = new LinkedList<>();
-            formulas.add(toLambConvSyntax(original.not(),alphabet));
-            formulas.add(toLambConvSyntax(refined,alphabet));
+//        	LinkedList<String> formulas = new LinkedList<>();
+//            formulas.add(toLambConvSyntax(original.not(),alphabet));
+//            formulas.add(toLambConvSyntax(refined,alphabet));
+        	LinkedList<LabelledFormula> formulas = new LinkedList<>();
+        	formulas.add(LabelledFormula.of(original.not(), alphabet));
+        	formulas.add(LabelledFormula.of(refined, alphabet));
             String alph = alphabet.toString();
             Count counter = new Count();
-		    BigInteger r = counter.count(formulas, alph, k, false, true);
+		    BigInteger r = counter.count(formulas, k, false, true);
             wonModels.add(r);
         }
         List<BigInteger> result = new LinkedList<>();

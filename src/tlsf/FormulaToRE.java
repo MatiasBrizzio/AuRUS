@@ -28,6 +28,8 @@ import owl.translations.ltl2nba.SymmetricNBAConstruction;
 import owl.translations.nba2ldba.NBA2LDBA;
 
 import javax.annotation.Nullable;
+import javax.swing.tree.DefaultTreeModel;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -93,8 +95,8 @@ public class FormulaToRE {
 //        	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
 //        			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
         System.out.print(automaton.size()+"("+acceptanceSets+"/"+automaton.initialStates().size()+") ");
-//        System.out.println(formula+" ");
-//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+        System.out.println(formula+" ");
+        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        alphabetSize = formula.variables().size();
         return automataToRegularExpression(automaton);
     }
@@ -108,13 +110,14 @@ public class FormulaToRE {
     }
 
     public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
-
+    	
 
         automata.Automaton fsa = new FiniteStateAutomaton();
 
         //Map nodes to states ids
 //        java.util.Map<String,Integer> ids = new HashMap<>();
-
+        stateNumbers = new Object2IntOpenHashMap();
+        
         //create one unique initial state
         automata.State is = fsa.createStateWithId(new Point(),-1);
         fsa.setInitialState(is);
@@ -131,7 +134,7 @@ public class FormulaToRE {
             FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA);
             fsa.addTransition(t);
 //            ids.put(in.toString(), ais.getID());
-//            System.out.println("initial: "+ getStateId(in));
+            System.out.println("initial: "+ getStateId(in));
         }
 
         for (S from : automaton.states()) {
@@ -176,7 +179,7 @@ public class FormulaToRE {
 	
 	                    String label = labelIDs.get(l);
 
-//                        System.out.println("from: "+ getStateId(from) + " label:"+ l + "("+label+") to:" + getStateId(to));
+                        System.out.println("from: "+ getStateId(from) + " label:"+ l + "("+label+") to:" + getStateId(to));
 	                    //check if toState exists
 	                    automata.State toState = fsa.getStateWithID(getStateId(to));
                         if (toState == null)
@@ -217,15 +220,25 @@ public class FormulaToRE {
 //        System.out.print("n");
 //        System.out.println(fsa.toString());
         NFAToDFA determinizer = new NFAToDFA();
-        automata.Automaton dfa = determinizer.convertToDFA(fsa);
-//        System.out.println(dfa.toString());
+        automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
+        System.out.println(dfa.toString());
+        
         Minimizer min = new Minimizer();
-        automata.Automaton minimized = min.getMinimizeableAutomaton(dfa);
-        FSAToRegularExpressionConverter.convertToSimpleAutomaton(minimized);
-//        System.out.println(minimized.toString());
+//        automata.Automaton dfa_minimized = (automata.Automaton) dfa.clone();
+//        boolean isminimized = false;
+//        while (!isminimized) {
+        	min.initializeMinimizer();
+        	automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
+        	DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
+        	automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+//        	isminimized = min.isMinimized(dfa_minimized, tree);
+//        }
+        	System.out.println(dfa_minimized.toString());	
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa_minimized);
+        System.out.println(dfa_minimized.toString());
 //        System.out.print("f");
-        String re = FSAToRegularExpressionConverter.convertToRegularExpression(minimized);
-//        System.out.println(re);
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(dfa_minimized);
+        System.out.println(re);
         return re;
     }
 

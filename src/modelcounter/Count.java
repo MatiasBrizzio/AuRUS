@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.uni_luebeck.isp.rltlconv.automata.Nba;
 import owl.ltl.LabelledFormula;
+import solvers.SolverUtils;
 import tlsf.FormulaToRE;
 
 
@@ -16,12 +17,13 @@ public class Count {
 		translatorLTLtoRE = new Rltlconv_LTLModelCounter();
 	}
 
-	public BigInteger count(List<String> formulas, String alphStr, int bound, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
+	public BigInteger count(List<LabelledFormula> formulas, int bound, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
 		ABC abc = new ABC();
 		LinkedList<String> abcStrs = new LinkedList<>();
-		for(String f: formulas){
-			String abcStr = genABCString(f, alphStr);
-			abcStrs.add(abcStr);
+		for(LabelledFormula f: formulas){
+			String abcStr = genABCString(f);
+			if (abcStr != null)
+				abcStrs.add(abcStr);
 		}
 		BigInteger count = BigInteger.ZERO;
 		if(translatorLTLtoRE.encoded_alphabet==0)
@@ -46,23 +48,20 @@ public class Count {
 		return sec;
 	}
 	
-	public String genABCString(String ltl, String alph) throws IOException, InterruptedException{
+	public String genABCString(LabelledFormula formula) throws IOException, InterruptedException{
+		String ltl = SolverUtils.toLambConvSyntax(formula.formula().toString());
+		String alph = SolverUtils.createLambConvAlphabet(formula);
 		String form = "LTL="+ltl;
 		if(alph!=null && alph!="")
 			form += ",ALPHABET="+alph;
-//		Nfa dfa = LTLModelCounter.ltl2dfa(formula);
-		if(translatorLTLtoRE.props && alph!=null && alph.split(",").length>5 && alph.split(",").length<12)
+		if(alph!=null && formula.variables().size()>5 && formula.variables().size()<12)
 			translatorLTLtoRE.encoded_alphabet = 0;
-		else if(translatorLTLtoRE.props && alph!=null && alph.split(",").length>=12)
+		else if(alph!=null && formula.variables().size()>=12)
 			translatorLTLtoRE.encoded_alphabet = 1;
 //		System.out.println("Translating from LTL to NBA...");
-		Nba nba = translatorLTLtoRE.ltl2nba(form);
-//		System.out.println(LTLModelCounter.encoded_alphabet);
-		System.out.println();
-		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
-//		Nfa dfa = nba.toDeterministicNfa();
-//		System.out.println("Generating RE...");
-		String s = translatorLTLtoRE.automata2RE(nba);
+		
+//		translatorLTLtoRE = new Rltlconv_LTLModelCounter();
+		String s = translatorLTLtoRE.ltl2RE(form);
 		return translatorLTLtoRE.toABClanguage(s);
 	}
 	

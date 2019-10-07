@@ -14,10 +14,14 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.RuntimeErrorException;
+import javax.swing.tree.DefaultTreeModel;
 
+import automata.AutomatonChecker;
 import automata.fsa.FSAToRegularExpressionConverter;
 import automata.fsa.FSATransition;
 import automata.fsa.FiniteStateAutomaton;
+import automata.fsa.Minimizer;
+import automata.fsa.NFAToDFA;
 import de.uni_luebeck.isp.buchi.BuchiAutomaton;
 import de.uni_luebeck.isp.buchi.Transition;
 import de.uni_luebeck.isp.rltlconv.automata.DirectedState;
@@ -42,303 +46,130 @@ import scala.collection.immutable.VectorIterator;
 public class Rltlconv_LTLModelCounter {
 
 	public int TIMEOUT = 60;
+	//Map labels to ids
+	public java.util.Map<String,String> labelIDs ;
 	
 	public Rltlconv_LTLModelCounter() {
 		base = 48;
-		labelIDs.clear();
+		labelIDs = new HashMap<>();
 		encoded_alphabet = -1;
 	}
 	
-	private void writeFile(String fname,String text) throws IOException{
-		
-        try {
-            File file = new File(fname);
-            FileWriter fw = new FileWriter(file);
-            BufferedWriter output = new BufferedWriter(fw);
-            output.write(text);
-            output.flush();
-            output.close();
-            fw.close();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } 
+	public void generateLabels(Nba nba) {
+        if (!labelIDs.isEmpty())
+            return;
+        Iterator<String> it = nba.alphabet().iterator();
+        while(it.hasNext()){
+        	String l = it.next();
+        	if (encoded_alphabet == -1)
+                setLabel(l);
+            else
+                setLabelEncoded(l);
+        }
+        System.out.println(labelIDs);
 	}
 	
-	private void runCommand(String cmd) throws IOException, InterruptedException{
-		
-		Process p = Runtime.getRuntime().exec(cmd);
-		
-		boolean timeout = false;
-		if(!p.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
-		    timeout = true; //kill the process. 
-			p.destroy(); // consider using destroyForcibly instead
-		}
-		
-		if (timeout)
-			throw new IllegalStateException("rltlconv timeout exception.");
-		
-		//empty out file
-		Process p1 = Runtime.getRuntime().exec("rm rltlconv-out.txt");
-		p1.waitFor(TIMEOUT, TimeUnit.SECONDS);
-		
-		InputStream in = p.getInputStream();
-    	InputStreamReader inread = new InputStreamReader(in);
-    	BufferedReader bufferedreader = new BufferedReader(inread);
-    	String aux;
-    	String out = "";
-	    while ((aux = bufferedreader.readLine()) != null) {
-	    	out += aux+"\n";
-	    }
-	    if(out!="")
-	    	writeFile("rltlconv-out.txt",out);
-	    else
-	    	throw new IllegalStateException("rltlconv error: out empty file");
-	 // Leer el error del programa.
-    	InputStream err = p.getErrorStream();
-    	InputStreamReader errread = new InputStreamReader(err);
-    	BufferedReader errbufferedreader = new BufferedReader(errread);
-    	
-	    while ((aux = errbufferedreader.readLine()) != null) {
-	    	System.out.println("ERR: " + aux);
-	    }
-	   
-	    // Check for failure
-		if (p.waitFor() != 0) {
-			System.out.println("exit value = " + p.exitValue());
-		}
-  
-		// Close the InputStream
-    	bufferedreader.close();
-    	inread.close();
-    	in.close();
-   		// Close the ErrorStream
-   		errbufferedreader.close();
-   		errread.close();
-   		err.close();
-    		
-   		if (p!=null) {
-//   			InputStream is = p.getInputStream();
- //  			InputStream es = p.getErrorStream();
-  			OutputStream os = p.getOutputStream();
-//   				if (is!=null) is.close();
-//   				if (es!=null) es.close();
-			if (os!=null) os.close();
-   		}
+	public String ltl2RE(String formula) throws IOException, InterruptedException {
+//		System.out.println(formula);
+//		Nfa nfa = ltl2dfa(formula);
+//		String re = automata2RE(nfa);
+		Nba nba = ltl2nba(formula);
+		generateLabels(nba);
+		String re = automata2RE(nba);
+		return re;
 	}
 	
-	
-	public boolean props = true;
 	public Nfa ltl2dfa(String formula) throws IOException, InterruptedException{
-//		ConversionVal[] conv = {Conversion.PROPS(), Conversion.FORMULA(),Conversion.APA(),Conversion.NBA(), Conversion.MIN(), Conversion.NFA(), Conversion.DFA()};
-//		Object res = RltlConv.convert(formula, conv);
-		
-		//write results to file
-		String fname = "rltlconv.txt";
-		//empty rltlconv file
-		Process p0 = Runtime.getRuntime().exec("rm rltlconv.txt");
-		p0.waitFor(TIMEOUT, TimeUnit.SECONDS);
-		writeFile(fname,formula);
-		if (props)
-			runCommand("./rltlconv.sh @rltlconv.txt --formula --props --nba --min --nfa --dfa");
-		else
-			runCommand("./rltlconv.sh @rltlconv.txt --formula --apa --nba --min --nfa --dfa");
-			
-		Object res = Main.load("@rltlconv-out.txt");
-		
-		Nfa fsa = (Nfa) RltlConv.convert(res, Conversion.DFA());
-		return fsa.toNamedNfa();
+		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.NBA(), Conversion.MIN(), Conversion.NFA(), Conversion.DFA()};
+		Nfa dfa = (Nfa) RltlConv.convert(formula, conv);
+//		System.out.println(dfa);
+		return dfa.toNamedNfa();
 	}
 	
 	public Nba ltl2nba(String formula) throws IOException, InterruptedException{
-		
-		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(), Conversion.NBA(), Conversion.MIN()};
-//		String [] conv = { "--formula","--props", "--apa", "--reduce", "--nba", "--min"};
-		Object res = RltlConv.convert(formula, conv);
-		Nba nba = (Nba) res;
-		
-////		labelIDs.clear();
-//		//write results to file
-//		String fname = "rltlconv.txt";
-//		//empty rltlconv file
-//		Process p0 = Runtime.getRuntime().exec("rm rltlconv.txt");
-//		p0.waitFor(TIMEOUT, TimeUnit.SECONDS);
-//		writeFile(fname,formula);
-//		
-//		if (props)
-//			runCommand("./rltlconv.sh @rltlconv.txt --formula --props --nba --min");
-//		else
-//			runCommand("./rltlconv.sh @rltlconv.txt --formula --nba --min");
-//		Object res = Main.load("@rltlconv-out.txt");
-//		
-//		Nba nba = (Nba) RltlConv.convert(res, Conversion.NBA());
-		return nba.toNamedNba();
+		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(), Conversion.APA(), Conversion.NBA(), Conversion.MIN()};
+		Nba nba = (Nba) RltlConv.convert(formula, conv);
+		System.out.println(nba);
+		return nba;
 	}
 	
-
-			
-	public String automata2RE(Nfa ltl_ba){
+	public String automata2RE(Nfa ltl_fsa){
 		
 		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
 	
 		//Map nodes to states ids
 		java.util.Map<String,Integer> ids = new HashMap<>();
+		
 		//get initial node
-		State in = ltl_ba.start().head(); //CUIDADO:que pasa si tenemos varios estados iniciales.
+		//create one unique initial state
+//        automata.State is = fsa.createStateWithId(new Point(),-1);
+//        fsa.setInitialState(is);
+//        Iterator<State> init_it = ltl_fsa.start().iterator();
+//        while(init_it.hasNext()) {
+//        	State in = init_it.next(); 
+//        	 //create and set initial state
+//            automata.State ais = fsa.createState(new Point());
+//            //initial node ids
+//    		ids.put(in.name(), ais.getID());
+//            //initial node ids
+//            FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA);
+//            fsa.addTransition(t);
+//            System.out.println("initial: "+ in.name());
+//        }
+		
+		//get initial node
+		if(ltl_fsa.start().size() > 1) throw new RuntimeException("automata2RE: more than 1 initial state found");
+		State in = ltl_fsa.start().head(); //CUIDADO:que pasa si tenemos varios estados iniciales.
 
 		//create and set initial state
 		automata.State is = fsa.createState(new Point());
 		fsa.setInitialState(is);
-		
+
+		//initial node ids
+		ids.put(in.name(), is.getID());
+        
 		//Map labels to ids
 //		java.util.Map<String,Integer> labelIDs = new HashMap<>();
 		
-		Iterator<String> lit = ltl_ba.alphabet().iterator();
-		while(lit.hasNext()){
-			String l = lit.next();
-//			System.out.println(l);
-			if(!labelIDs.containsKey(l)){
-				labelIDs.put("\""+l+"\"", ""+labelIDs.keySet().size());
-			}
-		}
-		
-		//initial node ids
-		ids.put(in.name(), is.getID());
-			
-		Map<Tuple2<State,Sign>, List<DirectedState>> trans = (Map<Tuple2<State, Sign>, List<DirectedState>>) ltl_ba.transitions();
-		Vector<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> vector =  trans.toVector();
-		VectorIterator<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> ltl_ba_it = vector.iterator();
-		while(ltl_ba_it.hasNext()){
-			Tuple2<Tuple2<State,Sign>,List<DirectedState>> o = ltl_ba_it.next();
-			State from = o._1()._1();
-			//checks if ID exists
-			int ID = 0;
-			automata.State fromState = null;
-			if (ids.containsKey(from.name())){
-				ID = ids.get(from.name());
-				fromState = fsa.getStateWithID(ID);
-			}
-			else{
-				//create new state
-				fromState = fsa.createState(new Point());
-				//update ids
-				ids.put(from.name(), fromState.getID());
-				ID = fromState.getID();
-			}
-			
-			//get Label
-			String l = o._1()._2().toString();
-			
-//			String label = getLabel(l);
-//			int base = 97;//a
-//			System.out.println("l:" +l.toString());
-//			String label = ""+Character.toChars(base+labelIDs.get(l))[0];
-			String label = labelIDs.get(l).toString();
-			
-			Iterator<DirectedState> listIt = o._2().iterator();
-			while(listIt.hasNext()){
-				State to = listIt.next().state();
-				//check if toState exists
-				automata.State toState = null;
-				
-				if (ids.containsKey(to.name())){
-					ID = ids.get(to.name());
-					toState = fsa.getStateWithID(ID);
-				}
-				else{
-					//create new state
-					toState = fsa.createState(new Point());
-					//update ids
-					ids.put(to.name(), toState.getID());
-					ID = toState.getID();
-				}
-				
-				//add transition
-				FSATransition t = new FSATransition(fromState,toState,label);
-				fsa.addTransition(t);
-			}
-		}
-		
-		//add final states
-		Iterator<State> ac_it = ltl_ba.accepting().iterator();
-		while(ac_it.hasNext()){
-			State a = ac_it.next();
-			int ID = ids.get(a.name());
-			automata.State as = fsa.getStateWithID(ID);
-			fsa.addFinalState(as);
-		}
-		
-		//convertToDFA
-		//FiniteStateAutomaton dfa = (new NFAToDFA()).convertToDFA(fsa);
-		
-		//minimize automaton
-		//Automaton m = (new Minimizer()).getMinimizeableAutomaton(dfa);
-		
-//		System.out.println(labelIDs);
-		
-		//removeEmptyTransitions(fsa);
-//		System.out.println(fsa.toString());
-
-		FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
-//		System.out.println(fsa.toString());
-		return FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
-	}
-	
-	//Map labels to ids
-	public java.util.Map<String,String> labelIDs = new HashMap<>();
-	
-	public  String automata2RE(Nba ltl_ba){
-
-		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
-	
-		//Map nodes to states ids
-		java.util.Map<String,Integer> ids = new HashMap<>();
-		//get initial node
-		State in = ltl_ba.start().head(); //CUIDADO:que pasa si tenemos varios estados iniciales.
-
-		//create and set initial state
-		automata.State is = fsa.createState(new Point());
-		fsa.setInitialState(is);
-
-		//initial node ids
-		ids.put(in.name(), is.getID());
-			
-		Map<Tuple2<State,Sign>, List<DirectedState>> trans = (Map<Tuple2<State, Sign>, List<DirectedState>>) ltl_ba.transitions();
-		Vector<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> vector =  trans.toVector();
-		VectorIterator<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> ltl_ba_it = vector.iterator();
-		while(ltl_ba_it.hasNext()){
-			Tuple2<Tuple2<State,Sign>,List<DirectedState>> o = ltl_ba_it.next();
-			State from = o._1()._1();
-			//checks if ID exists
-			int ID = 0;
-			automata.State fromState = null;
-			if (ids.containsKey(from.name())){
-				ID = ids.get(from.name());
-				fromState = fsa.getStateWithID(ID);
-			}
-			else{
-				//create new state
-				fromState = fsa.createState(new Point());
-				//update ids
-				ids.put(from.name(), fromState.getID());
-				ID = fromState.getID();
-			}
-			
-			//get Label
-			String l = o._1()._2().toString();
-			
-			if(encoded_alphabet==-1)
-				setLabel(l);
-			else
-				setLabelEncoded(l);
+//		Iterator<String> lit = ltl_ba.alphabet().iterator();
+//		while(lit.hasNext()){
+//			String l = lit.next();
+////			System.out.println(l);
 //			if(!labelIDs.containsKey(l)){
-//				labelIDs.put(l, labelIDs.keySet().size());
+//				labelIDs.put("\""+l+"\"", ""+labelIDs.keySet().size());
 //			}
+//		}
+		
 			
-//			String label = getLabel(l);
+		Map<Tuple2<State,Sign>, List<DirectedState>> trans = (Map<Tuple2<State, Sign>, List<DirectedState>>) ltl_fsa.transitions();
+		Vector<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> vector =  trans.toVector();
+		VectorIterator<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> ltl_ba_it = vector.iterator();
+		while(ltl_ba_it.hasNext()){
+			Tuple2<Tuple2<State,Sign>,List<DirectedState>> o = ltl_ba_it.next();
+			State from = o._1()._1();
+			//checks if ID exists
+			int ID = 0;
+			automata.State fromState = null;
+			if (ids.containsKey(from.name())){
+				ID = ids.get(from.name());
+				fromState = fsa.getStateWithID(ID);
+			}
+			else{
+				//create new state
+				fromState = fsa.createState(new Point());
+				//update ids
+				ids.put(from.name(), fromState.getID());
+				ID = fromState.getID();
+			}
 			
-//			int base = 97;//a
-//			String label = l; //""+Character.toChars(base+labelIDs.get(l))[0];
-//			String label = ""+Character.toChars(labelIDs.get(l))[0];
+			//get Label
+			String l = o._1()._2().toString();
+			
+//			if(encoded_alphabet==-1)
+//				setLabel(l);
+//			else
+//				setLabelEncoded(l);
+
 			String label = labelIDs.get(l);
 			
 			Iterator<DirectedState> listIt = o._2().iterator();
@@ -366,19 +197,143 @@ public class Rltlconv_LTLModelCounter {
 		}
 		
 		//add final states
-		Iterator<State> ac_it = ltl_ba.accepting().iterator();
+		Iterator<State> ac_it = ltl_fsa.accepting().iterator();
 		while(ac_it.hasNext()){
 			State a = ac_it.next();
 			int ID = ids.get(a.name());
 			automata.State as = fsa.getStateWithID(ID);
 			fsa.addFinalState(as);
 		}
-//		System.out.println("lablesID: "+ labelIDs.size());
-//		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
-		FSAToRegularExpressionConverter.convertToSimpleAutomaton(fsa);
-//		System.out.println("FSA: " + fsa.getStates().length +  "(" + fsa.getFinalStates().length + ") " + fsa.getTransitions().length);
-//		System.out.println(fsa.toString());
-		return FSAToRegularExpressionConverter.convertToRegularExpression(fsa);
+		AutomatonChecker ac = new AutomatonChecker();
+		if (ac.isNFA(fsa))throw new RuntimeException("automata2RE: fsa must be deterministic.");
+		
+//		NFAToDFA determinizer = new NFAToDFA();
+//        automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
+//        System.out.println(dfa.toString());
+        
+        Minimizer min = new Minimizer();
+      	min.initializeMinimizer();
+    	automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) fsa.clone());
+    	DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
+    	automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+		
+    	System.out.println(dfa_minimized.toString());	
+		
+			
+			
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa_minimized);
+//        System.out.println(dfa_minimized.toString());
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(dfa_minimized);
+        System.out.println(re);
+        return re;
+	}
+	
+	
+	
+	public  String automata2RE(Nba ltl_ba){
+
+		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
+	
+		//Map nodes to states ids
+		java.util.Map<String,Integer> ids = new HashMap<>();
+		
+		//get initial node
+		if(ltl_ba.start().size() > 1) throw new RuntimeException("automata2RE: more than 1 initial state found");
+		State in = ltl_ba.start().head(); //CUIDADO:que pasa si tenemos varios estados iniciales.
+
+		//create and set initial state
+		automata.State is = fsa.createState(new Point());
+		fsa.setInitialState(is);
+
+		//initial node ids
+		ids.put(in.toString(), is.getID());
+	
+		Map<Tuple2<State,Sign>, List<DirectedState>> trans = (Map<Tuple2<State, Sign>, List<DirectedState>>) ltl_ba.transitions();
+		Vector<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> vector =  trans.toVector();
+		VectorIterator<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> ltl_ba_it = vector.iterator();
+		while(ltl_ba_it.hasNext()){
+			Tuple2<Tuple2<State,Sign>,List<DirectedState>> o = ltl_ba_it.next();
+			State from = o._1()._1();
+			//checks if ID exists
+			int ID = 0;
+			automata.State fromState = null;
+			if (ids.containsKey(from.toString())){
+				ID = ids.get(from.toString());
+				fromState = fsa.getStateWithID(ID);
+			}
+			else{
+				//create new state
+				fromState = fsa.createState(new Point());
+				//update ids
+				ids.put(from.toString(), fromState.getID());
+//				ID = fromState.getID();
+			}
+			
+			//get Label
+			String l = o._1()._2().toString().replace("\"", "");
+			
+//			if(encoded_alphabet==-1)
+//				setLabel(l);
+//			else
+//				setLabelEncoded(l);
+//			System.out.println(l);
+			String label = labelIDs.get(l);
+			
+			Iterator<DirectedState> listIt = o._2().iterator();
+			while(listIt.hasNext()){
+				State to = listIt.next().state();
+				//check if toState exists
+				automata.State toState = null;
+				
+				if (ids.containsKey(to.toString())){
+					ID = ids.get(to.toString());
+					toState = fsa.getStateWithID(ID);
+				}
+				else{
+					//create new state
+					toState = fsa.createState(new Point());
+					//update ids
+					ids.put(to.toString(), toState.getID());
+//					ID = toState.getID();
+				}
+				
+				//add transition
+				FSATransition t = new FSATransition(fromState,toState,label);
+				fsa.addTransition(t);
+			}
+		}
+		
+		//add final states
+		Iterator<State> ac_it = ltl_ba.accepting().iterator();
+		while(ac_it.hasNext()){
+			State a = ac_it.next();
+			int ID = ids.get(a.toString());
+			automata.State as = fsa.getStateWithID(ID);
+			fsa.addFinalState(as);
+		}
+		
+		
+		NFAToDFA determinizer = new NFAToDFA();
+        automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
+        AutomatonChecker ac = new AutomatonChecker();
+		if (ac.isNFA(dfa))throw new RuntimeException("automata2RE: dfa must be deterministic.");
+//        System.out.println(dfa.toString());
+        
+        Minimizer min = new Minimizer();
+      	min.initializeMinimizer();
+    	automata.Automaton to_minimize = min.getMinimizeableAutomaton(dfa);
+    	DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
+    	automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+		
+    	System.out.println(dfa_minimized.toString());	
+		
+			
+			
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa_minimized);
+//        System.out.println(dfa_minimized.toString());
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(dfa_minimized);
+        System.out.println(re);
+        return re;
 	}
 	
 	public String toABClanguage(String re){
