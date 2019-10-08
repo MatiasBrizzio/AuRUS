@@ -49,8 +49,13 @@ public class Count {
 	}
 	
 	public String genABCString(LabelledFormula formula) throws IOException, InterruptedException{
-		String ltl = SolverUtils.toLambConvSyntax(formula.formula().toString());
-		String alph = SolverUtils.createLambConvAlphabet(formula);
+//		String ltl = SolverUtils.toLambConvSyntax(formula.formula().toString());
+//		String alph = SolverUtils.createLambConvAlphabet(formula);
+		List<String> alphabet = SolverUtils.genAlphabet(formula.variables().size());
+		LabelledFormula label_formula = LabelledFormula.of(formula.formula(), alphabet);
+		String ltl = SolverUtils.toLambConvSyntax(label_formula.toString());
+		String alph = alphabet.toString();
+		
 		String form = "LTL="+ltl;
 		if(alph!=null && alph!="")
 			form += ",ALPHABET="+alph;

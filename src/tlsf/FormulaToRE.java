@@ -123,8 +123,8 @@ public class FormulaToRE {
         fsa.setInitialState(is);
         
         //create one unique final state
-        automata.State fs = fsa.createStateWithId(new Point(),-2);
-        fsa.addFinalState(fs);
+//        automata.State fs = fsa.createStateWithId(new Point(),-2);
+//        fsa.addFinalState(fs);
         
         //get initial nodes
         for(S in : automaton.initialStates()) {
@@ -211,9 +211,9 @@ public class FormulaToRE {
 //	                int finalID = ids.get(to.toString());
 	                automata.State as = fsa.getStateWithID(getStateId(to));
 	              //add transition
-                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
-                    fsa.addTransition(t);
-//	                fsa.addFinalState(as);
+//                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
+//                    fsa.addTransition(t);
+	                fsa.addFinalState(as);
 	            }
             });
         }

@@ -26,7 +26,7 @@ class CountREModelsTest {
         CountREModels counter = new CountREModels();
 //	        String re = counter.genABCString(f0);
 //	        System.out.println(re);
-        BigInteger c = counter.count(list, 10, false, true);
+        BigInteger c = counter.count(list, 5, false, true);
         System.out.println(c);
     }
 
