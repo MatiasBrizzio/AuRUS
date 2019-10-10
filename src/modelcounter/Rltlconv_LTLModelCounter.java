@@ -4,17 +4,20 @@ import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.RuntimeErrorException;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 
 import automata.AutomatonChecker;
 import automata.fsa.FSAToRegularExpressionConverter;
@@ -35,6 +38,7 @@ import de.uni_luebeck.isp.rltlconv.cli.Conversion;
 import de.uni_luebeck.isp.rltlconv.cli.Main;
 import de.uni_luebeck.isp.rltlconv.cli.RltlConv;
 import de.uni_luebeck.isp.rltlconv.formula.Formula;
+import regular.Discretizer;
 import scala.Tuple2;
 import scala.collection.Iterator;
 import scala.collection.immutable.List;
@@ -61,7 +65,7 @@ public class Rltlconv_LTLModelCounter {
 	
 	public void generateLabels(Nba nba) {
         if (!labelIDs.isEmpty())
-            return;
+            throw new RuntimeException("labelsID not empty.");
         Iterator<String> it = nba.alphabet().iterator();
         while(it.hasNext()){
         	String l = it.next();
@@ -91,30 +95,43 @@ public class Rltlconv_LTLModelCounter {
 	}
 	
 //	public Nba ltl2nba(String formula) throws IOException, InterruptedException{
-////		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(),Conversion.NBA(), Conversion.MIN()};
-//		String [] conv = {"--formula","--props", "--apa", "--nba", "--min"};
+//		ConversionVal[] conv = {Conversion.FORMULA(),Conversion.PROPS(),Conversion.APA(),Conversion.NBA()};
+////		String [] conv = {"--formula","--props", "--apa", "--nba", "--min"};
 //		Nba nba = (Nba) RltlConv.convert(formula, conv);
 ////		System.out.println(dfa);
-//		return nba.toNamedNba();
+//		return nba.toMinimizedNba().toNamedNba(true);
 //	}
 	
 	private void writeFile(String fname,String text) throws IOException{
-		BufferedWriter output = null;
-        try {
-            File file = new File(fname);
-            output = new BufferedWriter(new FileWriter(file));
-            output.write(text);
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } finally {
-          if ( output != null ) {
+//		BufferedWriter output = null;
+//        try {
+        	FileOutputStream output = new FileOutputStream(fname);
+//        	writer.close();
+//        	File file = new File(fname);
+//            output = new BufferedWriter(new FileWriter(file));
+            output.write(text.getBytes());
+            output.flush();
             output.close();
-          }
-        }
+//        } catch ( IOException e ) {
+//            e.printStackTrace();
+//        } finally {
+//          if ( output != null ) {
+//            output.close();
+//          }
+//        }
 	}
 	
 	private void runCommand(String cmd) throws IOException, InterruptedException{
 		Process p = Runtime.getRuntime().exec(cmd);
+		
+    	boolean timeout = false;
+		if(!p.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
+		    timeout = true; //kill the process. 
+			p.destroy(); // consider using destroyForcibly instead
+		}
+		
+		if (timeout)
+			throw new RuntimeException("TIMEOUT reached in RltlConv translation");
 		
 		InputStream in = p.getInputStream();
     	InputStreamReader inread = new InputStreamReader(in);
@@ -124,6 +141,11 @@ public class Rltlconv_LTLModelCounter {
 	    while ((aux = bufferedreader.readLine()) != null) {
 	    	out += aux+"\n";
 	    }
+	 // Close the InputStream
+    	bufferedreader.close();
+    	inread.close();
+    	in.close();
+    	
 	    if(out!="")
 	    	writeFile("rltlconv-out.txt",out);
 	    
@@ -135,21 +157,16 @@ public class Rltlconv_LTLModelCounter {
 	    while ((aux = errbufferedreader.readLine()) != null) {
 	    	System.out.println("ERR: " + aux);
 	    }
-	   
-	    // Check for failure
-		if (p.waitFor() != 0) {
-			System.out.println("exit value = " + p.exitValue());
-		}
-  
-		// Close the InputStream
-    	bufferedreader.close();
-    	inread.close();
-    	in.close();
-   		// Close the ErrorStream
+	    // Close the ErrorStream
    		errbufferedreader.close();
    		errread.close();
    		err.close();
-    		
+	    // Check for failure
+		if (p.waitFor() != 0) {
+			System.out.println("exit value = " + p.exitValue());
+			throw new RuntimeException("ERROR in RltlConv translation.");
+		}
+  		
    		if (p!=null) {
 //   			InputStream is = p.getInputStream();
  //  			InputStream es = p.getErrorStream();
@@ -157,6 +174,7 @@ public class Rltlconv_LTLModelCounter {
 //   				if (is!=null) is.close();
 //   				if (es!=null) es.close();
 			if (os!=null) os.close();
+			p.destroy();
    		}
 	}
 	public Nba ltl2nba(String formula) throws IOException, InterruptedException{
@@ -165,12 +183,12 @@ public class Rltlconv_LTLModelCounter {
 			
 			writeFile(fname,formula);
 			
-			runCommand("./rltlconv.sh @rltlconv.txt --formula --props --apa --nba --min");
+			runCommand("./rltlconv.sh @rltlconv.txt --props --formula --apa --nba --min");
 			
 			Object res = Main.load("@rltlconv-out.txt");
 			
 			Nba nba = (Nba) RltlConv.convert(res, Conversion.NBA());
-			return nba.toMinimizedNba().toNamedNba();
+			return nba;
 	}
 	
 	public String automata2RE(Nfa ltl_fsa){
@@ -311,7 +329,7 @@ public class Rltlconv_LTLModelCounter {
 	
 	
 	public  String automata2RE(Nba ltl_ba){
-
+//		System.out.println(ltl_ba);
 		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
 	
 		//Map nodes to states ids
@@ -322,6 +340,7 @@ public class Rltlconv_LTLModelCounter {
 //			System.out.println(s.toString());
 //			int stateID = Integer.valueOf(s.name().substring(1));
 //			System.out.println(stateID);
+//			automata.State state = fsa.createStateWithId(new Point(),stateID);
 			automata.State state = fsa.createState(new Point());
 			//initial node ids
 			ids.put(s, state);
@@ -409,26 +428,26 @@ public class Rltlconv_LTLModelCounter {
 //		System.out.println(fsa);
 		
 		NFAToDFA determinizer = new NFAToDFA();
-        automata.Automaton dfa = determinizer.convertToDFA(fsa);
+        FiniteStateAutomaton dfa = determinizer.convertToDFA(fsa);
 //        AutomatonChecker ac = new AutomatonChecker();
 //		if (ac.isNFA(dfa))throw new RuntimeException("automata2RE: dfa must be deterministic.");
 //        System.out.println(dfa.toString());
         
         Minimizer min = new Minimizer();
-
-    	automata.Automaton to_minimize = min.getMinimizeableAutomaton(dfa);
-    	DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
-      	min.initializeMinimizer();
-    	automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
-		
+        min.initializeMinimizer();
+	    automata.Automaton minimizable = min.getMinimizeableAutomaton(dfa);
+	    DefaultTreeModel tree = min.getDistinguishableGroupsTree(minimizable);
+	    minimizable = min.getMinimumDfa(minimizable, tree);
 //    	System.out.println(dfa_minimized.toString());	
 //    	min.printTree(tree, (MinimizeTreeNode)tree.getRoot());
 //    	System.out.println();
-			
-        FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa_minimized);
+		
+        FSAToRegularExpressionConverter.convertToSimpleAutomaton(minimizable);
 //        System.out.println(dfa_minimized.toString());
-        String re = FSAToRegularExpressionConverter.convertToRegularExpression(dfa_minimized);
-//        System.out.println(re);
+        String re = FSAToRegularExpressionConverter.convertToRegularExpression(minimizable);
+//        String[] arr = Discretizer.or(re);
+//        for (int i=0;i<arr.length;i++)
+//        	System.out.print(arr[i].length()+" ");
         return re;
 	}
 	

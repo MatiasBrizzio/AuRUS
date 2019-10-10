@@ -17,7 +17,7 @@ public class ABC {
 	  result = false;
 	  abcDriver = new DriverProxy();
   }
-  public BigInteger count(LinkedList<String> formulas, long bound, boolean exhaustive, boolean positive) {
+  public BigInteger count(LinkedList<String> formulas, int bound, boolean exhaustive, boolean positive) {
 
     
 //    abcDriver.setOption(Option.ENABLE_IMPLICATIONS);
@@ -34,7 +34,7 @@ public class ABC {
     		constraint+= "(assert (not (in x /"+f+"/)))\n";
     		
     }
-//    constraint += "(assert (= (len x) "+bound+"))\n";
+    constraint += "(assert (= (len x) "+bound+"))\n";
     constraint += "(check-sat)\n";
 //    System.out.println();
 //    System.out.println(constraint);

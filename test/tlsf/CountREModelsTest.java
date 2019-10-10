@@ -19,7 +19,7 @@ class CountREModelsTest {
 	 @Test
     public void testSimple1() throws IOException, InterruptedException{
         List<String> vars = List.of("a", "b");
-        LabelledFormula f0 =  LtlParser.parse("G(a -> F(b))",vars);
+        LabelledFormula f0 =  LtlParser.parse("G F(a & (b))",vars);
         List<LabelledFormula> list = new LinkedList();
         list.add(f0);
         System.out.println(f0);
@@ -46,7 +46,7 @@ class CountREModelsTest {
 	 
 	 @Test
 	    public void testMinepump() throws IOException, InterruptedException{
-	    	String filename = "examples/minepump-2.tlsf";
+	    	String filename = "examples/minepump.tlsf";
 	  	  	Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 	        List<String> vars = tlsf.variables();
 	        LabelledFormula f0 =  tlsf.toFormula();

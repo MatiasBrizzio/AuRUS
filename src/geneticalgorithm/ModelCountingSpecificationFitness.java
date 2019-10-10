@@ -16,8 +16,10 @@ import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import modelcounter.ABC;
 import modelcounter.Count;
+import modelcounter.CountRltlConv;
 import owl.ltl.*;
 import owl.ltl.Formula.TemporalOperator;
+import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.NormalForms;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
@@ -32,7 +34,7 @@ import tlsf.TLSF_Utils;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public  final int BOUND = 10;
+	public  final int BOUND = 5;
 	public boolean EXHAUSTIVE = false;
 	public  final double STATUS_FACTOR = 0.7d;
 	public  final double LOST_MODELS_FACTOR = 0.1d;
@@ -51,7 +53,9 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
-		originalNumOfModels = countModels(originalSpecification.toFormula());
+		originalNumOfModels = countModels(originalSpecification.toFormula(),null);
+//		System.out.println(originalSpecification.toFormula());
+//		System.out.println(originalNumOfModels);
 //		originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 	}
 	
@@ -231,62 +235,79 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 ////        formulas.sort((x,y) -> x.formula().compareTo(y.formula()));
 ////		System.out.println("S("+formulas.size()+") ");
 //		CountREModels counter = new CountREModels();
-//		BigInteger numOfModels = counter.count(formulas, 5, false, true);
+//		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 //		return numOfModels;
 //	}
 //
-//	private BigInteger countModels (List<LabelledFormula> constraints) throws IOException, InterruptedException {
-//		LinkedList<LabelledFormula> formulas = new LinkedList<>();
+//	private BigInteger countModels (List<LabelledFormula> formulas) throws IOException, InterruptedException {
+////		LinkedList<LabelledFormula> formulas = new LinkedList<>();
 ////		for (LabelledFormula formula : constraints) {
 ////			LabelledFormula f = LabelledFormula.of(NormalForms.toCnfFormula(formula.formula().nnf()), formula.variables());
 ////			formulas.add(f);
-//		Set<Formula> conjuncts = new HashSet();
-//		for(LabelledFormula f : constraints)
-//			conjuncts.add(f.formula());
-//		Formula formula = Conjunction.of(conjuncts);
-//		SyntacticSimplifier simp = new SyntacticSimplifier();
-//        Formula simplified = formula.accept(simp);
-//        if(simplified == BooleanConstant.FALSE) {
-//        	return BigInteger.ZERO;
-//        }
-//        List<String> vars = constraints.get(0).variables();
-//		for(Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
-//			Formula f = Disjunction.of(clause);
-//            if (f == BooleanConstant.FALSE)
-//                return BigInteger.ZERO;
-//			formulas.add(LabelledFormula.of(f, vars));
-//		}
+////		Set<Formula> conjuncts = new HashSet();
+////		for(LabelledFormula f : constraints)
+////			conjuncts.add(f.formula());
+////		Formula formula = Conjunction.of(conjuncts);
+////		SyntacticSimplifier simp = new SyntacticSimplifier();
+////        Formula simplified = formula.accept(simp);
+////        if(simplified == BooleanConstant.FALSE) {
+////        	return BigInteger.ZERO;
+////        }
+////        List<String> vars = constraints.get(0).variables();
+////		for(Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
+////			Formula f = Disjunction.of(clause);
+////            if (f == BooleanConstant.FALSE)
+////                return BigInteger.ZERO;
+////			formulas.add(LabelledFormula.of(f, vars));
+////		}
 ////		}
 //		CountREModels counter = new CountREModels();
 //		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
 //		return numOfModels;
 //	}
-	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
-		List<LabelledFormula> formulas = new LinkedList<>();
-		formulas.add(formula);
-//		SyntacticSimplifier simp = new SyntacticSimplifier();
-//	    Formula simplified = formula.formula().accept(simp);
-//	    formulas.add(LabelledFormula.of(simplified, formula.variables()));
-//	    if(simplified == BooleanConstant.FALSE) {
-//	    	return BigInteger.ZERO;
-//	    }
-//	    for (Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
-//			Formula f = Disjunction.of(clause);
-//	        if (f == BooleanConstant.FALSE)
-//	            return BigInteger.ZERO;
-//			formulas.add(LabelledFormula.of(f, formula.variables()));
-//		}
-		Count counter = new Count();
-		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
-		return numOfModels;
-	}
-
-	private BigInteger countModels (List<LabelledFormula> formulas) throws IOException, InterruptedException {
-		
-		Count counter = new Count();
-		BigInteger numOfModels = counter.count(formulas, this.BOUND, this.EXHAUSTIVE, true);
-
-		return numOfModels;
+	
+//	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
+////		List<LabelledFormula> formulas = new LinkedList<>();
+////		formulas.add(formula);
+////		SyntacticSimplifier simp = new SyntacticSimplifier();
+////	    Formula simplified = formula.formula().accept(simp);
+////	    LabelledFormula simple_formula = LabelledFormula.of(simplified, formula.variables());
+////	    formulas.add(LabelledFormula.of(simplified, formula.variables()));
+////	    if(simplified == BooleanConstant.FALSE) {
+////	    	return BigInteger.ZERO;
+////	    }
+////	    for (Set<Formula> clause : NormalForms.toCnf(simplified.nnf())) {
+////			Formula f = Disjunction.of(clause);
+////	        if (f == BooleanConstant.FALSE)
+////	            return BigInteger.ZERO;
+////			formulas.add(LabelledFormula.of(f, formula.variables()));
+////		}
+//		Count counter = new Count();
+//		BigInteger numOfModels = counter.count(formula, this.BOUND, this.EXHAUSTIVE, true);
+//		return numOfModels;
+//	}
+//
+//	private BigInteger countModels (List<LabelledFormula> formulas) throws IOException, InterruptedException {
+//		
+//		Count counter = new Count();
+//		BigInteger numOfModels = counter.count(formulas, 5, false, true);//this.BOUND, this.EXHAUSTIVE, true);
+//
+//		return numOfModels;
+//	}
+	
+	private BigInteger countModels (LabelledFormula formula1, LabelledFormula formula2) throws IOException, InterruptedException {
+		LabelledFormula form = null;
+		if (formula2 == null)
+			form = LabelledFormula.of(formula1.formula(), formula1.variables());
+		else {
+			Formula cnf = NormalForms.toCnfFormula(Conjunction.of(formula1.formula(),formula2.formula()));
+			form = LabelledFormula.of(cnf, formula1.variables());
+		}
+		CountRltlConv counter = new CountRltlConv();
+//		Formula cnf = NormalForms.toCnfFormula(Conjunction.of(spec2.toFormula().formula(),spec.toFormula().formula()));
+//		LabelledFormula form = LabelledFormula.of(cnf, spec.variables());
+		BigInteger result = counter.countPrefixes(form, this.BOUND);
+		return result;
 	}
 
 	private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
@@ -306,13 +327,15 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 //		if (lostModels == BooleanConstant.FALSE)
 //			return 0.0d;
 
-		List<LabelledFormula> formulas = new LinkedList();
-		formulas.add(original.toFormula());
-		formulas.add(refined.toFormula());
+//		List<LabelledFormula> formulas = new LinkedList();
+//		formulas.add(original.toFormula());
+//		formulas.add(refined.toFormula());
 		
 //		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined.toFormula().formula());
 //		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
-		BigDecimal numOfLostModels = new BigDecimal(countModels(formulas));
+//		System.out.println("LOST: "+formula);
+//		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
+		BigDecimal numOfLostModels = new BigDecimal(countModels(original.toFormula(),refined.toFormula()));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
@@ -326,7 +349,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 		System.out.print("+");
 //		if (originalNegationNumOfModels == BigInteger.ZERO)
 //			return 1.0d;
-		BigInteger refinedNumOfModels = countModels(refined.toFormula());
+		BigInteger refinedNumOfModels = countModels(refined.toFormula(),null);
 //		if (refinedNumOfModels == BigInteger.ZERO)
 //			return 0.0d;
 //		
@@ -342,13 +365,16 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 //		if (wonModels == BooleanConstant.FALSE)
 //			return 0.0d;
 		
-		List<LabelledFormula> formulas = new LinkedList();
-		formulas.add(original.toFormula());
-		formulas.add(refined.toFormula());
+//		List<LabelledFormula> formulas = new LinkedList();
+//		formulas.add(original.toFormula());
+//		formulas.add(refined.toFormula());
 		
 //		Formula wonModels = Conjunction.of(original.toFormula().formula(), refined.toFormula().formula());
 //		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
-		BigDecimal numOfWonModels = new BigDecimal(countModels(formulas));
+//		System.out.println("WON: "+formula);
+//		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
+		BigDecimal numOfWonModels = new BigDecimal(countModels(original.toFormula(),refined.toFormula()));
+
 
 		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
 

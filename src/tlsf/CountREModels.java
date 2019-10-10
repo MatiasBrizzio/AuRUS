@@ -3,6 +3,7 @@ package tlsf;
 import de.uni_luebeck.isp.rltlconv.automata.Nba;
 import modelcounter.ABC;
 import owl.ltl.LabelledFormula;
+import regular.Discretizer;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -16,7 +17,7 @@ public class CountREModels{
 		translatorLTLtoRE = new FormulaToRE();
 	}
 
-	public BigInteger count(List<LabelledFormula> formulas, long bound, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
+	public BigInteger count(List<LabelledFormula> formulas, int bound, boolean exhaustive, boolean positive) throws IOException, InterruptedException{
 		ABC abc = new ABC();
 		LinkedList<String> abcStrs = new LinkedList<>();
 		for(LabelledFormula f: formulas){
@@ -48,7 +49,7 @@ public class CountREModels{
 	}
 	
 	public String genABCString(LabelledFormula ltl) throws IOException, InterruptedException{
-		translatorLTLtoRE = new FormulaToRE();
+//		translatorLTLtoRE = new FormulaToRE();
 		int vars = ltl.variables().size();
 		if(vars>5 && vars<12)
 			translatorLTLtoRE.encoded_alphabet = 0;

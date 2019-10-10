@@ -29,8 +29,8 @@ class ModelCountingSpecificationFitnessTest {
 	void testMinePump2() throws IOException, InterruptedException {
 		FileReader f = new FileReader("examples/minepump.tlsf");
 		Tlsf spec1 = TlsfParser.parse(f);
-		f = new FileReader("examples/minepump-2.tlsf");
-		Tlsf spec2 = TlsfParser.parse(f);
+		FileReader f2 = new FileReader("examples/minepump-2.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f2);
 		Settings.USE_DOCKER = false;
 		Fitness<SpecificationChromosome, Double> fitnessFunc = new ModelCountingSpecificationFitness(spec1);
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
