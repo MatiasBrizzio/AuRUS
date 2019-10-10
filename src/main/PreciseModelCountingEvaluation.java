@@ -95,7 +95,7 @@ public class PreciseModelCountingEvaluation {
                 result = countModels(original_formula, ref, vars.size(), bound, solver);
             else
                 result = countPrefixesRltl(original_formula, ref, vars,bound);
-//            System.out.println(result);
+            System.out.println(result);
             if (outname != null) {
                 String filename = outname.replace(".out", index + ".out");
                 writeFile(filename, result);
@@ -127,13 +127,13 @@ public class PreciseModelCountingEvaluation {
         List<BigInteger> totalNumOfModels = new LinkedList<>();
         for(int i = 0; i < num_of_formulas; i++){
             BigInteger f_result = BigInteger.ZERO;
-            if (!prefixes) {
+//            if (!prefixes) {
             	for(BigInteger v : solutions[i])
             		f_result = f_result.add(v);
-            }
-            else {
-            	f_result = solutions[i].get(bound-1);
-            }
+//            }
+//            else {
+//            	f_result = solutions[i].get(bound-1);
+//            }
             totalNumOfModels.add(f_result);
         }
         List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
