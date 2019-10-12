@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,7 @@ import automata.fsa.FiniteStateAutomaton;
 import automata.fsa.MinimizeTreeNode;
 import automata.fsa.Minimizer;
 import automata.fsa.NFAToDFA;
+import automata.graph.DisjointSetsDetector;
 import de.uni_luebeck.isp.buchi.BuchiAutomaton;
 import de.uni_luebeck.isp.buchi.Transition;
 import de.uni_luebeck.isp.rltlconv.automata.Apa;
@@ -432,6 +434,9 @@ public class Rltlconv_LTLModelCounter {
 //        AutomatonChecker ac = new AutomatonChecker();
 //		if (ac.isNFA(dfa))throw new RuntimeException("automata2RE: dfa must be deterministic.");
 //        System.out.println(dfa.toString());
+        DisjointSetsDetector disj = new DisjointSetsDetector();
+        HashSet<automata.State>[] disjSets = disj.getDisjointSets(fsa);
+        System.out.println(disjSets.length);
         
         Minimizer min = new Minimizer();
         min.initializeMinimizer();
