@@ -14,11 +14,14 @@ import owl.ltl.rewriter.SyntacticSimplifier;
 import solvers.PreciseLTLModelCounter;
 import tlsf.CountREModels;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +35,15 @@ public class PreciseModelCountingEvaluation {
         int solver = 0;
         boolean prefixes = false;
         int bound = 0;
+        String filepath = null;
+        boolean benchmarkusage = false;
         List<String> vars = new LinkedList<>();
         for (int i = 0; i< args.length; i++ ){
+        	if(args[i].startsWith("-b=")) {
+        		String val = args[i].replace("-b=","");
+        		filepath = val;
+        		benchmarkusage = true;
+        	}
             if(args[i].startsWith("-k=")){
                 String val = args[i].replace("-k=","");
                 bound = Integer.parseInt(val);
@@ -65,25 +75,51 @@ public class PreciseModelCountingEvaluation {
                 formula = args[i];
             }
         }
-
-        if (formula == null || refinemets.isEmpty()) {
+        
+        Formula original_formula = null;
+        List<Formula> refined_formulas = new LinkedList<>();
+        
+        if (benchmarkusage && filepath == null) {
+        	 System.out.println("Use ./modelcounter.sh [-b=pathToFile] [-k=bound | -vars=a,b,c | -no-precise]");
+        	 return;
+        }
+        else if (benchmarkusage && filepath != null) {
+     		
+    		BufferedReader reader;
+    		reader = new BufferedReader(new FileReader(filepath));
+    		
+    		//First formula as original one
+    		String line = reader.readLine();
+    		original_formula = LtlParser.syntax(line, vars);
+    	
+    		refined_formulas = new ArrayList<Formula>();
+    		line = reader.readLine();
+    		while (line != null) {
+    			refined_formulas.add(LtlParser.syntax(line, vars));
+    			line = reader.readLine();
+    		}
+    		reader.close();
+        }
+        else if (formula == null || refinemets.isEmpty()) {
             correctUssage();
             return;
         }
-
-        Formula original_formula = null;
-        if (vars.isEmpty())
-            original_formula = LtlParser.syntax(formula);
-        else
-            original_formula = LtlParser.syntax(formula,vars);
-
-        List<Formula> refined_formulas = new LinkedList<>();
-        for(String s : refinemets){
+        
+        if (!benchmarkusage) {
             if (vars.isEmpty())
-                refined_formulas.add(LtlParser.syntax(s));
+                original_formula = LtlParser.syntax(formula);
             else
-                refined_formulas.add(LtlParser.syntax(s,vars));
+                original_formula = LtlParser.syntax(formula,vars);
+            
+            for(String s : refinemets){
+                if (vars.isEmpty())
+                    refined_formulas.add(LtlParser.syntax(s));
+                else
+                    refined_formulas.add(LtlParser.syntax(s,vars));
+            }       
         }
+        
+
         int num_of_formulas = refined_formulas.size();
         List<BigInteger>[] solutions = new List [num_of_formulas];
         int index = 0;
