@@ -22,7 +22,9 @@
         <pathelement location="lib/hamcrest-core-1.3.jar"/>
         <pathelement location="lib/junit-4.12.jar"/> 
         <pathelement location="lib/rltlconv.jar"/>  
-        <pathelement location="lib/JFLAP-7.0_With_Source.jar"/>  
+        <pathelement location="lib/JFLAP-7.0_With_Source.jar"/> 
+        <pathelement location="lib/ltl2buchi.jar"/>  
+        <pathelement location="lib/ejml/*jar"/>  
     </path>
 
 
@@ -47,6 +49,8 @@
         <pathelement location="lib/junit-4.12.jar"/>
         <pathelement location="lib/rltlconv.jar"/>  
         <pathelement location="lib/JFLAP-7.0_With_Source.jar"/>  
+        <pathelement location="lib/ltl2buchi.jar"/>  
+        <pathelement location="lib/ejml/*jar"/>  
     </path>
     
     <target name="compile-test">
