@@ -126,6 +126,7 @@ public class PreciseModelCountingEvaluation {
         int index = 0;
         System.out.println("Counting...");
         for(Formula ref : refined_formulas) {
+            long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
             List<BigInteger> result = null;
             if (!prefixes)
@@ -133,9 +134,15 @@ public class PreciseModelCountingEvaluation {
             else
                 result = countAutomatadBasedPrefixes(original_formula, ref, vars,bound);
             System.out.println(result);
+            long finalTime = System.currentTimeMillis();
+            long totalTime = finalTime-initialTime;
+            int min = (int) (totalTime)/60000;
+            int sec = (int) (totalTime - min*60000)/1000;
+            String time = String.format("Time: %s m  %s s",min, sec);
+            System.out.println(time);
             if (outname != null) {
                 String filename = outname.replace(".out", index + ".out");
-                writeFile(filename, result);
+                writeFile(filename, result, time);
             }
             solutions[index] = result;
             index++;
@@ -383,7 +390,7 @@ public class PreciseModelCountingEvaluation {
 		return new String(LTLFormula); 
 	}
 
-     private static void writeFile(String filename, List<BigInteger> result) throws IOException {
+     private static void writeFile(String filename, List<BigInteger> result, String time) throws IOException {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
@@ -396,6 +403,8 @@ public class PreciseModelCountingEvaluation {
             bw.write("\n");
 //            System.out.println((i+1) + " " + sol);
         }
+         bw.write(time +"\n");
+        bw.flush();
         bw.close();
     }
 
