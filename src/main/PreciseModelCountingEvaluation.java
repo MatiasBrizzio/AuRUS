@@ -1,5 +1,6 @@
 package main;
 
+import modelcounter.AutomataBasedModelCounting;
 import modelcounter.Count;
 import modelcounter.CountRltlConv;
 import modelcounter.Rltlconv_LTLModelCounter;
@@ -130,7 +131,7 @@ public class PreciseModelCountingEvaluation {
             if (!prefixes)
                 result = countModels(original_formula, ref, vars.size(), bound, solver);
             else
-                result = countPrefixesRltl(original_formula, ref, vars,bound);
+                result = countAutomatadBasedPrefixes(original_formula, ref, vars,bound);
             System.out.println(result);
             if (outname != null) {
                 String filename = outname.replace(".out", index + ".out");
@@ -327,6 +328,34 @@ public class PreciseModelCountingEvaluation {
         	LabelledFormula form = getFormula(original.not(), refined, vars);
             CountRltlConv counter = new CountRltlConv();
 		    BigInteger r = counter.countPrefixes(form, k);
+            wonModels.add(r);
+        }
+        List<BigInteger> result = new LinkedList<>();
+        for(int i = 0; i < bound; i++) {
+            BigInteger pos = lostModels.get(i);
+            BigInteger neg = wonModels.get(i);
+            result.add(pos.add(neg));
+        }
+
+        return result;
+    }
+
+    static List<BigInteger> countAutomatadBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
+        List<BigInteger> lostModels = new LinkedList<>();
+        for(int k = 1; k <= bound; k++) {
+            Formula conj = Conjunction.of(original, refined.not());
+            LabelledFormula form = LabelledFormula.of(conj, vars);
+            AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form,false);
+            BigInteger r = counter.count(k);
+            lostModels.add(r);
+        }
+
+        List<BigInteger> wonModels = new LinkedList<>();
+        for(int k = 1; k <= bound; k++) {
+            Formula conj = Conjunction.of(original.not(), refined);
+            LabelledFormula form = LabelledFormula.of(conj, vars);
+            AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form,false);
+            BigInteger r = counter.count(k);
             wonModels.add(r);
         }
         List<BigInteger> result = new LinkedList<>();

@@ -31,8 +31,8 @@ public class SpecificationGeneticAlgorithm {
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 //		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
-		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
-		
+//		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
+		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
 		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
 			System.out.println("The specification is already realizable.");
