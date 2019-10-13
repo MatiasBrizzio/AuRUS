@@ -119,8 +119,8 @@ public class PreciseModelCountingEvaluation {
                     refined_formulas.add(LtlParser.syntax(s,vars));
             }       
         }
-        
 
+        long initialTOTALTime = System.currentTimeMillis();
         int num_of_formulas = refined_formulas.size();
         List<BigInteger>[] solutions = new List [num_of_formulas];
         int index = 0;
@@ -192,8 +192,18 @@ public class PreciseModelCountingEvaluation {
             	global +="]";
         }
         System.out.println(global);
+
+        long finalTOTALTime = System.currentTimeMillis();
+        long totalTime = finalTOTALTime-initialTOTALTime;
+        int min = (int) (totalTime)/60000;
+        int sec = (int) (totalTime - min*60000)/1000;
+        String time = String.format("Time: %s m  %s s",min, sec);
+        System.out.println(time);
+
         if (outname != null)
-            writeRanking(outname.replace(".out", "-global.out"), global);
+            writeRanking(outname.replace(".out", "-global.out"), global, time);
+
+
     }
 
     static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
@@ -421,11 +431,13 @@ public class PreciseModelCountingEvaluation {
         bw.close();
     }
 
-    private static void writeRanking(String filename, String ranking) throws IOException {
+    private static void writeRanking(String filename, String ranking, String time) throws IOException {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write(ranking);
+        bw.write(time+"\n");
+        bw.flush();
         bw.close();
     }
     private static void correctUssage(){
