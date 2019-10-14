@@ -173,7 +173,7 @@ public class AutomataBasedModelCounting {
 			  Node<String> si = nba.getNodes().get(i);
 			  for (int j=0;j<n;j++) {
 				  Node<String> sj = nba.getNodes().get(j);
-				  int transitions = 0;
+				  long transitions = 0;
 				  for (Edge<String> edge : si.getOutgoingEdges()) {
 					  if (edge.getNext().getId()==sj.getId())
 						  transitions++;
