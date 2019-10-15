@@ -174,6 +174,7 @@ public class PreciseModelCountingEvaluation {
         System.out.println("Global ranking...");
         int[] global_ranking = new int [num_of_formulas];
         List<BigInteger> totalNumOfModels = new LinkedList<>();
+        String sumTotalNumOfModels = "";
         for(int i = 0; i < num_of_formulas; i++){
             BigInteger f_result = BigInteger.ZERO;
 //            if (!prefixes) {
@@ -183,8 +184,12 @@ public class PreciseModelCountingEvaluation {
 //            else {
 //            	f_result = solutions[i].get(bound-1);
 //            }
+            sumTotalNumOfModels += i + " " + f_result + "\n";
             totalNumOfModels.add(f_result);
         }
+
+        if (outname != null)
+            writeRanking(outname.replace(".out", "-summary.out"), sumTotalNumOfModels, "");
         List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
         Collections.sort(totalNumOfModels);
         String global = "[";
