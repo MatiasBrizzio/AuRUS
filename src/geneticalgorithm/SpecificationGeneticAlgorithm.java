@@ -17,23 +17,27 @@ import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
-	
+
 	public static int GENERATIONS = 10;
 	public static int NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
 	public static int POPULATION_SIZE = 30;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
-	
+
 	public List<SpecificationChromosome> solutions = new LinkedList<>();
 	public List<SpecificationChromosome> bestSolutions = new LinkedList<>();
-	
-	public void run(Tlsf spec) throws IOException, InterruptedException{
+
+	public void run(Tlsf spec) throws IOException, InterruptedException {
+		run(spec, 0.0d, 0.0d, 0.0d);
+	}
+	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor) throws IOException, InterruptedException{
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 //		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
 //		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
 		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
+		fitness.setFactors(status_factor,syntactic_factor,semantic_factor);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
 		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
 			System.out.println("The specification is already realizable.");

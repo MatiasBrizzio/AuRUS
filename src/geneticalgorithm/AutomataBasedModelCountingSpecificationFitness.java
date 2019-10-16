@@ -28,13 +28,13 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public  final int BOUND = 10;
+	public int BOUND = 10;
 	public boolean EXHAUSTIVE = true;
-	public  final double STATUS_FACTOR = 0.7d;
-	public  final double LOST_MODELS_FACTOR = 0.1d;
-	public  final double WON_MODELS_FACTOR = 0.1d;
+	public double STATUS_FACTOR = 0.7d;
+	public double LOST_MODELS_FACTOR = 0.1d;
+	public double WON_MODELS_FACTOR = 0.1d;
 	//	public static final double SOLUTION = 0.8d;
-	public  final double SYNTACTIC_FACTOR = 0.1d;
+	public  double SYNTACTIC_FACTOR = 0.1d;
 	public Tlsf originalSpecification = null;
 	public List<String> alphabet = null;
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
@@ -48,7 +48,19 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		this.originalStatus = originalChromosome.status;
 		originalNumOfModels = countModels(originalSpecification.toFormula());
 	}
-	
+
+	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
+		if (status_factor > 0.0d)
+			this.STATUS_FACTOR = status_factor;
+		if (syntactic_factor > 0.0d)
+			this.SYNTACTIC_FACTOR = syntactic_factor;
+		if (semantic_factor > 0.0d) {
+			double factor = semantic_factor/2.0d;
+			this.LOST_MODELS_FACTOR = factor;
+			this.WON_MODELS_FACTOR = factor;
+		}
+	}
+
 	private void generateAlphabet () {
 		if (originalSpecification.variables().size() <= 26) {
 			alphabet = new LinkedList();

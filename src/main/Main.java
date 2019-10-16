@@ -23,6 +23,9 @@ public class Main {
 		int mutationRate = 0;
 		int generations = 0;
 		boolean randomGen = false;
+		double status_factor = 0.0d;
+		double syntactic_factor = 0.0d;
+		double semantic_factor = 0.0d;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
 			if(args[i].startsWith("-Gen=")){
@@ -45,6 +48,16 @@ public class Main {
 			}
 			else if(args[i].startsWith("-random")){
 				randomGen = true;
+			}
+			else if(args[i].startsWith("-factors")){
+				String[] factors = args[i].replace("-factors=", "").split(",");
+				if (factors == null || factors.length != 3) {
+					correctUssage();
+					return;
+				}
+				status_factor = Double.valueOf(factors[0]);
+				syntactic_factor = Double.valueOf(factors[1]);
+				semantic_factor = Double.valueOf(factors[2]);
 			}
 			else if(args[i].startsWith("-") || (!args[i].endsWith(".tlsf") && !args[i].endsWith(".spectra"))){
 				correctUssage();
@@ -70,7 +83,7 @@ public class Main {
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
-			ga.run(tlsf);
+			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor);
 		
 		if (ga.solutions.isEmpty())
 			return;
