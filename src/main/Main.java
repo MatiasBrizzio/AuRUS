@@ -18,6 +18,7 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		int popSize = 0;
+		int maxNumOfInd = 0;
 		int crossoverRate = 0;
 		int mutationRate = 0;
 		int generations = 0;
@@ -29,6 +30,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-Pop=")){
 				popSize = Integer.parseInt(args[i].replace("-Pop=", ""));
+			}
+			else if(args[i].startsWith("-Max=")){
+				maxNumOfInd = Integer.parseInt(args[i].replace("-Max=", ""));
 			}
 			else if(args[i].startsWith("-COR=")){
 				crossoverRate = Integer.parseInt(args[i].replace("-COR=", ""));
@@ -58,6 +62,7 @@ public class Main {
 		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
 		if (popSize > 0) ga.POPULATION_SIZE = popSize;
+		if (maxNumOfInd > 0) ga.NUM_OF_INDIVIDUALS = maxNumOfInd;
 		if (crossoverRate > 0) ga.CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) ga.MUTATION_RATE = mutationRate;
 		if (generations > 0) ga.GENERATIONS = generations;
@@ -86,7 +91,7 @@ public class Main {
 	}
 	
 	private static void correctUssage(){
-		System.out.println("Use ./unreal-repair.sh [-Pop=population_size | -Gen=num_of_generations | -COR=crossover_rate | -MR=mutation_rate | -no-docker] input-file.tlsf");
+		System.out.println("Use ./unreal-repair.sh [-Pop=population_size | -Max=max_num_of_individuals |  -Gen=num_of_generations | -COR=crossover_rate | -MR=mutation_rate | -no-docker | -random] input-file.tlsf");
 	}
 
 }

@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public  final int BOUND = 5;
+	public  final int BOUND = 10;
 	public boolean EXHAUSTIVE = true;
 	public  final double STATUS_FACTOR = 0.7d;
 	public  final double LOST_MODELS_FACTOR = 0.1d;
@@ -205,6 +205,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	private BigInteger countModels (LabelledFormula formula) throws IOException, InterruptedException {
 		SyntacticSimplifier simp = new SyntacticSimplifier();
 		Formula simplified = formula.formula().accept(simp);
+		if (simplified == BooleanConstant.FALSE)
+			return BigInteger.ZERO;
 		LabelledFormula simp_formula = LabelledFormula.of(simplified, formula.variables());
 		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula,this.EXHAUSTIVE);
 		BigInteger numOfModels = counter.count(this.BOUND);
@@ -216,16 +218,16 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (originalNumOfModels == BigInteger.ZERO)
 			return 0.0d;
 
-		Formula refined_formula = refined.toFormula().formula();
+		Formula refined_formula = refined.toFormula().formula().not();
 		if (refined_formula == BooleanConstant.TRUE)
-			return 1.0d;
-		if (refined_formula == BooleanConstant.FALSE)
 			return 0.0d;
+		if (refined_formula == BooleanConstant.FALSE)
+			return 1.0d;
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
 		if (lostModels == BooleanConstant.TRUE)
-			return 1.0d;
-		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
+		if (lostModels == BooleanConstant.FALSE)
+			return 1.0d;
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
 		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
@@ -233,40 +235,44 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
-		double value = res.doubleValue();
+		double value = 1.0d - res.doubleValue();
 		System.out.print(numOfLostModels + " " + numOfModels + " ");
+		if (res.doubleValue() > 1.0d)
+			throw new RuntimeException("lost models major than 1.0: " + refined.toFormula());
 		return value;
 	}
 	
 	private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
-//		if (originalNegationNumOfModels == BigInteger.ZERO)
-//			return 1.0d;
+		if (refined.toFormula().formula() == BooleanConstant.FALSE)
+			return 0.0d;
+
 		BigInteger refinedNumOfModels = countModels(refined.toFormula());
 		if (refinedNumOfModels == BigInteger.ZERO)
 			return 0.0d;
 //		
 //		int numOfVars = original.variables().size();
-		Formula original_formula = original.toFormula().formula();
+		Formula original_formula = original.toFormula().formula().not();
 		if (original_formula == BooleanConstant.TRUE)
-			return 1.0d;
-		if (original_formula == BooleanConstant.FALSE)
 			return 0.0d;
+		if (original_formula == BooleanConstant.FALSE)
+			return 1.0d;
 		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula());
 		if (wonModels == BooleanConstant.TRUE)
-			return 1.0d;
-		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
+		if (wonModels == BooleanConstant.FALSE)
+			return 1.0d;
 		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
 //		System.out.println("WON: "+formula);
 		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
 
-
 		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
-
 		BigDecimal res = numOfWonModels.divide(numOfRefinedModels, 2, RoundingMode.HALF_UP);
-		double value = res.doubleValue();
+
+		double value = 1.0d - res.doubleValue();
 		System.out.print(numOfWonModels + " " + numOfRefinedModels + " ");
+		if (res.doubleValue() > 1.0d)
+			throw new RuntimeException("won models major than 1.0: " + refined.toFormula());
 		return value;
 	}
 

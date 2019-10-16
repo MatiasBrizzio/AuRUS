@@ -66,7 +66,13 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	// number of parental chromosomes, which survive (and move to new
 	// population)
 	private int parentChromosomesSurviveCount = ALL_PARENTAL_CHROMOSOMES;
-	
+
+	// number of chromosomes visited during the search
+	private int numberOfVisitedIndividuals = 0;
+	// number of chromosomes visited during the search
+	private int MAXIMUM_NUM_OF_INDIVIDUALS =  Integer.MAX_VALUE;
+
+
 	// Percentage of chromosomes that are selected for crossover
 	private int CROSSOVER_RATE = 10; 
 	// Probability with which the mutation is applied to each chromosome
@@ -92,26 +98,30 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 		// apply mutation
 		Random r = new Random();
-		for (int i = 0; i < parentPopulationSize; i++) {
+		for (int i = 0; (i < parentPopulationSize) && (numberOfVisitedIndividuals < MAXIMUM_NUM_OF_INDIVIDUALS); i++) {
 			int mut = r.nextInt(100);
 			if (mut < MUTATION_RATE){
 				C chromosome = this.population.getChromosomeByIndex(i);
 				C mutated = chromosome.mutate();
 				newPopulation.addChromosome(mutated);
+				//update number of visited chromosomes
+				this.numberOfVisitedIndividuals++;
 			}
 		}
 		
 		// apply crossover
 		int numOfCrossovers = Math.max(10, parentPopulationSize*(CROSSOVER_RATE/100));
-		for (int i = 0; i < numOfCrossovers; i++) {
+		for (int i = 0; (i < numOfCrossovers) && (numberOfVisitedIndividuals < MAXIMUM_NUM_OF_INDIVIDUALS); i++) {
 			C chromosome = this.population.getRandomChromosome();
 			C otherChromosome = this.population.getRandomChromosome();
 			List<C> crossovered = chromosome.crossover(otherChromosome);
 			for (C c : crossovered) {
 				newPopulation.addChromosome(c);
 			}
+			//update number of visited chromosomes
+			this.numberOfVisitedIndividuals += crossovered.size();
 		}
-		
+
 		newPopulation.sortPopulationByFitness(this.chromosomesComparator);
 		if (newPopulation.getSize() > this.parentChromosomesSurviveCount)
 			newPopulation.trim(this.parentChromosomesSurviveCount);
@@ -120,9 +130,8 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 	public void evolve(int count) {
 		this.terminate = false;
-
 		for (int i = 0; i < count; i++) {
-			if (this.terminate) {
+			if (this.terminate || numberOfVisitedIndividuals >= MAXIMUM_NUM_OF_INDIVIDUALS) {
 				break;
 			}
 			this.evolve();
@@ -157,6 +166,18 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		this.parentChromosomesSurviveCount = parentChromosomesCount;
 	}
 	
+	public int getMaximumNumberOfIndividuals() {
+		return this.MAXIMUM_NUM_OF_INDIVIDUALS;
+	}
+
+	public void setMaximumNumberOfIndividuals(int MAXIMUM_NUM_OF_INDIVIDUALS) {
+		this.MAXIMUM_NUM_OF_INDIVIDUALS = MAXIMUM_NUM_OF_INDIVIDUALS;
+	}
+
+	public int getNumberOfVisitedIndividuals() {
+		return this.numberOfVisitedIndividuals;
+	}
+
 	public int getParentChromosomesSurviveCount() {
 		return this.parentChromosomesSurviveCount;
 	}

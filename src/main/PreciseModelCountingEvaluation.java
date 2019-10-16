@@ -514,7 +514,7 @@ public class PreciseModelCountingEvaluation {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(ranking);
+        bw.write(ranking+"\n");
         bw.write(time+"\n");
         bw.flush();
         bw.close();

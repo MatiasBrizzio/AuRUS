@@ -19,6 +19,7 @@ import tlsf.TLSF_Utils;
 public class SpecificationGeneticAlgorithm {
 	
 	public static int GENERATIONS = 10;
+	public static int NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
 	public static int POPULATION_SIZE = 30;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
@@ -44,6 +45,7 @@ public class SpecificationGeneticAlgorithm {
 		ga.setCrossoverRate(CROSSOVER_RATE);
 		ga.setMutationRate(MUTATION_RATE);
 		ga.setParentChromosomesSurviveCount(POPULATION_SIZE);
+		ga.setMaximumNumberOfIndividuals(NUM_OF_INDIVIDUALS);
 		print_config();
 		ga.evolve(GENERATIONS);
 		long finalTime = System.currentTimeMillis();
@@ -59,6 +61,7 @@ public class SpecificationGeneticAlgorithm {
 		int min = (int) (totalTime)/60000;
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
+		System.out.println("Number of visited chromosomes: " + ga.getNumberOfVisitedIndividuals());
 		print_config();
 		fitness.print_config();
 	}
@@ -68,15 +71,15 @@ public class SpecificationGeneticAlgorithm {
 		//create random population
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
-		population.addChromosome(init);
+		//population.addChromosome(init);
 		for (int i = 0; i < POPULATION_SIZE; i++) {
 			SpecificationChromosome c = init.mutate();
 			population.addChromosome(c);
 		}
-		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
-		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
-		for (SpecificationChromosome c : ga.getPopulation()) {
-			if (c.status == SPEC_STATUS.REALIZABLE) {
+
+		for (SpecificationChromosome c : population) {
+			RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
+			if (status == RealizabilitySolverResult.REALIZABLE) {
 				solutions.add(c);
 			}
 		}
@@ -93,11 +96,10 @@ public class SpecificationGeneticAlgorithm {
 		int sec = (int) (totalTime - min*60000)/1000;
 		System.out.println(String.format("Time: %s m  %s s",min, sec));
 		print_config();
-		fitness.print_config();
 	}
 	
 	public void print_config() {
-		System.out.println(String.format("GEN: %s, Pop:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, MUTATION_RATE, CROSSOVER_RATE));
+		System.out.println(String.format("GEN: %s, Pop:%s, MAX:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, (NUM_OF_INDIVIDUALS==Integer.MAX_VALUE)?"INF":NUM_OF_INDIVIDUALS, MUTATION_RATE, CROSSOVER_RATE));
 	}
 	private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
 		Population<SpecificationChromosome> population = new Population<>();
@@ -121,7 +123,7 @@ public class SpecificationGeneticAlgorithm {
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
 
 					//TODO: select a reasonable threshold
-					private final double threshold = 0.9d;
+					private final double threshold = 0.0d;
 
 					@Override
 					public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {
@@ -129,7 +131,7 @@ public class SpecificationGeneticAlgorithm {
 						SpecificationChromosome best = ga.getBest();
 						double bestFit = ga.fitness(best);
 						int iteration = ga.getIteration();
-						if (bestFit >= 1.0d && !bestSolutions.contains(best)) {
+						if (bestFit > 1.0d && !bestSolutions.contains(best)) {
 							System.out.println(String.format("BEST Fitness: %.2f",best.fitness));
 							System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
 							bestSolutions.add(best);
@@ -160,7 +162,7 @@ public class SpecificationGeneticAlgorithm {
 						
 						// Listener prints best achieved solution
 						System.out.println();
-						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getPopulationSize(),solutions.size()));
+						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getNumberOfVisitedIndividuals(),solutions.size()));
 					}
 				});
 	}
