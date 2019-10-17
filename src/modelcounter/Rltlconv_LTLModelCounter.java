@@ -54,7 +54,7 @@ import scala.collection.immutable.VectorIterator;
 
 public class Rltlconv_LTLModelCounter {
 
-	public int TIMEOUT = 60;
+	public int TIMEOUT = 180;
 	//Map labels to ids
 	public java.util.Map<String,String> labelIDs ;
 	
