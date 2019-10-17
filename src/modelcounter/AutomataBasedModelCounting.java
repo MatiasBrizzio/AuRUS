@@ -27,7 +27,7 @@ public class AutomataBasedModelCounting {
 	private DMatrixRMaj I = null;
 	private Graph<String> nba = null;
 	private boolean exhaustive = true;
-
+	public static int TIMEOUT = 300;
 	public AutomataBasedModelCounting (LabelledFormula formula, boolean exhaustive) throws IOException, InterruptedException {
 
 		  this.exhaustive = exhaustive;
@@ -110,10 +110,20 @@ public class AutomataBasedModelCounting {
 		DMatrixRMaj T_res = T.copy();
 		int bound = exhaustive ? k+1 : k;
 		for(int i=1; i<bound; i++) {
+			long initialTime = System.currentTimeMillis();
 			DMatrixRMaj T_i = T.copy();
 			DMatrixRMaj T_aux = T_res.copy();
 			CommonOps_DDRM.mult(T_aux, T_i, T_res);
 //			System.out.println(i + ": " + T_res.toString());
+			//check for timeout
+			long currentTime = System.currentTimeMillis();
+			long totalTime = currentTime-initialTime;
+			int min = (int) (totalTime)/60000;
+			int sec = (int) (totalTime - min*60000)/1000;
+			if (sec > TIMEOUT) {
+				System.out.print("TO ");
+				return BigInteger.ZERO;
+			}
 		}
 		DMatrixRMaj reachable = new DMatrixRMaj(1,n);
 		CommonOps_DDRM.mult(u, T_res, reachable);
