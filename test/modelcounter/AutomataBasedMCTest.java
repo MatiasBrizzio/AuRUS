@@ -40,9 +40,28 @@ public class AutomataBasedMCTest {
 	@Test
 	public void test1() throws ParseErrorException, IOException, InterruptedException  {
 		List<String> vars = List.of("a", "b");
-		LabelledFormula formula =  LtlParser.parse("G F (!b) -> G F(a)",vars);
+		LabelledFormula formula =  LtlParser.parse("G(a & b)",vars);
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
+		BigInteger d =  counter.count(2);
+		System.out.println(d);
+	}
+
+	@Test
+	public void test2() throws ParseErrorException, IOException, InterruptedException  {
+		List<String> vars = List.of("a", "b");
+		LabelledFormula formula =  LtlParser.parse("G (a | b)",vars);
 		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);
 		BigInteger d =  counter.count(2);
+		System.out.println(d);
+	}
+
+
+	@Test
+	public void test3() throws ParseErrorException, IOException, InterruptedException  {
+		List<String> vars = List.of("a", "b");
+		LabelledFormula formula =  LtlParser.parse("G F (a && b)",vars);
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);
+		BigInteger d =  counter.count(3);
 		System.out.println(d);
 	}
 
@@ -58,6 +77,23 @@ public class AutomataBasedMCTest {
 		Formula cnf = Conjunction.of(spec.toFormula().formula(),spec2.toFormula().formula());
 		SyntacticSimplifier simp = new SyntacticSimplifier();
 	    Formula simplified = cnf.accept(simp);
+		LabelledFormula formula = LabelledFormula.of(simplified, spec.variables());
+
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);
+		BigInteger d =  counter.count(5);
+		System.out.println(d);
+	}
+
+	@Test
+	public void testDetector() throws ParseErrorException, IOException, InterruptedException  {
+
+		FileReader f = new FileReader("examples/syntcomp2019/unreal/9158508/detector_unreal_4_basic.tlsf");
+		Tlsf spec = TlsfParser.parse(f);
+
+		Formula cnf = spec.toFormula().formula();
+		SyntacticSimplifier simp = new SyntacticSimplifier();
+		Formula simplified = cnf.accept(simp);
+		System.out.println(simplified);
 		LabelledFormula formula = LabelledFormula.of(simplified, spec.variables());
 
 		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);

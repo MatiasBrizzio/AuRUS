@@ -2,15 +2,29 @@ package tlsf;
 
 import org.junit.jupiter.api.Test;
 
+import owl.automaton.Automaton;
+import owl.automaton.acceptance.BuchiAcceptance;
+import owl.automaton.acceptance.GeneralizedBuchiAcceptance;
+import owl.automaton.acceptance.OmegaAcceptance;
+import owl.automaton.output.HoaPrinter;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
+import owl.run.DefaultEnvironment;
+import owl.translations.LTL2DAFunction;
+import owl.translations.ltl2nba.SymmetricNBAConstruction;
+import owl.translations.nba2ldba.NBA2LDBA;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
 
 public class FormulaToRETest {
 
@@ -62,11 +76,26 @@ public class FormulaToRETest {
     	String filename = "examples/minepump-2.tlsf";
   	  	Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         List<String> vars = tlsf.variables();
-        LabelledFormula f0 =  tlsf.toFormula();
+        LabelledFormula orig =  tlsf.toFormula();
+        SyntacticSimplifier simp = new SyntacticSimplifier();
+        Formula simplified = orig.formula().accept(simp);
+        LabelledFormula f0 = LabelledFormula.of(simplified,vars);
         System.out.println(f0);
         FormulaToRE translatorLTLtoRE = new FormulaToRE();
         translatorLTLtoRE.generateLabels(vars);
         String re = translatorLTLtoRE.formulaToRegularExpression(f0);
         System.out.println(re);
+    }
+
+    @Test
+    public void testAutomata(){
+        List<String> vars = List.of("a", "b");
+//        LabelledFormula f0 = LtlParser.parse("(G(G!p4||!p0||!p1)&&((GFp3&&GFp2&&GFp1&&GFp0) <-> GFp4)&&G(G!p4||!p0||!p2)&&G(G!p4||!p1||!p2)&&G(!p3||G!p4||!p1)&&G(!p3||G!p4||!p2)&&G(!p3||G!p4||!p0))");
+        LabelledFormula f0 =  LtlParser.parse("G F (a && (b))",vars);
+        System.out.println(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE.generateLabels(vars);
+        automata.Automaton dfa = translatorLTLtoRE.formulaToDfa(f0);
+        System.out.println(dfa);
     }
 }

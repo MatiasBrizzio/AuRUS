@@ -82,7 +82,7 @@ public class FormulaToRE {
             else
                 setLabelEncoded(l);
         });
-        System.out.println(labelIDs);
+//        System.out.println(labelIDs);
     }
 
     public <S> String formulaToRegularExpression(LabelledFormula formula){
@@ -113,8 +113,9 @@ public class FormulaToRE {
 //        return id;
 //    }
 
+
+
     public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton){
-    	
 
         automata.Automaton fsa = new FiniteStateAutomaton();
 
@@ -126,8 +127,7 @@ public class FormulaToRE {
   		java.util.Map<S,automata.State> ids = new HashMap<>();
   		for (S s : automaton.states()) {
   			automata.State state = fsa.createState(new Point());
-  			//initial node ids
-  			ids.put(s, state);
+            ids.put(s, state);
   		}
         
         //create one unique initial state
@@ -259,58 +259,121 @@ public class FormulaToRE {
         return re;
     }
 
-//    public static <S> Set<S> finalStates(Automaton<S, ?> automaton) {
-//        OmegaAcceptance acceptance = automaton.acceptance();
-//
-//        if (acceptance instanceof AllAcceptance) {
-//            return automaton.states();
+
+    public <S> automata.Automaton formulaToDfa(LabelledFormula formula){
+//        SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), OmegaAcceptance.class);
+//        Automaton<S, OmegaAcceptance> automaton = translator.apply(formula);
+
+        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.BUCHI));
+        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
+
+//        if (automaton.size() == 0)
+//            return null;
+//        System.out.println(formula+" ");
+//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+        return nbaToDfa(automaton);
+    }
+
+    public <S> automata.Automaton nbaToDfa(Automaton<S, ? extends OmegaAcceptance> automaton){
+
+        automata.Automaton fsa = new FiniteStateAutomaton();
+
+         //Map nodes to states ids
+        java.util.Map<S,automata.State> ids = new HashMap<>();
+        for (S s : automaton.states()) {
+            automata.State state = fsa.createState(new Point());
+            ids.put(s, state);
+        }
+
+        //create one unique initial state
+        automata.State is = fsa.createState(new Point());
+        fsa.setInitialState(is);
+
+        //create one unique final state
+        automata.State fs = fsa.createState(new Point());
+        fsa.addFinalState(fs);
+
+        //get initial nodes
+        for(S in : automaton.initialStates()) {
+            //create and set initial state
+//            automata.State ais = fsa.createStateWithId(new Point(),getStateId(in));
+            automata.State ais = ids.get(in);
+            //initial node ids
+            FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA);
+            fsa.addTransition(t);
+//            ids.put(in.toString(), ais.getID());
+//            System.out.println("initial: "+ in.toString());
+        }
+
+        for (S from : automaton.states()) {
+            Map<Edge<S>, ValuationSet> edgeMap = automaton.edgeMap(from);
+            edgeMap.forEach((edge, valuationSet) -> {
+                S to = edge.successor();
+                if (!valuationSet.isEmpty()) {
+                    valuationSet.forEach(bitSet -> {
+                        //checks if ID exists
+                        automata.State fromState = ids.get(from);
+
+                        //get Label
+                        List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
+                        for (int i = 0; i < alphabetSize; i++) {
+                            BooleanExpression<AtomLabel> atom = new BooleanExpression<>(AtomLabel.createAPIndex(i));
+
+                            if (bitSet.get(i)) {
+                                conjuncts.add(atom);
+                            } else {
+                                conjuncts.add(atom.not());
+                            }
+                        }
+                        String l = BooleanExpressions.createConjunction(conjuncts).toString();
+                        String label = labelIDs.get(l);
+
+                        //check if toState exists
+                        automata.State toState = ids.get(to);
+
+                        FSATransition t = new FSATransition(fromState, toState, label);
+                        fsa.addTransition(t);
+
+                        if (edge.acceptanceSetIterator().hasNext()) {
+                            //get state
+                            automata.State as = ids.get(to);
+                            //add transition
+                            FSATransition final_t = new FSATransition(fromState, fs, label);
+                            fsa.addTransition(final_t);
+                        }
+                    });
+
+//              IntArrayList acceptanceSets = new IntArrayList();
+//              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+                //add final states
+//                if (edge.acceptanceSetIterator().hasNext()) {
+//                    //get state
+//                    automata.State as = ids.get(to);
+//                    //add transition
+//                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
+//                    fsa.addTransition(t);
+//                    fsa.addFinalState(as);
+                }
+            });
+        }
+//        System.out.print("n");
+//        System.out.println(fsa.toString());
+        NFAToDFA determinizer = new NFAToDFA();
+        automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
+//        System.out.println(dfa.toString());
+
+//        Minimizer min = new Minimizer();
+////        automata.Automaton dfa_minimized = (automata.Automaton) dfa.clone();
+////        boolean isminimized = false;
+////        while (!isminimized) {
+//        min.initializeMinimizer();
+//        automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
+//        DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
+//        automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+//        	isminimized = min.isMinimized(dfa_minimized, tree);
 //        }
-//
-//        if (acceptance instanceof BuchiAcceptance) {
-//            Automaton<S, BuchiAcceptance> casted = AutomatonUtil.cast(automaton, BuchiAcceptance.class);
-//            casted.acceptance().
-//      /* assert Buchi.containsAcceptingLasso(casted, initialState)
-//        == Buchi.containsAcceptingScc(casted, initialState); */
-//            return !EmptinessCheck.Buchi.containsAcceptingLasso(casted, initialState);
-//        }
-//
-//        if (acceptance instanceof GeneralizedBuchiAcceptance) {
-//            Automaton<S, GeneralizedBuchiAcceptance> casted = AutomatonUtil.cast(automaton,
-//                    GeneralizedBuchiAcceptance.class);
-//
-//            return !EmptinessCheck.Buchi.containsAcceptingScc(casted, initialState);
-//        }
-//
-//        if (acceptance instanceof NoneAcceptance) {
-//            return true;
-//        }
-//
-//        if (acceptance instanceof ParityAcceptance) {
-//            Automaton<S, ParityAcceptance> casted = AutomatonUtil.cast(automaton, ParityAcceptance.class);
-//
-//      /* assert Parity.containsAcceptingLasso(casted, initialState)
-//        == Parity.containsAcceptingScc(casted, initialState); */
-//            return !EmptinessCheck.Parity.containsAcceptingLasso(casted, initialState);
-//        }
-//
-//        if (acceptance instanceof RabinAcceptance) {
-//            Automaton<S, RabinAcceptance> casted = AutomatonUtil.cast(automaton, RabinAcceptance.class);
-//
-//      /* assert Rabin.containsAcceptingLasso(casted, initialState)
-//        == Rabin.containsAcceptingScc(casted, initialState); */
-//            return !EmptinessCheck.Rabin.containsAcceptingLasso(casted, initialState);
-//        }
-//
-//        if (acceptance instanceof GeneralizedRabinAcceptance) {
-//            Automaton<S, GeneralizedRabinAcceptance> casted = AutomatonUtil.cast(automaton,
-//                    GeneralizedRabinAcceptance.class);
-//
-//            return isEmpty(RabinDegeneralization.degeneralize(casted));
-//        }
-//
-//        throw new UnsupportedOperationException(
-//                String.format("Emptiness check for %s not yet implemented.", acceptance.name()));
-//    }
+        return dfa;
+    }
 
 
 

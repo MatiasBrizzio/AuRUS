@@ -6,6 +6,7 @@ import automata.State;
 import automata.Transition;
 import automata.fsa.FiniteStateAutomaton;
 import de.uni_luebeck.isp.rltlconv.automata.Nba;
+import owl.ltl.LabelledFormula;
 import scala.Tuple2;
 import scala.collection.Iterator;
 import scala.collection.immutable.List;
@@ -14,6 +15,8 @@ import scala.collection.immutable.Set;
 import scala.collection.immutable.Vector;
 import scala.collection.immutable.VectorIterator;
 import gov.nasa.ltl.graph.*;
+import tlsf.FormulaToRE;
+
 public class Buchi2Graph {
 	 
 	public static Graph<String> LTL2Graph(String formula) throws IOException, InterruptedException {
@@ -21,7 +24,20 @@ public class Buchi2Graph {
 		Nba nba = translator.ltl2nba(formula);
 		translator.generateLabels(nba);
 		automata.Automaton dfa = translator.nbaTodfa(nba);
+
 //		System.out.println(dfa);
+		return dfaToGraph(dfa);
+	}
+
+	public static Graph<String> LTL2Graph(LabelledFormula formula) throws IOException, InterruptedException {
+		FormulaToRE translatorLTLtoRE = new FormulaToRE();
+		translatorLTLtoRE.generateLabels(formula.variables());
+		automata.Automaton dfa = translatorLTLtoRE.formulaToDfa(formula);
+//		System.out.println(dfa);
+		return dfaToGraph(dfa);
+	}
+
+	private static Graph<String> dfaToGraph (automata.Automaton dfa) {
 		Graph<String> g = new Graph<>();
 
 		//Setear estados iniciales.

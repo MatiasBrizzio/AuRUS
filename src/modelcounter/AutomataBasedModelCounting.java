@@ -33,12 +33,15 @@ public class AutomataBasedModelCounting {
 		  this.exhaustive = exhaustive;
 		  Writer<String> w = Writer.getWriter (Writer.Format.FSP, System.out);
 
-		// Convert the ltl formula to an automaton
-		Formula clean_syntax = formula.formula().accept(new RltlConvSyntaxReplacer());
-		LabelledFormula clean_formula = LabelledFormula.of(clean_syntax, formula.variables());
-		String ltlStr = genRltlString(clean_formula);
-//		System.out.println(ltlStr);
-		nba = Buchi2Graph.LTL2Graph(ltlStr);
+		// Convert the ltl formula to an automaton with RltlConv
+//		Formula clean_syntax = formula.formula().accept(new RltlConvSyntaxReplacer());
+//		LabelledFormula clean_formula = LabelledFormula.of(clean_syntax, formula.variables());
+//		String ltlStr = genRltlString(clean_formula);
+////		System.out.println(ltlStr);
+//		nba = Buchi2Graph.LTL2Graph(ltlStr);
+
+		// Convert the ltl formula to an automaton with OWL
+		nba = Buchi2Graph.LTL2Graph(formula);
 
 		if(exhaustive) {
 			//We first apply a transformation and add an extra state, sn+1. The resulting
