@@ -16,7 +16,9 @@ import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 
 import gov.nasa.ltl.graph.*;
+import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
+import owl.ltl.visitors.RltlConvSyntaxReplacer;
 import solvers.SolverUtils;
 
 public class AutomataBasedModelCounting {
@@ -32,7 +34,9 @@ public class AutomataBasedModelCounting {
 		  Writer<String> w = Writer.getWriter (Writer.Format.FSP, System.out);
 
 		// Convert the ltl formula to an automaton
-		String ltlStr = genRltlString(formula);
+		Formula clean_syntax = formula.formula().accept(new RltlConvSyntaxReplacer());
+		LabelledFormula clean_formula = LabelledFormula.of(clean_syntax, formula.variables());
+		String ltlStr = genRltlString(clean_formula);
 //		System.out.println(ltlStr);
 		nba = Buchi2Graph.LTL2Graph(ltlStr);
 
