@@ -362,17 +362,12 @@ public class FormulaToRE {
         automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
 //        System.out.println(dfa.toString());
 
-//        Minimizer min = new Minimizer();
-////        automata.Automaton dfa_minimized = (automata.Automaton) dfa.clone();
-////        boolean isminimized = false;
-////        while (!isminimized) {
-//        min.initializeMinimizer();
-//        automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
-//        DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
-//        automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
-//        	isminimized = min.isMinimized(dfa_minimized, tree);
-//        }
-        return dfa;
+        Minimizer min = new Minimizer();
+        min.initializeMinimizer();
+        automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
+        DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
+        automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+        return dfa_minimized;
     }
 
 
