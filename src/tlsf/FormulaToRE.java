@@ -77,6 +77,12 @@ public class FormulaToRE {
                 }
             }
             String l = BooleanExpressions.createConjunction(conjuncts).toString();
+
+            if(variables.size()>5 && variables.size()<12)
+                encoded_alphabet = 0;
+            else if(variables.size() >=12)
+                encoded_alphabet = 1;
+
             if (encoded_alphabet == -1)
                 setLabel(l);
             else
