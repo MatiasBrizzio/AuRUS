@@ -23,7 +23,8 @@ public class SpecificationGeneticAlgorithm {
 	public static int POPULATION_SIZE = 30;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
-	private long initialExecutionTime = 0;
+	public long initialExecutionTime = 0;
+	public long finalExecutionTime = 0;
 	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 
 	public List<SpecificationChromosome> solutions = new LinkedList<>();
@@ -64,12 +65,8 @@ public class SpecificationGeneticAlgorithm {
 			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
 		}
-		long totalTime = finalTime-initialTime;
-		int min = (int) (totalTime)/60000;
-		int sec = (int) (totalTime - min*60000)/1000;
-		System.out.println(String.format("Time: %s m  %s s",min, sec));
-		System.out.println("Number of visited chromosomes: " + ga.getNumberOfVisitedIndividuals());
-		print_config();
+		System.out.println(print_execution_time());
+		System.out.println(print_config());
 		fitness.print_config();
 	}
 	
@@ -97,16 +94,20 @@ public class SpecificationGeneticAlgorithm {
 			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
 		}
-		long finalTime = System.currentTimeMillis();
-		long totalTime = finalTime-initialTime;
-		int min = (int) (totalTime)/60000;
-		int sec = (int) (totalTime - min*60000)/1000;
-		System.out.println(String.format("Time: %s m  %s s",min, sec));
-		print_config();
+		System.out.println(print_execution_time());
+		System.out.println(print_config());
 	}
 	
-	public void print_config() {
-		System.out.println(String.format("GEN: %s, Pop:%s, MAX:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, (NUM_OF_INDIVIDUALS==Integer.MAX_VALUE)?"INF":NUM_OF_INDIVIDUALS, MUTATION_RATE, CROSSOVER_RATE));
+	public String print_config() {
+		return String.format("GEN: %s, Pop:%s, MAX:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, (NUM_OF_INDIVIDUALS==Integer.MAX_VALUE)?"INF":NUM_OF_INDIVIDUALS, MUTATION_RATE, CROSSOVER_RATE);
+	}
+
+	public String print_execution_time() {
+		long totalTime = finalExecutionTime - initialExecutionTime;
+		int min = (int) (totalTime)/60000;
+		int sec = (int) (totalTime - min*60000)/1000;
+		String timeStr = String.format("Time: %s m  %s s",min, sec);
+		return timeStr;
 	}
 	private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
 		Population<SpecificationChromosome> population = new Population<>();

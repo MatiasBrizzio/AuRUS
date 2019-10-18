@@ -105,6 +105,16 @@ public class Main {
 	        bw.write("\n//fitness: " + sol.fitness);
 	        bw.close(); 
 		}
+
+		//saving the time execution and configuration details
+
+		File file = new File(directoryName + "/out.txt");
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write(ga.print_execution_time()+"\n");
+		bw.write(ga.print_config()+"\n");
+		bw.close();
+
 	}
 	
 	private static void correctUssage(){
