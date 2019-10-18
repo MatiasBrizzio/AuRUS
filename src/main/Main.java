@@ -26,6 +26,7 @@ public class Main {
 		double status_factor = 0.0d;
 		double syntactic_factor = 0.0d;
 		double semantic_factor = 0.0d;
+		int ga_timeout = 0;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
 			if(args[i].startsWith("-Gen=")){
@@ -48,6 +49,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-random")){
 				randomGen = true;
+			}
+			else if(args[i].startsWith("-GATO=")){
+				ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
 			}
 			else if(args[i].startsWith("-factors")){
 				String[] factors = args[i].replace("-factors=", "").split(",");
@@ -79,7 +83,7 @@ public class Main {
 		if (crossoverRate > 0) ga.CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) ga.MUTATION_RATE = mutationRate;
 		if (generations > 0) ga.GENERATIONS = generations;
-		
+		if (ga_timeout > 0) ga.EXECUTION_TIMEOUT = ga_timeout;
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
@@ -104,7 +108,11 @@ public class Main {
 	}
 	
 	private static void correctUssage(){
-		System.out.println("Use ./unreal-repair.sh [-Pop=population_size | -Max=max_num_of_individuals |  -Gen=num_of_generations | -COR=crossover_rate | -MR=mutation_rate | -no-docker | -random] input-file.tlsf");
+		System.out.println("Use ./unreal-repair.sh " +
+								"[-Max=max_num_of_individuals |  -Gen=num_of_generations | -GATO=GA_timeout | " +
+								"-Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | " +
+								"-no-docker | -random] " +
+								"input-file.tlsf");
 	}
 
 }

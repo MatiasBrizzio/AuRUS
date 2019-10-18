@@ -23,6 +23,8 @@ public class SpecificationGeneticAlgorithm {
 	public static int POPULATION_SIZE = 30;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
+	private long initialExecutionTime = 0;
+	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 
 	public List<SpecificationChromosome> solutions = new LinkedList<>();
 	public List<SpecificationChromosome> bestSolutions = new LinkedList<>();
@@ -31,6 +33,7 @@ public class SpecificationGeneticAlgorithm {
 		run(spec, 0.0d, 0.0d, 0.0d);
 	}
 	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor) throws IOException, InterruptedException{
+		this.initialExecutionTime = System.currentTimeMillis();
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
@@ -167,6 +170,18 @@ public class SpecificationGeneticAlgorithm {
 						// Listener prints best achieved solution
 						System.out.println();
 						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getNumberOfVisitedIndividuals(),solutions.size()));
+
+						//check if timeout has been reached
+						if (EXECUTION_TIMEOUT > 0) {
+							long currentIterationTime = System.currentTimeMillis();
+							long totalTime = currentIterationTime - initialExecutionTime;
+							int min = (int) (totalTime) / 60000;
+							int sec = (int) (totalTime - min * 60000) / 1000;
+							if (sec > EXECUTION_TIMEOUT) {
+								System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
+								ga.terminate();
+							}
+						}
 					}
 				});
 	}
