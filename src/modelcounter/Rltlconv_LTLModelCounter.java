@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,7 @@ import scala.collection.immutable.VectorIterator;
 
 public class Rltlconv_LTLModelCounter {
 
-	public int TIMEOUT = 60;
+	public int TIMEOUT = 180;
 	//Map labels to ids
 	public java.util.Map<String,String> labelIDs ;
 	
@@ -432,8 +433,8 @@ public class Rltlconv_LTLModelCounter {
 //        AutomatonChecker ac = new AutomatonChecker();
 //		if (ac.isNFA(dfa))throw new RuntimeException("automata2RE: dfa must be deterministic.");
 //        System.out.println(dfa.toString());
-        
-        Minimizer min = new Minimizer();
+
+		Minimizer min = new Minimizer();
         min.initializeMinimizer();
 	    automata.Automaton minimizable = min.getMinimizeableAutomaton(dfa);
 	    DefaultTreeModel tree = min.getDistinguishableGroupsTree(minimizable);
@@ -450,7 +451,126 @@ public class Rltlconv_LTLModelCounter {
 //        	System.out.print(arr[i].length()+" ");
         return re;
 	}
-	
+
+
+	public  automata.Automaton nbaTodfa(Nba ltl_ba){
+//		System.out.println(ltl_ba);
+		FiniteStateAutomaton fsa = new FiniteStateAutomaton();
+
+		//Map nodes to states ids
+		java.util.Map<State,automata.State> ids = new HashMap<>();
+		Iterator<State> states_it = ltl_ba.states().iterator();
+		while(states_it.hasNext()) {
+			State s = states_it.next();
+//			System.out.println(s.toString());
+//			int stateID = Integer.valueOf(s.name().substring(1));
+//			System.out.println(stateID);
+//			automata.State state = fsa.createStateWithId(new Point(),stateID);
+			automata.State state = fsa.createState(new Point());
+			//initial node ids
+			ids.put(s, state);
+		}
+
+
+		//get initial node
+		if(ltl_ba.start().size() > 1) throw new RuntimeException("automata2RE: more than 1 initial state found");
+		State in = ltl_ba.start().head(); //CUIDADO:que pasa si tenemos varios estados iniciales.
+		//create and set initial state
+//		automata.State is = fsa.createState(new Point());
+		automata.State is = ids.get(in);
+		fsa.setInitialState(is);
+
+		//initial node ids
+//		ids.put(in, is.getID());
+
+		Map<Tuple2<State,Sign>, List<DirectedState>> trans = (Map<Tuple2<State, Sign>, List<DirectedState>>) ltl_ba.transitions();
+		Vector<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> vector =  trans.toVector();
+		VectorIterator<Tuple2<Tuple2<State,Sign>,List<DirectedState>>> ltl_ba_it = vector.iterator();
+		while(ltl_ba_it.hasNext()){
+			Tuple2<Tuple2<State,Sign>,List<DirectedState>> o = ltl_ba_it.next();
+			State from = o._1()._1();
+			automata.State fromState = ids.get(from);
+			//checks if ID exists
+//			int ID = 0;
+//			automata.State fromState = null;
+//			if (ids.containsKey(from)){
+//				ID = ids.get(from);
+//				fromState = fsa.getStateWithID(ID);
+//			}
+//			else{
+//				//create new state
+//				fromState = fsa.createState(new Point());
+//				//update ids
+//				ids.put(from, fromState.getID());
+////				ID = fromState.getID();
+//			}
+
+			//get Label
+			String l = o._1()._2().toString().replace("\"", "");
+
+//			if(encoded_alphabet==-1)
+//				setLabel(l);
+//			else
+//				setLabelEncoded(l);
+//			System.out.println(l);
+			String label = labelIDs.get(l);
+
+			Iterator<DirectedState> listIt = o._2().iterator();
+			while(listIt.hasNext()){
+				State to = listIt.next().state();
+				automata.State toState = ids.get(to);
+				//check if toState exists
+//				automata.State toState = null;
+//
+//				if (ids.containsKey(to)){
+//					ID = ids.get(to);
+//					toState = fsa.getStateWithID(ID);
+//				}
+//				else{
+//					//create new state
+//					toState = fsa.createState(new Point());
+//					//update ids
+//					ids.put(to, toState.getID());
+////					ID = toState.getID();
+//				}
+
+				//add transition
+				FSATransition t = new FSATransition(fromState,toState,label);
+				fsa.addTransition(t);
+			}
+		}
+
+		//add final states
+		Iterator<State> ac_it = ltl_ba.accepting().iterator();
+		while(ac_it.hasNext()){
+			State a = ac_it.next();
+			automata.State as = ids.get(a);
+//			int ID = ids.get(a);
+//			automata.State as = fsa.getStateWithID(ID);
+			fsa.addFinalState(as);
+		}
+
+//		System.out.println(fsa);
+
+		NFAToDFA determinizer = new NFAToDFA();
+		FiniteStateAutomaton dfa = determinizer.convertToDFA(fsa);
+//        AutomatonChecker ac = new AutomatonChecker();
+//		if (ac.isNFA(dfa))throw new RuntimeException("automata2RE: dfa must be deterministic.");
+//        System.out.println(dfa.toString());
+
+//		Minimizer min = new Minimizer();
+//		min.initializeMinimizer();
+//		automata.Automaton minimizable = min.getMinimizeableAutomaton(dfa);
+//		DefaultTreeModel tree = min.getDistinguishableGroupsTree(minimizable);
+//		minimizable = min.getMinimumDfa(minimizable, tree);
+//    	System.out.println(dfa_minimized.toString());
+//    	min.printTree(tree, (MinimizeTreeNode)tree.getRoot());
+//    	System.out.println();
+
+		return dfa;
+	}
+
+
 	public String toABClanguage(String re){
 		String abcStr = "";
 		abcStr = re.replace("λ", "\"\"");

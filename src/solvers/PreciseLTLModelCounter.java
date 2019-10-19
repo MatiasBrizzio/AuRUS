@@ -24,7 +24,7 @@ public class PreciseLTLModelCounter {
 	public int numOfTimeout = 0;
 	public int numOfError = 0;
 	public int numOfCalls = 0;
-	public int TIMEOUT = 60;
+	public int TIMEOUT = 180;
 	public enum MODEL_COUNTER {RELSAT, CACHET, MINIC2D, GANAK;
 		public String toString(){
 			if (this == GANAK)	return "ganak";

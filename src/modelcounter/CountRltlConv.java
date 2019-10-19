@@ -14,7 +14,7 @@ import solvers.SolverUtils;
 
 public class CountRltlConv {
 
-	public int TIMEOUT = 60;
+	public int TIMEOUT = 180;
 	
 	public BigInteger countPrefixes(LabelledFormula formula, int bound) throws IOException, InterruptedException {
 		String ltlStr = genRltlString(formula);
@@ -72,16 +72,18 @@ public class CountRltlConv {
     	
 	    while ((aux = errbufferedreader.readLine()) != null) {
 	    	System.out.println("ERR: " + aux);
+	    	System.out.println("BOUND: " + bound);
+	    	System.out.println("OUT: " + out);
 	    }
 	    // Close the ErrorStream
    		errbufferedreader.close();
    		errread.close();
    		err.close();
 	    // Check for failure
-		if (p.waitFor() != 0) {
-			System.out.println("exit value = " + p.exitValue());
-			throw new RuntimeException("ERROR in CountRltlConv.");
-		}
+//		if (p.waitFor() != 0) {
+//			System.out.println("exit value = " + p.exitValue());
+//			throw new RuntimeException("ERROR in CountRltlConv.");
+//		}
   		
    		if (p!=null) {
 //   			InputStream is = p.getInputStream();

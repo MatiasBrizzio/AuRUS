@@ -22,7 +22,16 @@
         <pathelement location="lib/hamcrest-core-1.3.jar"/>
         <pathelement location="lib/junit-4.12.jar"/> 
         <pathelement location="lib/rltlconv.jar"/>  
-        <pathelement location="lib/JFLAP-7.0_With_Source.jar"/>  
+        <pathelement location="lib/JFLAP-7.0_With_Source.jar"/> 
+        <pathelement location="lib/ltl2buchi.jar"/>  
+        <pathelement location="lib/ejml/ejml-zdense-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-simple-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-fdense-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-experimental-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-dsparse-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-ddense-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-core-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-cdense-0.34.jar"/>
     </path>
 
 
@@ -47,6 +56,15 @@
         <pathelement location="lib/junit-4.12.jar"/>
         <pathelement location="lib/rltlconv.jar"/>  
         <pathelement location="lib/JFLAP-7.0_With_Source.jar"/>  
+        <pathelement location="lib/ltl2buchi.jar"/>  
+        <pathelement location="lib/ejml/ejml-zdense-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-simple-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-fdense-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-experimental-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-dsparse-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-ddense-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-core-0.34.jar"/>
+        <pathelement location="lib/ejml/ejml-cdense-0.34.jar"/>
     </path>
     
     <target name="compile-test">

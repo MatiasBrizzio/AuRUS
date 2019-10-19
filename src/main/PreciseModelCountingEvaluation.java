@@ -1,5 +1,6 @@
 package main;
 
+import modelcounter.AutomataBasedModelCounting;
 import modelcounter.Count;
 import modelcounter.CountRltlConv;
 import modelcounter.Rltlconv_LTLModelCounter;
@@ -118,23 +119,35 @@ public class PreciseModelCountingEvaluation {
                     refined_formulas.add(LtlParser.syntax(s,vars));
             }       
         }
-        
 
+        if (prefixes)
+            runPrefixesMC(original_formula,refined_formulas,vars,bound,outname);
+        else
+            runPreciseMC(original_formula,refined_formulas,vars,bound,solver,outname);
+
+    }
+
+    static void runPreciseMC(Formula original_formula, List<Formula> refined_formulas, List<String> vars, int bound, int solver, String outname) throws IOException, InterruptedException {
+        long initialTOTALTime = System.currentTimeMillis();
         int num_of_formulas = refined_formulas.size();
         List<BigInteger>[] solutions = new List [num_of_formulas];
         int index = 0;
         System.out.println("Counting...");
         for(Formula ref : refined_formulas) {
+            long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
             List<BigInteger> result = null;
-            if (!prefixes)
-                result = countModels(original_formula, ref, vars.size(), bound, solver);
-            else
-                result = countPrefixesRltl(original_formula, ref, vars,bound);
+            result = countModels(original_formula, ref, vars.size(), bound, solver);
             System.out.println(result);
+            long finalTime = System.currentTimeMillis();
+            long totalTime = finalTime-initialTime;
+            int min = (int) (totalTime)/60000;
+            int sec = (int) (totalTime - min*60000)/1000;
+            String time = String.format("Time: %s m  %s s",min, sec);
+            System.out.println(time);
             if (outname != null) {
                 String filename = outname.replace(".out", index + ".out");
-                writeFile(filename, result);
+                writeFile(filename, result, time);
             }
             solutions[index] = result;
             index++;
@@ -161,16 +174,77 @@ public class PreciseModelCountingEvaluation {
         System.out.println("Global ranking...");
         int[] global_ranking = new int [num_of_formulas];
         List<BigInteger> totalNumOfModels = new LinkedList<>();
+        String sumTotalNumOfModels = "";
         for(int i = 0; i < num_of_formulas; i++){
             BigInteger f_result = BigInteger.ZERO;
 //            if (!prefixes) {
-            	for(BigInteger v : solutions[i])
-            		f_result = f_result.add(v);
+            for(BigInteger v : solutions[i])
+                f_result = f_result.add(v);
 //            }
 //            else {
 //            	f_result = solutions[i].get(bound-1);
 //            }
+            sumTotalNumOfModels += i + " " + f_result + "\n";
             totalNumOfModels.add(f_result);
+        }
+
+        if (outname != null)
+            writeRanking(outname.replace(".out", "-summary.out"), sumTotalNumOfModels, "");
+        List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
+        Collections.sort(totalNumOfModels);
+        String global = "[";
+        for(int i = 0; i < num_of_formulas; i++){
+            global_ranking[i] = total_values_copy.indexOf(totalNumOfModels.get(i));
+            global += ""+global_ranking[i];
+            if (i < num_of_formulas-1)
+                global +=", ";
+            else
+                global +="]";
+        }
+        System.out.println(global);
+
+        long finalTOTALTime = System.currentTimeMillis();
+        long totalTime = finalTOTALTime-initialTOTALTime;
+        int min = (int) (totalTime)/60000;
+        int sec = (int) (totalTime - min*60000)/1000;
+        String time = String.format("Time: %s m  %s s",min, sec);
+        System.out.println(time);
+
+        if (outname != null)
+            writeRanking(outname.replace(".out", "-global.out"), global, time);
+    }
+
+    static void runPrefixesMC(Formula original_formula, List<Formula> refined_formulas, List<String> vars, int bound, String outname) throws IOException, InterruptedException {
+        long initialTOTALTime = System.currentTimeMillis();
+        int num_of_formulas = refined_formulas.size();
+        BigInteger[] solutions = new BigInteger [num_of_formulas];
+        int index = 0;
+        System.out.println("Counting...");
+        for(Formula ref : refined_formulas) {
+            long initialTime = System.currentTimeMillis();
+            System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
+            BigInteger result = countExhaustiveAutomataBasedPrefixes(original_formula, ref, vars, bound);
+            System.out.println(result);
+            long finalTime = System.currentTimeMillis();
+            long totalTime = finalTime-initialTime;
+            int min = (int) (totalTime)/60000;
+            int sec = (int) (totalTime - min*60000)/1000;
+            String time = String.format("Time: %s m  %s s",min, sec);
+            System.out.println(time);
+            if (outname != null) {
+                String filename = outname.replace(".out", index + ".out");
+                writeFile(filename, List.of(result), time);
+            }
+            solutions[index] = result;
+            index++;
+        }
+
+
+        System.out.println("Global ranking...");
+        int[] global_ranking = new int [num_of_formulas];
+        List<BigInteger> totalNumOfModels = new LinkedList<>();
+        for(int i = 0; i < num_of_formulas; i++){
+            totalNumOfModels.add(solutions[i]);
         }
         List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
         Collections.sort(totalNumOfModels);
@@ -179,13 +253,21 @@ public class PreciseModelCountingEvaluation {
             global_ranking[i] = total_values_copy.indexOf(totalNumOfModels.get(i));
             global += ""+global_ranking[i];
             if (i < num_of_formulas-1)
-            	global +=", ";
+                global +=", ";
             else
-            	global +="]";
+                global +="]";
         }
         System.out.println(global);
+
+        long finalTOTALTime = System.currentTimeMillis();
+        long totalTime = finalTOTALTime-initialTOTALTime;
+        int min = (int) (totalTime)/60000;
+        int sec = (int) (totalTime - min*60000)/1000;
+        String time = String.format("Time: %s m  %s s",min, sec);
+        System.out.println(time);
+
         if (outname != null)
-            writeRanking(outname.replace(".out", "-global.out"), global);
+            writeRanking(outname.replace(".out", "-global.out"), global, time);
     }
 
     static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
@@ -338,6 +420,49 @@ public class PreciseModelCountingEvaluation {
 
         return result;
     }
+
+    static BigInteger countExhaustiveAutomataBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
+
+        Formula conj_lost = Conjunction.of(original, refined.not());
+        LabelledFormula form_lost = LabelledFormula.of(conj_lost, vars);
+        AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form_lost,true);
+        BigInteger lostModels = counter.count(bound);
+
+        Formula conj_won = Conjunction.of(original.not(), refined);
+        LabelledFormula form_won = LabelledFormula.of(conj_won, vars);
+        AutomataBasedModelCounting counter2 = new AutomataBasedModelCounting(form_won,true);
+        BigInteger wonModels = counter2.count(bound);
+        BigInteger result = lostModels.add(wonModels);
+        return result;
+    }
+
+    static List<BigInteger> countAutomataBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
+        List<BigInteger> lostModels = new LinkedList<>();
+        for(int k = 1; k <= bound; k++) {
+            Formula conj = Conjunction.of(original, refined.not());
+            LabelledFormula form = LabelledFormula.of(conj, vars);
+            AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form,false);
+            BigInteger r = counter.count(k);
+            lostModels.add(r);
+        }
+
+        List<BigInteger> wonModels = new LinkedList<>();
+        for(int k = 1; k <= bound; k++) {
+            Formula conj = Conjunction.of(original.not(), refined);
+            LabelledFormula form = LabelledFormula.of(conj, vars);
+            AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form,false);
+            BigInteger r = counter.count(k);
+            wonModels.add(r);
+        }
+        List<BigInteger> result = new LinkedList<>();
+        for(int i = 0; i < bound; i++) {
+            BigInteger pos = lostModels.get(i);
+            BigInteger neg = wonModels.get(i);
+            result.add(pos.add(neg));
+        }
+
+        return result;
+    }
     
     static List<String> genAlphabet(int n){
     	List<String> alphabet = new LinkedList();
@@ -354,7 +479,7 @@ public class PreciseModelCountingEvaluation {
 		return new String(LTLFormula); 
 	}
 
-     private static void writeFile(String filename, List<BigInteger> result) throws IOException {
+     private static void writeFile(String filename, List<BigInteger> result, String time) throws IOException {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
@@ -367,6 +492,8 @@ public class PreciseModelCountingEvaluation {
             bw.write("\n");
 //            System.out.println((i+1) + " " + sol);
         }
+         bw.write(time +"\n");
+        bw.flush();
         bw.close();
     }
 
@@ -383,11 +510,13 @@ public class PreciseModelCountingEvaluation {
         bw.close();
     }
 
-    private static void writeRanking(String filename, String ranking) throws IOException {
+    private static void writeRanking(String filename, String ranking, String time) throws IOException {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(ranking);
+        bw.write(ranking+"\n");
+        bw.write(time+"\n");
+        bw.flush();
         bw.close();
     }
     private static void correctUssage(){
