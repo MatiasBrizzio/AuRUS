@@ -98,4 +98,17 @@ public class FormulaToRETest {
         automata.Automaton dfa = translatorLTLtoRE.formulaToDfa(f0);
         System.out.println(dfa);
     }
+
+    @Test
+    public void testAutomataExamples() throws IOException, InterruptedException {
+        String filename = "examples/firefighting.tlsf";
+        Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+        List<String> vars = tlsf.variables();
+        LabelledFormula f0 =  tlsf.toFormula();
+        System.out.println(f0);
+        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE.generateLabels(vars);
+        automata.Automaton dfa = translatorLTLtoRE.formulaToDfa(f0);
+        System.out.println(dfa);
+    }
 }

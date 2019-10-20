@@ -35,7 +35,7 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	  private final boolean fixedVariables;
 	  private int strengthening_rate;
 	  private int numOfAllowedStrengthenings = 0;
-	  private boolean print_debug_info = true;
+	  private boolean print_debug_info = false;
 	  
 	public FormulaStrengthening(List<String> literals, int strengthening_rate, int num_of_strengthening_to_appply) {
 		ListIterator<String> literalIterator = literals.listIterator();

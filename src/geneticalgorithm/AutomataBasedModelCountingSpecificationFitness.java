@@ -39,6 +39,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	public List<String> alphabet = null;
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
 	public BigInteger originalNumOfModels;
+	public boolean allowAssumptionGuaranteeRemoval = false;
 //	public BigInteger originalNegationNumOfModels;
 
 	public AutomataBasedModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
@@ -59,6 +60,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			this.LOST_MODELS_FACTOR = factor;
 			this.WON_MODELS_FACTOR = factor;
 		}
+	}
+
+	public void allowAssumptionGuaranteeRemoval(boolean value) {
+		this.allowAssumptionGuaranteeRemoval = value;
 	}
 
 	private void generateAlphabet () {
@@ -89,6 +94,11 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (guarantees == BooleanConstant.TRUE)
 			return 0.0d;
 
+		if (!this.allowAssumptionGuaranteeRemoval) {
+			boolean somethingRemoved = somethingHasBeenRemoved(originalSpecification, chromosome.spec);
+			if (somethingRemoved)
+				return 0.0d;
+		}
 		// First compute the status fitness
 		try {
 			compute_status(chromosome);
@@ -340,7 +350,12 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		double syntactic_distance = 0.5d * size + 0.25d * lost + 0.25d * won;
 		return syntactic_distance;
 	}
-	
+
+	public boolean somethingHasBeenRemoved(Tlsf original, Tlsf refined) {
+		boolean assumptionRemoved = Formula_Utils.splitConjunction(original.assume()).size() > Formula_Utils.splitConjunction(refined.assume()).size() ;
+		boolean guaranteeRemoved =  original.guarantee().size() > refined.guarantee().size();
+		return assumptionRemoved || guaranteeRemoved;
+	}
 
 	
 	private String toSolverSyntax(Formula f) {
@@ -358,6 +373,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	}
 
 	public  void print_config() {
-		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR));
+		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s, rem: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR,allowAssumptionGuaranteeRemoval));
 	}
 }

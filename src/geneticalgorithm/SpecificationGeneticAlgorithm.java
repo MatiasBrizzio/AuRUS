@@ -31,9 +31,9 @@ public class SpecificationGeneticAlgorithm {
 	public List<SpecificationChromosome> bestSolutions = new LinkedList<>();
 
 	public void run(Tlsf spec) throws IOException, InterruptedException {
-		run(spec, 0.0d, 0.0d, 0.0d);
+		run(spec, 0.0d, 0.0d, 0.0d, false);
 	}
-	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor) throws IOException, InterruptedException{
+	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor, boolean allowAssumptionGuaranteeRemoval) throws IOException, InterruptedException{
 		this.initialExecutionTime = System.currentTimeMillis();
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
@@ -42,8 +42,10 @@ public class SpecificationGeneticAlgorithm {
 //		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
 		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 		fitness.setFactors(status_factor,syntactic_factor,semantic_factor);
+		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
-		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {	
+		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
+			System.out.println();
 			System.out.println("The specification is already realizable.");
 			return;
 		}
@@ -56,7 +58,7 @@ public class SpecificationGeneticAlgorithm {
 		ga.setMaximumNumberOfIndividuals(NUM_OF_INDIVIDUALS);
 		print_config();
 		ga.evolve(GENERATIONS);
-		long finalTime = System.currentTimeMillis();
+		finalExecutionTime = System.currentTimeMillis();
 		
 		System.out.println("Realizable Specifications:" );
 		for (int i = 0; i < solutions.size(); i++) {

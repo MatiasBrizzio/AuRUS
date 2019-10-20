@@ -26,6 +26,7 @@ public class Main {
 		double status_factor = 0.0d;
 		double syntactic_factor = 0.0d;
 		double semantic_factor = 0.0d;
+		boolean allowAssumptionGuaranteeRemoval = false;
 		int ga_timeout = 0;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
@@ -49,6 +50,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-random")){
 				randomGen = true;
+			}
+			else if(args[i].startsWith("-allow-AG-removal")){
+				allowAssumptionGuaranteeRemoval = true;
 			}
 			else if(args[i].startsWith("-GATO=")){
 				ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
@@ -87,7 +91,7 @@ public class Main {
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
-			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor);
+			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor,allowAssumptionGuaranteeRemoval);
 		
 		if (ga.solutions.isEmpty())
 			return;

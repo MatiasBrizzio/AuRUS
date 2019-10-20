@@ -40,7 +40,7 @@ public class FormulaWeakening implements Visitor<Formula>{
 	  private int weakening_rate;
 	  private int numOfAllowedWeakenings = 0;
 	  
-	public FormulaWeakening(List<String> literals, int weakening_rate, int num_of_weakening_to_appply) {
+	public FormulaWeakening(List<String> literals, int weakening_rate, int num_of_weakening_to_apply) {
 		ListIterator<String> literalIterator = literals.listIterator();
 	    List<Literal> literalList = new ArrayList<>();
 	    List<String> variableList = new ArrayList<>();
@@ -56,7 +56,7 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    variables = List.copyOf(variableList);
 	    fixedVariables = true;
 	    this.weakening_rate = weakening_rate;
-	    this.numOfAllowedWeakenings = num_of_weakening_to_appply;
+	    this.numOfAllowedWeakenings = num_of_weakening_to_apply;
 		
 	}
 	
