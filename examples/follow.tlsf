@@ -1,0 +1,75 @@
+INFO {
+  TITLE:       "TLSF - Test Specification"
+  DESCRIPTION: "Test Test Test"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+	//environment variables
+	esbit0;
+	esbit1;
+	esbit2;
+	esbit3;
+  }
+
+  OUTPUTS {
+	//System variables   
+	senv_stationary;
+	sbit0;
+	sbit1;
+	sbit2;
+	sbit3;
+
+  }
+
+  ASSUMPTIONS {
+	G F (true); 
+	G ( ((!esbit0 && !esbit1 && !esbit2 && !esbit3)) -> ( ((!X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3)))  ) );
+	G ( ((!esbit0 && !esbit1 && !esbit2 && esbit3)) -> ( ((!X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3)))  ) ); 
+	G ( ((!esbit0 && !esbit1 && esbit2 && !esbit3)) -> ( ((!X(esbit0) && !X(esbit1) && X(esbit2) && !X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3)))  ) ); 
+	G ( ((!esbit0 && !esbit1 && esbit2 && esbit3)) -> ( ((!X(esbit0) && !X(esbit1) && X(esbit2) && X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3)))  ) ); 
+	G ( ((!esbit0 && esbit1 && !esbit2 && !esbit3)) -> ( ((!X(esbit0) && X(esbit1) && !X(esbit2) && !X(esbit3))) || ((X(esbit0) && !X(esbit1) && X(esbit2) && !X(esbit3)))  ) ); 
+	G ( ((!esbit0 && esbit1 && !esbit2 && esbit3)) -> ( ((!X(esbit0) && X(esbit1) && !X(esbit2) && X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3)))  ) ); 
+	G ( ((!esbit0 && esbit1 && esbit2 && !esbit3)) -> ( ((!X(esbit0) && X(esbit1) && X(esbit2) && !X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3)))  ) ); 
+	G ( ((!esbit0 && esbit1 && esbit2 && esbit3)) -> ( ((!X(esbit0) && X(esbit1) && X(esbit2) && X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3)))  ) ); 
+	G ( ((esbit0 && !esbit1 && !esbit2 && !esbit3)) -> ( ((X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3))) || ((!X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3))) || ((!X(esbit0) && !X(esbit1) && X(esbit2) && !X(esbit3)))  || ((!X(esbit0) && X(esbit1) && X(esbit2) && X(esbit3)))  || ((X(esbit0) && !X(esbit1) && X(esbit2) && !X(esbit3)))  || ((X(esbit0) && !X(esbit1) && X(esbit2) && X(esbit3)))  ) ); 
+	G ( ((esbit0 && !esbit1 && !esbit2 && esbit3)) -> ( ((X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3))) || ((!X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3))) || ((!X(esbit0) && !X(esbit1) && X(esbit2) && X(esbit3))) || ((!X(esbit0) && X(esbit1) && !X(esbit2) && X(esbit3))) || ((!X(esbit0) && X(esbit1) && X(esbit2) && !X(esbit3)))  || ((X(esbit0) && !X(esbit1) && X(esbit2) && !X(esbit3)))  ) ); 
+	G ( ((esbit0 && !esbit1 && esbit2 && !esbit3)) -> ( ((X(esbit0) && !X(esbit1) && X(esbit2) && !X(esbit3))) || ((!X(esbit0) && X(esbit1) && !X(esbit2) && !X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3)))  || ((X(esbit0) && !X(esbit1) && !X(esbit2) && X(esbit3)))  ) );  
+	G ( ((esbit0 && !esbit1 && esbit2 && esbit3)) -> ( ((X(esbit0) && !X(esbit1) && X(esbit2) && X(esbit3))) || ((X(esbit0) && !X(esbit1) && !X(esbit2) && !X(esbit3)))  ) ); 
+	( (!esbit0 && !esbit1 && !esbit2 && !esbit3) || (!esbit0 && !esbit1 && !esbit2 && esbit3) || (!esbit0 && !esbit1 && esbit2 && !esbit3) || (!esbit0 && !esbit1 && esbit2 && esbit3) || (!esbit0 && esbit1 && !esbit2 && !esbit3) || (!esbit0 && esbit1 && !esbit2 && esbit3) || (!esbit0 && esbit1 && esbit2 && !esbit3) || (!esbit0 && esbit1 && esbit2 && esbit3) || (esbit0 && !esbit1 && !esbit2 && !esbit3) || (esbit0 && !esbit1 && !esbit2 && esbit3) || (esbit0 && !esbit1 && esbit2 && !esbit3) || (esbit0 && !esbit1 && esbit2 && esbit3)); 
+  }
+
+  GUARANTEES {
+		(G ((X(senv_stationary) <-> ( (X(esbit0) <-> esbit0) && (X(esbit1) <-> esbit1) && (X(esbit2) <-> esbit2) && (X(esbit3) <-> esbit3) )))); 
+		(G ((!X(senv_stationary) -> ( (X(sbit0) <-> sbit0) && (X(sbit1) <-> sbit1) && (X(sbit2) <-> sbit2) && (X(sbit3) <-> sbit3) )))); 
+		(G F (((senv_stationary && ((!esbit0 && !esbit1 && esbit2 && esbit3))) -> ((!sbit0 && !sbit1 && sbit2 && sbit3))))); 
+		(G F (((senv_stationary && ((esbit0 && !esbit1 && esbit2 && !esbit3))) -> ((sbit0 && !sbit1 && sbit2 && !sbit3))))); 
+		(G F (((senv_stationary && ((esbit0 && !esbit1 && !esbit2 && !esbit3))) -> ((sbit0 && !sbit1 && !sbit2 && !sbit3))))); 
+		(G F (((senv_stationary && ((esbit0 && !esbit1 && !esbit2 && esbit3))) -> ((sbit0 && !sbit1 && !sbit2 && sbit3))))); 
+		(G F (((senv_stationary && ((esbit0 && !esbit1 && esbit2 && esbit3))) -> ((sbit0 && !sbit1 && sbit2 && sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && esbit1 && esbit2 && esbit3))) -> ((!sbit0 && sbit1 && sbit2 && sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && !esbit1 && !esbit2 && !esbit3))) -> ((!sbit0 && !sbit1 && !sbit2 && !sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && !esbit1 && esbit2 && !esbit3))) -> ((!sbit0 && !sbit1 && sbit2 && !sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && !esbit1 && !esbit2 && esbit3))) -> ((!sbit0 && !sbit1 && !sbit2 && sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && esbit1 && !esbit2 && esbit3))) -> ((!sbit0 && sbit1 && !sbit2 && sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && esbit1 && esbit2 && !esbit3))) -> ((!sbit0 && sbit1 && sbit2 && !sbit3))))); 
+		(G F (((senv_stationary && ((!esbit0 && esbit1 && !esbit2 && !esbit3))) -> ((!sbit0 && sbit1 && !sbit2 && !sbit3))))); 
+		(G (!((!sbit0 && sbit1 && sbit2 && sbit3)))); 
+		!((!sbit0 && sbit1 && sbit2 && sbit3));
+		( (!sbit0 && !sbit1 && !sbit2 && !sbit3) || (!sbit0 && !sbit1 && !sbit2 && sbit3) || (!sbit0 && !sbit1 && sbit2 && !sbit3) || (!sbit0 && !sbit1 && sbit2 && sbit3) || (!sbit0 && sbit1 && !sbit2 && !sbit3) || (!sbit0 && sbit1 && !sbit2 && sbit3) || (!sbit0 && sbit1 && sbit2 && !sbit3) || (!sbit0 && sbit1 && sbit2 && sbit3) || (sbit0 && !sbit1 && !sbit2 && !sbit3) || (sbit0 && !sbit1 && !sbit2 && sbit3) || (sbit0 && !sbit1 && sbit2 && !sbit3) || (sbit0 && !sbit1 && sbit2 && sbit3)); 
+		G ( ((!sbit0 && !sbit1 && !sbit2 && !sbit3)) -> ( ((!X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3)))  ) ); 
+		G ( ((!sbit0 && !sbit1 && !sbit2 && sbit3)) -> ( ((!X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3)))  ) ); 
+		G ( ((!sbit0 && !sbit1 && sbit2 && !sbit3)) -> ( ((!X(sbit0) && !X(sbit1) && X(sbit2) && !X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3)))  ) ); 
+		G ( ((!sbit0 && !sbit1 && sbit2 && sbit3)) -> ( ((!X(sbit0) && !X(sbit1) && X(sbit2) && X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3)))  ) ); 
+		G ( ((!sbit0 && sbit1 && !sbit2 && !sbit3)) -> ( ((!X(sbit0) && X(sbit1) && !X(sbit2) && !X(sbit3))) || ((X(sbit0) && !X(sbit1) && X(sbit2) && !X(sbit3)))  ) ); 
+		G ( ((!sbit0 && sbit1 && !sbit2 && sbit3)) -> ( ((!X(sbit0) && X(sbit1) && !X(sbit2) && X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3)))  ) ); 
+		G ( ((!sbit0 && sbit1 && sbit2 && !sbit3)) -> ( ((!X(sbit0) && X(sbit1) && X(sbit2) && !X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3)))  ) ); 
+		G ( ((!sbit0 && sbit1 && sbit2 && sbit3)) -> ( ((!X(sbit0) && X(sbit1) && X(sbit2) && X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3)))  ) ); 
+		G ( ((sbit0 && !sbit1 && !sbit2 && !sbit3)) -> ( ((X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3))) || ((!X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3))) || ((!X(sbit0) && !X(sbit1) && X(sbit2) && !X(sbit3)))  || ((!X(sbit0) && X(sbit1) && X(sbit2) && X(sbit3)))  || ((X(sbit0) && !X(sbit1) && X(sbit2) && !X(sbit3))) || ((X(sbit0) && !X(sbit1) && X(sbit2) && X(sbit3)))  ) ); 
+		G ( ((sbit0 && !sbit1 && !sbit2 && sbit3)) -> ( ((X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3))) || ((!X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3)))  || ((!X(sbit0) && !X(sbit1) && X(sbit2) && X(sbit3)))  || ((!X(sbit0) && X(sbit1) && !X(sbit2) && X(sbit3))) || ((!X(sbit0) && X(sbit1) && X(sbit2) && !X(sbit3)))  || ((X(sbit0) && !X(sbit1) && X(sbit2) && !X(sbit3)))  ) ); 
+		G ( ((sbit0 && !sbit1 && sbit2 && !sbit3)) -> ( ((X(sbit0) && !X(sbit1) && X(sbit2) && !X(sbit3))) || ((!X(sbit0) && X(sbit1) && !X(sbit2) && !X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3)))  || ((X(sbit0) && !X(sbit1) && !X(sbit2) && X(sbit3)))  ) ); 
+		G ( ((sbit0 && !sbit1 && sbit2 && sbit3)) -> ( ((X(sbit0) && !X(sbit1) && X(sbit2) && X(sbit3))) || ((X(sbit0) && !X(sbit1) && !X(sbit2) && !X(sbit3)))  ) );
+  }
+}

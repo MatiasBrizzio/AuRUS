@@ -1,0 +1,72 @@
+INFO {
+  TITLE:       "TLSF - Test Specification"
+  DESCRIPTION: "Test Test Test"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+	//environment variables
+
+  }
+
+  OUTPUTS {
+	//System variables   
+	sp1;
+	sp2;
+	sp3;
+	sp4;
+	sp5;
+	sp6;
+	sp7;
+	sp8;
+	sp9;
+	sp10;
+	sp11;
+	sp12;
+	sp13;
+	sp14;
+	sp15;
+	sp16;
+	scamera;
+
+  }
+
+  ASSUMPTIONS {
+	(true && G (true) && G F (true));
+  }
+
+  GUARANTEES {
+	G F (true);
+	(G (((sp11) -> !scamera))); 
+	(G (((sp15 || sp16) -> !scamera))); 
+	(G (((sp13 || sp14) -> !scamera))); 
+	(G (((sp6) -> !scamera))); 
+	(G (((sp5) -> !scamera))); 
+	(G (((sp4) -> !scamera))); 
+	(G (((sp3) -> !scamera))); 
+	(G (((sp2) -> !scamera))); 
+	(G (((sp1) -> !scamera))); 
+	(G (!(sp7))); 
+	!(sp7); 
+	(sp11);
+	(G (scamera));
+	G (!(sp2 && sp3) && !(sp2 && sp1) && !(sp2 && sp6) && !(sp2 && sp7) && !(sp2 && sp4) && !(sp2 && sp5) && !(sp2 && sp8) && !(sp2 && sp11) && !(sp2 && sp12) && !(sp2 && sp13) && !(sp2 && sp14) && !(sp2 && sp15) && !(sp2 && sp16) && !(sp3 && sp1) && !(sp3 && sp6) && !(sp3 && sp7) && !(sp3 && sp4) && !(sp3 && sp5) && !(sp3 && sp8) && !(sp3 && sp11) && !(sp3 && sp12) && !(sp3 && sp13) && !(sp3 && sp14) && !(sp3 && sp15) && !(sp3 && sp16) && !(sp1 && sp6) && !(sp1 && sp7) && !(sp1 && sp4) && !(sp1 && sp5) && !(sp1 && sp8) && !(sp1 && sp11) && !(sp1 && sp12) && !(sp1 && sp13) && !(sp1 && sp14) && !(sp1 && sp15) && !(sp1 && sp16) && !(sp6 && sp7) && !(sp6 && sp4) && !(sp6 && sp5) && !(sp6 && sp8) && !(sp6 && sp11) && !(sp6 && sp12) && !(sp6 && sp13) && !(sp6 && sp14) && !(sp6 && sp15) && !(sp6 && sp16) && !(sp7 && sp4) && !(sp7 && sp5) && !(sp7 && sp8) && !(sp7 && sp11) && !(sp7 && sp12) && !(sp7 && sp13) && !(sp7 && sp14) && !(sp7 && sp15) && !(sp7 && sp16) && !(sp4 && sp5) && !(sp4 && sp8) && !(sp4 && sp11) && !(sp4 && sp12) && !(sp4 && sp13) && !(sp4 && sp14) && !(sp4 && sp15) && !(sp4 && sp16) && !(sp5 && sp8) && !(sp5 && sp11) && !(sp5 && sp12) && !(sp5 && sp13) && !(sp5 && sp14) && !(sp5 && sp15) && !(sp5 && sp16) && !(sp8 && sp11) && !(sp8 && sp12) && !(sp8 && sp13) && !(sp8 && sp14) && !(sp8 && sp15) && !(sp8 && sp16) && !(sp11 && sp12) && !(sp11 && sp13) && !(sp11 && sp14) && !(sp11 && sp15) && !(sp11 && sp16) && !(sp12 && sp13) && !(sp12 && sp14) && !(sp12 && sp15) && !(sp12 && sp16) && !(sp13 && sp14) && !(sp13 && sp15) && !(sp13 && sp16) && !(sp14 && sp15) && !(sp14 && sp16) && !(sp15 && sp16));
+	((sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && sp11 && !sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && sp12 && !sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && sp13 && !sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && sp14 && !sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && sp15 && !sp16) || (!sp2 && !sp3 && !sp1 && !sp6 && !sp7 && !sp4 && !sp5 && !sp8 && !sp11 && !sp12 && !sp13 && !sp14 && !sp15 && sp16));
+	G ( (sp2) -> ( (X(sp2)) || (X(sp14))  ) ); 
+	G ( (sp3) -> ( (X(sp3)) || (X(sp15))  ) ); 
+	G ( (sp1) -> ( (X(sp1)) || (X(sp13))  ) ); 
+	G ( (sp6) -> ( (X(sp6)) || (X(sp15))  ) ); 
+	G ( (sp7) -> ( (X(sp7)) || (X(sp11))  ) ); 
+	G ( (sp4) -> ( (X(sp4)) || (X(sp15))  ) ); 
+	G ( (sp5) -> ( (X(sp5)) || (X(sp16))  ) ); 
+	G ( (sp8) -> ( (X(sp8)) || (X(sp14))  ) ); 
+	G ( (sp11) -> ( (X(sp11)) || (X(sp7))  || (X(sp14))  || (X(sp16))  ) ); 
+	G ( (sp12) -> ( (X(sp12)) || (X(sp13))  ) ); 
+	G ( (sp13) -> ( (X(sp13)) || (X(sp1))  || (X(sp12))  || (X(sp14))  ) ); 
+	G ( (sp14) -> ( (X(sp14)) || (X(sp2))  || (X(sp8))   || (X(sp11))  || (X(sp13))  ) ); 
+	G ( (sp15) -> ( (X(sp15)) || (X(sp3))  || (X(sp6))   || (X(sp4))   || (X(sp16))  ) ); 
+	G ( (sp16) -> ( (X(sp16)) || (X(sp5))  || (X(sp11))  || (X(sp15))  ) ) 
+  }
+}
