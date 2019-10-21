@@ -23,9 +23,9 @@ public class Main {
 		int mutationRate = 0;
 		int generations = 0;
 		boolean randomGen = false;
-		double status_factor = 0.0d;
-		double syntactic_factor = 0.0d;
-		double semantic_factor = 0.0d;
+		double status_factor = -1.0d;
+		double syntactic_factor = -1.0d;
+		double semantic_factor = -1.0d;
 		boolean allowAssumptionGuaranteeRemoval = false;
 		int ga_timeout = 0;
 		String filename = "";
