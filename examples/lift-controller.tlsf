@@ -1,0 +1,57 @@
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Moore
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+	b1; b2;
+  }
+  
+  OUTPUTS {
+	f1;f2;
+  }
+
+  INITIALLY {
+    !b1 && !b2;
+  }
+  
+  REQUIRE {
+    (b1 && f1) -> X(!b1);
+    (b2 && f2) -> X(!b2);
+    (b1 && !f1) -> X(b1);
+    (b2 && !f2) -> X(b2);    
+  }
+
+
+  PRESET {
+    f1 && !f2;
+  }
+
+  ASSERT {
+    !(f1 && f2);
+    f1 -> X (f1 || f2);
+    f2 -> X (f1 || f2);
+    (f1 && X(f2)) -> X (b1 || b2);
+
+  }
+
+
+
+
+
+  //ASSUMPTIONS{
+	//Assumptions to be added to make the specification realizable	
+	//!(G(!r || !c) && G (r || !c));
+	//G (!c);
+  //}
+
+  GUARANTEE {
+	   G F (b1 -> f1);
+     G F (b2 -> f2);
+     G F (f1);
+     G F (f2);
+  }
+}
