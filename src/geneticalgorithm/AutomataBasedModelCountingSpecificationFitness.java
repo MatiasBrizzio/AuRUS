@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public int BOUND = 10;
+	public int BOUND = 40;
 	public boolean EXHAUSTIVE = true;
 	public double STATUS_FACTOR = 0.7d;
 	public double LOST_MODELS_FACTOR = 0.1d;
@@ -51,11 +51,11 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	}
 
 	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
-		if (status_factor > 0.0d)
+		if (status_factor >= 0.0d)
 			this.STATUS_FACTOR = status_factor;
-		if (syntactic_factor > 0.0d)
+		if (syntactic_factor >= 0.0d)
 			this.SYNTACTIC_FACTOR = syntactic_factor;
-		if (semantic_factor > 0.0d) {
+		if (semantic_factor >= 0.0d) {
 			double factor = semantic_factor/2.0d;
 			this.LOST_MODELS_FACTOR = factor;
 			this.WON_MODELS_FACTOR = factor;
@@ -151,12 +151,13 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			}
 			catch (Exception e) { e.printStackTrace(); }
 		}
+
 		double fitness = (STATUS_FACTOR * status_fitness) + (LOST_MODELS_FACTOR * lost_models_fitness) + (WON_MODELS_FACTOR * won_models_fitness) + (SYNTACTIC_FACTOR * syntactic_distance);
 //		}
 		System.out.printf("f%.2f ",fitness);
 		chromosome.fitness = fitness;
 		if (fitness > 1.0d) {
-			System.out.println(String.format("BEST Fitness: %.2f",fitness));
+			System.out.println(String.format("BROKEN Fitness: %.2f",fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(chromosome.spec));
 			throw new RuntimeException();
 		}
@@ -240,16 +241,16 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (originalNumOfModels == BigInteger.ZERO)
 			return 0.0d;
 
-		Formula refined_formula = refined.toFormula().formula().not();
+		Formula refined_formula = refined.toFormula().formula();
 		if (refined_formula == BooleanConstant.TRUE)
-			return 0.0d;
-		if (refined_formula == BooleanConstant.FALSE)
 			return 1.0d;
+		if (refined_formula == BooleanConstant.FALSE)
+			return 0.0d;
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
 		if (lostModels == BooleanConstant.TRUE)
-			return 0.0d;
-		if (lostModels == BooleanConstant.FALSE)
 			return 1.0d;
+		if (lostModels == BooleanConstant.FALSE)
+			return 0.0d;
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
 		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
@@ -257,10 +258,14 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
-		double value = 1.0d - res.doubleValue();
+		double value = res.doubleValue();
 		System.out.print(numOfLostModels + " " + numOfModels + " ");
-		if (res.doubleValue() > 1.0d)
-			throw new RuntimeException("lost models major than 1.0: " + refined.toFormula());
+		if (res.doubleValue() > 1.0d) {
+//			System.out.println("\nBROKEN formula: " + formula);
+//			throw new RuntimeException("lost models major than 1.0: " + refined.toFormula());
+			System.out.println("\nWARNING: increase the bound. ");
+			return 1.0d;
+		}
 		return value;
 	}
 	
@@ -274,16 +279,16 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			return 0.0d;
 //		
 //		int numOfVars = original.variables().size();
-		Formula original_formula = original.toFormula().formula().not();
+		Formula original_formula = original.toFormula().formula();
 		if (original_formula == BooleanConstant.TRUE)
-			return 0.0d;
-		if (original_formula == BooleanConstant.FALSE)
 			return 1.0d;
+		if (original_formula == BooleanConstant.FALSE)
+			return 0.0d;
 		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula());
 		if (wonModels == BooleanConstant.TRUE)
-			return 0.0d;
-		if (wonModels == BooleanConstant.FALSE)
 			return 1.0d;
+		if (wonModels == BooleanConstant.FALSE)
+			return 0.0d;
 		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
 //		System.out.println("WON: "+formula);
 		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
@@ -291,12 +296,15 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
 		BigDecimal res = numOfWonModels.divide(numOfRefinedModels, 2, RoundingMode.HALF_UP);
 
-		double value = 1.0d - res.doubleValue();
+		double value = res.doubleValue();
 		System.out.print(numOfWonModels + " " + numOfRefinedModels + " ");
-		if (res.doubleValue() > 1.0d)
-			throw new RuntimeException("won models major than 1.0: " + refined.toFormula());
+		if (res.doubleValue() > 1.0d) {
+			System.out.println("\nWARNING: increase the bound. ");
+			return 1.0d;
+		}
 		return value;
 	}
+
 
 	public double compute_syntactic_distance_size(Tlsf original, Tlsf refined) {
 		Formula f0 = original.toFormula().formula();

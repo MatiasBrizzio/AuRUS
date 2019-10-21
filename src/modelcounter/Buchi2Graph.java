@@ -39,9 +39,10 @@ public class Buchi2Graph {
 
 	private static Graph<String> dfaToGraph (automata.Automaton dfa) {
 		Graph<String> g = new Graph<>();
-
 		//Setear estados iniciales.
 		State is = dfa.getInitialState();
+		if (is == null) //dfa is empty
+			return g;
 		Node<String> in= getNode(g, is.getName());
 		g.setInit(in);
 		Transition[] transitions = dfa.getTransitions();

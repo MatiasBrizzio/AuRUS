@@ -162,7 +162,7 @@ public class TLSF_Utils {
 		}
 		
 		if (hasSyfcoSintax(spec)) {
-			if (isBasic(spec)) 
+			if (isBasic(spec))
 				return TlsfParser.parse(new FileReader(spec));
 		}
 		else {

@@ -28,7 +28,8 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		FileReader f2 = new FileReader("examples/minepump-2.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f2);
 //		Settings.USE_DOCKER = false;
-		Fitness<SpecificationChromosome, Double> fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+		fitnessFunc.allowAssumptionGuaranteeRemoval(true);
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 	}
@@ -40,7 +41,8 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		f = new FileReader("examples/minepump-3.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
-		Fitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+		fitnessFunc.allowAssumptionGuaranteeRemoval(true);
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 		
@@ -53,7 +55,8 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		f = new FileReader("examples/minepump-4.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
-		Fitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+		fitnessFunc.allowAssumptionGuaranteeRemoval(true);
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 		

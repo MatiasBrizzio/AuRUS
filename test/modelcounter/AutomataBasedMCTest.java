@@ -49,9 +49,9 @@ public class AutomataBasedMCTest {
 	@Test
 	public void test2() throws ParseErrorException, IOException, InterruptedException  {
 		List<String> vars = List.of("a", "b");
-		LabelledFormula formula =  LtlParser.parse("G (a | b)",vars);
-		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);
-		BigInteger d =  counter.count(2);
+		LabelledFormula formula =  LtlParser.parse("G (a || (b))",vars);
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
+		BigInteger d =  counter.count(4);
 		System.out.println(d);
 	}
 
@@ -71,16 +71,26 @@ public class AutomataBasedMCTest {
 		FileReader f = new FileReader("examples/minepump.tlsf");
 		Tlsf spec = TlsfParser.parse(f);
 
-		FileReader f2 = new FileReader("examples/minepump-4.tlsf");
+		FileReader f2 = new FileReader("examples/minepump-broken.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f2);
 
 		Formula cnf = Conjunction.of(spec.toFormula().formula(),spec2.toFormula().formula());
 		SyntacticSimplifier simp = new SyntacticSimplifier();
 	    Formula simplified = cnf.accept(simp);
-		LabelledFormula formula = LabelledFormula.of(simplified, spec.variables());
+		LabelledFormula formula = LabelledFormula.of(cnf, spec.variables());
+
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
+		BigInteger d =  counter.count(5);
+		System.out.println(d);
+	}
+
+	@Test
+	public void testMinePumpBroken() throws ParseErrorException, IOException, InterruptedException  {
+		List<String> vars = List.of("methane", "high_water", "pump_on");
+		LabelledFormula formula =  LtlParser.parse("(((G((!methane | X(!pump_on))) & G((!high_water | X(pump_on)))) | F((high_water & pump_on & X((high_water & X(high_water)))))) & ((G((!methane | X(!pump_on))) & G((methane | !high_water | X(pump_on)))) | F((high_water & pump_on & X((high_water & X(high_water)))))))",vars);
 
 		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);
-		BigInteger d =  counter.count(5);
+		BigInteger d =  counter.count(10);
 		System.out.println(d);
 	}
 

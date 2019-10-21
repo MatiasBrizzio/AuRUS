@@ -281,7 +281,7 @@ public class FormulaToRE {
         return nbaToDfa(automaton);
     }
 
-    private final Object2IntMap stateNumbers = new Object2IntOpenHashMap();
+    private Object2IntMap stateNumbers;
     private <S> int getStateId(@Nullable S state) {
         checkState(state != null);
         return stateNumbers.computeIntIfAbsent(state, k -> stateNumbers.size());
@@ -290,7 +290,7 @@ public class FormulaToRE {
     public <S> automata.Automaton nbaToDfa(Automaton<S, ? extends OmegaAcceptance> automaton){
 
         automata.Automaton fsa = new FiniteStateAutomaton();
-
+        stateNumbers = new Object2IntOpenHashMap();
          //Map nodes to states ids
         java.util.Map<S,automata.State> ids = new HashMap<>();
         for (S s : automaton.states()) {
@@ -299,12 +299,13 @@ public class FormulaToRE {
             ids.put(s, state);
         }
 
+        int N = automaton.size();
         //create one unique initial state
-        automata.State is = fsa.createStateWithId(new Point(),-1);
+        automata.State is = fsa.createStateWithId(new Point(),N);
         fsa.setInitialState(is);
 
         //create one unique final state
-        automata.State fs = fsa.createStateWithId(new Point(),-2);
+        automata.State fs = fsa.createStateWithId(new Point(),N+2);
         fsa.addFinalState(fs);
 
         //get initial nodes
@@ -386,6 +387,7 @@ public class FormulaToRE {
         automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
         DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
         automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+//        System.out.println(dfa_minimized.toString());
         return dfa_minimized;
     }
 
