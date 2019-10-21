@@ -17,7 +17,7 @@ import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
-
+	public static int BOUND = 0;
 	public static int GENERATIONS = 10;
 	public static int NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
 	public static int POPULATION_SIZE = 30;
@@ -48,6 +48,7 @@ public class SpecificationGeneticAlgorithm {
 		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 		fitness.setFactors(status_factor,syntactic_factor,semantic_factor);
 		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
+		fitness.setBound(BOUND);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
 		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
 			System.out.println();

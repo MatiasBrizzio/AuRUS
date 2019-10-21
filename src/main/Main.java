@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import geneticalgorithm.AutomataBasedModelCountingSpecificationFitness;
 import geneticalgorithm.Settings;
 import geneticalgorithm.SpecificationChromosome;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
@@ -27,6 +28,7 @@ public class Main {
 		double syntactic_factor = -1.0d;
 		double semantic_factor = -1.0d;
 		boolean allowAssumptionGuaranteeRemoval = false;
+		int bound = 0;
 		int ga_timeout = 0;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
@@ -44,6 +46,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-MR=")){
 				mutationRate = Integer.parseInt(args[i].replace("-MR=", ""));
+			}
+			else if(args[i].startsWith("-k=")){
+				bound = Integer.parseInt(args[i].replace("-k=", ""));
 			}
 			else if(args[i].startsWith("-no-docker")){
 				Settings.USE_DOCKER = false;
@@ -88,6 +93,7 @@ public class Main {
 		if (mutationRate > 0) ga.MUTATION_RATE = mutationRate;
 		if (generations > 0) ga.GENERATIONS = generations;
 		if (ga_timeout > 0) ga.EXECUTION_TIMEOUT = ga_timeout;
+		if (bound > 0) ga.BOUND = bound;
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
@@ -124,7 +130,7 @@ public class Main {
 	private static void correctUssage(){
 		System.out.println("Use ./unreal-repair.sh " +
 								"[-Max=max_num_of_individuals |  -Gen=num_of_generations | -GATO=GA_timeout | " +
-								"-Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | " +
+								"-k=bound | -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | " +
 								"-no-docker | -random] " +
 								"input-file.tlsf");
 	}

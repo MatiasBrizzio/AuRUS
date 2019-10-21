@@ -62,6 +62,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		}
 	}
 
+	public void setBound (int bound) {
+		if (bound > 0)
+			 this.BOUND = bound;
+	}
 	public void allowAssumptionGuaranteeRemoval(boolean value) {
 		this.allowAssumptionGuaranteeRemoval = value;
 	}
