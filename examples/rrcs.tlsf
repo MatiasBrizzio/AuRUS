@@ -1,0 +1,72 @@
+//Taken from Symbolic causality checking using bounded model checking. SPIN 2015.
+//Adrian Beer, Stephan Heidinger, Uwe Kuhne, Florian Leitner-Fischer, and Stefan Leue.
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+  ta; tc; // tl;
+  ca; cc; //cl;
+  }
+  OUTPUTS {
+    go;
+  }
+  
+  INITIALLY {
+    !ta && !tc;// && !tl;
+    !ca && !cc;// && !cl;
+  }
+  
+  REQUIRE {
+    //Trains do not stop
+    (ta -> !tc);
+    (tc -> !ta);
+//    (tl -> !ta && !tc);  
+    ta -> X(tc);
+    tc -> X(!tc);
+    //Cars cross only when the gate is opened.
+    (ca -> !cc);
+    (cc -> !ca);
+    //(cl -> !(ca && !cc);)
+    (X(cc) -> (ca && go));
+    (cc -> X(!cc));
+  }
+
+
+  PRESET {
+    !go;
+  }
+
+//  ASSERT {
+//    (gc -> !go);
+//    (go -> !gc);
+//  }
+
+  //ASSUMPTIONS{
+  //  GF(ta);
+  //  GF(ca);
+  //}
+
+
+
+  GUARANTEE {
+  //When the train is approaching (ta), then the gate should be closed (tc) so the train can cross (tc). 
+    G (ta -> X(!go)) ;
+    //When a car approaches to the crossing (ca), then the gate opens (go) and car crosses (cc). 
+    G (ca -> X(go)) ;
+    //Of course, the train and the car cannot be crossing at the same time.
+    G (tc -> cc);
+    //GF(tc);
+    //GF(cc);
+  }
+}
+
+
+
+
+
+

@@ -7,22 +7,21 @@ INFO {
 
 MAIN {
   INPUTS {
-    req;
-    cl;
+    x;
   }
   OUTPUTS {
-    gr;
-    val;
+    y;
+  }
+
+  ASSERT {
+     G (x || !y);
   }
 
   ASSUMPTIONS {
-     G  F !req;
+     G  F !x;
   }
 
   GUARANTEES {
-     G (req -> X (F gr));
-     G ((cl || gr) -> !gr);
-     G (cl -> !val);
-     G F (gr && val);
+     G  F y;
   }
 }
