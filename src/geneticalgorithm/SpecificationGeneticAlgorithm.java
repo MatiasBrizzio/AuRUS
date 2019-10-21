@@ -37,7 +37,7 @@ public class SpecificationGeneticAlgorithm {
 	public void run(Tlsf spec, boolean allowAssumptionGuaranteeRemoval) throws IOException, InterruptedException {
 		run(spec, -1.0d, -1.0d, -1.0d, allowAssumptionGuaranteeRemoval);
 	}
-	
+
 	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor, boolean allowAssumptionGuaranteeRemoval) throws IOException, InterruptedException{
 		this.initialExecutionTime = System.currentTimeMillis();
 		long initialTime = System.currentTimeMillis();

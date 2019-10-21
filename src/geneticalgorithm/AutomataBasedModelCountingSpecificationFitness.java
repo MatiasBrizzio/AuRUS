@@ -198,7 +198,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 				else { //env_sat == SolverResult.SAT && sys_sat == SolverResult.SAT
 //					Formula env_sys = spec.toFormula().formula();
 					//check if initial states and safety properties are consistent
-					Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())));
+					Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), spec.assume());
 
 
 //					System.out.println(env_sys);
