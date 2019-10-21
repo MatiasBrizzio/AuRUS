@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public int BOUND = 40;
+	public int BOUND = 10;
 	public boolean EXHAUSTIVE = true;
 	public double STATUS_FACTOR = 0.7d;
 	public double LOST_MODELS_FACTOR = 0.1d;
@@ -117,14 +117,15 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
 			status_fitness = 0.2d;
 		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 0.5d;
+			status_fitness = 0.8d;
 		else if (chromosome.status == SPEC_STATUS.REALIZABLE)
 			status_fitness = 1.0d;
 
 		
 
 		double syntactic_distance = 0.0d;
-		syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
+		if (SYNTACTIC_FACTOR > 0.0d)
+			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 
 
@@ -132,7 +133,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		//if the specifications are not syntactically equivalent
 		// Second, compute the portion of loosing models with respect to the original specification
 		double lost_models_fitness = 0.0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
-		if (syntactic_distance < 1.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
+		if (syntactic_distance < 1.0d &&  LOST_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
 			try {
 				lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
@@ -143,7 +144,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
 		// Third, compute the portion of winning models with respect to the original specification
 		double won_models_fitness = 0.0d;
-		if (syntactic_distance < 1.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
+		if (syntactic_distance < 1.0d &&  WON_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
 			try {
 				won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
@@ -195,8 +196,11 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 					status = SPEC_STATUS.ASSUMPTIONS;
 				}
 				else { //env_sat == SolverResult.SAT && sys_sat == SolverResult.SAT
-					Formula env_sys = spec.toFormula().formula();
-					
+//					Formula env_sys = spec.toFormula().formula();
+					//check if initial states and safety properties are consistent
+					Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())));
+
+
 //					System.out.println(env_sys);
 					Formula env_sys2 = env_sys.accept(visitor);
 //					System.out.println(env_sys2);
