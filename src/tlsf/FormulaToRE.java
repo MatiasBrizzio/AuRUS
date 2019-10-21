@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.IntConsumer;
 
+import static com.google.common.base.Preconditions.checkState;
 import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
 
 public class FormulaToRE {
@@ -280,6 +281,12 @@ public class FormulaToRE {
         return nbaToDfa(automaton);
     }
 
+    private final Object2IntMap stateNumbers = new Object2IntOpenHashMap();
+    private <S> int getStateId(@Nullable S state) {
+        checkState(state != null);
+        return stateNumbers.computeIntIfAbsent(state, k -> stateNumbers.size());
+    }
+
     public <S> automata.Automaton nbaToDfa(Automaton<S, ? extends OmegaAcceptance> automaton){
 
         automata.Automaton fsa = new FiniteStateAutomaton();
@@ -287,16 +294,17 @@ public class FormulaToRE {
          //Map nodes to states ids
         java.util.Map<S,automata.State> ids = new HashMap<>();
         for (S s : automaton.states()) {
-            automata.State state = fsa.createState(new Point());
+            int id = getStateId(s);
+            automata.State state = fsa.createStateWithId(new Point(),id);
             ids.put(s, state);
         }
 
         //create one unique initial state
-        automata.State is = fsa.createState(new Point());
+        automata.State is = fsa.createStateWithId(new Point(),-1);
         fsa.setInitialState(is);
 
         //create one unique final state
-        automata.State fs = fsa.createState(new Point());
+        automata.State fs = fsa.createStateWithId(new Point(),-2);
         fsa.addFinalState(fs);
 
         //get initial nodes
@@ -341,11 +349,16 @@ public class FormulaToRE {
                         fsa.addTransition(t);
 
                         if (edge.acceptanceSetIterator().hasNext()) {
-                            //get state
-                            automata.State as = ids.get(to);
-                            //add transition
-                            FSATransition final_t = new FSATransition(fromState, fs, label);
-                            fsa.addTransition(final_t);
+                            IntArrayList acceptanceSets = new IntArrayList();
+                            edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+                            int toID = getStateId(to);
+                            if (acceptanceSets.contains(toID)) {
+                                //get state
+                                //automata.State as = ids.get(to);
+                                //add transition
+                                FSATransition final_t = new FSATransition(fromState, fs, label);
+                                fsa.addTransition(final_t);
+                            }
                         }
                     });
 
