@@ -15,12 +15,9 @@
  ******************************************************************************/
 package com.lagodiuk.ga;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.WeakHashMap;
+import geneticalgorithm.Settings;
+
+import java.util.*;
 
 public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> {
 
@@ -97,7 +94,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		}
 
 		// apply mutation
-		Random r = new Random();
+		Random r = Settings.RANDOM_GENERATOR;
 		for (int i = 0; (i < parentPopulationSize) && (numberOfVisitedIndividuals < MAXIMUM_NUM_OF_INDIVIDUALS); i++) {
 			int mut = r.nextInt(100);
 			if (mut < MUTATION_RATE){
@@ -123,11 +120,22 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		}
 
 		newPopulation.sortPopulationByFitness(this.chromosomesComparator);
-		if (newPopulation.getSize() > this.parentChromosomesSurviveCount)
-			newPopulation.trim(this.parentChromosomesSurviveCount);
+//		if (newPopulation.getSize() > this.parentChromosomesSurviveCount)
+//			newPopulation.trim(this.parentChromosomesSurviveCount);
 		this.population = newPopulation;
 	}
 
+	public boolean randomSelector = false;
+	public void select() {
+		//best selector
+		if (population.getSize() > this.parentChromosomesSurviveCount) {
+			if (randomSelector) {
+				//first, disorder individuals before trimming
+				population.shufflePopulation();
+			}
+			population.trim(this.parentChromosomesSurviveCount);
+		}
+	}
 	public void evolve(int count) {
 		this.terminate = false;
 		for (int i = 0; i < count; i++) {
@@ -139,6 +147,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			for (IterartionListener<C, T> l : this.iterationListeners) {
 				l.update(this);
 			}
+			this.select();
 		}
 	}
 
@@ -218,4 +227,5 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	public void clearCache() {
 		this.chromosomesComparator.clearCache();
 	}
+
 }

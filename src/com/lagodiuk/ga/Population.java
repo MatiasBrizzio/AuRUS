@@ -55,6 +55,10 @@ public class Population<C extends Chromosome<C>> implements Iterable<C> {
 		Collections.sort(this.chromosomes, chromosomesComparator);
 	}
 
+	public void shufflePopulation() {
+		Collections.shuffle(this.chromosomes);
+	}
+
 	/**
 	 * shortening population till specific number
 	 */

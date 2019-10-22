@@ -49,7 +49,8 @@ public class AutomataBasedMCTest {
 	@Test
 	public void test2() throws ParseErrorException, IOException, InterruptedException  {
 		List<String> vars = List.of("a", "b");
-		LabelledFormula formula =  LtlParser.parse("G (a || (b))",vars);
+		LabelledFormula formula =  LtlParser.parse("G(a -> X(b))",vars);
+
 		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
 		BigInteger d =  counter.count(4);
 		System.out.println(d);
@@ -59,8 +60,8 @@ public class AutomataBasedMCTest {
 	@Test
 	public void test3() throws ParseErrorException, IOException, InterruptedException  {
 		List<String> vars = List.of("a", "b");
-		LabelledFormula formula =  LtlParser.parse("G F (a && b)",vars);
-		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,true);
+		LabelledFormula formula =  LtlParser.parse("F (a && b)",vars);
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
 		BigInteger d =  counter.count(3);
 		System.out.println(d);
 	}
@@ -71,13 +72,26 @@ public class AutomataBasedMCTest {
 		FileReader f = new FileReader("examples/minepump.tlsf");
 		Tlsf spec = TlsfParser.parse(f);
 
-		FileReader f2 = new FileReader("examples/minepump-broken.tlsf");
+		FileReader f2 = new FileReader("examples/minepump-3.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f2);
 
-		Formula cnf = Conjunction.of(spec.toFormula().formula(),spec2.toFormula().formula());
-		SyntacticSimplifier simp = new SyntacticSimplifier();
-	    Formula simplified = cnf.accept(simp);
-		LabelledFormula formula = LabelledFormula.of(cnf, spec.variables());
+//		Formula cnf = Conjunction.of(spec.toFormula().formula().not(),spec2.toFormula().formula().not());
+//		SyntacticSimplifier simp = new SyntacticSimplifier();
+//	    Formula simplified = cnf.accept(simp);
+//		LabelledFormula formula = LabelledFormula.of(simplified, spec.variables());
+		LabelledFormula formula = LtlParser.parse(spec.toFormula().not().toString() + " && " + spec2.toFormula().not().toString(), spec.variables());
+		System.out.println(formula);
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
+		BigInteger d =  counter.count(5);
+		System.out.println(d);
+	}
+
+	@Test
+	public void testMinePumpBrokenMC() throws ParseErrorException, IOException, InterruptedException  {
+		List<String> vars = List.of("methane", "high_water", "pump_on");
+//		LabelledFormula formula =  LtlParser.parse("((F(X!p2&p1)|F(Xp2&p0))&F(X!p2&p1)&G(X(X!p1|!p1)|!p2|!p1))",vars);
+//		LabelledFormula formula =  LtlParser.parse("((F((methane & X(pump_on))) | F((high_water & X(!pump_on)))) & (F((methane & X(pump_on))) | F((!methane & high_water & X(!pump_on)))) & G((!high_water | !pump_on | X((!high_water | X(!high_water))))))", vars);
+		LabelledFormula formula =  LtlParser.parse("((F((methane & X(pump_on))) | F((high_water & X(!pump_on)))) & (F((methane & X(pump_on))) | F((!methane & high_water & X(!pump_on)))) & G((!high_water | !pump_on | X((!high_water | X(!high_water))))))",vars);
 
 		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(formula,false);
 		BigInteger d =  counter.count(5);

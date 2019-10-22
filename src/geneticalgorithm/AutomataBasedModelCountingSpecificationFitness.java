@@ -7,6 +7,7 @@ import gov.nasa.ltl.trans.ParseErrorException;
 import modelcounter.AutomataBasedModelCounting;
 import modelcounter.CountRltlConv;
 import owl.ltl.*;
+import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.NormalForms;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
@@ -38,9 +39,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	public Tlsf originalSpecification = null;
 	public List<String> alphabet = null;
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+    public boolean allowAssumptionGuaranteeRemoval = false;
 	public BigInteger originalNumOfModels;
-	public boolean allowAssumptionGuaranteeRemoval = false;
-//	public BigInteger originalNegationNumOfModels;
+	public BigInteger originalNegationNumOfModels;
+//    public BigInteger UNIVERSE;
 
 	public AutomataBasedModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
 		this.originalSpecification = originalSpecification;
@@ -48,7 +50,9 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
 		originalNumOfModels = countModels(originalSpecification.toFormula());
-	}
+        originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
+//        UNIVERSE = countModels(LtlParser.parse("true",originalSpecification.variables()));
+    }
 
 	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
 		if (status_factor >= 0.0d)
@@ -251,19 +255,20 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
 		Formula refined_formula = refined.toFormula().formula();
 		if (refined_formula == BooleanConstant.TRUE)
-			return 1.0d;
-		if (refined_formula == BooleanConstant.FALSE)
 			return 0.0d;
+		if (refined_formula == BooleanConstant.FALSE)
+			return 1.0d;
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
 		if (lostModels == BooleanConstant.TRUE)
-			return 1.0d;
-		if (lostModels == BooleanConstant.FALSE)
 			return 0.0d;
+		if (lostModels == BooleanConstant.FALSE)
+			return 1.0d;
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
 		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
 
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
+//        BigDecimal numOfModels = new BigDecimal(UNIVERSE);
 
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
@@ -282,17 +287,17 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (refined.toFormula().formula() == BooleanConstant.FALSE)
 			return 0.0d;
 
-		BigInteger refinedNumOfModels = countModels(refined.toFormula());
-		if (refinedNumOfModels == BigInteger.ZERO)
-			return 0.0d;
-//		
+//		BigInteger refinedNumOfModels = countModels(refined.toFormula());
+//		if (refinedNumOfModels == BigInteger.ZERO)
+//			return 0.0d;
+
 //		int numOfVars = original.variables().size();
-		Formula original_formula = original.toFormula().formula();
-		if (original_formula == BooleanConstant.TRUE)
-			return 1.0d;
-		if (original_formula == BooleanConstant.FALSE)
-			return 0.0d;
-		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula());
+		Formula original_formula = original.toFormula().formula().not();
+//		if (original_formula == BooleanConstant.TRUE)
+//			return 1.0d;
+//		if (original_formula == BooleanConstant.FALSE)
+//			return 0.0d;
+		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula().not());
 		if (wonModels == BooleanConstant.TRUE)
 			return 1.0d;
 		if (wonModels == BooleanConstant.FALSE)
@@ -301,7 +306,9 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		System.out.println("WON: "+formula);
 		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
 
-		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
+//		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
+//        BigDecimal numOfRefinedModels = new BigDecimal(UNIVERSE);
+        BigDecimal numOfRefinedModels = new BigDecimal(originalNegationNumOfModels);
 		BigDecimal res = numOfWonModels.divide(numOfRefinedModels, 2, RoundingMode.HALF_UP);
 
 		double value = res.doubleValue();

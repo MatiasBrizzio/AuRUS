@@ -98,6 +98,8 @@ public class AutomataBasedModelCounting {
 	public  BigInteger count(int k){
 		//We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,
 		// and v is the column vector where vi = 1 if and only if i is an accepting state and 0 otherwise.
+		if (nba == null || nba.getNodeCount() == 0)
+			return BigInteger.ZERO;
 		int n = T.numRows;
 		DMatrixRMaj u = new DMatrixRMaj(1,n);
 		//TODO: Assume that the initial state is in first position

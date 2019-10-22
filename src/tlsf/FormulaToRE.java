@@ -43,7 +43,7 @@ import java.util.function.IntConsumer;
 import static com.google.common.base.Preconditions.checkState;
 import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
 
-public class FormulaToRE {
+public class FormulaToRE<S> {
 
     //Map labels to ids
     public java.util.Map<String,String> labelIDs = new HashMap<>();
@@ -101,7 +101,7 @@ public class FormulaToRE {
 //        Automaton<S, BuchiAcceptance> automaton = (Automaton<S, BuchiAcceptance>) nba2dba.apply(nba);
         if (automaton.size() == 0)
             return null;
-        Set acceptanceSets = new HashSet();//automaton.acceptance().acceptingSet(); 
+        Set acceptanceSets = new HashSet();//automaton.acceptance().acceptingSet();
 //        automaton.states().forEach(s ->
 //        	automaton.edgeMap(s).forEach((edge, valuationSet) -> {
 //        			edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);}));
@@ -129,22 +129,22 @@ public class FormulaToRE {
         //Map nodes to states ids
 //        java.util.Map<String,Integer> ids = new HashMap<>();
 //        stateNumbers = new Object2IntOpenHashMap();
-        
+
       //Map nodes to states ids
   		java.util.Map<S,automata.State> ids = new HashMap<>();
   		for (S s : automaton.states()) {
   			automata.State state = fsa.createState(new Point());
             ids.put(s, state);
   		}
-        
+
         //create one unique initial state
         automata.State is = fsa.createState(new Point());
         fsa.setInitialState(is);
-        
+
         //create one unique final state
 //        automata.State fs = fsa.createStateWithId(new Point(),-2);
 //        fsa.addFinalState(fs);
-        
+
         //get initial nodes
         for(S in : automaton.initialStates()) {
             //create and set initial state
@@ -198,10 +198,10 @@ public class FormulaToRE {
 //	                        setLabel(l);
 //	                    else
 //	                        setLabelEncoded(l);
-	
+
 	                    String label = labelIDs.get(l);
 
-                        
+
 	                    //check if toState exists
 	                    automata.State toState = ids.get(to);
 //	                    automata.State toState = fsa.getStateWithID(getStateId(to));
@@ -224,7 +224,7 @@ public class FormulaToRE {
 	                    fsa.addTransition(t);
                 	});
                 }
-            
+
 
 //              IntArrayList acceptanceSets = new IntArrayList();
 //              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
@@ -246,7 +246,7 @@ public class FormulaToRE {
         NFAToDFA determinizer = new NFAToDFA();
         automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
 //        System.out.println(dfa.toString());
-        
+
         Minimizer min = new Minimizer();
 //        automata.Automaton dfa_minimized = (automata.Automaton) dfa.clone();
 //        boolean isminimized = false;
@@ -257,7 +257,7 @@ public class FormulaToRE {
         	automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
 //        	isminimized = min.isMinimized(dfa_minimized, tree);
 //        }
-//        	System.out.println(dfa_minimized.toString());	
+//        	System.out.println(dfa_minimized.toString());
         FSAToRegularExpressionConverter.convertToSimpleAutomaton(dfa_minimized);
 //        System.out.println(dfa_minimized.toString());
 //        System.out.print("f");
@@ -271,13 +271,15 @@ public class FormulaToRE {
 //        SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), OmegaAcceptance.class);
 //        Automaton<S, OmegaAcceptance> automaton = translator.apply(formula);
 
-        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.BUCHI));
+        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.GENERALIZED_BUCHI));
         Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
 
 //        if (automaton.size() == 0)
 //            return null;
-//        System.out.println(formula+" ");
+//        System.out.println(automaton.acceptance().acceptingSet());
+//        System.out.println(automaton.acceptance().booleanExpression());
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+//        System.out.println(HoaPrinter.toString(automaton));
         return nbaToDfa(automaton);
     }
 
@@ -301,7 +303,7 @@ public class FormulaToRE {
 
         int N = automaton.size();
         //create one unique initial state
-        automata.State is = fsa.createStateWithId(new Point(),N);
+        automata.State is = fsa.createStateWithId(new Point(),N+1);
         fsa.setInitialState(is);
 
         //create one unique final state
@@ -349,17 +351,18 @@ public class FormulaToRE {
                         FSATransition t = new FSATransition(fromState, toState, label);
                         fsa.addTransition(t);
 
+
                         if (edge.acceptanceSetIterator().hasNext()) {
-                            IntArrayList acceptanceSets = new IntArrayList();
-                            edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                            int toID = getStateId(to);
-                            if (acceptanceSets.contains(toID)) {
+//                            IntArrayList acceptanceSets = new IntArrayList();
+//                            edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+//                            int toID = getStateId(to);
+//                            if (automaton.acceptance().acceptingSet().get(toID)) {
                                 //get state
                                 //automata.State as = ids.get(to);
                                 //add transition
                                 FSATransition final_t = new FSATransition(fromState, fs, label);
                                 fsa.addTransition(final_t);
-                            }
+//                            }
                         }
                     });
 

@@ -19,15 +19,15 @@ import tlsf.FormulaToRE;
 
 public class Buchi2Graph {
 	 
-	public static Graph<String> LTL2Graph(String formula) throws IOException, InterruptedException {
-		Rltlconv_LTLModelCounter translator = new Rltlconv_LTLModelCounter() ;
-		Nba nba = translator.ltl2nba(formula);
-		translator.generateLabels(nba);
-		automata.Automaton dfa = translator.nbaTodfa(nba);
-
-//		System.out.println(dfa);
-		return dfaToGraph(dfa);
-	}
+//	public static Graph<String> LTL2Graph(String formula) throws IOException, InterruptedException {
+//		Rltlconv_LTLModelCounter translator = new Rltlconv_LTLModelCounter() ;
+//		Nba nba = translator.ltl2nba(formula);
+//		translator.generateLabels(nba);
+//		automata.Automaton dfa = translator.nbaTodfa(nba);
+//
+////		System.out.println(dfa);
+//		return dfaToGraph(dfa);
+//	}
 
 	public static Graph<String> LTL2Graph(LabelledFormula formula) throws IOException, InterruptedException {
 		FormulaToRE translatorLTLtoRE = new FormulaToRE();
