@@ -55,6 +55,11 @@ public class SpecificationGeneticAlgorithm {
 			System.out.println("The specification is already realizable.");
 			return;
 		}
+		if (!fitness.originalStatus.isSpecificationConsistent()) {
+			System.out.println();
+			System.out.println("The specification is inconsistent. The approach requires a consistent specification as input.");
+			return;
+		}
 
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		addListener(ga);

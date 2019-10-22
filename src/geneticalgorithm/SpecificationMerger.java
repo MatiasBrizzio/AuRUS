@@ -70,14 +70,14 @@ public class SpecificationMerger {
 						listOfConjuncts.add(c);
 				conjuncts0.removeAll(listOfConjuncts);
 				conjuncts1.removeAll(listOfConjuncts);
-				Formula guarantee0 = BooleanConstant.TRUE;
+				Formula assume0 = BooleanConstant.TRUE;
 				if (!conjuncts0.isEmpty())
-					guarantee0 = Conjunction.of(conjuncts0);
-				Formula guarantee1 = BooleanConstant.TRUE;
+					assume0 = Conjunction.of(conjuncts0);
+				Formula assume1 = BooleanConstant.TRUE;
 				if (!conjuncts1.isEmpty())
-					guarantee1 = Conjunction.of(conjuncts1);
-				if(guarantee0 != BooleanConstant.TRUE && guarantee1 != BooleanConstant.TRUE)
-					listOfConjuncts.add(Disjunction.of(guarantee0,guarantee1));
+					assume1 = Conjunction.of(conjuncts1);
+				if(assume0 != BooleanConstant.TRUE && assume1 != BooleanConstant.TRUE)
+					listOfConjuncts.add(Disjunction.of(assume0,assume1));
 				if (listOfConjuncts.isEmpty())
 					listOfConjuncts.add(BooleanConstant.TRUE);
 				new_spec = TLSF_Utils.change_assume(new_spec, listOfConjuncts);

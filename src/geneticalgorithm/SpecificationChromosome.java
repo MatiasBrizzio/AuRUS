@@ -52,6 +52,20 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		public boolean isSpecificationConsistent () {
 			return (this == UNREALIZABLE || this == REALIZABLE);
 		}
+
+		@Override
+		public String toString(){
+			switch (this) {
+				case UNKNOWN : return "unknown";
+				case BOTTOM : return "BOTTOM: both the assumptions and goals are unsatisfiable.";
+				case ASSUMPTIONS: return "ASSUMPTIONS: the assumptions are consistent, but not the goals.";
+				case GUARANTEES: return "GUARANTEES: the goals are consistent, but not the assumptions.";
+				case CONTRADICTORY : return "CONTRADICTORY: the assumptions and goals become unsatisfiable when are putted together. ";
+				case UNREALIZABLE:  return "UNREALIZABLE: the specification is satisfiable, but not realizable.";
+				case REALIZABLE: return "REALIZABLE: the specification is satisfiable and realizable.";
+			};
+			return null;
+		}
 	};
 		
 	public Tlsf spec = null;

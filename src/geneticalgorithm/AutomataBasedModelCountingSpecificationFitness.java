@@ -49,6 +49,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
+		System.out.println("Initial specification is: " + originalStatus);
 		originalNumOfModels = countModels(originalSpecification.toFormula());
         originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 //        UNIVERSE = countModels(LtlParser.parse("true",originalSpecification.variables()));
@@ -125,7 +126,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
 			status_fitness = 0.2d;
 		else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-			status_fitness = 0.8d;
+			status_fitness = 0.5d;
 		else if (chromosome.status == SPEC_STATUS.REALIZABLE)
 			status_fitness = 1.0d;
 

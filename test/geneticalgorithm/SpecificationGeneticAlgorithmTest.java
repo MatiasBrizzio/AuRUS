@@ -38,11 +38,11 @@ class SpecificationGeneticAlgorithmTest {
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 20	;
-		ga.POPULATION_SIZE = 100;
+		ga.GENERATIONS = 10	;
+		ga.POPULATION_SIZE = 30;
 		ga.MUTATION_RATE = 100;
-		//ga.NUM_OF_INDIVIDUALS = 1000;
-		ga.run(tlsf,0,0,0,false);
+		ga.NUM_OF_INDIVIDUALS = 200;
+		ga.run(tlsf);
 	}
 
 	@Test
