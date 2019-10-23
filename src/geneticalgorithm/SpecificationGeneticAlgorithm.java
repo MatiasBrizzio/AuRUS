@@ -1,6 +1,8 @@
 package geneticalgorithm;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,8 +25,8 @@ public class SpecificationGeneticAlgorithm {
 	public static int POPULATION_SIZE = 30;
 	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
-	public long initialExecutionTime = 0;
-	public long finalExecutionTime = 0;
+	public Instant initialExecutionTime = null;
+	public Instant finalExecutionTime = null;
 	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 
 	public List<SpecificationChromosome> solutions = new LinkedList<>();
@@ -39,7 +41,7 @@ public class SpecificationGeneticAlgorithm {
 	}
 
 	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor, boolean allowAssumptionGuaranteeRemoval) throws IOException, InterruptedException{
-		this.initialExecutionTime = System.currentTimeMillis();
+		initialExecutionTime = Instant.now();
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
@@ -67,9 +69,10 @@ public class SpecificationGeneticAlgorithm {
 		ga.setMutationRate(MUTATION_RATE);
 		ga.setParentChromosomesSurviveCount(POPULATION_SIZE);
 		ga.setMaximumNumberOfIndividuals(NUM_OF_INDIVIDUALS);
+		ga.setTIMEOUT(EXECUTION_TIMEOUT);
 		print_config();
 		ga.evolve(GENERATIONS);
-		finalExecutionTime = System.currentTimeMillis();
+		finalExecutionTime = Instant.now();
 		
 		System.out.println("Realizable Specifications:" );
 		for (int i = 0; i < solutions.size(); i++) {
@@ -116,10 +119,8 @@ public class SpecificationGeneticAlgorithm {
 	}
 
 	public String print_execution_time() {
-		long totalTime = finalExecutionTime - initialExecutionTime;
-		int min = (int) (totalTime)/60000;
-		int sec = (int) (totalTime - min*60000)/1000;
-		String timeStr = String.format("Time: %s m  %s s",min, sec);
+		Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
+		String timeStr = String.format("Time: %s m  %s s",duration.toMinutes(), duration.toSecondsPart());
 		return timeStr;
 	}
 	private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
@@ -185,17 +186,19 @@ public class SpecificationGeneticAlgorithm {
 						System.out.println();
 						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getNumberOfVisitedIndividuals(),solutions.size()));
 
-						//check if timeout has been reached
-						if (EXECUTION_TIMEOUT > 0) {
-							long currentIterationTime = System.currentTimeMillis();
-							long totalTime = currentIterationTime - initialExecutionTime;
-							int min = (int) (totalTime) / 60000;
-							int sec = (int) (totalTime - min * 60000) / 1000;
-							if (sec > EXECUTION_TIMEOUT) {
-								System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
-								ga.terminate();
-							}
-						}
+//						//check if timeout has been reached
+//						if (EXECUTION_TIMEOUT > 0) {
+//							Duration current = Duration.between(initialExecutionTime, Instant.now());
+////							long currentIterationTime = System.currentTimeMillis();
+////							long totalTime = currentIterationTime - initialExecutionTime;
+////							int min = (int) (totalTime) / 60000;
+////							int sec = (int) (totalTime - min * 60000) / 1000;
+//
+//							if (current.toSeconds() > EXECUTION_TIMEOUT) {
+//								System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
+//								ga.terminate();
+//							}
+//						}
 					}
 				});
 	}

@@ -41,7 +41,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
     public boolean allowAssumptionGuaranteeRemoval = false;
 	public BigInteger originalNumOfModels;
-	public BigInteger originalNegationNumOfModels;
+//	public BigInteger originalNegationNumOfModels;
 //    public BigInteger UNIVERSE;
 
 	public AutomataBasedModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
@@ -51,7 +51,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		this.originalStatus = originalChromosome.status;
 		System.out.println("Initial specification is: " + originalStatus);
 		originalNumOfModels = countModels(originalSpecification.toFormula());
-        originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
+//        originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 //        UNIVERSE = countModels(LtlParser.parse("true",originalSpecification.variables()));
     }
 
@@ -267,7 +267,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
 		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
-
+		//patch to avoid computing again this value;
+		commonNumOfModels = numOfLostModels;
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 //        BigDecimal numOfModels = new BigDecimal(UNIVERSE);
 
@@ -282,34 +283,40 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		}
 		return value;
 	}
-	
+
+	private BigDecimal commonNumOfModels = null;
 	private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
 		if (refined.toFormula().formula() == BooleanConstant.FALSE)
 			return 0.0d;
 
-//		BigInteger refinedNumOfModels = countModels(refined.toFormula());
-//		if (refinedNumOfModels == BigInteger.ZERO)
-//			return 0.0d;
+		BigInteger refinedNumOfModels = countModels(refined.toFormula());
+		if (refinedNumOfModels == BigInteger.ZERO)
+			return 0.0d;
 
 //		int numOfVars = original.variables().size();
-		Formula original_formula = original.toFormula().formula().not();
+		Formula original_formula = original.toFormula().formula();
 //		if (original_formula == BooleanConstant.TRUE)
 //			return 1.0d;
 //		if (original_formula == BooleanConstant.FALSE)
 //			return 0.0d;
-		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula().not());
+		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula());
 		if (wonModels == BooleanConstant.TRUE)
-			return 1.0d;
-		if (wonModels == BooleanConstant.FALSE)
 			return 0.0d;
+		if (wonModels == BooleanConstant.FALSE)
+			return 1.0d;
 		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
 //		System.out.println("WON: "+formula);
-		BigDecimal numOfWonModels = new BigDecimal(countModels(formula));
-
-//		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
+		//patch to avoid computing again this value;
+		BigDecimal numOfWonModels = null;
+		if (commonNumOfModels != null)
+			numOfWonModels = commonNumOfModels;
+		else
+			numOfWonModels = new BigDecimal(countModels(formula));
+		commonNumOfModels = null;
+		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
 //        BigDecimal numOfRefinedModels = new BigDecimal(UNIVERSE);
-        BigDecimal numOfRefinedModels = new BigDecimal(originalNegationNumOfModels);
+//        BigDecimal numOfRefinedModels = new BigDecimal(originalNegationNumOfModels);
 		BigDecimal res = numOfWonModels.divide(numOfRefinedModels, 2, RoundingMode.HALF_UP);
 
 		double value = res.doubleValue();
@@ -371,7 +378,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		double lost = ((double) commonSubs.size()) / ((double) sub_original.size());
 		double won = ((double) commonSubs.size()) / ((double) sub_refined.size());
 		double size = compute_syntactic_distance_size(original, refined);
-		double syntactic_distance = 0.5d * size + 0.25d * lost + 0.25d * won;
+		double syntactic_distance =  0.5d * size +  0.25d * lost + 0.25d * won;
 		return syntactic_distance;
 	}
 

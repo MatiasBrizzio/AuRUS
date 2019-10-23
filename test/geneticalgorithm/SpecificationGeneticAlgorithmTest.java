@@ -26,14 +26,29 @@ class SpecificationGeneticAlgorithmTest {
 		ga.GENERATIONS = 10;
 		ga.POPULATION_SIZE = 30;
 		ga.MUTATION_RATE = 100;
-//		ga.NUM_OF_INDIVIDUALS = 100;
-		ga.run(tlsf);
+		ga.NUM_OF_INDIVIDUALS = 200;
+		ga.run(tlsf,true);
 	}
 
 	@Test
 	void testRunSimple() throws IOException, InterruptedException {
 		//example taken from paper: Minimal Assumptions Refinement for GR(1) Specifications
 		String filename = "examples/simple.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
+//		Settings.USE_DOCKER = false;
+		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+		ga.GENERATIONS = 10	;
+		ga.POPULATION_SIZE = 30;
+		ga.MUTATION_RATE = 100;
+		ga.NUM_OF_INDIVIDUALS = 200;
+		ga.run(tlsf);
+	}
+
+	@Test
+	void testRuHenzingerPaper() throws IOException, InterruptedException {
+		//example taken from paper: Minimal Assumptions Refinement for GR(1) Specifications
+		String filename = "examples/HENZINGER/simple.tlsf";
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
@@ -77,11 +92,12 @@ class SpecificationGeneticAlgorithmTest {
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 10;
+		ga.GENERATIONS = 1;
 		ga.POPULATION_SIZE = 30;
 		ga.MUTATION_RATE = 100;
-		ga.NUM_OF_INDIVIDUALS = 200;
-		ga.BOUND = 20;
+		ga.NUM_OF_INDIVIDUALS = 50;
+		ga.BOUND = 10;
+		ga.EXECUTION_TIMEOUT = 600;
 		ga.run(tlsf,true);
 	}
 }

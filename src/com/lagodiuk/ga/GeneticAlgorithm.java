@@ -17,11 +17,14 @@ package com.lagodiuk.ga;
 
 import geneticalgorithm.Settings;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> {
 
 	private static final int ALL_PARENTAL_CHROMOSOMES = Integer.MAX_VALUE;
+
 
 	private class ChromosomesComparator implements Comparator<C> {
 
@@ -69,7 +72,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	// number of chromosomes visited during the search
 	private int MAXIMUM_NUM_OF_INDIVIDUALS =  Integer.MAX_VALUE;
 
-
 	// Percentage of chromosomes that are selected for crossover
 	private int CROSSOVER_RATE = 10; 
 	// Probability with which the mutation is applied to each chromosome
@@ -95,7 +97,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 		// apply mutation
 		Random r = Settings.RANDOM_GENERATOR;
-		for (int i = 0; (i < parentPopulationSize) && (numberOfVisitedIndividuals < MAXIMUM_NUM_OF_INDIVIDUALS); i++) {
+		for (int i = 0; (i < parentPopulationSize) && !terminate; i++) {
 			int mut = r.nextInt(100);
 			if (mut < MUTATION_RATE){
 				C chromosome = this.population.getChromosomeByIndex(i);
@@ -104,11 +106,12 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 				//update number of visited chromosomes
 				this.numberOfVisitedIndividuals++;
 			}
+			checkTermination();
 		}
 		
 		// apply crossover
 		int numOfCrossovers = Math.max(10, parentPopulationSize*(CROSSOVER_RATE/100));
-		for (int i = 0; (i < numOfCrossovers) && (numberOfVisitedIndividuals < MAXIMUM_NUM_OF_INDIVIDUALS); i++) {
+		for (int i = 0; (i < numOfCrossovers) && !terminate; i++) {
 			C chromosome = this.population.getRandomChromosome();
 			C otherChromosome = this.population.getRandomChromosome();
 			List<C> crossovered = chromosome.crossover(otherChromosome);
@@ -117,6 +120,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			}
 			//update number of visited chromosomes
 			this.numberOfVisitedIndividuals += crossovered.size();
+			checkTermination();
 		}
 
 		newPopulation.sortPopulationByFitness(this.chromosomesComparator);
@@ -138,8 +142,10 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 	}
 	public void evolve(int count) {
 		this.terminate = false;
+		startRunningTime = Instant.now();
 		for (int i = 0; i < count; i++) {
-			if (this.terminate || numberOfVisitedIndividuals >= MAXIMUM_NUM_OF_INDIVIDUALS) {
+			checkTermination();
+			if (this.terminate) {
 				break;
 			}
 			this.evolve();
@@ -148,6 +154,26 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 				l.update(this);
 			}
 			this.select();
+		}
+	}
+
+	private int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
+	private Instant startRunningTime = null;
+	public void setTIMEOUT(int timeout) {
+		this.EXECUTION_TIMEOUT = timeout;
+	}
+	private void checkTermination() {
+		if (numberOfVisitedIndividuals >=  MAXIMUM_NUM_OF_INDIVIDUALS) {
+			terminate();
+			return;
+		}
+		//check if timeout has been reached
+		if (EXECUTION_TIMEOUT > 0) {
+			Duration current = Duration.between(startRunningTime, Instant.now());
+			if (current.toSeconds() > EXECUTION_TIMEOUT) {
+				System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
+				terminate();
+			}
 		}
 	}
 
