@@ -2,7 +2,6 @@ package solvers;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,20 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import geneticalgorithm.Settings;
-import owl.ltl.BooleanConstant;
-import owl.ltl.Formula;
+import main.Settings;
 import owl.ltl.LabelledFormula;
-import owl.ltl.parser.TlsfParser;
 import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
-import owl.ltl.tlsf.Tlsf.Semantics;
 import tlsf.TLSF_Utils;
 
 public class StrixHelper {
 
 	private static FileWriter writer;
-	private static int TIMEOUT = 180;
+//	private static int TIMEOUT = 180;
 	
 	static Map<String, String> replacements = new HashMap<String, String>(){
 		private static final long serialVersionUID = 1L;
@@ -111,7 +106,7 @@ public class StrixHelper {
 		else
 			pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
 		boolean timeout = false;
-		if(!pr.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
+		if(!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
 			pr.destroy(); // consider using destroyForcibly instead
 		}
@@ -219,7 +214,7 @@ public class StrixHelper {
 		else
 			pr = Runtime.getRuntime().exec( new String[]{"lib/new_strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
 		boolean timeout = false;
-		if(!pr.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
+		if(!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
 			pr.destroy(); // consider using destroyForcibly instead
 		}

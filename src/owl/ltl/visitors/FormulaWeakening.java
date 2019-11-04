@@ -5,12 +5,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Random;
 import java.util.Set;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import geneticalgorithm.Settings;
+import main.Settings;
 import owl.ltl.Biconditional;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;

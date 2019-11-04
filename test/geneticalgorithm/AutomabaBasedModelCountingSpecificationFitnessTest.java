@@ -1,6 +1,7 @@
 package geneticalgorithm;
 
 import com.lagodiuk.ga.Fitness;
+import main.Settings;
 import org.junit.jupiter.api.Test;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
@@ -27,9 +28,10 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		Tlsf spec1 = TlsfParser.parse(f);
 		FileReader f2 = new FileReader("examples/minepump-2.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f2);
+		Settings.allowAssumptionGuaranteeRemoval = true;
 //		Settings.USE_DOCKER = false;
 		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
-		fitnessFunc.allowAssumptionGuaranteeRemoval(true);
+
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 	}
@@ -42,7 +44,7 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
-		fitnessFunc.allowAssumptionGuaranteeRemoval(true);
+		Settings.allowAssumptionGuaranteeRemoval = true;
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 		
@@ -56,7 +58,7 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
-		fitnessFunc.allowAssumptionGuaranteeRemoval(true);
+		Settings.allowAssumptionGuaranteeRemoval = true;
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 		

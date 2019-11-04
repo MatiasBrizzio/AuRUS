@@ -1,5 +1,7 @@
 package solvers;
 
+import main.Settings;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class LTLSolver {
 	public static int numOfTimeout = 0;
 	public static int numOfError = 0;
 	public static int numOfCalls = 0;
-	public static int TIMEOUT = 30;
+//	public static int TIMEOUT = 30;
 	
 	private static String getCommand(){
 		String cmd = "";
@@ -56,7 +58,7 @@ public class LTLSolver {
     	}
 
 		boolean timeout = false;
-		if(!p.waitFor(TIMEOUT, TimeUnit.SECONDS)) {
+		if(!p.waitFor(Settings.SAT_TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
 			p.destroy(); // consider using destroyForcibly instead
 		}

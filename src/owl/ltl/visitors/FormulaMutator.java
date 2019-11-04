@@ -5,10 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Random;
 
-import geneticalgorithm.Settings;
-import owl.grammar.LTLParser;
+import main.Settings;
 import owl.ltl.Biconditional;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
@@ -29,7 +27,6 @@ import owl.ltl.WOperator;
 import owl.ltl.XOperator;
 import owl.ltl.YOperator;
 import owl.ltl.ZOperator;
-import owl.ltl.parser.LtlParser;
 
 public class FormulaMutator implements Visitor<Formula>{
 	private final List<Literal> literalCache;

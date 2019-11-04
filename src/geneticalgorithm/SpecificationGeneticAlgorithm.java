@@ -12,6 +12,7 @@ import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
+import main.Settings;
 import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
 import solvers.StrixHelper;
@@ -19,15 +20,16 @@ import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
-	public static int BOUND = 0;
-	public static int GENERATIONS = 10;
-	public static int NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
-	public static int POPULATION_SIZE = 30;
-	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
-	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
+//	public static int BOUND = 0;
+//	public static int GENERATIONS = 10;
+//	public static int NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
+//	public static int POPULATION_SIZE = 30;
+//	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
+//	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
+//	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 	public Instant initialExecutionTime = null;
 	public Instant finalExecutionTime = null;
-	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
+
 
 	public List<SpecificationChromosome> solutions = new LinkedList<>();
 	public List<SpecificationChromosome> bestSolutions = new LinkedList<>();
@@ -48,9 +50,9 @@ public class SpecificationGeneticAlgorithm {
 //		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
 //		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
 		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
-		fitness.setFactors(status_factor,syntactic_factor,semantic_factor);
-		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
-		fitness.setBound(BOUND);
+		Settings.setFactors(status_factor,syntactic_factor,semantic_factor);
+//		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
+//		fitness.setBound(Settings.MC_BOUND);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
 		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
 			System.out.println();
@@ -65,13 +67,13 @@ public class SpecificationGeneticAlgorithm {
 
 		GeneticAlgorithm<SpecificationChromosome,Double> ga = new GeneticAlgorithm<SpecificationChromosome,Double>(population, fitness);
 		addListener(ga);
-		ga.setCrossoverRate(CROSSOVER_RATE);
-		ga.setMutationRate(MUTATION_RATE);
-		ga.setParentChromosomesSurviveCount(POPULATION_SIZE);
-		ga.setMaximumNumberOfIndividuals(NUM_OF_INDIVIDUALS);
-		ga.setTIMEOUT(EXECUTION_TIMEOUT);
+		ga.setCrossoverRate(Settings.GA_CROSSOVER_RATE);
+		ga.setMutationRate(Settings.GA_MUTATION_RATE);
+		ga.setParentChromosomesSurviveCount(Settings.GA_POPULATION_SIZE);
+		ga.setMaximumNumberOfIndividuals(Settings.GA_MAX_NUM_INDIVIDUALS);
+		ga.setTIMEOUT(Settings.GA_EXECUTION_TIMEOUT);
 		print_config();
-		ga.evolve(GENERATIONS);
+		ga.evolve(Settings.GA_GENERATIONS);
 		finalExecutionTime = Instant.now();
 		
 		System.out.println("Realizable Specifications:" );
@@ -92,7 +94,7 @@ public class SpecificationGeneticAlgorithm {
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		//population.addChromosome(init);
-		for (int i = 0; i < POPULATION_SIZE; i++) {
+		for (int i = 0; i < Settings.GA_POPULATION_SIZE; i++) {
 			SpecificationChromosome c = init.mutate();
 			population.addChromosome(c);
 		}
@@ -115,7 +117,7 @@ public class SpecificationGeneticAlgorithm {
 	}
 	
 	public String print_config() {
-		return String.format("GEN: %s, Pop:%s, MAX:%s MR: %s, COR: %s", GENERATIONS, POPULATION_SIZE, (NUM_OF_INDIVIDUALS==Integer.MAX_VALUE)?"INF":NUM_OF_INDIVIDUALS, MUTATION_RATE, CROSSOVER_RATE);
+		return String.format("GEN: %s, Pop:%s, MAX:%s MR: %s, COR: %s", Settings.GA_GENERATIONS, Settings.GA_POPULATION_SIZE, (Settings.GA_MAX_NUM_INDIVIDUALS==Integer.MAX_VALUE)?"INF":Settings.GA_MAX_NUM_INDIVIDUALS, Settings.GA_MUTATION_RATE, Settings.GA_CROSSOVER_RATE);
 	}
 
 	public String print_execution_time() {

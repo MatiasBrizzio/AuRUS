@@ -1,10 +1,9 @@
 package geneticalgorithm;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.FileReader;
 import java.io.IOException;
 
+import main.Settings;
 import org.junit.jupiter.api.Test;
 
 import com.lagodiuk.ga.Fitness;

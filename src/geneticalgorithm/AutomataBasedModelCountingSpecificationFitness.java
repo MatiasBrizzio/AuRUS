@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import gov.nasa.ltl.trans.ParseErrorException;
+import main.Settings;
 import modelcounter.AutomataBasedModelCounting;
 import modelcounter.CountRltlConv;
 import owl.ltl.*;
@@ -29,17 +30,17 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-	public int BOUND = 10;
-	public boolean EXHAUSTIVE = true;
-	public double STATUS_FACTOR = 0.7d;
-	public double LOST_MODELS_FACTOR = 0.1d;
-	public double WON_MODELS_FACTOR = 0.1d;
-	//	public static final double SOLUTION = 0.8d;
-	public  double SYNTACTIC_FACTOR = 0.1d;
+//	public int BOUND = 10;
+//	public boolean EXHAUSTIVE = true;
+//	public double STATUS_FACTOR = 0.7d;
+//	public double LOST_MODELS_FACTOR = 0.1d;
+//	public double WON_MODELS_FACTOR = 0.1d;
+//	//	public static final double SOLUTION = 0.8d;
+//	public  double SYNTACTIC_FACTOR = 0.1d;
 	public Tlsf originalSpecification = null;
 	public List<String> alphabet = null;
 	public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
-    public boolean allowAssumptionGuaranteeRemoval = false;
+//    public boolean allowAssumptionGuaranteeRemoval = false;
 	public BigInteger originalNumOfModels;
 //	public BigInteger originalNegationNumOfModels;
 //    public BigInteger UNIVERSE;
@@ -55,25 +56,26 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //        UNIVERSE = countModels(LtlParser.parse("true",originalSpecification.variables()));
     }
 
-	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
-		if (status_factor >= 0.0d)
-			this.STATUS_FACTOR = status_factor;
-		if (syntactic_factor >= 0.0d)
-			this.SYNTACTIC_FACTOR = syntactic_factor;
-		if (semantic_factor >= 0.0d) {
-			double factor = semantic_factor/2.0d;
-			this.LOST_MODELS_FACTOR = factor;
-			this.WON_MODELS_FACTOR = factor;
-		}
-	}
+//	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
+//		if (status_factor >= 0.0d)
+//			this.STATUS_FACTOR = status_factor;
+//		if (syntactic_factor >= 0.0d)
+//			this.SYNTACTIC_FACTOR = syntactic_factor;
+//		if (semantic_factor >= 0.0d) {
+//			double factor = semantic_factor/2.0d;
+//			this.LOST_MODELS_FACTOR = factor;
+//			this.WON_MODELS_FACTOR = factor;
+//		}
+//	}
 
-	public void setBound (int bound) {
-		if (bound > 0)
-			 this.BOUND = bound;
-	}
-	public void allowAssumptionGuaranteeRemoval(boolean value) {
-		this.allowAssumptionGuaranteeRemoval = value;
-	}
+//	public void setBound (int bound) {
+//		if (bound > 0)
+//			 this.BOUND = bound;
+//	}
+
+//	public void allowAssumptionGuaranteeRemoval(boolean value) {
+//		this.allowAssumptionGuaranteeRemoval = value;
+//	}
 
 	private void generateAlphabet () {
 		if (originalSpecification.variables().size() <= 26) {
@@ -103,7 +105,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (guarantees == BooleanConstant.TRUE)
 			return 0.0d;
 
-		if (!this.allowAssumptionGuaranteeRemoval) {
+		if (!Settings.allowAssumptionGuaranteeRemoval) {
 			boolean somethingRemoved = somethingHasBeenRemoved(originalSpecification, chromosome.spec);
 			if (somethingRemoved)
 				return 0.0d;
@@ -133,7 +135,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		
 
 		double syntactic_distance = 0.0d;
-		if (SYNTACTIC_FACTOR > 0.0d)
+		if (Settings.SYNTACTIC_FACTOR > 0.0d)
 			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
 		System.out.printf("s%.2f ", syntactic_distance);
 
@@ -142,7 +144,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		//if the specifications are not syntactically equivalent
 		// Second, compute the portion of loosing models with respect to the original specification
 		double lost_models_fitness = 0.0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
-		if (syntactic_distance < 1.0d &&  LOST_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
+		if (syntactic_distance < 1.0d &&  Settings.LOST_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
 			try {
 				lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
@@ -153,7 +155,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
 		// Third, compute the portion of winning models with respect to the original specification
 		double won_models_fitness = 0.0d;
-		if (syntactic_distance < 1.0d &&  WON_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
+		if (syntactic_distance < 1.0d &&  Settings.WON_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent() && chromosome.status.isSpecificationConsistent()) {
 			// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
 			try {
 				won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
@@ -162,7 +164,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			catch (Exception e) { e.printStackTrace(); }
 		}
 
-		double fitness = (STATUS_FACTOR * status_fitness) + (LOST_MODELS_FACTOR * lost_models_fitness) + (WON_MODELS_FACTOR * won_models_fitness) + (SYNTACTIC_FACTOR * syntactic_distance);
+		double fitness = (Settings.STATUS_FACTOR * status_fitness) + (Settings.LOST_MODELS_FACTOR * lost_models_fitness) + (Settings.WON_MODELS_FACTOR * won_models_fitness) + (Settings.SYNTACTIC_FACTOR * syntactic_distance);
 //		}
 		System.out.printf("f%.2f ",fitness);
 		chromosome.fitness = fitness;
@@ -244,8 +246,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (simplified == BooleanConstant.FALSE)
 			return BigInteger.ZERO;
 		LabelledFormula simp_formula = LabelledFormula.of(simplified, formula.variables());
-		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula,this.EXHAUSTIVE);
-		BigInteger numOfModels = counter.count(this.BOUND);
+		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula, Settings.MC_EXHAUSTIVE);
+		BigInteger numOfModels = counter.count(Settings.MC_BOUND);
 		return numOfModels;
 	}
 
@@ -404,6 +406,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	}
 
 	public  void print_config() {
-		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s, rem: %s", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR,allowAssumptionGuaranteeRemoval));
+		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s, rem: %s", Settings.STATUS_FACTOR, Settings.LOST_MODELS_FACTOR, Settings.WON_MODELS_FACTOR, Settings.SYNTACTIC_FACTOR,Settings.allowAssumptionGuaranteeRemoval));
 	}
 }

@@ -3,15 +3,11 @@ package geneticalgorithm;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
-import owl.ltl.BooleanConstant;
-import owl.ltl.Conjunction;
-import owl.ltl.Disjunction;
+import main.Settings;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
-import owl.ltl.rewriter.NormalForms;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
@@ -46,7 +42,7 @@ public class SpecificationMerger {
 				if (!guaranteeConjuncts.contains(c))
 					guaranteeConjuncts.add(c);
 		}
-		//take guarantees from spec0?
+		//take guarantees from spec1?
 		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
 			for (Formula c : spec1.guarantee())
 				if (!guaranteeConjuncts.contains(c))

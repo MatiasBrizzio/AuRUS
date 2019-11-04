@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import main.Settings;
 import org.junit.jupiter.api.Test;
 
 import com.lagodiuk.ga.Population;
@@ -23,25 +24,26 @@ class SpecificationGeneticAlgorithmTest {
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 10;
-		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 100;
-		ga.NUM_OF_INDIVIDUALS = 200;
+		Settings.GA_GENERATIONS = 10;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 200;
 		ga.run(tlsf,true);
 	}
 
 	@Test
 	void testRunSimple() throws IOException, InterruptedException {
 		//example taken from paper: Minimal Assumptions Refinement for GR(1) Specifications
-		String filename = "examples/simple.tlsf";
+		String filename = "examples/simple2.tlsf";
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 10	;
-		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 100;
-		ga.NUM_OF_INDIVIDUALS = 200;
+		Settings.GA_GENERATIONS = 10	;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 200;
+		Settings.GA_EXECUTION_TIMEOUT = 600;
 		ga.run(tlsf);
 	}
 
@@ -53,10 +55,10 @@ class SpecificationGeneticAlgorithmTest {
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 10	;
-		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 100;
-		ga.NUM_OF_INDIVIDUALS = 200;
+		Settings.GA_GENERATIONS = 10	;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 200;
 		ga.run(tlsf);
 	}
 
@@ -66,11 +68,11 @@ class SpecificationGeneticAlgorithmTest {
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 10;
-		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 100;
-		//ga.NUM_OF_INDIVIDUALS = 1000;
-		ga.run(tlsf,0,0,0,false);
+		Settings.GA_GENERATIONS = 10;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		//Settings.GA_MAX_NUM_INDIVIDUALS = 1000;
+		ga.run(tlsf,-1,0,0,false);
 	}
 
 	@Test
@@ -79,10 +81,10 @@ class SpecificationGeneticAlgorithmTest {
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 10;
-		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 100;
-		//ga.NUM_OF_INDIVIDUALS = 1000;
+		Settings.GA_GENERATIONS = 10;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		//Settings.GA_MAX_NUM_INDIVIDUALS = 1000;
 		ga.run(tlsf,0,0,0,false);
 	}
 
@@ -92,12 +94,12 @@ class SpecificationGeneticAlgorithmTest {
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		ga.GENERATIONS = 1;
-		ga.POPULATION_SIZE = 30;
-		ga.MUTATION_RATE = 100;
-		ga.NUM_OF_INDIVIDUALS = 50;
-		ga.BOUND = 10;
-		ga.EXECUTION_TIMEOUT = 600;
+		Settings.GA_GENERATIONS = 1;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 50;
+		Settings.MC_BOUND = 10;
+		Settings.GA_EXECUTION_TIMEOUT = 600;
 		ga.run(tlsf,true);
 	}
 }

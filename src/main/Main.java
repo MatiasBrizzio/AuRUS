@@ -2,16 +2,11 @@ package main;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import geneticalgorithm.AutomataBasedModelCountingSpecificationFitness;
-import geneticalgorithm.Settings;
 import geneticalgorithm.SpecificationChromosome;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
-import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -29,7 +24,10 @@ public class Main {
 		double semantic_factor = -1.0d;
 		boolean allowAssumptionGuaranteeRemoval = false;
 		int bound = 0;
+		boolean precise = false;
 		int ga_timeout = 0;
+		int sat_timeout = 0;
+		int mc_timeout = 0;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
 			if(args[i].startsWith("-Gen=")){
@@ -50,6 +48,9 @@ public class Main {
 			else if(args[i].startsWith("-k=")){
 				bound = Integer.parseInt(args[i].replace("-k=", ""));
 			}
+			else if(args[i].startsWith("-precise")){
+				precise = true;
+			}
 			else if(args[i].startsWith("-no-docker")){
 				Settings.USE_DOCKER = false;
 			}
@@ -61,6 +62,12 @@ public class Main {
 			}
 			else if(args[i].startsWith("-GATO=")){
 				ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
+			}
+			else if(args[i].startsWith("-SatTO=")){
+				sat_timeout = Integer.parseInt(args[i].replace("-SatTO=", ""));
+			}
+			else if(args[i].startsWith("-MCTO=")){
+				mc_timeout = Integer.parseInt(args[i].replace("-MCTO=", ""));
 			}
 			else if(args[i].startsWith("-factors")){
 				String[] factors = args[i].replace("-factors=", "").split(",");
@@ -87,13 +94,17 @@ public class Main {
 		//FileReader f = new FileReader(filename);
 		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		if (popSize > 0) ga.POPULATION_SIZE = popSize;
-		if (maxNumOfInd > 0) ga.NUM_OF_INDIVIDUALS = maxNumOfInd;
-		if (crossoverRate > 0) ga.CROSSOVER_RATE = crossoverRate;
-		if (mutationRate > 0) ga.MUTATION_RATE = mutationRate;
-		if (generations > 0) ga.GENERATIONS = generations;
-		if (ga_timeout > 0) ga.EXECUTION_TIMEOUT = ga_timeout;
-		if (bound > 0) ga.BOUND = bound;
+		if (popSize > 0) Settings.GA_POPULATION_SIZE = popSize;
+		if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
+		if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
+		if (mutationRate > 0) Settings.GA_MUTATION_RATE = mutationRate;
+		if (generations > 0) Settings.GA_GENERATIONS = generations;
+		if (ga_timeout > 0) Settings.GA_EXECUTION_TIMEOUT = ga_timeout;
+		if (sat_timeout > 0) Settings.SAT_TIMEOUT = sat_timeout;
+		if (mc_timeout > 0) Settings.MC_TIMEOUT = mc_timeout;
+		if (bound > 0) Settings.MC_BOUND = bound;
+		if (precise) Settings.MC_EXHAUSTIVE = false;
+
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
@@ -128,11 +139,12 @@ public class Main {
 	}
 	
 	private static void correctUssage(){
-		System.out.println("Use ./unreal-repair.sh " +
-								"[-Max=max_num_of_individuals |  -Gen=num_of_generations | -GATO=GA_timeout | " +
-								"-k=bound | -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | " +
-								"-no-docker | -random] " +
-								"input-file.tlsf");
+		System.out.println("Use ./unreal-repair.sh \n" +
+								"\t[-Max=max_num_of_individuals |  -Gen=num_of_generations | -GATO=GA_timeout | \n" +
+								"\t-k=bound | -precise | -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
+								"\t-factors=STATUS_factor,MC_factor,SYN_factor\n" +
+								"\t-no-docker | -random | -SatTO=sat_timeout | MCTO=model_counting_timeout] \n" +
+								"\tinput-file.tlsf");
 	}
 
 }

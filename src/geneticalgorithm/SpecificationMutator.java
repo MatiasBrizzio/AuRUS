@@ -2,17 +2,12 @@ package geneticalgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
-import owl.grammar.LTLLexer;
-import owl.grammar.LTLParser;
+import main.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Formula;
-import owl.ltl.LabelledFormula;
-import owl.ltl.Literal;
-import owl.ltl.parser.TokenErrorListener;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaMutator;
 import owl.ltl.visitors.FormulaStrengthening;

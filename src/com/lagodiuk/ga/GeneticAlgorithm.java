@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.lagodiuk.ga;
 
-import geneticalgorithm.Settings;
+import main.Settings;
 
 import java.time.Duration;
 import java.time.Instant;
