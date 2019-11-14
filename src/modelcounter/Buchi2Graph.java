@@ -37,7 +37,7 @@ public class Buchi2Graph {
 		return dfaToGraph(dfa);
 	}
 
-	private static Graph<String> dfaToGraph (automata.Automaton dfa) {
+	public static Graph<String> dfaToGraph (automata.Automaton dfa) {
 		Graph<String> g = new Graph<>();
 		//Setear estados iniciales.
 		State is = dfa.getInitialState();

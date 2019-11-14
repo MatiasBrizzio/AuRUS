@@ -79,6 +79,50 @@ public class AutomataBasedModelCounting {
 
 	  }
 
+	public AutomataBasedModelCounting (Graph<String> input_graph, boolean exhaustive) {
+
+		this.exhaustive = exhaustive;
+
+
+		// Convert the ltl formula to an automaton with OWL
+		nba = input_graph;
+
+		if(exhaustive) {
+			//We first apply a transformation and add an extra state, sn+1. The resulting
+			//automaton is a DFA A0 with λ-transitions from each of the accepting states of A
+			//to sn+1 where λ is a new padding symbol that is not in the alphabet of A.
+
+			Node<String> sn1 = new Node<>(nba);
+//			Guard<String> lambda = new Guard<>();
+//			lambda.add(new Literal<String>("0", false));
+
+			for (Node<String> node : nba.getNodes()) {
+				if (node.getBooleanAttribute("accepting")) {
+					node.setBooleanAttribute("accepting", false);
+					Edge<String> nToSn1 = new Edge<>(node, sn1);
+					node.getOutgoingEdges().add(nToSn1);
+					sn1.getIncomingEdges().add(nToSn1);
+				}
+			}
+
+			sn1.setBooleanAttribute("accepting", true);
+			Edge<String> sn1ToSn1 = new Edge<>(sn1, sn1);
+			sn1.getOutgoingEdges().add(sn1ToSn1);
+			sn1.getIncomingEdges().add(sn1ToSn1);
+
+//			w.write(nba);
+		}
+
+		//From A0 we construct the (n + 1) × (n + 1) transfer matrix T. A0 has n + 1
+		//states s1, s2, . . . sn+1. The matrix entry Ti,j is the number of transitions from
+		//state si to state sj
+		T = buildTransferMatrix(nba);
+//		System.out.println("T: " + T.toString());
+		int n = nba.getNodeCount();
+		I = CommonOps_DDRM.identity(n);
+
+	}
+
 	public String genRltlString(LabelledFormula formula) throws IOException, InterruptedException{
 //		String ltl = SolverUtils.toLambConvSyntax(formula.formula().toString());
 //		String alph = SolverUtils.createLambConvAlphabet(formula);

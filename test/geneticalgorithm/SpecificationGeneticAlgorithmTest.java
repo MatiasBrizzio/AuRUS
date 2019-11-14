@@ -76,6 +76,32 @@ class SpecificationGeneticAlgorithmTest {
 	}
 
 	@Test
+	void testRunSafralessMaxReal() throws IOException, InterruptedException {
+		String filename = "examples/safraless-maximal-real.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
+		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+		Settings.GA_GENERATIONS = 10;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 100;
+		ga.run(tlsf,false);
+	}
+
+	@Test
+	void testRunStrongSAT() throws IOException, InterruptedException {
+		String filename = "examples/strong-sat.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
+		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+		Settings.GA_GENERATIONS = 10;
+		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 100;
+		ga.run(tlsf,false);
+	}
+
+	@Test
 	void testRunLiftController() throws IOException, InterruptedException {
 		String filename = "examples/lift-controller.tlsf";
 		FileReader f = new FileReader(filename);
