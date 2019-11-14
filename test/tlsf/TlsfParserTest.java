@@ -33,7 +33,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import geneticalgorithm.SpecificationMerger;
 import owl.automaton.Automaton;
+import owl.automaton.AutomatonOperations;
+import owl.automaton.AutomatonUtil;
 import owl.automaton.acceptance.BuchiAcceptance;
+import owl.automaton.acceptance.EmersonLeiAcceptance;
 import owl.automaton.acceptance.GeneralizedBuchiAcceptance;
 import owl.automaton.acceptance.OmegaAcceptance;
 import owl.automaton.edge.Edge;
@@ -41,6 +44,8 @@ import owl.automaton.edge.Edges;
 import owl.automaton.output.HoaPrinter;
 import owl.collections.Collections3;
 import owl.collections.ValuationSet;
+import owl.factories.FactorySupplier;
+import owl.factories.ValuationSetFactory;
 import owl.grammar.LTLParserBaseVisitor;
 import owl.ltl.*;
 import owl.ltl.Formula.LogicalOperator;
@@ -52,10 +57,15 @@ import owl.ltl.visitors.FormulaMutator;
 import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
 import owl.run.DefaultEnvironment;
+import owl.run.Environment;
 import owl.run.modules.Transformers;
 import owl.translations.LTL2DAFunction;
 import owl.translations.LTL2DAModule;
 import owl.translations.canonical.BreakpointState;
+import owl.translations.delag.DelagBuilder;
+import owl.translations.delag.State;
+import owl.translations.ltl2ldba.AnnotatedLDBA;
+import owl.translations.ltl2ldba.SymmetricLDBAConstruction;
 import owl.translations.ltl2nba.SymmetricNBAConstruction;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
@@ -440,16 +450,10 @@ class TlsfParserTest {
   
   @Test
   void testTlsfMinepump() throws IOException, InterruptedException {
-	  String filename = "examples/minepump.tlsf";
-//	  FileReader f = new FileReader(filename);
-//	    Tlsf tlsf = TlsfParser.parse(f);
-	  Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
-//	  Tlsf tlsf2 = TlsfParser.parse(TLSF_Utils.toTLSF(tlsf));
-	  System.out.println(tlsf.toFormula());
-	  
-	  System.out.println(tlsf.assert_());
-	  System.out.println(tlsf.guarantee());
-	  System.out.println(tlsf.toAssertGuaranteeConjuncts());
+	  String filename = "examples/simple2.tlsf";
+	  FileReader f = new FileReader(filename);
+	    Tlsf tlsf = TlsfParser.parse(f);
+
 	  System.out.println(tlsf.toFormula());
 	  
   }
@@ -506,6 +510,7 @@ class TlsfParserTest {
 
 	@Test
 	void testFormulas() throws IOException {
+		System.out.println(LtlParser.parse("true"));
 		List<String> vars = List.of("a", "b", "c");
 		Formula f0 = LtlParser.syntax("F(!a & b & c)", vars);
 		Formula f1 = LtlParser.syntax("a | b & c", vars);
@@ -651,10 +656,32 @@ class TlsfParserTest {
 		System.out.println(diffs);
 		System.out.println(f0.compareTo(f1));
 	}
+
+	@Test
+	<S> void testAutomataFiltering() throws IOException {
+		String filename = "examples/simple2.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
+		LabelledFormula f0 = tlsf.toFormula();
+		SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
+
+		Automaton<S, OmegaAcceptance> automaton = (Automaton<S, OmegaAcceptance>) translator.apply(f0);
+		System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+
+		System.out.println("Input : ");
+		List<String> vars = List.of("x");
+		LabelledFormula input_formula =  LtlParser.parse("true",vars);
+		Automaton<S, OmegaAcceptance> input_automaton = (Automaton<S, OmegaAcceptance>) translator.apply(input_formula);
+		System.out.println(HoaPrinter.toString(input_automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+
+		System.out.println("Result : ");
+		Automaton<List<S>, OmegaAcceptance> reduced = AutomatonOperations.intersection(List.of(automaton,input_automaton));
+		System.out.println(HoaPrinter.toString(reduced, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
+	}
   @Test
-  void testAutomata() throws IOException {
-	  List<String> vars = List.of("a", "b", "c");
-	  LabelledFormula f0 =  LtlParser.parse("G(a -> (b))",vars);
+	  void testAutomata() throws IOException {
+	  List<String> vars = List.of("x");
+	  LabelledFormula f0 =  LtlParser.parse("F (x)",vars);
 
 	  System.out.println(f0);
 
@@ -666,14 +693,30 @@ class TlsfParserTest {
 //			  LTL2DAFunction.Constructions.CO_BUCHI));
 //	  LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),
 //			  false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
-	  SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
+//	  SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
+//
+//	  Automaton<?, OmegaAcceptance> automaton = (Automaton<?, OmegaAcceptance>) translator.apply(f0);
 
-	  Automaton<?, BuchiAcceptance> automaton = translator.apply(f0);
+	  DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
+	  Automaton<State<Object>, EmersonLeiAcceptance> automaton = translator.apply(f0);
 	  System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
-//	  System.out.println(automaton.initialStates());
-//	  System.out.println(automaton.acceptance().acceptanceSets());
-//	  System.out.println(automaton.acceptance().acceptingSet());
-//	  System.out.println(automaton.acceptance().booleanExpression());
+	  //create valuation factory
+	  Environment env = DefaultEnvironment.standard();
+	  FactorySupplier factorySupplier = env.factorySupplier();
+	  ValuationSetFactory vsFactory = factorySupplier.getValuationSetFactory(new ArrayList<>(vars));
+
+	  for(State<Object> s : automaton.states()) {
+		  System.out.println(s);
+		  vsFactory.universe().forEach(valuation -> {
+			  Edge<State<Object>> edge = automaton.edge(s, valuation);
+			  if (edge != null) {
+			  	System.out.println(edge);
+			  }
+		  });
+	  }
+	  System.out.println(automaton.initialStates());
+	  System.out.println(automaton.acceptance().acceptanceSets());
+	  System.out.println(automaton.acceptance().booleanExpression());
 
 
   }

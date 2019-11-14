@@ -34,6 +34,7 @@ import owl.translations.ltl2dpa.LTL2DPAFunction;
 import owl.translations.ltl2ldba.AnnotatedLDBA;
 import owl.translations.ltl2ldba.AsymmetricLDBAConstruction;
 import owl.translations.ltl2ldba.SymmetricLDBAConstruction;
+import tlsf.FormulaToAutomaton;
 import tlsf.FormulaToRE;
 
 import javax.annotation.Nullable;
@@ -72,7 +73,7 @@ public class StrongSATSolver<S> {
         System.out.println("Checking...");
 //        boolean isStronSAT = checkStrongSAT(input_automaton);
 //        return isStronSAT;
-        FormulaToRE translatorLTLtoRE = new FormulaToRE();
+        FormulaToAutomaton translatorLTLtoRE = new FormulaToAutomaton();
         translatorLTLtoRE.generateLabels(formula.variables());
         System.out.println("Determinizing...");
         automata.Automaton dfa = translatorLTLtoRE.telaToDfa(input_automaton);

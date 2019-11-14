@@ -15,6 +15,7 @@ import scala.collection.immutable.Set;
 import scala.collection.immutable.Vector;
 import scala.collection.immutable.VectorIterator;
 import gov.nasa.ltl.graph.*;
+import tlsf.FormulaToAutomaton;
 import tlsf.FormulaToRE;
 
 public class Buchi2Graph {
@@ -30,9 +31,9 @@ public class Buchi2Graph {
 //	}
 
 	public static Graph<String> LTL2Graph(LabelledFormula formula) throws IOException, InterruptedException {
-		FormulaToRE translatorLTLtoRE = new FormulaToRE();
-		translatorLTLtoRE.generateLabels(formula.variables());
-		automata.Automaton dfa = translatorLTLtoRE.formulaToDfa(formula);
+		FormulaToAutomaton translator = new FormulaToAutomaton();
+		translator.generateLabels(formula.variables());
+		automata.Automaton dfa = translator.formulaToDfa(formula);
 //		System.out.println(dfa);
 		return dfaToGraph(dfa);
 	}
