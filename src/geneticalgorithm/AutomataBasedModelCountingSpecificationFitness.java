@@ -7,6 +7,7 @@ import gov.nasa.ltl.trans.ParseErrorException;
 import main.Settings;
 import modelcounter.AutomataBasedModelCounting;
 import modelcounter.CountRltlConv;
+import modelcounter.EmersonLeiAutomatonBasedModelCounting;
 import owl.ltl.*;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.NormalForms;
@@ -246,7 +247,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (simplified == BooleanConstant.FALSE)
 			return BigInteger.ZERO;
 		LabelledFormula simp_formula = LabelledFormula.of(simplified, formula.variables());
-		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula, Settings.MC_EXHAUSTIVE);
+//		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula, Settings.MC_EXHAUSTIVE);
+		EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(simp_formula);
 		BigInteger numOfModels = counter.count(Settings.MC_BOUND);
 		return numOfModels;
 	}

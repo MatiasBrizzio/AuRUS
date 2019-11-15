@@ -98,6 +98,7 @@ public class FormulaToAutomaton<S> {
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        System.out.println(HoaPrinter.toString(automaton));
 //        return nbaToDfa(automaton);
+        System.out.println("Parsing...");
         DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
         Automaton<State<Object>, EmersonLeiAcceptance> automaton = translator.apply(formula);
         return telaToDfa(automaton);
@@ -215,7 +216,7 @@ public class FormulaToAutomaton<S> {
     }
 
     public <S> automata.Automaton telaToDfa(Automaton<S, EmersonLeiAcceptance> automaton){
-
+        System.out.println("Building DFA...");
         automata.Automaton fsa = new FiniteStateAutomaton();
         stateNumbers = new Object2IntOpenHashMap();
         //Map nodes to states ids
@@ -301,6 +302,7 @@ public class FormulaToAutomaton<S> {
         }
 //        System.out.print("n");
 //        System.out.println(fsa.toString());
+        System.out.println("Determinizing ...");
         NFAToDFA determinizer = new NFAToDFA();
         automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
 //        System.out.println(dfa.toString());

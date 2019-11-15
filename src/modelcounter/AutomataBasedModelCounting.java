@@ -275,7 +275,7 @@ public class AutomataBasedModelCounting {
 	  }
 	  
 	  /**
-	   * Determinize the fiven NFA
+	   * Determinize the given NFA
 	   */
 	  private static Graph<String> toDFA(Graph<String> nfa) {
 		  Graph<String> dfa = new Graph<String>();

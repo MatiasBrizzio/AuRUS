@@ -11,6 +11,7 @@ import jhoafparser.ast.BooleanExpression;
 import main.Settings;
 import modelcounter.AutomataBasedModelCounting;
 import modelcounter.Buchi2Graph;
+import modelcounter.EmersonLeiAutomatonBasedModelCounting;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import owl.automaton.*;
@@ -79,6 +80,7 @@ public class StrongSATSolver<S> {
         automata.Automaton dfa = translatorLTLtoRE.telaToDfa(input_automaton);
         Graph<String> graph = Buchi2Graph.dfaToGraph(dfa);
         AutomataBasedModelCounting counter = new AutomataBasedModelCounting(graph,false);
+//        EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(input_automaton);
         System.out.println("Counting...");
         BigInteger numOfModels = counter.count(Settings.MC_BOUND);
         BigInteger expectedNumOfModels =  (BigInteger.valueOf(2).pow(formula.player1Variables().size())).pow(Settings.MC_BOUND);
