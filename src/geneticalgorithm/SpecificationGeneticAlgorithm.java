@@ -35,14 +35,11 @@ public class SpecificationGeneticAlgorithm {
 	public List<SpecificationChromosome> bestSolutions = new LinkedList<>();
 
 	public void run(Tlsf spec) throws IOException, InterruptedException {
-		run(spec, -1.0d, -1.0d, -1.0d, false);
+		run(spec, -1.0d, -1.0d, -1.0d);
 	}
 
-	public void run(Tlsf spec, boolean allowAssumptionGuaranteeRemoval) throws IOException, InterruptedException {
-		run(spec, -1.0d, -1.0d, -1.0d, allowAssumptionGuaranteeRemoval);
-	}
 
-	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor, boolean allowAssumptionGuaranteeRemoval) throws IOException, InterruptedException{
+	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor) throws IOException, InterruptedException{
 		initialExecutionTime = Instant.now();
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);

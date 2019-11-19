@@ -104,11 +104,11 @@ public class Main {
 		if (mc_timeout > 0) Settings.MC_TIMEOUT = mc_timeout;
 		if (bound > 0) Settings.MC_BOUND = bound;
 		if (precise) Settings.MC_EXHAUSTIVE = false;
-
+		if (allowAssumptionGuaranteeRemoval) Settings.allowAssumptionGuaranteeRemoval = true;
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
-			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor,allowAssumptionGuaranteeRemoval);
+			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor);
 		
 		if (ga.solutions.isEmpty())
 			return;

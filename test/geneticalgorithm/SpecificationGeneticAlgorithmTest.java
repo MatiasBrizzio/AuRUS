@@ -28,7 +28,8 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_POPULATION_SIZE = 30;
 		Settings.GA_MUTATION_RATE = 100;
 		Settings.GA_MAX_NUM_INDIVIDUALS = 200;
-		ga.run(tlsf,true);
+		Settings.allowAssumptionGuaranteeRemoval = true;
+		ga.run(tlsf);
 	}
 
 	@Test
@@ -72,7 +73,7 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_POPULATION_SIZE = 30;
 		Settings.GA_MUTATION_RATE = 100;
 		//Settings.GA_MAX_NUM_INDIVIDUALS = 1000;
-		ga.run(tlsf,-1,0,0,false);
+		ga.run(tlsf,-1,0,0);
 	}
 
 	@Test
@@ -85,7 +86,7 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_POPULATION_SIZE = 30;
 		Settings.GA_MUTATION_RATE = 100;
 		Settings.GA_MAX_NUM_INDIVIDUALS = 100;
-		ga.run(tlsf,false);
+		ga.run(tlsf);
 	}
 
 	@Test
@@ -98,7 +99,7 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_POPULATION_SIZE = 30;
 		Settings.GA_MUTATION_RATE = 100;
 		Settings.GA_MAX_NUM_INDIVIDUALS = 100;
-		ga.run(tlsf,false);
+		ga.run(tlsf);
 	}
 
 	@Test
@@ -111,7 +112,7 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_POPULATION_SIZE = 30;
 		Settings.GA_MUTATION_RATE = 100;
 		//Settings.GA_MAX_NUM_INDIVIDUALS = 1000;
-		ga.run(tlsf,0,0,0,false);
+		ga.run(tlsf,0,0,0);
 	}
 
 	@Test
@@ -126,6 +127,7 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_MAX_NUM_INDIVIDUALS = 50;
 		Settings.MC_BOUND = 10;
 		Settings.GA_EXECUTION_TIMEOUT = 600;
-		ga.run(tlsf,true);
+		Settings.allowAssumptionGuaranteeRemoval = true;
+		ga.run(tlsf);
 	}
 }
