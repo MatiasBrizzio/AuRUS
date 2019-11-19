@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,16 +24,29 @@ import static org.junit.Assert.assertTrue;
 public class EmersonLeiAutomatonBasedStrongSATSolverTest {
 
     @Test
-    <S> void testAutomataSimpleUnreal() throws IOException {
+    <S> void testAutomataSimple2Unreal() throws IOException {
         String filename = "examples/simple2.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
         EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.isStrongSatisfiable();
+        boolean res = s.checkStrongSatisfiable();
         System.out.println(res);
         assertFalse(res);
+    }
+
+    @Test
+    <S> void testAutomataSimple2Real() throws IOException {
+        String filename = "examples/simple2-real.tlsf";
+        FileReader f = new FileReader(filename);
+        Tlsf tlsf = TlsfParser.parse(f);
+        LabelledFormula f0 = tlsf.toFormula();
+        System.out.println(f0);
+        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
+        boolean res = s.checkStrongSatisfiable();
+        System.out.println(res);
+        assertTrue(res);
     }
 
     @Test
@@ -42,7 +57,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
         EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.isStrongSatisfiable();
+        boolean res = s.checkStrongSatisfiable();
         System.out.println(res);
         assertFalse(res);
     }
@@ -55,7 +70,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
         EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.isStrongSatisfiable();
+        boolean res = s.checkStrongSatisfiable();
         System.out.println(res);
         assertTrue(res);
     }
@@ -68,7 +83,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
         EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.isStrongSatisfiable();
+        boolean res = s.checkStrongSatisfiable();
         System.out.println(res);
         assertTrue(res);
     }
@@ -81,7 +96,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
         EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.isStrongSatisfiable();
+        boolean res = s.checkStrongSatisfiable();
         System.out.println(res);
         assertTrue(res);
     }
@@ -93,13 +108,26 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
         EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.isStrongSatisfiable();
+        boolean res = s.checkStrongSatisfiable();
+        System.out.println(res);
+        assertFalse(res);
+    }
+
+
+    @Test
+    <S> void testAutomata_round_robin_arbiter_unreal1_2_3() throws IOException, InterruptedException {
+        String filename = "examples/syntcomp2019/unreal/9158546/round_robin_arbiter_unreal1_2_3.tlsf";
+        Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+        LabelledFormula f0 = tlsf.toFormula();
+        System.out.println(f0);
+        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
+        boolean res = s.checkStrongSatisfiable();
         System.out.println(res);
         assertFalse(res);
     }
 
     @Test
-    <S> void testAyntCompUnreal() throws IOException {
+    <S> void testSyntCompUnreal() throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get("examples/syntcomp2019/unreal/"))) {
 
             List<String> specifications = walk.map(x -> x.toString())
@@ -112,9 +140,49 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
                 LabelledFormula f0 = tlsf.toFormula();
 //                System.out.println(f0);
                 EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-                boolean res = s.isStrongSatisfiable();
+                boolean res = s.checkStrongSatisfiable();
                 System.out.println(res);
                 assertFalse(res);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    <S> void testAutomata_SensorSelector_real() throws IOException, InterruptedException {
+        String filename = "examples/syntcomp2019/LTL/9127916/SensorSelector.tlsf";
+        Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+        LabelledFormula f0 = tlsf.toFormula();
+        System.out.println(f0);
+        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
+        boolean res = s.checkStrongSatisfiable();
+        System.out.println(res);
+        assertTrue(res);
+    }
+
+    @Test
+    <S> void testSyntCompReal() throws IOException {
+        try (Stream<Path> walk = Files.walk(Paths.get("examples/syntcomp2019/LTL/"))) {
+
+            List<String> specifications = walk.map(x -> x.toString())
+                    .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
+
+            for (String filename : specifications) {
+                Instant initialExecutionTime = Instant.now();
+                System.out.println(filename);
+                FileReader f = new FileReader(filename);
+                Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+                LabelledFormula f0 = tlsf.toFormula();
+//                System.out.println(f0);
+                EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
+                boolean res = s.checkStrongSatisfiable();
+                System.out.println(res);
+                Instant finalExecutionTime = Instant.now();
+                Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
+                System.out.printf("Time: %s m  %s s\n",duration.toMinutes(), duration.toSecondsPart());
+                assertTrue(res);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

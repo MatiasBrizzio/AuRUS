@@ -28,7 +28,7 @@ import java.util.function.IntConsumer;
 public class EmersonLeiAutomatonBasedModelCounting<S> {
 
 	private DMatrixRMaj T = null;
-	private DMatrixRMaj I = null;
+//	private DMatrixRMaj I = null;
 	private Automaton<S,EmersonLeiAcceptance> automaton = null;
     private Object[] states = null;
 	public static int TIMEOUT = 300;
@@ -44,8 +44,8 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		T = buildTransferMatrix();
 
 //		System.out.println("T: " + T.toString());
-		int n = automaton.size();
-		I = CommonOps_DDRM.identity(n);
+//		int n = automaton.size();
+//		I = CommonOps_DDRM.identity(n);
 	}
 
 
@@ -139,7 +139,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 								transitions++;
 						  }
 					  });
-				  M.add(i, j, transitions);
+				  M.set(i, j, transitions);
 			  }
 		  }
 		  return M;
