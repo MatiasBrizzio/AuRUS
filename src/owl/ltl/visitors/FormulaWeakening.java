@@ -93,7 +93,10 @@ public class FormulaWeakening implements Visitor<Formula>{
 	    			current = BooleanConstant.TRUE;
 	    		else if (option == 1) {
 	    			// weak(a) = a | b
-	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+					int new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
+					while (new_variable == literal.getAtom())
+						new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
+					Literal new_literal = createVariable(variables.get(new_variable));
 	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				new_literal = new_literal.not();
 	    			current = Disjunction.of(current, new_literal); 
@@ -414,7 +417,7 @@ public class FormulaWeakening implements Visitor<Formula>{
 		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + zOperator);
 	}
 	
-	private Formula createVariable(String name) {
+	private Literal createVariable(String name) {
 	    assert variables.size() == literalCache.size();
 	    int index = variables.indexOf(name);
 

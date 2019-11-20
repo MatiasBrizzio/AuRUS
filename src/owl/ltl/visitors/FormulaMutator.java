@@ -37,7 +37,7 @@ public class FormulaMutator implements Visitor<Formula>{
 
 	  private boolean print_debug_info = false;
 	  
-	  public FormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_appply) {
+	  public FormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_apply) {
 			ListIterator<String> literalIterator = literals.listIterator();
 		    List<Literal> literalList = new ArrayList<>();
 		    List<String> variableList = new ArrayList<>();
@@ -53,7 +53,7 @@ public class FormulaMutator implements Visitor<Formula>{
 		    variables = List.copyOf(variableList);
 		    fixedVariables = true;
 		    this.mutation_rate = mutation_rate;
-		    this.numOfAllowedMutations = max_num_of_mutations_to_appply;
+		    this.numOfAllowedMutations = max_num_of_mutations_to_apply;
 			
 	}
 	
@@ -100,7 +100,7 @@ public class FormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(4);
 	    		//0: TRUE 1:FALSE 2:negateFormula 3:new literal
 	    		if (print_debug_info) System.out.print("before: " + literal + " random: " + random);
 	    		if (random == 0)
@@ -110,9 +110,13 @@ public class FormulaMutator implements Visitor<Formula>{
 	    		else if (random == 2)
 	    			current = current.not();
 	    		else {
-		    		Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+					int new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
+					while (new_variable == literal.getAtom())
+						new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
+					Literal new_literal = createVariable(variables.get(new_variable));
 					if (Settings.RANDOM_GENERATOR.nextBoolean())
 						new_literal = new_literal.not();
+
 					current = new_literal;
 	    		}
 	    		if (print_debug_info) System.out.println(" after: " + current);
@@ -566,7 +570,7 @@ public class FormulaMutator implements Visitor<Formula>{
 		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + zOperator);
 	}
 	
-	private Formula createVariable(String name) {
+	private Literal createVariable(String name) {
 	    assert variables.size() == literalCache.size();
 	    int index = variables.indexOf(name);
 

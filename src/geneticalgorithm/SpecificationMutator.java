@@ -20,8 +20,8 @@ public class SpecificationMutator {
 	public static Tlsf mutate(Tlsf spec, SPEC_STATUS status) {
 		//create empty specification
 		Tlsf new_spec = TLSF_Utils.fromSpec(spec);
-
-		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+		int random = Settings.RANDOM_GENERATOR.nextInt(100);
+		if (random >= Settings.GA_GUARANTEES_PREFERENCE_FACTOR) {
 		// mutate assumptions	
 			List<Formula> assumptions = Formula_Utils.splitConjunction(spec.assume());
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(assumptions.size());

@@ -37,7 +37,7 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	  private int numOfAllowedStrengthenings = 0;
 	  private boolean print_debug_info = false;
 	  
-	public FormulaStrengthening(List<String> literals, int strengthening_rate, int num_of_strengthening_to_appply) {
+	public FormulaStrengthening(List<String> literals, int strengthening_rate, int num_of_strengthening_to_apply) {
 		ListIterator<String> literalIterator = literals.listIterator();
 	    List<Literal> literalList = new ArrayList<>();
 	    List<String> variableList = new ArrayList<>();
@@ -53,7 +53,7 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	    variables = List.copyOf(variableList);
 	    fixedVariables = true;
 	    this.strengthening_rate = strengthening_rate;
-	    this.numOfAllowedStrengthenings = num_of_strengthening_to_appply;
+	    this.numOfAllowedStrengthenings = num_of_strengthening_to_apply;
 		
 	}
 	
@@ -95,7 +95,10 @@ public class FormulaStrengthening implements Visitor<Formula>{
 	    			current = BooleanConstant.FALSE;
 	    		else if (option == 1) {
 	    			// strength(a) = a & b
-	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
+					int new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
+					while (new_variable == literal.getAtom())
+						new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
+					Literal new_literal = createVariable(variables.get(new_variable));
 	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
 	    				new_literal = new_literal.not();
 	    			current = Conjunction.of(current, new_literal); 
@@ -446,7 +449,7 @@ public class FormulaStrengthening implements Visitor<Formula>{
 		throw new UnsupportedOperationException("FormulaWeakening: formula in NNF was expected: " + zOperator);
 	}
 	
-	private Formula createVariable(String name) {
+	private Literal createVariable(String name) {
 	    assert variables.size() == literalCache.size();
 	    int index = variables.indexOf(name);
 
