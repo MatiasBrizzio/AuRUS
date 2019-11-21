@@ -131,7 +131,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         try (Stream<Path> walk = Files.walk(Paths.get("examples/syntcomp2019/unreal/"))) {
 
             List<String> specifications = walk.map(x -> x.toString())
-                    .filter(f -> f.endsWith(".tlsf")).collect(Collectors.toList());
+                    .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
 
             for (String filename : specifications) {
                 System.out.println(filename);

@@ -14,6 +14,7 @@ import owl.ltl.rewriter.NormalForms;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
+import solvers.EmersonLeiAutomatonBasedStrongSATSolver;
 import solvers.LTLSolver;
 import solvers.LTLSolver.SolverResult;
 import solvers.StrixHelper;
@@ -133,8 +134,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		else if (chromosome.status == SPEC_STATUS.REALIZABLE)
 			status_fitness = 1.0d;
 
-		
-
 		double syntactic_distance = 0.0d;
 		if (Settings.SYNTACTIC_FACTOR > 0.0d)
 			syntactic_distance = compute_syntactic_distance(originalSpecification, chromosome.spec);
@@ -222,15 +221,25 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 						if (sat == SolverResult.UNSAT)
 							status = SPEC_STATUS.CONTRADICTORY;
 						else {
-							// check for realizability
-							RealizabilitySolverResult rel = StrixHelper.checkRealizability(spec);
-							if (!rel.inconclusive()) {
-								if (rel == RealizabilitySolverResult.REALIZABLE) {
-									System.out.print("R" );
-									status = SPEC_STATUS.REALIZABLE;
+							status = SPEC_STATUS.UNREALIZABLE;
+							if (Settings.check_REALIZABILITY) {
+								RealizabilitySolverResult rel = RealizabilitySolverResult.UNREALIZABLE;
+								if (Settings.check_STRONG_SAT) {
+									// check for strong satisfiability
+									EmersonLeiAutomatonBasedStrongSATSolver strong_sat_solver = new EmersonLeiAutomatonBasedStrongSATSolver(spec.toFormula());
+									if (strong_sat_solver.checkStrongSatisfiable())
+										rel = RealizabilitySolverResult.REALIZABLE;
 								}
-								else
-									status = SPEC_STATUS.UNREALIZABLE;
+								else {
+									// check for realizability
+									rel = StrixHelper.checkRealizability(spec);
+								}
+								if (!rel.inconclusive()) {
+									if (rel == RealizabilitySolverResult.REALIZABLE) {
+										System.out.print("R");
+										status = SPEC_STATUS.REALIZABLE;
+									}
+								}
 							}
 						}
 					}

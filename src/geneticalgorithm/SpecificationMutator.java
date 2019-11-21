@@ -22,7 +22,7 @@ public class SpecificationMutator {
 		Tlsf new_spec = TLSF_Utils.fromSpec(spec);
 		int random = Settings.RANDOM_GENERATOR.nextInt(100);
 		if (random >= Settings.GA_GUARANTEES_PREFERENCE_FACTOR) {
-		// mutate assumptions	
+			// mutate assumptions
 			List<Formula> assumptions = Formula_Utils.splitConjunction(spec.assume());
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(assumptions.size());
 			Formula assumption_to_mutate = assumptions.get(index_to_mutate);
@@ -64,16 +64,12 @@ public class SpecificationMutator {
 				// weaken mutation
 				new_guarantee = strengthenFormula(guarantee_to_mutate, spec.variables());
 			}
-
 			if (new_guarantee != BooleanConstant.FALSE) {
 				guarantees.remove(index_to_mutate);
 				guarantees.add(index_to_mutate, new_guarantee);
-				Formula new_guarantees = Conjunction.of(guarantees);
-				new_spec = TLSF_Utils.change_guarantees(new_spec, new_guarantees);
+				new_spec = TLSF_Utils.change_guarantees(new_spec, guarantees);
 			}
-
 		}
-		
 		return new_spec;
 	}
 

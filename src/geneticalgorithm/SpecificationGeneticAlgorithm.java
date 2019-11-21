@@ -51,7 +51,7 @@ public class SpecificationGeneticAlgorithm {
 //		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
 //		fitness.setBound(Settings.MC_BOUND);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
-		if (fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
+		if (!Settings.check_STRONG_SAT && fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
 			System.out.println();
 			System.out.println("The specification is already realizable.");
 			return;
@@ -72,7 +72,15 @@ public class SpecificationGeneticAlgorithm {
 		print_config();
 		ga.evolve(Settings.GA_GENERATIONS);
 		finalExecutionTime = Instant.now();
-		
+		if (!Settings.check_REALIZABILITY || Settings.check_STRONG_SAT) {
+			System.out.println("Checking for Realizability ..." );
+			for (SpecificationChromosome c : bestSolutions) {
+				RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
+				if (status == RealizabilitySolverResult.REALIZABLE) {
+					solutions.add(c);
+				}
+			}
+		}
 		System.out.println("Realizable Specifications:" );
 		for (int i = 0; i < solutions.size(); i++) {
 			SpecificationChromosome s = solutions.get(i);
@@ -152,8 +160,8 @@ public class SpecificationGeneticAlgorithm {
 						SpecificationChromosome best = ga.getBest();
 						double bestFit = ga.fitness(best);
 						int iteration = ga.getIteration();
-						if (bestFit > 1.0d && !bestSolutions.contains(best)) {
-							System.out.println(String.format("BEST Fitness: %.2f",best.fitness));
+						if (bestFit > 1.0d ) {
+							System.out.println(String.format("WRONG Fitness: %.2f",best.fitness));
 							System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
 							bestSolutions.add(best);
 							ga.terminate();
@@ -171,19 +179,27 @@ public class SpecificationGeneticAlgorithm {
 //							// we can stop Genetic algorithm
 ////							ga.terminate(); 
 //						}
-						
+
 						// save ALL the solutions
-						for (SpecificationChromosome c : ga.getPopulation()) {
-							if (c.fitness < threshold) break;
-							if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
-								solutions.add(c);
-							// we can stop Genetic algorithm
-//							ga.terminate(); 
+						if (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) {
+							for (SpecificationChromosome c : ga.getPopulation()) {
+								if (c.fitness < threshold) break;
+								if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
+									solutions.add(c);
+								// we can stop Genetic algorithm
+								// ga.terminate();
+							}
 						}
-						
+						else {
+							for (SpecificationChromosome c : ga.getPopulation()) {
+								if (c.fitness < threshold) break;
+								if (c.status.isSpecificationConsistent() && !bestSolutions.contains(best))
+									bestSolutions.add(best);
+							}
+						}
 						// Listener prints best achieved solution
 						System.out.println();
-						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getNumberOfVisitedIndividuals(),solutions.size()));
+						System.out.println(String.format("%s\t%.2f\t%s\t%s\t%s", iteration, bestFit, best, ga.getNumberOfVisitedIndividuals(), (Settings.check_REALIZABILITY && ! Settings.check_STRONG_SAT)?solutions.size():bestSolutions.size()));
 
 //						//check if timeout has been reached
 //						if (EXECUTION_TIMEOUT > 0) {

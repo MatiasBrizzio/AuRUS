@@ -38,7 +38,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
         // Convert the ltl formula to an automaton with OWL
         DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
         automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
-        System.out.println("Parsed...");
+//        System.out.println("Parsed...");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         input_vars = new ArrayList<>(formula.player1Variables());
 //        variables = formula.variables();
@@ -74,10 +74,11 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
 //        BigInteger numOfInputEvents = BigInteger.valueOf(2).pow(input_vars.size());
         List<S> visitedStates = new LinkedList<>();
         Set<S> undesiredStates = new HashSet<>();
+        Set<S> visitedUndesiredStates = new HashSet<>();
         List<S> statesToAnalyse = new LinkedList<>(automaton.initialStates());
-        System.out.println(automaton.size());
+//        System.out.println(automaton.size());
         while (!statesToAnalyse.isEmpty()) {
-            System.out.print(".");
+//            System.out.print(".");
             S current = statesToAnalyse.remove(0);
             if (visitedStates.contains(current))
                 continue;
@@ -117,76 +118,137 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
                     });
                     if (!isAcceptance) {
                         noAcceptance = true;
-                        undesiredStates.add(current);
+                        if (!visitedUndesiredStates.contains(current))
+                            undesiredStates.add(current);
                     }
                 });
-                for(S succ : automaton.successors(current)) {
-                    if (!visitedStates.contains(succ) && !statesToAnalyse.contains(succ))
-                        statesToAnalyse.add(succ);
+                if (!noAcceptance) {
+                    for (S succ : automaton.successors(current)) {
+                        if (!visitedStates.contains(succ) && !statesToAnalyse.contains(succ))
+                            statesToAnalyse.add(succ);
+                    }
                 }
             }
             else {
                 // current is a sink state with no successors
                 undesiredStates.add(current); //check if it can be avoided
             }
-        }
+            if (!undesiredStates.isEmpty()) {
+//                System.out.print("+");
+                //check if there is a (controllable) way to avoid reaching the bad state
+//                List<S> list_undesired_states = new LinkedList<>(undesiredStates);
+//                while (!list_undesired_states.isEmpty()) {
+                for(S bad_state : undesiredStates) {
+                    for (S predecessor : automaton.predecessors(bad_state)) {
+                        if (predecessor.equals(bad_state) || undesiredStates.contains(predecessor) || visitedUndesiredStates.contains(predecessor) || !visitedStates.contains(predecessor))
+                            continue;
 
-        System.out.printf("states = %d \n", automaton.size());
-        System.out.printf("undesiredStates = %d \n", undesiredStates.size());
-//            if(! numOfInputEvents.equals(BigInteger.valueOf(numOfAcceptanceTransition))) {
+                        Map<Edge<S>, ValuationSet> predecessor_edges = automaton.edgeMap(predecessor);
+                        //create valuation factory
+                        Environment env = DefaultEnvironment.standard();
+                        FactorySupplier factorySupplier = env.factorySupplier();
+                        ValuationSetFactory inputFactory = factorySupplier.getValuationSetFactory(new ArrayList<>(input_vars));
 
-        if (undesiredStates.contains(automaton.onlyInitialState()))
-            return false;
-
-        //check if there is a (controlable) way to avoid reaching the bad state
-        for (S bad_state : undesiredStates) {
-            for(S predecessor : automaton.predecessors(bad_state)) {
-                if (undesiredStates.contains(predecessor))
-                    continue;
-
-                Map<Edge<S>, ValuationSet> predecessor_edges = automaton.edgeMap(predecessor);
-                if(!predecessor_edges.isEmpty()) {
-                    //create valuation factory
-                    Environment env = DefaultEnvironment.standard();
-                    FactorySupplier factorySupplier = env.factorySupplier();
-                    ValuationSetFactory inputFactory = factorySupplier.getValuationSetFactory(new ArrayList<>(input_vars));
-
-                    noAcceptance = false;
-                    inputFactory.universe().forEach(inputBitSet -> {
-                        if (noAcceptance)
-                            return;
-
-                        isAcceptance = false;
-                        predecessor_edges.forEach((predecessor_edge, valuation) -> {
-                            if (isAcceptance)
+                        noAcceptance = false;
+                        inputFactory.universe().forEach(inputBitSet -> {
+                            if (noAcceptance)
                                 return;
-                            if (predecessor_edge.successor().equals(bad_state))
-                                return;
-                            valuation.forEach(bitSet -> {
-                                BitSet bs1 = bitSet.get(0, input_vars.size());
-                                //                            System.out.println(inputBitSet + ": "+ bitSet + "  ->  " + bs1);
-                                if (bs1.equals(inputBitSet)) {
-                                    //check if it is an acceptance transition
-                                    IntArrayList acceptanceSets = new IntArrayList();
-                                    if (predecessor_edge.acceptanceSetIterator().hasNext())
-                                        predecessor_edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                                    if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
-                                        isAcceptance = true;
+
+                            isAcceptance = false;
+                            predecessor_edges.forEach((predecessor_edge, valuation) -> {
+                                if (isAcceptance)
+                                    return;
+                                if (predecessor_edge.successor().equals(bad_state))
+                                    return;
+                                valuation.forEach(bitSet -> {
+                                    BitSet bs1 = bitSet.get(0, input_vars.size());
+                                    //                            System.out.println(inputBitSet + ": "+ bitSet + "  ->  " + bs1);
+                                    if (bs1.equals(inputBitSet)) {
+                                        //check if it is an acceptance transition
+                                        IntArrayList acceptanceSets = new IntArrayList();
+                                        if (predecessor_edge.acceptanceSetIterator().hasNext())
+                                            predecessor_edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+                                        if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
+                                            isAcceptance = true;
+                                        }
                                     }
-                                }
+                                });
                             });
+                            if (!isAcceptance) {
+                                noAcceptance = true;
+                            }
                         });
-                        if (!isAcceptance) {
-                            noAcceptance = true;
+                        if (noAcceptance) {
+//                            if(automaton.initialStates().contains(predecessor)) { //no way to avoid this path
+//                                System.out.printf("ERROR: %s\n", bad_state);
+                                return false;
+//                            }
+                            //add predecessors of the path of undesired states to see if it is possible to avoid it
+//                            list_undesired_states.add(predecessor);
                         }
-                    });
-                    if (noAcceptance) {
-//                        System.out.printf("ERROR: state[%d] = %s\n", states.get(bad_state), bad_state);
-                        return false;
                     }
+                    visitedUndesiredStates.add(bad_state);
                 }
+                undesiredStates.clear();
             }
         }
+
+//        System.out.printf("states = %d \n", automaton.size());
+//        System.out.printf("undesiredStates = %d \n", undesiredStates.size());
+////            if(! numOfInputEvents.equals(BigInteger.valueOf(numOfAcceptanceTransition))) {
+//
+//        if (undesiredStates.contains(automaton.onlyInitialState()))
+//            return false;
+//
+//        //check if there is a (controlable) way to avoid reaching the bad state
+//        for (S bad_state : undesiredStates) {
+//            for(S predecessor : automaton.predecessors(bad_state)) {
+//                if (undesiredStates.contains(predecessor))
+//                    continue;
+//
+//                Map<Edge<S>, ValuationSet> predecessor_edges = automaton.edgeMap(predecessor);
+//                if(!predecessor_edges.isEmpty()) {
+//                    //create valuation factory
+//                    Environment env = DefaultEnvironment.standard();
+//                    FactorySupplier factorySupplier = env.factorySupplier();
+//                    ValuationSetFactory inputFactory = factorySupplier.getValuationSetFactory(new ArrayList<>(input_vars));
+//
+//                    noAcceptance = false;
+//                    inputFactory.universe().forEach(inputBitSet -> {
+//                        if (noAcceptance)
+//                            return;
+//
+//                        isAcceptance = false;
+//                        predecessor_edges.forEach((predecessor_edge, valuation) -> {
+//                            if (isAcceptance)
+//                                return;
+//                            if (predecessor_edge.successor().equals(bad_state))
+//                                return;
+//                            valuation.forEach(bitSet -> {
+//                                BitSet bs1 = bitSet.get(0, input_vars.size());
+//                                //                            System.out.println(inputBitSet + ": "+ bitSet + "  ->  " + bs1);
+//                                if (bs1.equals(inputBitSet)) {
+//                                    //check if it is an acceptance transition
+//                                    IntArrayList acceptanceSets = new IntArrayList();
+//                                    if (predecessor_edge.acceptanceSetIterator().hasNext())
+//                                        predecessor_edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+//                                    if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
+//                                        isAcceptance = true;
+//                                    }
+//                                }
+//                            });
+//                        });
+//                        if (!isAcceptance) {
+//                            noAcceptance = true;
+//                        }
+//                    });
+//                    if (noAcceptance) {
+////                        System.out.printf("ERROR: state[%d] = %s\n", states.get(bad_state), bad_state);
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
         return true;
     }
 

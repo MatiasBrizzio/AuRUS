@@ -18,6 +18,8 @@ public class Settings {
 															// (1-p) is the probability to which the genetic operators will be applied to the assumptions.
 
 	//fitness setting
+	public static boolean check_REALIZABILITY = true;
+	public static boolean check_STRONG_SAT = false;
 	public static boolean allowAssumptionGuaranteeRemoval = false;
 	public static double STATUS_FACTOR = 0.7d;
 	public static double LOST_MODELS_FACTOR = 0.1d;
@@ -48,5 +50,9 @@ public class Settings {
 	//SAT solver setting
 	public static int SAT_TIMEOUT = 30;
 
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }
 
