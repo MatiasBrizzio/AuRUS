@@ -46,12 +46,12 @@ public class SpecificationGeneticAlgorithm {
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 //		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
 //		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
-		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 		Settings.setFactors(status_factor,syntactic_factor,semantic_factor);
+		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 //		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
 //		fitness.setBound(Settings.MC_BOUND);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
-		if (!Settings.check_STRONG_SAT && fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
+		if (Settings.check_REALIZABILITY && fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
 			System.out.println();
 			System.out.println("The specification is already realizable.");
 			return;

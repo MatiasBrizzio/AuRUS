@@ -43,11 +43,14 @@ class SpecificationGeneticAlgorithmTest {
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		Settings.GA_GENERATIONS = 10	;
-		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_GENERATIONS = 500;
+		Settings.GA_POPULATION_SIZE = 50;
 		Settings.GA_MUTATION_RATE = 100;
-		Settings.GA_MAX_NUM_INDIVIDUALS = 200;
-		Settings.GA_EXECUTION_TIMEOUT = 600;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
+		Settings.allowAssumptionGuaranteeRemoval = false;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 100;
+//		Settings.check_REALIZABILITY = false;
+		Settings.check_STRONG_SAT = true;
 		ga.run(tlsf);
 	}
 

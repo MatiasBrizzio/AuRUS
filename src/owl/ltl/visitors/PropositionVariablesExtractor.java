@@ -21,7 +21,7 @@ public class PropositionVariablesExtractor implements Visitor<Set<Literal>> {
 
     @Override
     public Set<Literal> visit(BooleanConstant booleanConstant) {
-        return Set.of();
+        return new HashSet<>();
     }
 
     @Override
@@ -57,7 +57,9 @@ public class PropositionVariablesExtractor implements Visitor<Set<Literal>> {
 
     @Override
     public Set<Literal> visit(Literal literal) {
-        return Set.of(literal);
+        Set<Literal> res = new HashSet<>();
+        res.add(literal);
+        return res;
     }
 
     @Override
