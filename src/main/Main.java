@@ -17,6 +17,7 @@ public class Main {
 		int maxNumOfInd = 0;
 		int crossoverRate = 0;
 		int mutationRate = 0;
+		int guaranteePreferenceRate = 0;
 		int generations = 0;
 		boolean randomGen = false;
 		double status_factor = -1.0d;
@@ -43,6 +44,9 @@ public class Main {
 			}
 			else if(args[i].startsWith("-COR=")){
 				crossoverRate = Integer.parseInt(args[i].replace("-COR=", ""));
+			}
+			else if(args[i].startsWith("-GPR=")){
+				guaranteePreferenceRate = Integer.parseInt(args[i].replace("-GPR=", ""));
 			}
 			else if(args[i].startsWith("-MR=")){
 				mutationRate = Integer.parseInt(args[i].replace("-MR=", ""));
@@ -106,6 +110,7 @@ public class Main {
 		if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
 		if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) Settings.GA_MUTATION_RATE = mutationRate;
+		if (guaranteePreferenceRate > 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
 		if (generations > 0) Settings.GA_GENERATIONS = generations;
 		if (ga_timeout > 0) Settings.GA_EXECUTION_TIMEOUT = ga_timeout;
 		if (sat_timeout > 0) Settings.SAT_TIMEOUT = sat_timeout;
@@ -152,7 +157,7 @@ public class Main {
 		System.out.println("Use ./unreal-repair.sh \n" +
 								"\t[ -onlySAT | -strongSAT | -no-docker | -random | \n" +
 								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | \n" +
-								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
+								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | -GPR=guarantee_preference_rate \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
 								"\t -GATO=GA_timeout | -SatTO=sat_timeout | MCTO=model_counting_timeout] \n" +
 								"\tinput-file.tlsf");
