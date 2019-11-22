@@ -27,9 +27,9 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_GENERATIONS = 500;
 		Settings.GA_POPULATION_SIZE = 50;
 		Settings.GA_MUTATION_RATE = 100;
-		Settings.GA_MAX_NUM_INDIVIDUALS = 10000;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
 		Settings.allowAssumptionGuaranteeRemoval = false;
-		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 50;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 70;
 //		Settings.check_REALIZABILITY = false;
 		Settings.check_STRONG_SAT = true;
 		ga.run(tlsf);

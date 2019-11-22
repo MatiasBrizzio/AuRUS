@@ -8,10 +8,12 @@ import main.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Formula;
+import owl.ltl.SyntacticFragments;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaMutator;
 import owl.ltl.visitors.FormulaStrengthening;
 import owl.ltl.visitors.FormulaWeakening;
+import owl.ltl.visitors.GeneralFormulaMutator;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
@@ -26,20 +28,21 @@ public class SpecificationMutator {
 			List<Formula> assumptions = Formula_Utils.splitConjunction(spec.assume());
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(assumptions.size());
 			Formula assumption_to_mutate = assumptions.get(index_to_mutate);
-			Formula new_assumption = BooleanConstant.TRUE;
-			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
-			if (modification == 0) {
-				// arbitrary mutation
-				new_assumption = mutateFormula(assumption_to_mutate, spec.variables());
-			}
-			else if (modification == 1) {
-				// weaken mutation
-				new_assumption = weakenFormula(assumption_to_mutate, spec.variables());
-			}
-			else {
-				// strengthen mutation
-				new_assumption = strengthenFormula(assumption_to_mutate, spec.variables());
-			}
+//			Formula new_assumption = BooleanConstant.TRUE;
+//			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
+//			if (modification == 0) {
+//				// arbitrary mutation
+//				new_assumption = mutateFormula(assumption_to_mutate, spec.variables());
+//			}
+//			else if (modification == 1) {
+//				// weaken mutation
+//				new_assumption = weakenFormula(assumption_to_mutate, spec.variables());
+//			}
+//			else {
+//				// strengthen mutation
+//				new_assumption = strengthenFormula(assumption_to_mutate, spec.variables());
+//			}
+			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, spec.variables());
 			if (new_assumption != BooleanConstant.FALSE) {
 				assumptions.remove(index_to_mutate);
 				assumptions.add(index_to_mutate, new_assumption);
@@ -50,20 +53,21 @@ public class SpecificationMutator {
 			List<Formula> guarantees = new LinkedList<>(spec.guarantee());
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(guarantees.size());
 			Formula guarantee_to_mutate = guarantees.get(index_to_mutate);
-			Formula new_guarantee = BooleanConstant.TRUE;
-			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
-			if (modification == 0) {
-				// arbitrary mutation
-				new_guarantee = mutateFormula(guarantee_to_mutate, spec.variables());
-			}
-			else if (modification == 1){
-				// weaken mutation
-				new_guarantee = weakenFormula(guarantee_to_mutate, spec.variables());
-			}
-			else {
-				// weaken mutation
-				new_guarantee = strengthenFormula(guarantee_to_mutate, spec.variables());
-			}
+//			Formula new_guarantee = BooleanConstant.TRUE;
+//			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
+//			if (modification == 0) {
+//				// arbitrary mutation
+//				new_guarantee = mutateFormula(guarantee_to_mutate, spec.variables());
+//			}
+//			else if (modification == 1){
+//				// weaken mutation
+//				new_guarantee = weakenFormula(guarantee_to_mutate, spec.variables());
+//			}
+//			else {
+//				// weaken mutation
+//				new_guarantee = strengthenFormula(guarantee_to_mutate, spec.variables());
+//			}
+			Formula new_guarantee = applyGeneralMutation(guarantee_to_mutate, spec.variables());
 			if (new_guarantee != BooleanConstant.FALSE) {
 				guarantees.remove(index_to_mutate);
 				guarantees.add(index_to_mutate, new_guarantee);
@@ -73,6 +77,12 @@ public class SpecificationMutator {
 		return new_spec;
 	}
 
+	public static Formula applyGeneralMutation (Formula f, List<String> variables) {
+		int n = Formula_Utils.formulaSize(f);
+		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, n, n);
+		Formula m = f.nnf().accept(formVisitor);
+		return m;
+	}
 
 	public static Formula mutateFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);

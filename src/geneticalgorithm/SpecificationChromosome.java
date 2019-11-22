@@ -118,6 +118,8 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 	public SpecificationChromosome mutate() {
 		//clone the current specification
 		Tlsf mutated_spec = SpecificationMutator.mutate(spec, status);
+		if (mutated_spec == null)
+			return null;
 		SpecificationChromosome mutated_chromosome = new SpecificationChromosome(mutated_spec);
 		return mutated_chromosome;
 	}

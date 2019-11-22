@@ -102,9 +102,11 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			if (mut < MUTATION_RATE){
 				C chromosome = this.population.getChromosomeByIndex(i);
 				C mutated = chromosome.mutate();
-				newPopulation.addChromosome(mutated);
-				//update number of visited chromosomes
-				this.numberOfVisitedIndividuals++;
+				if (mutated != null) {
+					newPopulation.addChromosome(mutated);
+					//update number of visited chromosomes
+					this.numberOfVisitedIndividuals++;
+				}
 			}
 			checkTermination();
 		}
