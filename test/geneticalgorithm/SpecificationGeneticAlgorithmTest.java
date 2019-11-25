@@ -62,10 +62,14 @@ class SpecificationGeneticAlgorithmTest {
 		Tlsf tlsf = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		Settings.GA_GENERATIONS = 10	;
-		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_GENERATIONS = 500;
+		Settings.GA_POPULATION_SIZE = 50;
 		Settings.GA_MUTATION_RATE = 100;
-		Settings.GA_MAX_NUM_INDIVIDUALS = 200;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
+		Settings.allowAssumptionGuaranteeRemoval = false;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 70;
+//		Settings.check_REALIZABILITY = false;
+		Settings.check_STRONG_SAT = true;
 		ga.run(tlsf);
 	}
 
@@ -75,11 +79,15 @@ class SpecificationGeneticAlgorithmTest {
 		FileReader f = new FileReader(filename);
 		Tlsf tlsf = TlsfParser.parse(f);
 		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
-		Settings.GA_GENERATIONS = 10;
-		Settings.GA_POPULATION_SIZE = 30;
+		Settings.GA_GENERATIONS = 500;
+		Settings.GA_POPULATION_SIZE = 50;
 		Settings.GA_MUTATION_RATE = 100;
-		//Settings.GA_MAX_NUM_INDIVIDUALS = 1000;
-		ga.run(tlsf,-1,0,0);
+		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
+		Settings.allowAssumptionGuaranteeRemoval = false;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 70;
+//		Settings.check_REALIZABILITY = false;
+		Settings.check_STRONG_SAT = true;
+		ga.run(tlsf);
 	}
 
 	@Test
@@ -93,6 +101,41 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_MUTATION_RATE = 100;
 		Settings.GA_MAX_NUM_INDIVIDUALS = 100;
 		ga.run(tlsf);
+	}
+
+	@Test
+	void testRunArbiterPaper() throws IOException, InterruptedException {
+		String filename = "examples/arbiter.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
+		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+		Settings.GA_GENERATIONS = 500;
+		Settings.GA_POPULATION_SIZE = 50;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
+		Settings.allowAssumptionGuaranteeRemoval = false;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 70;
+//		Settings.check_REALIZABILITY = false;
+		Settings.only_inputs_in_assumptions = true;
+		Settings.check_STRONG_SAT = true;
+		ga.run(tlsf);
+	}
+
+	@Test
+	void testRunFirefighting() throws IOException, InterruptedException {
+		String filename = "examples/firefighting.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TlsfParser.parse(f);
+		SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+		Settings.GA_GENERATIONS = 500;
+		Settings.GA_POPULATION_SIZE = 50;
+		Settings.GA_MUTATION_RATE = 100;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 10000;
+		Settings.allowAssumptionGuaranteeRemoval = false;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 70;
+		Settings.check_REALIZABILITY = false;
+//		Settings.check_STRONG_SAT = true;
+		ga.run(tlsf, .7d, .3d, 0d);
 	}
 
 	@Test

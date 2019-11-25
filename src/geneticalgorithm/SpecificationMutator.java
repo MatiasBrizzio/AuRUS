@@ -42,7 +42,10 @@ public class SpecificationMutator {
 //				// strengthen mutation
 //				new_assumption = strengthenFormula(assumption_to_mutate, spec.variables());
 //			}
-			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, spec.variables());
+			List<String> vars = spec.variables();
+			if (Settings.only_inputs_in_assumptions && Settings.RANDOM_GENERATOR.nextBoolean())
+				vars = vars.subList(0,spec.numberOfInputs());
+			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);
 			if (new_assumption != BooleanConstant.FALSE) {
 				assumptions.remove(index_to_mutate);
 				assumptions.add(index_to_mutate, new_assumption);
@@ -67,7 +70,10 @@ public class SpecificationMutator {
 //				// weaken mutation
 //				new_guarantee = strengthenFormula(guarantee_to_mutate, spec.variables());
 //			}
-			Formula new_guarantee = applyGeneralMutation(guarantee_to_mutate, spec.variables());
+			List<String> vars = spec.variables();
+//			if (Settings.RANDOM_GENERATOR.nextBoolean())
+//				vars = vars.subList(spec.numberOfInputs(), spec.variables().size());
+			Formula new_guarantee = applyGeneralMutation(guarantee_to_mutate, vars);
 			if (new_guarantee != BooleanConstant.FALSE) {
 				guarantees.remove(index_to_mutate);
 				guarantees.add(index_to_mutate, new_guarantee);

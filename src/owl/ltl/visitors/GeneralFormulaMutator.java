@@ -8,31 +8,50 @@ import java.util.*;
 public class GeneralFormulaMutator implements Visitor<Formula>{
 	private final List<Literal> literalCache;
 	  private final List<String> variables;
+//	  private final int numOfInputs;
 	  private final boolean fixedVariables;
 	  private int mutation_rate;
 	  public int numOfAllowedMutations = 0;
 
 	  private boolean print_debug_info = false;
 
-	  public GeneralFormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_apply) {
-			ListIterator<String> literalIterator = literals.listIterator();
-		    List<Literal> literalList = new ArrayList<>();
-		    List<String> variableList = new ArrayList<>();
+	public GeneralFormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_apply) {
+		ListIterator<String> literalIterator = literals.listIterator();
+		List<Literal> literalList = new ArrayList<>();
+		List<String> variableList = new ArrayList<>();
+//		numOfInputs = 0;
+		while (literalIterator.hasNext()) {
+			int index = literalIterator.nextIndex();
+			String name = literalIterator.next();
+			literalList.add(Literal.of(index));
+			variableList.add(name);
+		}
 
-		    while (literalIterator.hasNext()) {
-		      int index = literalIterator.nextIndex();
-		      String name = literalIterator.next();
-		      literalList.add(Literal.of(index));
-		      variableList.add(name);
-		    }
-
-		    literalCache = List.copyOf(literalList);
-		    variables = List.copyOf(variableList);
-		    fixedVariables = true;
-		    this.mutation_rate = mutation_rate;
-		    this.numOfAllowedMutations = max_num_of_mutations_to_apply;
-			
+		literalCache = List.copyOf(literalList);
+		variables = List.copyOf(variableList);
+		fixedVariables = true;
+		this.mutation_rate = mutation_rate;
+		this.numOfAllowedMutations = max_num_of_mutations_to_apply;
 	}
+
+//	  public GeneralFormulaMutator(List<String> literals, int num_of_inputs, int mutation_rate, int max_num_of_mutations_to_apply) {
+//			ListIterator<String> literalIterator = literals.listIterator();
+//		    List<Literal> literalList = new ArrayList<>();
+//		    List<String> variableList = new ArrayList<>();
+//			numOfInputs = num_of_inputs;
+//		    while (literalIterator.hasNext()) {
+//		      int index = literalIterator.nextIndex();
+//		      String name = literalIterator.next();
+//		      literalList.add(Literal.of(index));
+//		      variableList.add(name);
+//		    }
+//
+//		    literalCache = List.copyOf(literalList);
+//		    variables = List.copyOf(variableList);
+//		    fixedVariables = true;
+//		    this.mutation_rate = mutation_rate;
+//		    this.numOfAllowedMutations = max_num_of_mutations_to_apply;
+//	}
 	
 	public List<String> variables() {
 	    return List.copyOf(variables);
@@ -58,10 +77,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    		if (random == 0)
 	    				current = current.not();
 	    		else {
-	    			Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
-	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
-	    				new_literal = new_literal.not();
-	    			current = new_literal;
+	    			current = new_literal(current);
 	    		}
 	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
@@ -85,14 +101,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    		else if (random == 1)
     				current =BooleanConstant.FALSE;
 	    		else if (random == 2) {
-					int new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
-					while (new_variable == literal.getAtom())
-						new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
-					Literal new_literal = createVariable(variables.get(new_variable));
-					if (Settings.RANDOM_GENERATOR.nextBoolean())
-						new_literal = new_literal.not();
-
-					current = new_literal;
+					current = new_literal(current);
 	    		}
 	    		else {
 	    			//0:not 1:X 2:F 3:G
@@ -280,18 +289,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    			}
 	    		}
 	    		else if (random == 2) {
-	    			Set<Literal> props = current.accept(new PropositionVariablesExtractor());
-					int new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
-					Literal new_literal = createVariable(variables.get(new_variable));
-					int trying = 0;
-					while (props.contains(new_literal) && trying< 10) {
-						trying++;
-						new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
-						new_literal = createVariable(variables.get(new_variable));
-					}
-
-	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
-	    				new_literal = new_literal.not();
+					Literal new_literal =new_literal(current);
 	    			current = Conjunction.of(current, new_literal);
 	    		}
 	    		else if (current.children().size() > 0){ // random == 3
@@ -371,18 +369,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    			}
 	    		}
 	    		else if(random == 2) {
-					Set<Literal> props = current.accept(new PropositionVariablesExtractor());
-					int new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
-					Literal new_literal = createVariable(variables.get(new_variable));
-					int trying = 0;
-					while (props.contains(new_literal) && trying< 10) {
-						trying++;
-						new_variable = Settings.RANDOM_GENERATOR.nextInt(variables.size());
-						new_literal = createVariable(variables.get(new_variable));
-					}
-
-	    			if (Settings.RANDOM_GENERATOR.nextBoolean())
-	    				new_literal = new_literal.not();
+					Literal new_literal = new_literal(current);
 	    			current = Disjunction.of(current, new_literal); 
 	    		}
 	    		else if (current.children().size() > 0) { // random == 3
@@ -723,5 +710,24 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 			return max;
 		}
 		return 0;
+	}
+
+	public Literal new_literal (Formula current) {
+		Set<Literal> props = current.accept(new PropositionVariablesExtractor());
+		int max = variables.size();
+//		if (numOfInputs > 0)
+//			max = numOfInputs;
+		int new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
+		Literal new_literal = createVariable(variables.get(new_variable));
+		int trying = 0;
+		while (props.contains(new_literal) && trying < 5) {
+			trying++;
+			new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
+			new_literal = createVariable(variables.get(new_variable));
+		}
+
+		if (Settings.RANDOM_GENERATOR.nextBoolean())
+			new_literal = new_literal.not();
+		return new_literal;
 	}
 }

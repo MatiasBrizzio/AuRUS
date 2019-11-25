@@ -13,10 +13,14 @@ import com.lagodiuk.ga.Population;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
+import owl.ltl.FOperator;
 import owl.ltl.Formula;
+import owl.ltl.GOperator;
+import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
+import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
 public class SpecificationGeneticAlgorithm {
@@ -51,7 +55,7 @@ public class SpecificationGeneticAlgorithm {
 //		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
 //		fitness.setBound(Settings.MC_BOUND);
 		//if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
-		if (Settings.check_REALIZABILITY && fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
+		if (!Settings.check_STRONG_SAT && fitness.originalStatus ==  SPEC_STATUS.REALIZABLE) {
 			System.out.println();
 			System.out.println("The specification is already realizable.");
 			return;
@@ -75,11 +79,14 @@ public class SpecificationGeneticAlgorithm {
 		if (!Settings.check_REALIZABILITY || Settings.check_STRONG_SAT) {
 			System.out.println("Checking for Realizability ..." );
 			for (SpecificationChromosome c : bestSolutions) {
+				System.out.print(".");
 				RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
 				if (status == RealizabilitySolverResult.REALIZABLE) {
+					System.out.print("R");
 					solutions.add(c);
 				}
 			}
+			System.out.println();
 		}
 		System.out.println("Realizable Specifications:" );
 		for (int i = 0; i < solutions.size(); i++) {
@@ -134,6 +141,15 @@ public class SpecificationGeneticAlgorithm {
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		population.addChromosome(init);
+
+		for(int i = 0; i < spec.numberOfInputs(); i++) {
+			Literal input = Literal.of(i);
+			Formula new_assumption = GOperator.of(FOperator.of(input));
+			List<Formula>  assumes = Formula_Utils.splitConjunction(spec.assume());
+			assumes.add(new_assumption);
+			Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
+			population.addChromosome(new SpecificationChromosome(input_spec));
+		}
 //		for (Formula g : spec.guarantee()) {
 //			Tlsf g_spec = TLSF_Utils.fromSpec(spec);
 //			g_spec = TLSF_Utils.change_guarantees(g_spec, g);

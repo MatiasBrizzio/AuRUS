@@ -16,6 +16,8 @@ public class Settings {
 	public static int GA_EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 	public static int GA_GUARANTEES_PREFERENCE_FACTOR = 50; // p is the probability to which the genetic operators will be applied to the guarantees.
 															// (1-p) is the probability to which the genetic operators will be applied to the assumptions.
+	public static boolean GA_RANDOM_SELECTOR = false;
+	public static boolean only_inputs_in_assumptions = false;
 
 	//fitness setting
 	public static boolean check_REALIZABILITY = true;

@@ -53,7 +53,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		compute_status(originalChromosome);
 		this.originalStatus = originalChromosome.status;
 		System.out.println("Initial specification is: " + originalStatus);
-		originalNumOfModels = countModels(originalSpecification.toFormula());
+		if (Settings.LOST_MODELS_FACTOR > 0.0d)
+			originalNumOfModels = countModels(originalSpecification.toFormula());
 //        originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
 //        UNIVERSE = countModels(LtlParser.parse("true",originalSpecification.variables()));
     }

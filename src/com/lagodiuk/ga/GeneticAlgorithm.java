@@ -131,11 +131,11 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		this.population = newPopulation;
 	}
 
-	public boolean randomSelector = false;
+
 	public void select() {
 		//best selector
 		if (population.getSize() > this.parentChromosomesSurviveCount) {
-			if (randomSelector) {
+			if (Settings.GA_RANDOM_SELECTOR) {
 				//first, disorder individuals before trimming
 				population.shufflePopulation();
 			}
