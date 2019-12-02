@@ -18,12 +18,14 @@ public class Main {
 		int crossoverRate = 0;
 		int mutationRate = 0;
 		int guaranteePreferenceRate = 0;
+		boolean random_GA_selector = false;
 		int generations = 0;
 		boolean randomGen = false;
 		double status_factor = -1.0d;
 		double syntactic_factor = -1.0d;
 		double semantic_factor = -1.0d;
-		boolean allowAssumptionGuaranteeRemoval = false;
+		boolean allowGuaranteesRemoval = false;
+		boolean allowAssumptionsAddition = false;
 		boolean no_check_realizability = false;
 		boolean strong_SAT = false;
 		int bound = 0;
@@ -63,14 +65,20 @@ public class Main {
 			else if(args[i].startsWith("-random")){
 				randomGen = true;
 			}
+			else if(args[i].startsWith("-GA_random_selector")){
+				random_GA_selector = true;
+			}
 			else if(args[i].startsWith("-onlySAT")){
 				no_check_realizability = true;
 			}
 			else if(args[i].startsWith("-strongSAT")){
 				strong_SAT = true;
 			}
-			else if(args[i].startsWith("-allow-AG-removal")){
-				allowAssumptionGuaranteeRemoval = true;
+			else if(args[i].startsWith("-removeG")){
+				allowGuaranteesRemoval = true;
+			}
+			else if(args[i].startsWith("-addA")){
+				allowAssumptionsAddition = true;
 			}
 			else if(args[i].startsWith("-GATO=")){
 				ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
@@ -117,9 +125,11 @@ public class Main {
 		if (mc_timeout > 0) Settings.MC_TIMEOUT = mc_timeout;
 		if (bound > 0) Settings.MC_BOUND = bound;
 		if (precise) Settings.MC_EXHAUSTIVE = false;
-		if (allowAssumptionGuaranteeRemoval) Settings.allowAssumptionGuaranteeRemoval = true;
+		if (allowAssumptionsAddition) Settings.allowAssumptionAddition = true;
+		if (allowGuaranteesRemoval) Settings.allowGuaranteeRemoval = true;
 		if (no_check_realizability) Settings.check_REALIZABILITY = false;
 		if (strong_SAT) Settings.check_STRONG_SAT = true;
+		if (random_GA_selector) Settings.GA_RANDOM_SELECTOR = true;
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
@@ -157,7 +167,8 @@ public class Main {
 		System.out.println("Use ./unreal-repair.sh \n" +
 								"\t[ -onlySAT | -strongSAT | -no-docker | -random | \n" +
 								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | \n" +
-								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | -GPR=guarantee_preference_rate \n" +
+								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
+								"\t -removeGuarantees | -addAssumptions | -GA_random_selector | -GPR=guarantee_preference_rate | \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
 								"\t -GATO=GA_timeout | -SatTO=sat_timeout | MCTO=model_counting_timeout] \n" +
 								"\tinput-file.tlsf");

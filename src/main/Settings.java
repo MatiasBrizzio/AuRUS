@@ -18,11 +18,13 @@ public class Settings {
 															// (1-p) is the probability to which the genetic operators will be applied to the assumptions.
 	public static boolean GA_RANDOM_SELECTOR = false;
 	public static boolean only_inputs_in_assumptions = false;
+	public static double GA_THRESHOLD = 0.0d;
 
 	//fitness setting
 	public static boolean check_REALIZABILITY = true;
 	public static boolean check_STRONG_SAT = false;
-	public static boolean allowAssumptionGuaranteeRemoval = false;
+	public static boolean allowAssumptionAddition = false;
+	public static boolean allowGuaranteeRemoval = false;
 	public static double STATUS_FACTOR = 0.7d;
 	public static double LOST_MODELS_FACTOR = 0.1d;
 	public static double WON_MODELS_FACTOR = 0.1d;

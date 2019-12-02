@@ -28,7 +28,7 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		Tlsf spec1 = TlsfParser.parse(f);
 		FileReader f2 = new FileReader("examples/minepump-2.tlsf");
 		Tlsf spec2 = TlsfParser.parse(f2);
-		Settings.allowAssumptionGuaranteeRemoval = true;
+		Settings.allowAssumptionAddition = true;
 //		Settings.USE_DOCKER = false;
 		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
 
@@ -44,7 +44,7 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
-		Settings.allowAssumptionGuaranteeRemoval = true;
+		Settings.allowAssumptionAddition = true;
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 		
@@ -58,7 +58,7 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
 		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
-		Settings.allowAssumptionGuaranteeRemoval = true;
+		Settings.allowAssumptionAddition = true;
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 		
@@ -75,5 +75,47 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
 		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
 		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 
+	}
+
+	@Test
+	void testArbiterRepairAssumption() throws IOException, InterruptedException {
+		FileReader f = new FileReader("examples/arbiter.tlsf");
+		Tlsf spec1 = TlsfParser.parse(f);
+		FileReader f2 = new FileReader("examples/arbiter-2.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f2);
+//		Settings.allowAssumptionGuaranteeRemoval = true;
+//		Settings.USE_DOCKER = false;
+		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
+	}
+
+	@Test
+	void testArbiterRepairGoal1() throws IOException, InterruptedException {
+		FileReader f = new FileReader("examples/arbiter.tlsf");
+		Tlsf spec1 = TlsfParser.parse(f);
+		FileReader f2 = new FileReader("examples/arbiter-3.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f2);
+//		Settings.allowAssumptionGuaranteeRemoval = true;
+//		Settings.USE_DOCKER = false;
+		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
+	}
+
+	@Test
+	void testArbiterRepairGoal2() throws IOException, InterruptedException {
+		FileReader f = new FileReader("examples/arbiter.tlsf");
+		Tlsf spec1 = TlsfParser.parse(f);
+		FileReader f2 = new FileReader("examples/arbiter-4.tlsf");
+		Tlsf spec2 = TlsfParser.parse(f2);
+//		Settings.allowAssumptionGuaranteeRemoval = true;
+//		Settings.USE_DOCKER = false;
+		AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
+
+		SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+		System.out.printf("%.2f ",fitnessFunc.calculate(chromosome));
 	}
 }

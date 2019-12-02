@@ -32,6 +32,7 @@ public class SpecificationGeneticAlgorithm {
 //	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 //	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 	public Instant initialExecutionTime = null;
+	public Instant searchExecutionTime = null;
 	public Instant finalExecutionTime = null;
 
 
@@ -75,7 +76,7 @@ public class SpecificationGeneticAlgorithm {
 		ga.setTIMEOUT(Settings.GA_EXECUTION_TIMEOUT);
 		print_config();
 		ga.evolve(Settings.GA_GENERATIONS);
-		finalExecutionTime = Instant.now();
+		searchExecutionTime = Instant.now();
 		if (!Settings.check_REALIZABILITY || Settings.check_STRONG_SAT) {
 			System.out.println("Checking for Realizability ..." );
 			for (SpecificationChromosome c : bestSolutions) {
@@ -95,6 +96,7 @@ public class SpecificationGeneticAlgorithm {
 			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
 		}
+		finalExecutionTime = Instant.now();
 		System.out.println(print_execution_time());
 		System.out.println(print_config());
 		fitness.print_config();
@@ -133,8 +135,10 @@ public class SpecificationGeneticAlgorithm {
 	}
 
 	public String print_execution_time() {
+		Duration search = Duration.between(initialExecutionTime, searchExecutionTime);
 		Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
-		String timeStr = String.format("Time: %s m  %s s",duration.toMinutes(), duration.toSecondsPart());
+		String timeStr = String.format("GA Time: %s m  %s s",search.toMinutes(), search.toSecondsPart()) + "\n" +
+				String.format("Time: %s m  %s s",duration.toMinutes(), duration.toSecondsPart());
 		return timeStr;
 	}
 	private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){
@@ -167,8 +171,8 @@ public class SpecificationGeneticAlgorithm {
 				// Lets add listener, which prints best chromosome after each iteration
 				ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
 
-					//TODO: select a reasonable threshold
-					private final double threshold = 0.0d;
+//					//TODO: select a reasonable threshold
+//					private final double threshold = 0.0d;
 
 					@Override
 					public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {
@@ -199,7 +203,7 @@ public class SpecificationGeneticAlgorithm {
 						// save ALL the solutions
 						if (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) {
 							for (SpecificationChromosome c : ga.getPopulation()) {
-								if (c.fitness < threshold) break;
+								if (c.fitness < Settings.GA_THRESHOLD) break;
 								if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
 									solutions.add(c);
 								// we can stop Genetic algorithm
@@ -208,7 +212,7 @@ public class SpecificationGeneticAlgorithm {
 						}
 						else {
 							for (SpecificationChromosome c : ga.getPopulation()) {
-								if (c.fitness < threshold) break;
+								if (c.fitness < Settings.GA_THRESHOLD) break;
 								if (c.status.isSpecificationConsistent() && !bestSolutions.contains(best))
 									bestSolutions.add(best);
 							}

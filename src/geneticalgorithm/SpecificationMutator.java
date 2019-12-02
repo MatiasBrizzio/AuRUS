@@ -26,6 +26,8 @@ public class SpecificationMutator {
 		if (random >= Settings.GA_GUARANTEES_PREFERENCE_FACTOR) {
 			// mutate assumptions
 			List<Formula> assumptions = Formula_Utils.splitConjunction(spec.assume());
+			if (assumptions.isEmpty())
+				assumptions.add(BooleanConstant.TRUE);
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(assumptions.size());
 			Formula assumption_to_mutate = assumptions.get(index_to_mutate);
 //			Formula new_assumption = BooleanConstant.TRUE;
@@ -43,7 +45,7 @@ public class SpecificationMutator {
 //				new_assumption = strengthenFormula(assumption_to_mutate, spec.variables());
 //			}
 			List<String> vars = spec.variables();
-			if (Settings.only_inputs_in_assumptions && Settings.RANDOM_GENERATOR.nextBoolean())
+			if (Settings.only_inputs_in_assumptions)
 				vars = vars.subList(0,spec.numberOfInputs());
 			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);
 			if (new_assumption != BooleanConstant.FALSE) {
@@ -53,7 +55,9 @@ public class SpecificationMutator {
 			}
 		}
 		else {
-			List<Formula> guarantees = new LinkedList<>(spec.guarantee());
+			List<Formula> guarantees = Formula_Utils.splitConjunctions(spec.guarantee());
+			if (guarantees.isEmpty())
+				guarantees.add(BooleanConstant.TRUE);
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(guarantees.size());
 			Formula guarantee_to_mutate = guarantees.get(index_to_mutate);
 //			Formula new_guarantee = BooleanConstant.TRUE;

@@ -6,6 +6,7 @@ import java.util.Random;
 
 import com.lagodiuk.ga.Chromosome;
 
+import main.Settings;
 import owl.ltl.Formula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.rewriter.SyntacticSimplifier;
@@ -92,10 +93,14 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 	public List<SpecificationChromosome> crossover(SpecificationChromosome anotherChromosome) {
 		List<SpecificationChromosome> result = new LinkedList<SpecificationChromosome>();
 		// if the specifications will not lead us to a consistent specification, then do a random merge.
-		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
+//		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
+		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, Settings.RANDOM_GENERATOR.nextInt(3));
+//		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec);
 		for (Tlsf s : mergedSpecs) {
 			result.add(new SpecificationChromosome(s));
 		}
+
+
 		//result.add(new SpecificationChromosome());
 //		if (!this.status.compatible(anotherChromosome.status)) {
 //			int level = Settings.RANDOM_GENERATOR.nextInt(2);

@@ -19,7 +19,10 @@ import owl.run.Environment;
 import owl.translations.delag.DelagBuilder;
 
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.IntConsumer;
 
 import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
@@ -29,18 +32,30 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
 //    private DMatrixRMaj T = null;
 //    private DMatrixRMaj I = null;
     private Automaton<S,EmersonLeiAcceptance> automaton = null;
+    private LabelledFormula formula;
     private List<String> input_vars = null;
 //    private List<String> variables = null;
 //    private Map<S,Integer> states = null;
-    public static int TIMEOUT = 300;
+    public static int TIMEOUT = 120;
 
     public EmersonLeiAutomatonBasedStrongSATSolver(LabelledFormula formula) {
-        // Convert the ltl formula to an automaton with OWL
-        DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
-        automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
+        this.formula = formula;
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        // Do the call in a separate thread, get a Future back
+        Future<String> future = executorService.submit(this::parse);
+        try {
+            // Wait for at most TIMEOUT seconds until the result is returned
+            String result = future.get(TIMEOUT, TimeUnit.SECONDS);
+            input_vars = new ArrayList<>(formula.player1Variables());
+        } catch (TimeoutException e) {
+            System.out.println("EmersonLeiAutomatonBasedStrongSATSolver: TIMEOUT parsing.");
+        }
+        catch (InterruptedException | ExecutionException e) {
+            System.err.println("EmersonLeiAutomatonBasedStrongSATSolver: ERROR while parsing. " + e.getMessage());
+        }
 //        System.out.println("Parsed...");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
-        input_vars = new ArrayList<>(formula.player1Variables());
+//        input_vars = new ArrayList<>(formula.player1Variables());
 //        variables = formula.variables();
 //        states = new HashMap<>();
 //        int index = 0;
@@ -59,6 +74,13 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
 //        I = CommonOps_DDRM.identity(n);
     }
 
+    private String parse() {
+        // Convert the ltl formula to an automaton with OWL
+        DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
+        automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
+        return "OK";
+    }
+
 //    public boolean isStrongSatisfiable() {
 //        BigInteger numOfModels = count(Settings.MC_BOUND);
 //        BigInteger expectedNumOfModels =  (BigInteger.valueOf(2).pow(input_vars.size())).pow(Settings.MC_BOUND);
@@ -70,7 +92,26 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
     boolean isAcceptance = false;
     boolean noAcceptance = false;
 //    long numOfAcceptanceTransition = 0;
-    public boolean checkStrongSatisfiable() {
+    public Boolean checkStrongSatisfiable() {
+        if (automaton == null)
+            return null;
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        // Do the call in a separate thread, get a Future back
+        Future<Boolean> future = executorService.submit(this::isPotentiallyRealizable);
+        try {
+            // Wait for at most TIMEOUT seconds until the result is returned
+            Boolean result = future.get(TIMEOUT, TimeUnit.SECONDS);
+            return result;
+        } catch (TimeoutException e) {
+            System.out.println("EmersonLeiAutomatonBasedStrongSATSolver::isPotentiallyRealizable TIMEOUT.");
+        }
+        catch (InterruptedException | ExecutionException e) {
+            System.err.println("EmersonLeiAutomatonBasedStrongSATSolver::isPotentiallyRealizable ERROR. " + e.getMessage());
+        }
+        return null;
+    }
+
+    private boolean isPotentiallyRealizable() {
 //        BigInteger numOfInputEvents = BigInteger.valueOf(2).pow(input_vars.size());
         List<S> visitedStates = new LinkedList<>();
         Set<S> undesiredStates = new HashSet<>();
@@ -251,6 +292,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
 //        }
         return true;
     }
+
 
 //    public  BigInteger count(int bound){
 //        //We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,

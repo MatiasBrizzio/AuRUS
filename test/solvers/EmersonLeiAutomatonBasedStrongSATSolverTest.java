@@ -132,6 +132,9 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
 
             List<String> specifications = walk.map(x -> x.toString())
                     .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
+            int numOfTimeout = 0;
+            int numOfStrongSAT = 0;
+            int numOf_NOT_StrongSAT = 0;
 
             for (String filename : specifications) {
                 System.out.println(filename);
@@ -140,10 +143,17 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
                 LabelledFormula f0 = tlsf.toFormula();
 //                System.out.println(f0);
                 EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-                boolean res = s.checkStrongSatisfiable();
+                Boolean res = s.checkStrongSatisfiable();
+                //EXPECTED: false
                 System.out.println(res);
-                assertFalse(res);
+                if (res == null)
+                    numOfTimeout++;
+                else if (res.booleanValue())
+                    numOfStrongSAT++;
+                else //false
+                    numOf_NOT_StrongSAT++;
             }
+            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT,numOf_NOT_StrongSAT,numOfTimeout);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -168,6 +178,9 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
 
             List<String> specifications = walk.map(x -> x.toString())
                     .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
+            int numOfTimeout = 0;
+            int numOfStrongSAT = 0;
+            int numOf_NOT_StrongSAT = 0;
 
             for (String filename : specifications) {
                 Instant initialExecutionTime = Instant.now();
@@ -177,13 +190,21 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
                 LabelledFormula f0 = tlsf.toFormula();
 //                System.out.println(f0);
                 EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-                boolean res = s.checkStrongSatisfiable();
+                Boolean res = s.checkStrongSatisfiable();
+//                System.out.println(res);
+//                Instant finalExecutionTime = Instant.now();
+//                Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
+//                System.out.printf("Time: %s m  %s s\n",duration.toMinutes(), duration.toSecondsPart());
+                //EXPECTED: true
                 System.out.println(res);
-                Instant finalExecutionTime = Instant.now();
-                Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
-                System.out.printf("Time: %s m  %s s\n",duration.toMinutes(), duration.toSecondsPart());
-                assertTrue(res);
+                if (res == null)
+                    numOfTimeout++;
+                else if (res.booleanValue())
+                    numOfStrongSAT++;
+                else //false
+                    numOf_NOT_StrongSAT++;
             }
+            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT,numOf_NOT_StrongSAT,numOfTimeout);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

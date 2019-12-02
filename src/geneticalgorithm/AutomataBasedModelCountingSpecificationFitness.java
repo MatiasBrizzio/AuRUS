@@ -108,7 +108,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		if (guarantees == BooleanConstant.TRUE)
 			return 0.0d;
 
-		if (!Settings.allowAssumptionGuaranteeRemoval) {
+		if (!Settings.allowGuaranteeRemoval || !Settings.allowAssumptionAddition) {
 			boolean somethingRemoved = somethingHasBeenRemoved(originalSpecification, chromosome.spec);
 			if (somethingRemoved)
 				return 0.0d;
@@ -228,7 +228,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 								if (Settings.check_STRONG_SAT) {
 									// check for strong satisfiability
 									EmersonLeiAutomatonBasedStrongSATSolver strong_sat_solver = new EmersonLeiAutomatonBasedStrongSATSolver(spec.toFormula());
-									if (strong_sat_solver.checkStrongSatisfiable())
+									Boolean strong_sat_res = strong_sat_solver.checkStrongSatisfiable();
+									if (strong_sat_res!=null && strong_sat_res.booleanValue())
 										rel = RealizabilitySolverResult.REALIZABLE;
 								}
 								else {
@@ -391,15 +392,16 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		System.out.println(wonSubs.size()  +" " + sub_refined.size());
 		double lost = ((double) commonSubs.size()) / ((double) sub_original.size());
 		double won = ((double) commonSubs.size()) / ((double) sub_refined.size());
-		double size = compute_syntactic_distance_size(original, refined);
-		double syntactic_distance =  0.5d * size +  0.25d * lost + 0.25d * won;
+//		double size = compute_syntactic_distance_size(original, refined);
+//		double syntactic_distance =  0.5d * size +  0.25d * lost + 0.25d * won;
+		double syntactic_distance = 0.5d * lost + 0.5d * won;
 		return syntactic_distance;
 	}
 
 	public boolean somethingHasBeenRemoved(Tlsf original, Tlsf refined) {
-		boolean assumptionRemoved = Formula_Utils.splitConjunction(original.assume()).size() > Formula_Utils.splitConjunction(refined.assume()).size() ;
-		boolean guaranteeRemoved =  original.guarantee().size() > refined.guarantee().size();
-		return assumptionRemoved || guaranteeRemoved;
+		boolean assumptionAdded = !Settings.allowAssumptionAddition && Formula_Utils.splitConjunction(original.assume()).size() < Formula_Utils.splitConjunction(refined.assume()).size() ;
+		boolean guaranteeRemoved =  !Settings.allowGuaranteeRemoval && Formula_Utils.splitConjunctions(original.guarantee()).size() > Formula_Utils.splitConjunctions(refined.guarantee()).size();
+		return assumptionAdded || guaranteeRemoved;
 	}
 
 	
@@ -418,6 +420,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	}
 
 	public  void print_config() {
-		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s, rem: %s", Settings.STATUS_FACTOR, Settings.LOST_MODELS_FACTOR, Settings.WON_MODELS_FACTOR, Settings.SYNTACTIC_FACTOR,Settings.allowAssumptionGuaranteeRemoval));
+		System.out.println(String.format("status: %s, lost: %s, won: %s, syn: %s, addA: %s, remG: %s", Settings.STATUS_FACTOR, Settings.LOST_MODELS_FACTOR, Settings.WON_MODELS_FACTOR, Settings.SYNTACTIC_FACTOR,Settings.allowAssumptionAddition,Settings.allowGuaranteeRemoval));
 	}
 }
