@@ -1,6 +1,5 @@
 package solvers;
 
-import org.junit.jupiter.api.Test;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
@@ -18,13 +17,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import junit.framework.JUnit4TestAdapter;
+import org.junit.Test;
 
 public class EmersonLeiAutomatonBasedStrongSATSolverTest {
 
     @Test
-    <S> void testAutomataSimple2Unreal() throws IOException {
+    public void testAutomataSimple2Unreal() throws IOException {
         String filename = "examples/simple2.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
@@ -37,7 +37,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testAutomataSimple2Real() throws IOException {
+    public void testAutomataSimple2Real() throws IOException {
         String filename = "examples/simple2-real.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
@@ -50,7 +50,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testAutomataMinepumpUnreal() throws IOException {
+    public void testAutomataMinepumpUnreal() throws IOException {
         String filename = "examples/minepump.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
@@ -63,7 +63,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testAutomataMinepump2Real() throws IOException {
+    public void testAutomataMinepump2Real() throws IOException {
         String filename = "examples/minepump-2.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
@@ -76,7 +76,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testAutomataMinepump3Real() throws IOException {
+    public void testAutomataMinepump3Real() throws IOException {
         String filename = "examples/minepump-3.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
@@ -89,7 +89,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testAutomataMinepump4Real() throws IOException {
+    public void testAutomataMinepump4Real() throws IOException {
         String filename = "examples/minepump-4.tlsf";
         FileReader f = new FileReader(filename);
         Tlsf tlsf = TlsfParser.parse(f);
@@ -102,7 +102,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testAutomata_full_arbiter_unreal1_3_4() throws IOException, InterruptedException {
+    public void testAutomata_full_arbiter_unreal1_3_4() throws IOException, InterruptedException {
         String filename = "examples/syntcomp2019/unreal/9158599/full_arbiter_unreal1_3_4.tlsf";
         Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         LabelledFormula f0 = tlsf.toFormula();
@@ -115,7 +115,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
 
 
     @Test
-    <S> void testAutomata_round_robin_arbiter_unreal1_2_3() throws IOException, InterruptedException {
+    public void testAutomata_round_robin_arbiter_unreal1_2_3() throws IOException, InterruptedException {
         String filename = "examples/syntcomp2019/unreal/9158546/round_robin_arbiter_unreal1_2_3.tlsf";
         Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         LabelledFormula f0 = tlsf.toFormula();
@@ -127,7 +127,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testSyntCompUnreal() throws IOException {
+    public void testSyntCompUnreal() throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get("examples/syntcomp2019/unreal/"))) {
 
             List<String> specifications = walk.map(x -> x.toString())
@@ -161,7 +161,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
 
 
     @Test
-    <S> void testAutomata_SensorSelector_real() throws IOException, InterruptedException {
+    public void testAutomata_SensorSelector_real() throws IOException, InterruptedException {
         String filename = "examples/syntcomp2019/LTL/9127916/SensorSelector.tlsf";
         Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         LabelledFormula f0 = tlsf.toFormula();
@@ -173,7 +173,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
     }
 
     @Test
-    <S> void testSyntCompReal() throws IOException {
+    public void testSyntCompReal() throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get("examples/syntcomp2019/LTL/"))) {
 
             List<String> specifications = walk.map(x -> x.toString())

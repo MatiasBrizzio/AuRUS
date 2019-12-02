@@ -59,7 +59,7 @@ public class Settings {
 	//SAT solver setting
 	public static int SAT_TIMEOUT = 30;
 
-	
+
 	@Override
 	public String toString() {
 		return super.toString();
