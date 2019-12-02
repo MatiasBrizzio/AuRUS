@@ -42,18 +42,24 @@ public class Settings {
 		}
 	}
 
+	//parsing timeout
+	public static int PARSING_TIMEOUT = 60;
+
 	//model counting setting
 	public static int MC_BOUND = 10;
 	public static boolean MC_EXHAUSTIVE = true;
-	public static int MC_TIMEOUT = 60;
+	public static int MC_TIMEOUT = 180;
 
 	//Strix setting
 	public static int STRIX_TIMEOUT = 180;
 
+	//SAT solver setting
+	public static int STRONG_SAT_TIMEOUT = 180;
 
 	//SAT solver setting
 	public static int SAT_TIMEOUT = 30;
 
+	
 	@Override
 	public String toString() {
 		return super.toString();

@@ -4,6 +4,7 @@ package modelcounter;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import jhoafparser.ast.AtomAcceptance;
 import jhoafparser.ast.BooleanExpression;
+import main.Settings;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import owl.automaton.Automaton;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.IntConsumer;
 
 public class EmersonLeiAutomatonBasedModelCounting<S> {
@@ -30,32 +32,73 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 	private DMatrixRMaj T = null;
 //	private DMatrixRMaj I = null;
 	private Automaton<S,EmersonLeiAcceptance> automaton = null;
+	private LabelledFormula formula = null;
     private Object[] states = null;
-	public static int TIMEOUT = 300;
+	//public static int TIMEOUT = 300;
 
 	public EmersonLeiAutomatonBasedModelCounting(LabelledFormula formula) {
-		// Convert the ltl formula to an automaton with OWL
-		DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
-		automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
-        states = automaton.states().toArray();
+		this.formula = formula;
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		// Do the call in a separate thread, get a Future back
+		Future<String> future = executorService.submit(this::parse);
+		try {
+			// Wait for at most TIMEOUT seconds until the result is returned
+			String result = future.get(Settings.PARSING_TIMEOUT, TimeUnit.SECONDS);
+		} catch (TimeoutException e) {
+			System.out.println("EmersonLeiAutomatonBasedModelCounting: TIMEOUT parsing.");
+		}
+		catch (InterruptedException | ExecutionException e) {
+			System.err.println("EmersonLeiAutomatonBasedModelCounting: ERROR while parsing. " + e.getMessage());
+		}
+//		// Convert the ltl formula to an automaton with OWL
+//		DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
+//		automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
+//        states = automaton.states().toArray();
 		//From A0 we construct the (n + 1) × (n + 1) transfer matrix T. A0 has n + 1
 		//states s1, s2, . . . sn+1. The matrix entry Ti,j is the number of transitions from
 		//state si to state sj
-		T = buildTransferMatrix();
+//		T = buildTransferMatrix();
 
 //		System.out.println("T: " + T.toString());
 //		int n = automaton.size();
 //		I = CommonOps_DDRM.identity(n);
 	}
 
+	private String parse() {
+		// Convert the ltl formula to an automaton with OWL
+		DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
+		automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
+		states = automaton.states().toArray();
+		T = buildTransferMatrix();
+		return "OK";
+	}
 
 
 
-	public  BigInteger count(int bound){
+	public  BigInteger count(int bound) {
 		//We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,
 		// and v is the column vector where vi = 1 if and only if i is an accepting state and 0 otherwise.
 		if (automaton == null || automaton.size() == 0)
 			return BigInteger.ZERO;
+		BOUND = bound;
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		// Do the call in a separate thread, get a Future back
+		Future<BigInteger> future = executorService.submit(this::countModels);
+		try {
+			// Wait for at most TIMEOUT seconds until the result is returned
+			BigInteger result = future.get(Settings.MC_TIMEOUT, TimeUnit.SECONDS);
+			return result;
+		} catch (TimeoutException e) {
+			System.out.println("EmersonLeiAutomatonBasedModelCounting::count TIMEOUT.");
+		}
+		catch (InterruptedException | ExecutionException e) {
+			System.err.println("EmersonLeiAutomatonBasedModelCounting::count ERROR. " + e.getMessage());
+		}
+		return BigInteger.ZERO;
+	}
+
+	int BOUND = 0;
+	private BigInteger countModels() {
 		int N = T.numRows;
         //set initial states
 		DMatrixRMaj u = new DMatrixRMaj(1,N);
@@ -91,21 +134,12 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 
 		DMatrixRMaj T_res = T.copy();
 
-		for(int i=1; i<bound; i++) {
+		for(int i=1; i<BOUND; i++) {
 			long initialTime = System.currentTimeMillis();
 			DMatrixRMaj T_i = T.copy();
 			DMatrixRMaj T_aux = T_res.copy();
 			CommonOps_DDRM.mult(T_aux, T_i, T_res);
 //			System.out.println(i + ": " + T_res.toString());
-			//check for timeout
-			long currentTime = System.currentTimeMillis();
-			long totalTime = currentTime-initialTime;
-			int min = (int) (totalTime)/60000;
-			int sec = (int) (totalTime - min*60000)/1000;
-			if (sec > TIMEOUT) {
-				System.out.print("TO ");
-				return BigInteger.ZERO;
-			}
 		}
 		DMatrixRMaj reachable = new DMatrixRMaj(1,N);
 		CommonOps_DDRM.mult(u, T_res, reachable);

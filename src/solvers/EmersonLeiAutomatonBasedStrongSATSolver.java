@@ -36,7 +36,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
     private List<String> input_vars = null;
 //    private List<String> variables = null;
 //    private Map<S,Integer> states = null;
-    public static int TIMEOUT = 120;
+    //public static int TIMEOUT = 120;
 
     public EmersonLeiAutomatonBasedStrongSATSolver(LabelledFormula formula) {
         this.formula = formula;
@@ -45,7 +45,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
         Future<String> future = executorService.submit(this::parse);
         try {
             // Wait for at most TIMEOUT seconds until the result is returned
-            String result = future.get(TIMEOUT, TimeUnit.SECONDS);
+            String result = future.get(Settings.PARSING_TIMEOUT, TimeUnit.SECONDS);
             input_vars = new ArrayList<>(formula.player1Variables());
         } catch (TimeoutException e) {
             System.out.println("EmersonLeiAutomatonBasedStrongSATSolver: TIMEOUT parsing.");
@@ -100,7 +100,7 @@ public class EmersonLeiAutomatonBasedStrongSATSolver<S> {
         Future<Boolean> future = executorService.submit(this::isPotentiallyRealizable);
         try {
             // Wait for at most TIMEOUT seconds until the result is returned
-            Boolean result = future.get(TIMEOUT, TimeUnit.SECONDS);
+            Boolean result = future.get(Settings.STRONG_SAT_TIMEOUT, TimeUnit.SECONDS);
             return result;
         } catch (TimeoutException e) {
             System.out.println("EmersonLeiAutomatonBasedStrongSATSolver::isPotentiallyRealizable TIMEOUT.");
