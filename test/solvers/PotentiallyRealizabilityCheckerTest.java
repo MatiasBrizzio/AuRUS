@@ -11,17 +11,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
-import junit.framework.JUnit4TestAdapter;
+
 import org.junit.Test;
 
-public class EmersonLeiAutomatonBasedStrongSATSolverTest {
+public class PotentiallyRealizabilityCheckerTest {
 
     @Test
     public void testAutomataSimple2Unreal() throws IOException {
@@ -30,8 +29,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertFalse(res);
     }
@@ -43,8 +42,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertTrue(res);
     }
@@ -56,8 +55,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertFalse(res);
     }
@@ -69,8 +68,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertTrue(res);
     }
@@ -82,8 +81,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertTrue(res);
     }
@@ -95,8 +94,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TlsfParser.parse(f);
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertTrue(res);
     }
@@ -107,8 +106,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertFalse(res);
     }
@@ -120,8 +119,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertFalse(res);
     }
@@ -142,8 +141,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
                 Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
                 LabelledFormula f0 = tlsf.toFormula();
 //                System.out.println(f0);
-                EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-                Boolean res = s.checkStrongSatisfiable();
+                PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+                Boolean res = s.checkPotentiallyRealizability();
                 //EXPECTED: false
                 System.out.println(res);
                 if (res == null)
@@ -166,8 +165,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
         Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
         LabelledFormula f0 = tlsf.toFormula();
         System.out.println(f0);
-        EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-        boolean res = s.checkStrongSatisfiable();
+        PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+        boolean res = s.checkPotentiallyRealizability();
         System.out.println(res);
         assertTrue(res);
     }
@@ -189,8 +188,8 @@ public class EmersonLeiAutomatonBasedStrongSATSolverTest {
                 Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
                 LabelledFormula f0 = tlsf.toFormula();
 //                System.out.println(f0);
-                EmersonLeiAutomatonBasedStrongSATSolver s = new EmersonLeiAutomatonBasedStrongSATSolver(f0);
-                Boolean res = s.checkStrongSatisfiable();
+                PotentiallyRealizabilityChecker s = new PotentiallyRealizabilityChecker(f0);
+                Boolean res = s.checkPotentiallyRealizability();
 //                System.out.println(res);
 //                Instant finalExecutionTime = Instant.now();
 //                Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);

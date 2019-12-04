@@ -3,18 +3,13 @@ package geneticalgorithm;
 import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
-import gov.nasa.ltl.trans.ParseErrorException;
 import main.Settings;
-import modelcounter.AutomataBasedModelCounting;
-import modelcounter.CountRltlConv;
 import modelcounter.EmersonLeiAutomatonBasedModelCounting;
 import owl.ltl.*;
-import owl.ltl.parser.LtlParser;
-import owl.ltl.rewriter.NormalForms;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
-import solvers.EmersonLeiAutomatonBasedStrongSATSolver;
+import solvers.PotentiallyRealizabilityChecker;
 import solvers.LTLSolver;
 import solvers.LTLSolver.SolverResult;
 import solvers.StrixHelper;
@@ -227,8 +222,8 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 								RealizabilitySolverResult rel = RealizabilitySolverResult.UNREALIZABLE;
 								if (Settings.check_STRONG_SAT) {
 									// check for strong satisfiability
-									EmersonLeiAutomatonBasedStrongSATSolver strong_sat_solver = new EmersonLeiAutomatonBasedStrongSATSolver(spec.toFormula());
-									Boolean strong_sat_res = strong_sat_solver.checkStrongSatisfiable();
+									PotentiallyRealizabilityChecker strong_sat_solver = new PotentiallyRealizabilityChecker(spec.toFormula());
+									Boolean strong_sat_res = strong_sat_solver.checkPotentiallyRealizability();
 									if (strong_sat_res!=null && strong_sat_res.booleanValue())
 										rel = RealizabilitySolverResult.REALIZABLE;
 								}
