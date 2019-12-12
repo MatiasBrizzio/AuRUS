@@ -28,13 +28,13 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_POPULATION_SIZE = 100;
 		Settings.GA_MUTATION_RATE = 100;
 		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
-		Settings.allowAssumptionAddition = true;
-		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 70;
+//		Settings.allowAssumptionAddition = true;
+		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 100;
 //		Settings.check_REALIZABILITY = false;
 //		Settings.only_inputs_in_assumptions = true;
 		Settings.check_STRONG_SAT = true;
 //		Settings.GA_RANDOM_SELECTOR = true;
-//		Settings.GA_THRESHOLD = 0.85d;
+		Settings.GA_THRESHOLD = 0.8d;
 		ga.run(tlsf);
 	}
 
