@@ -80,6 +80,7 @@ public class SpecificationGeneticAlgorithm {
 		if (!Settings.check_REALIZABILITY || Settings.check_STRONG_SAT) {
 			System.out.println("Checking for Realizability ..." );
 			for (SpecificationChromosome c : bestSolutions) {
+				System.out.println(TLSF_Utils.adaptTLSFSpec(c.spec));
 				System.out.print(".");
 				RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
 				if (status == RealizabilitySolverResult.REALIZABLE) {

@@ -151,13 +151,45 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    		}
 				else if (random == 2) {
 					//0:not 1:F 2:G
-					int op = Settings.RANDOM_GENERATOR.nextInt(3);
+					int op = Settings.RANDOM_GENERATOR.nextInt(7);
 					if (op == 0)
 						current = current.not();
 					else if (op == 1 && numOfTO < 2)
 						current = FOperator.of(current);
-					else if (numOfTO < 2)
+					else if (op == 2 && numOfTO < 2)
 						current = GOperator.of(current);
+					else if (op == 3) {
+						if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = WOperator.of(new_literal(current), current);
+							else
+								current = WOperator.of(new_literal(current), operand);
+						}
+						else {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = WOperator.of(current,new_literal(current));
+							else
+								current = WOperator.of(operand,new_literal(current));
+						}
+					}
+					else if (op == 4) {
+						if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = UOperator.of(new_literal(current), current);
+							else
+								current = UOperator.of(new_literal(current), operand);
+						}
+						else {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = UOperator.of(current,new_literal(current));
+							else
+								current = UOperator.of(operand,new_literal(current));
+						}
+					}
+					else if (op == 5)
+						current = Conjunction.of(new_literal(current),current);
+					else
+						current = Disjunction.of(new_literal(current),current);
 				}
 	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
@@ -193,13 +225,46 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 				}
 				else if (random == 2) {
 					//0:not 1:X 2:G
-					int op = Settings.RANDOM_GENERATOR.nextInt(3);
+					int op = Settings.RANDOM_GENERATOR.nextInt(7);
+//					System.out.println("!!!!---->"+op);
 					if (op == 0)
 						current = current.not();
 					else if (op == 1)
 						current = XOperator.of(current);
-					else if (numOfTO < 2)
+					else if (op == 2 && numOfTO < 2)
 						current = GOperator.of(current);
+					else if (op == 3) {
+						if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = WOperator.of(new_literal(current), current);
+							else
+								current = WOperator.of(new_literal(current), operand);
+						}
+						else {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = WOperator.of(current,new_literal(current));
+							else
+								current = WOperator.of(operand,new_literal(current));
+						}
+					}
+					else if (op == 4) {
+						if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = UOperator.of(new_literal(current), current);
+							else
+								current = UOperator.of(new_literal(current), operand);
+						}
+						else {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = UOperator.of(current,new_literal(current));
+							else
+								current = UOperator.of(operand,new_literal(current));
+						}
+					}
+					else if (op == 5)
+						current = Conjunction.of(new_literal(current),current);
+					else
+						current = Disjunction.of(new_literal(current),current);
 				}
 	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
@@ -236,13 +301,45 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 				}
 				else if (random == 2) {
 					//0:not 1:F 2:X
-					int op = Settings.RANDOM_GENERATOR.nextInt(3);
+					int op = Settings.RANDOM_GENERATOR.nextInt(7);
 					if (op == 0)
 						current = current.not();
 					else if (op == 1 && numOfTO < 2)
 						current = FOperator.of(current);
-					else //if (numOfTO < 2)
+					else if (op == 2 && numOfTO < 2)
 						current = XOperator.of(current);
+					else if (op == 3) {
+						if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = WOperator.of(new_literal(current), current);
+							else
+								current = WOperator.of(new_literal(current), operand);
+						}
+						else {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = WOperator.of(current,new_literal(current));
+							else
+								current = WOperator.of(operand,new_literal(current));
+						}
+					}
+					else if (op == 4) {
+						if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = UOperator.of(new_literal(current), current);
+							else
+								current = UOperator.of(new_literal(current), operand);
+						}
+						else {
+							if (Settings.RANDOM_GENERATOR.nextBoolean() && numOfTO < 2)
+								current = UOperator.of(current,new_literal(current));
+							else
+								current = UOperator.of(operand,new_literal(current));
+						}
+					}
+					else if (op == 5)
+						current = Conjunction.of(new_literal(current),current);
+					else
+						current = Disjunction.of(new_literal(current),current);
 				}
 	    		if (print_debug_info) System.out.println(" after: " + current);
 	    	}
@@ -432,7 +529,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
 	    		//0 -> removeOP; 1 -> addOp; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + uOperator + " random: " + random);
 	    		if (random == 0) {
@@ -453,8 +550,15 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 					else if (numOfTO < 2)
 						current = GOperator.of(current);
 	    		}
+	    		else if (random == 2)
+	    			current = UOperator.of(right, left);
 	    		else { // random == 2
 	    			//0:& 1:| 2:W 3:R 4:M
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+	    				Formula aux = right;
+	    				right = left;
+	    				left = aux;
+	    			}
     				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
@@ -485,7 +589,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
 	    		//0 -> removeOP; 1 -> addOp; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + wOperator + " random: " + random);
 	    		if (random == 0) {
@@ -506,8 +610,15 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 					else if (numOfTO < 2)
 						current = GOperator.of(current);
 	    		}
+	    		else if (random == 2)
+	    			current = WOperator.of(right, left);
 	    		else { // random == 2
 	    			//0:& 1:| 2:U 3:R 4:M
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+	    				Formula aux = right;
+	    				right = left;
+	    				left = aux;
+	    			}
     				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
@@ -538,7 +649,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
 	    		//0 -> removeOP; 1 -> addOp; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + mOperator + " random: " + random);
 	    		if (random == 0) {
@@ -559,8 +670,15 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 					else if (numOfTO < 2)
 						current = GOperator.of(current);
 	    		}
+	    		else if (random == 2)
+	    			current = MOperator.of(right, left);
 	    		else { // random == 2
 	    			//0:& 1:| 2:U 3:R 4:W
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+	    				Formula aux = right;
+	    				right = left;
+	    				left = aux;
+	    			}
     				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
@@ -591,7 +709,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 	    	boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(mutation_rate) == 0);
 	    	if (mutate) {
 	    		this.numOfAllowedMutations --;
-	    		int random = Settings.RANDOM_GENERATOR.nextInt(3); 
+	    		int random = Settings.RANDOM_GENERATOR.nextInt(4); 
 	    		//0 -> removeOP; 1 -> addOp; 2 -> changeOp
 	    		if (print_debug_info) System.out.print("before: " + rOperator + " random: " + random);
 	    		if (random == 0) {
@@ -612,8 +730,15 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 					else if (numOfTO < 2)
 						current = GOperator.of(current);
 	    		}
+	    		else if (random == 2)
+	    			current = ROperator.of(right, left);
 	    		else { // random == 2
 	    			//0:& 1:| 2:U 3:W 4:M
+	    			if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+	    				Formula aux = right;
+	    				right = left;
+	    				left = aux;
+	    			}
     				int op = Settings.RANDOM_GENERATOR.nextInt(5);
     				if (op == 0)
     					current = Conjunction.of(left, right);
@@ -707,8 +832,14 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 //			max = numOfInputs;
 		int new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
 		Literal new_literal = createVariable(variables.get(new_variable));
+		
+		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+			if (Settings.RANDOM_GENERATOR.nextBoolean())
+				new_literal = new_literal.not();
+			return new_literal;
+		}
 		int trying = 0;
-		while (props.contains(new_literal) && trying < 5) {
+		while ((props.contains(new_literal) || props.contains(new_literal.not()) && trying < 5)) {
 			trying++;
 			new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
 			new_literal = createVariable(variables.get(new_variable));

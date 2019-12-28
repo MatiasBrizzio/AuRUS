@@ -113,9 +113,27 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		
 		// apply crossover
 		int numOfCrossovers = Math.max(10, parentPopulationSize*(CROSSOVER_RATE/100));
+		
 		for (int i = 0; (i < numOfCrossovers) && !terminate; i++) {
-			C chromosome = this.population.getRandomChromosome();
-			C otherChromosome = this.population.getRandomChromosome();
+			C chromosome = null;
+			C otherChromosome = null;
+			
+			newPopulation.sortPopulationByFitness(chromosomesComparator);
+			List<C> arrayChromosome = this.getListFromPop(newPopulation);
+			int op = Settings.RANDOM_GENERATOR.nextInt(3);
+			if (op == 0 && arrayChromosome.size() >= 2) {
+				chromosome = arrayChromosome.get(0);
+				otherChromosome = arrayChromosome.get(1);
+			}
+			else if (op == 1) {
+				chromosome = arrayChromosome.get(0);
+				otherChromosome = this.population.getRandomChromosome();
+			}
+			else {
+				chromosome = this.population.getRandomChromosome();
+				otherChromosome = this.population.getRandomChromosome();
+			}
+			
 			List<C> crossovered = chromosome.crossover(otherChromosome);
 			for (C c : crossovered) {
 				newPopulation.addChromosome(c);
@@ -131,6 +149,14 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		this.population = newPopulation;
 	}
 
+
+	private List<C> getListFromPop(Population<C> newPopulation) {
+		Iterator<C> it = newPopulation.iterator();
+		List<C> res =  new LinkedList<C>();
+		while (it.hasNext())
+			res.add(it.next());
+		return res;
+	}
 
 	public void select() {
 		//best selector
