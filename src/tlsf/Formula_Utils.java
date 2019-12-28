@@ -165,10 +165,18 @@ public class Formula_Utils {
 			right = Conjunction.of(left, right);
 		else if (op == 1)
 			right = Disjunction.of(left, right);
-		else if (op == 2)
-			right = UOperator.of(left, right);
-		else if (op == 3)
-			right = WOperator.of(left, right);
+		else if (op == 2) {
+			if (Settings.RANDOM_GENERATOR.nextBoolean())
+				right = UOperator.of(left, right);
+			else
+				right = UOperator.of(right, left);
+		}
+		else if (op == 3) {
+			if (Settings.RANDOM_GENERATOR.nextBoolean())
+				right = WOperator.of(left, right);
+			else
+				right = WOperator.of(right, left);
+		}
 
 		SubformulaReplacer visitor = new SubformulaReplacer(left,right);
 		Formula replaced_formula = f0.accept(visitor);
@@ -176,7 +184,7 @@ public class Formula_Utils {
 	}
 
 	public static int numOfTemporalOperators(Formula formula) {
-		if (formula == null )
+		if (formula == null || formula instanceof Literal)
 			return 0;
 		if (formula instanceof Formula.TemporalOperator && !(formula instanceof  XOperator)) {
 			int max = 0;
