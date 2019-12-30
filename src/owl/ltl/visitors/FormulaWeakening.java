@@ -500,11 +500,11 @@ public class FormulaWeakening implements Visitor<Formula>{
 		int new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
 		Literal new_literal = createVariable(variables.get(new_variable));
 		
-		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-			if (Settings.RANDOM_GENERATOR.nextBoolean())
-				new_literal = new_literal.not();
-			return new_literal;
-		}
+//		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+//			if (Settings.RANDOM_GENERATOR.nextBoolean())
+//				new_literal = new_literal.not();
+//			return new_literal;
+//		}
 		int trying = 0;
 		while ((props.contains(new_literal) || props.contains(new_literal.not()) && trying < 5)) {
 			trying++;

@@ -62,49 +62,49 @@ public class SpecificationCrossover {
 					guaranteeConjuncts.add(f);
 
 		}
-		else if (level == 2) {
-			// set assume
-			assumptionConjuncts.addAll(assumesspec0);
-			if (!assumesspec1.isEmpty()) {
-				for (int i = 0; i < assumesspec0.size(); i++) {
-					Formula new_formula =  assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
-					if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-						if (!assumptionConjuncts.contains(new_formula)) {
-							assumptionConjuncts.remove(i);
-							assumptionConjuncts.add(i, new_formula);
-						}
-					}
-				}
-			}
-			if (Settings.RANDOM_GENERATOR.nextBoolean() && !assumptionConjuncts.isEmpty()) {
-				int index = Settings.RANDOM_GENERATOR.nextInt(assumptionConjuncts.size());
-				Formula new_formula =  assumptionConjuncts.get(index);
-				assumptionConjuncts.remove(index);
-				assumptionConjuncts.add(index, SpecificationMutator.applyGeneralMutation(new_formula, spec0.variables()));
-			}
-			
-			// set guarantee
-			guaranteeConjuncts.addAll(spec0.guarantee());
-			if (!spec1.guarantee().isEmpty()) {
-				List<Formula> g1 = spec1.guarantee();
-				for (int i = 0; i < spec0.guarantee().size(); i++) {
-					Formula new_formula =  g1.get(Settings.RANDOM_GENERATOR.nextInt(g1.size()));
-					if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-						if (!guaranteeConjuncts.contains(new_formula)) {
-							guaranteeConjuncts.remove(i);
-							guaranteeConjuncts.add(i, new_formula);
-						}
-					}
-				}
-			}
-			if (Settings.RANDOM_GENERATOR.nextBoolean() && !guaranteeConjuncts.isEmpty()) {
-				int index = Settings.RANDOM_GENERATOR.nextInt(guaranteeConjuncts.size());
-				Formula new_formula =  guaranteeConjuncts.get(index);
-				guaranteeConjuncts.remove(index);
-				guaranteeConjuncts.add(index, SpecificationMutator.applyGeneralMutation(new_formula, spec0.variables()));
-			}
-			
-		}
+//		else if (level == 2) {
+//			// set assume
+//			assumptionConjuncts.addAll(assumesspec0);
+//			if (!assumesspec1.isEmpty()) {
+//				for (int i = 0; i < assumesspec0.size(); i++) {
+//					Formula new_formula =  assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
+//					if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+//						if (!assumptionConjuncts.contains(new_formula)) {
+//							assumptionConjuncts.remove(i);
+//							assumptionConjuncts.add(i, new_formula);
+//						}
+//					}
+//				}
+//			}
+//			if (Settings.RANDOM_GENERATOR.nextBoolean() && !assumptionConjuncts.isEmpty()) {
+//				int index = Settings.RANDOM_GENERATOR.nextInt(assumptionConjuncts.size());
+//				Formula new_formula =  assumptionConjuncts.get(index);
+//				assumptionConjuncts.remove(index);
+//				assumptionConjuncts.add(index, SpecificationMutator.applyGeneralMutation(new_formula, spec0.variables()));
+//			}
+//
+//			// set guarantee
+//			guaranteeConjuncts.addAll(spec0.guarantee());
+//			if (!spec1.guarantee().isEmpty()) {
+//				List<Formula> g1 = spec1.guarantee();
+//				for (int i = 0; i < spec0.guarantee().size(); i++) {
+//					Formula new_formula =  g1.get(Settings.RANDOM_GENERATOR.nextInt(g1.size()));
+//					if (Settings.RANDOM_GENERATOR.nextBoolean()) {
+//						if (!guaranteeConjuncts.contains(new_formula)) {
+//							guaranteeConjuncts.remove(i);
+//							guaranteeConjuncts.add(i, new_formula);
+//						}
+//					}
+//				}
+//			}
+//			if (Settings.RANDOM_GENERATOR.nextBoolean() && !guaranteeConjuncts.isEmpty()) {
+//				int index = Settings.RANDOM_GENERATOR.nextInt(guaranteeConjuncts.size());
+//				Formula new_formula =  guaranteeConjuncts.get(index);
+//				guaranteeConjuncts.remove(index);
+//				guaranteeConjuncts.add(index, SpecificationMutator.applyGeneralMutation(new_formula, spec0.variables()));
+//			}
+//
+//		}
 //		else if (level == 2 && status0.compatible(status1)) {
 //			// set assume
 //			if (status0.areAssumptionsSAT() && status1.areAssumptionsSAT()) {

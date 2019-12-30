@@ -62,7 +62,7 @@ public class SpecificationMutator {
 			Formula guarantee_to_mutate = guarantees.get(index_to_mutate);
 			
 			Formula new_guarantee = BooleanConstant.TRUE;
-			int modification =  Settings.RANDOM_GENERATOR.nextInt(4);
+			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
 			if (modification == 0) {
 				// arbitrary mutation
 				new_guarantee = strengthenFormula(guarantee_to_mutate, spec.variables());
@@ -97,7 +97,7 @@ public class SpecificationMutator {
 
 	public static Formula applyGeneralMutation (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, 2, n);
+		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
@@ -111,14 +111,14 @@ public class SpecificationMutator {
 
 	public static Formula weakenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaWeakening formVisitor = new FormulaWeakening(variables, 2, n);
+		FormulaWeakening formVisitor = new FormulaWeakening(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula strengthenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, 2, n);
+		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}

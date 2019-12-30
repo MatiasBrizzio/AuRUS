@@ -118,20 +118,20 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			C chromosome = null;
 			C otherChromosome = null;
 			
-			newPopulation.sortPopulationByFitness(chromosomesComparator);
-			List<C> arrayChromosome = this.getListFromPop(newPopulation);
+//			newPopulation.sortPopulationByFitness(chromosomesComparator);
+//			List<C> arrayChromosome = this.getListFromPop(newPopulation);
 			int op = Settings.RANDOM_GENERATOR.nextInt(3);
-			if (op == 0 && arrayChromosome.size() >= 2) {
-				chromosome = arrayChromosome.get(0);
-				otherChromosome = arrayChromosome.get(1);
+			if (op == 0 && newPopulation.getSize() >= 2) {
+				chromosome = newPopulation.getChromosomeByIndex(0);
+				otherChromosome = newPopulation.getChromosomeByIndex(1);
 			}
 			else if (op == 1) {
-				chromosome = arrayChromosome.get(0);
-				otherChromosome = this.population.getRandomChromosome();
+				chromosome = newPopulation.getChromosomeByIndex(0);
+				otherChromosome = newPopulation.getRandomChromosome();
 			}
 			else {
-				chromosome = this.population.getRandomChromosome();
-				otherChromosome = this.population.getRandomChromosome();
+				chromosome = newPopulation.getRandomChromosome();
+				otherChromosome = newPopulation.getRandomChromosome();
 			}
 			
 			List<C> crossovered = chromosome.crossover(otherChromosome);
