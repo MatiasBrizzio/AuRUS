@@ -27,7 +27,7 @@ class SpecificationGeneticAlgorithmTest {
 		Settings.GA_GENERATIONS = 500;
 		Settings.GA_POPULATION_SIZE = 100;
 		Settings.GA_MUTATION_RATE = 100;
-		Settings.GA_MAX_NUM_INDIVIDUALS = 20000;
+		Settings.GA_MAX_NUM_INDIVIDUALS = 2000;
 //		Settings.allowAssumptionAddition = true;
 		Settings.GA_GUARANTEES_PREFERENCE_FACTOR = 100;
 //		Settings.check_REALIZABILITY = false;
