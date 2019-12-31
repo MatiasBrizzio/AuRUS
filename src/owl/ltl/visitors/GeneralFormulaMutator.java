@@ -839,7 +839,7 @@ public class GeneralFormulaMutator implements Visitor<Formula>{
 //			return new_literal;
 //		}
 		int trying = 0;
-		while ((props.contains(new_literal) || props.contains(new_literal.not()) && trying < 5)) {
+		while ((props.contains(new_literal) || props.contains(new_literal.not())) && trying < 5) {
 			trying++;
 			new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
 			new_literal = createVariable(variables.get(new_variable));
