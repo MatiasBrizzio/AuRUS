@@ -30,24 +30,28 @@ public class SpecificationMutator {
 				assumptions.add(BooleanConstant.TRUE);
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(assumptions.size());
 			Formula assumption_to_mutate = assumptions.get(index_to_mutate);
-//			Formula new_assumption = BooleanConstant.TRUE;
-//			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
-//			if (modification == 0) {
-//				// arbitrary mutation
-//				new_assumption = mutateFormula(assumption_to_mutate, spec.variables());
-//			}
-//			else if (modification == 1) {
-//				// weaken mutation
-//				new_assumption = weakenFormula(assumption_to_mutate, spec.variables());
-//			}
-//			else {
-//				// strengthen mutation
-//				new_assumption = strengthenFormula(assumption_to_mutate, spec.variables());
-//			}
+			
 			List<String> vars = spec.variables();
 			if (Settings.only_inputs_in_assumptions)
 				vars = vars.subList(0,spec.numberOfInputs());
-			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);
+			
+			Formula new_assumption = BooleanConstant.TRUE;
+			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
+			if (modification == 0) {
+				// arbitrary mutation
+				new_assumption = applyGeneralMutation(assumption_to_mutate,vars);
+			}
+			else if (modification == 1) {
+				// weaken mutation
+				new_assumption = weakenFormula(assumption_to_mutate, vars);
+			}
+			else {
+				// strengthen mutation
+				new_assumption = strengthenFormula(assumption_to_mutate, vars);
+			}
+
+
+//			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);
 			if (new_assumption != BooleanConstant.FALSE) {
 				assumptions.remove(index_to_mutate);
 				assumptions.add(index_to_mutate, new_assumption);
