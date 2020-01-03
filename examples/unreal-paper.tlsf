@@ -1,0 +1,28 @@
+// Examples taken from "Environment Assumptions for Synthesis"
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Moore
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+	req;
+	cancel;
+  }
+  OUTPUTS {
+	grant;
+  }
+  
+  //ASSUMPTIONS{
+	//Assumptions to be added to make the specification realizable	
+	//!(G(!r || !c) && G (r || !c));
+	//G (!c);
+  //}
+
+  GUARANTEE {
+	G(req -> X (F grant));
+	G( (cancel || grant) -> X !grant);
+	}
+}
