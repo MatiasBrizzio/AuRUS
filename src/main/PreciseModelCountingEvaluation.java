@@ -22,11 +22,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PreciseModelCountingEvaluation {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -119,11 +115,27 @@ public class PreciseModelCountingEvaluation {
                     refined_formulas.add(LtlParser.syntax(s,vars));
             }       
         }
+        String directoryName = "result" ;
+        String filename = "result/default.out";
+        if (outname != null) {
+            if (outname.contains(".")) {
+                directoryName = outname.substring(0, outname.lastIndexOf('.'));
+
+            }
+            File outfolder = new File(directoryName);
+            if (!outfolder.exists())
+                outfolder.mkdir();
+            if(outname.contains("/")) {
+                filename = directoryName + outname.substring(outname.lastIndexOf('/'));
+            }
+            else
+                filename = outname;
+        }
 
         if (prefixes)
-            runPrefixesMC(original_formula,refined_formulas,vars,bound,outname);
+            runPrefixesMC(original_formula,refined_formulas,vars,bound,filename);
         else
-            runPreciseMC(original_formula,refined_formulas,vars,bound,solver,outname);
+            runPreciseMC(original_formula,refined_formulas,vars,bound,solver,filename);
 
     }
 
@@ -153,26 +165,31 @@ public class PreciseModelCountingEvaluation {
             index++;
         }
         System.out.println("Formula ranking for bounds 1..k");
-        List<Integer>[] ranking = new List [bound];
+        SortedMap<BigInteger,List<Integer>>[] ranking = new TreeMap [bound];
         for(int k = 0; k < bound; k++){
             List<BigInteger> k_values = new LinkedList<>();
             for(int i = 0; i < num_of_formulas; i++){
                 k_values.add(solutions[i].get(k));
             }
-            List<BigInteger> k_values_copy = List.copyOf(k_values);
-            Collections.sort(k_values);
-            List<Integer> order = new LinkedList<>();
+
+            SortedMap<BigInteger,List<Integer>> order = new TreeMap<>();
             for(int i = 0; i < num_of_formulas; i++){
-                order.add(k_values_copy.indexOf(k_values.get(i)));
+                BigInteger key = k_values.get(i);
+                List<Integer> value ;
+                if (order.containsKey(key))
+                    value = order.get(key);
+                else
+                    value = new LinkedList<>();
+                value.add(i);
+                order.put(key,value);
             }
             ranking[k] = order;
-            System.out.println((k+1)+" "+order);
+            System.out.println((k+1)+" "+order.values());
         }
         if (outname != null)
             writeRanking(outname, ranking);
 
         System.out.println("Global ranking...");
-        int[] global_ranking = new int [num_of_formulas];
         List<BigInteger> totalNumOfModels = new LinkedList<>();
         String sumTotalNumOfModels = "";
         for(int i = 0; i < num_of_formulas; i++){
@@ -190,12 +207,25 @@ public class PreciseModelCountingEvaluation {
 
         if (outname != null)
             writeRanking(outname.replace(".out", "-summary.out"), sumTotalNumOfModels, "");
-        List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
-        Collections.sort(totalNumOfModels);
-        String global = "[";
+
+        SortedMap<BigInteger,List<Integer>> global_ranking = new TreeMap<>();
         for(int i = 0; i < num_of_formulas; i++){
-            global_ranking[i] = total_values_copy.indexOf(totalNumOfModels.get(i));
-            global += ""+global_ranking[i];
+            BigInteger key = totalNumOfModels.get(i);
+            List<Integer> value ;
+            if (global_ranking.containsKey(key))
+                value = global_ranking.get(key);
+            else
+                value = new LinkedList<>();
+            value.add(i);
+            global_ranking.put(key,value);
+        }
+
+        String global = "[";
+        int i = 0;
+        for(BigInteger key : global_ranking.keySet()){
+
+            global += ""+global_ranking.get(key);
+            i += global_ranking.get(key).size();
             if (i < num_of_formulas-1)
                 global +=", ";
             else
@@ -497,13 +527,14 @@ public class PreciseModelCountingEvaluation {
         bw.close();
     }
 
-    private static void writeRanking(String filename, List<Integer>[] ranking) throws IOException {
+    private static void writeRanking(String filename, SortedMap<BigInteger,List<Integer>>[] ranking) throws IOException {
         File file = new File(filename);
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
 
         for (int i = 0; i < ranking.length; i++) {
-            bw.write(ranking[i].toString());
+            for(BigInteger key : ranking[i].keySet())
+                bw.write(ranking[i].get(key).toString());
             bw.write("\n");
 //            System.out.println((i+1) + " " + ranking[i].toString());
         }
