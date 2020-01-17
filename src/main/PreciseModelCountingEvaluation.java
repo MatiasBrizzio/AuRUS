@@ -148,20 +148,23 @@ public class PreciseModelCountingEvaluation {
         for(Formula ref : refined_formulas) {
             long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
-            List<BigInteger> result = null;
-            result = countModels(original_formula, ref, vars.size(), bound, solver);
-            System.out.println(result);
-            long finalTime = System.currentTimeMillis();
-            long totalTime = finalTime-initialTime;
-            int min = (int) (totalTime)/60000;
-            int sec = (int) (totalTime - min*60000)/1000;
-            String time = String.format("Time: %s m  %s s",min, sec);
-            System.out.println(time);
-            if (outname != null) {
-                String filename = outname.replace(".out", index + ".out");
-                writeFile(filename, result, time);
+            List<BigInteger> result = countModels(original_formula, ref, vars.size(), bound, solver);
+            if (result != null) {
+                System.out.println(result);
+                long finalTime = System.currentTimeMillis();
+                long totalTime = finalTime - initialTime;
+                int min = (int) (totalTime) / 60000;
+                int sec = (int) (totalTime - min * 60000) / 1000;
+                String time = String.format("Time: %s m  %s s", min, sec);
+                System.out.println(time);
+                if (outname != null) {
+                    String filename = outname.replace(".out", index + ".out");
+                    writeFile(filename, result, time);
+                }
+                solutions[index] = result;
             }
-            solutions[index] = result;
+            else
+                System.out.println("MC Timeout reached.");
             index++;
         }
         System.out.println("Formula ranking for bounds 1..k");
@@ -169,7 +172,8 @@ public class PreciseModelCountingEvaluation {
         for(int k = 0; k < bound; k++){
             List<BigInteger> k_values = new LinkedList<>();
             for(int i = 0; i < num_of_formulas; i++){
-                k_values.add(solutions[i].get(k));
+                if (solutions[i] != null)
+                    k_values.add(solutions[i].get(k));
             }
 
             SortedMap<BigInteger,List<Integer>> order = new TreeMap<>();
@@ -194,13 +198,12 @@ public class PreciseModelCountingEvaluation {
         String sumTotalNumOfModels = "";
         for(int i = 0; i < num_of_formulas; i++){
             BigInteger f_result = BigInteger.ZERO;
-//            if (!prefixes) {
-            for(BigInteger v : solutions[i])
-                f_result = f_result.add(v);
-//            }
-//            else {
-//            	f_result = solutions[i].get(bound-1);
-//            }
+            if (solutions[i] == null)
+                f_result = null;
+            else {
+                for(BigInteger v : solutions[i])
+                    f_result = f_result.add(v);
+            }
             sumTotalNumOfModels += i + " " + f_result + "\n";
             totalNumOfModels.add(f_result);
         }
@@ -211,13 +214,15 @@ public class PreciseModelCountingEvaluation {
         SortedMap<BigInteger,List<Integer>> global_ranking = new TreeMap<>();
         for(int i = 0; i < num_of_formulas; i++){
             BigInteger key = totalNumOfModels.get(i);
-            List<Integer> value ;
-            if (global_ranking.containsKey(key))
-                value = global_ranking.get(key);
-            else
-                value = new LinkedList<>();
-            value.add(i);
-            global_ranking.put(key,value);
+            if (key != null) {
+                List<Integer> value;
+                if (global_ranking.containsKey(key))
+                    value = global_ranking.get(key);
+                else
+                    value = new LinkedList<>();
+                value.add(i);
+                global_ranking.put(key, value);
+            }
         }
 
         String global = "[";
@@ -311,6 +316,8 @@ public class PreciseModelCountingEvaluation {
             	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
             Formula f = Conjunction.of(original, refined.not());
             BigInteger r = counter.count(f, vars);
+            if (r == null)
+                return null;
             lostModels.add(r);
         }
 
@@ -324,6 +331,8 @@ public class PreciseModelCountingEvaluation {
             	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
             Formula f = Conjunction.of(original.not(), refined);
             BigInteger r = counter.count(f, vars);
+            if (r == null)
+                return null;
             wonModels.add(r);
         }
         List<BigInteger> result = new LinkedList<>();

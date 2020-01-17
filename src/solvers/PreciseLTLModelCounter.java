@@ -115,7 +115,7 @@ public class PreciseLTLModelCounter {
 		BigInteger numOfModels = null;
 		if (timeout){
 			numOfTimeout++;
-			numOfModels = BigInteger.ZERO;
+			numOfModels = null;
 			p.destroy();
 		}
 		else {
