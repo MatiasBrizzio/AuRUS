@@ -30,7 +30,8 @@ public class PreciseModelCountingEvaluation {
         List<String> refinemets = new LinkedList<>();
         String outname = null;
         int solver = 0;
-        boolean prefixes = false;
+        boolean re_counting = false;
+        boolean automaton_counting = false;
         int bound = 0;
         String filepath = null;
         boolean benchmarkusage = false;
@@ -58,8 +59,11 @@ public class PreciseModelCountingEvaluation {
             else if(args[i].startsWith("-ganak")){
                 solver = 2;
             }
-            else if(args[i].startsWith("-prefix")){
-                prefixes = true;
+            else if(args[i].startsWith("-re")){
+                re_counting = true;
+            }
+            else if(args[i].startsWith("-auto")){
+                automaton_counting = true;
             }
             else if(args[i].startsWith("-ref=")){
                 refinemets.add(args[i].replace("-ref=",""));
@@ -91,7 +95,7 @@ public class PreciseModelCountingEvaluation {
     	
     		refined_formulas = new ArrayList<Formula>();
     		line = reader.readLine();
-    		while (line != null) {
+    		while (line != null && !line.startsWith("--")) {
     			refined_formulas.add(LtlParser.syntax(line, vars));
     			line = reader.readLine();
     		}
@@ -132,8 +136,8 @@ public class PreciseModelCountingEvaluation {
                 filename = outname;
         }
 
-        if (prefixes)
-            runPrefixesMC(original_formula,refined_formulas,vars,bound,filename);
+        if (automaton_counting || re_counting)
+            runPrefixesMC(automaton_counting,original_formula,refined_formulas,vars,bound,filename);
         else
             runPreciseMC(original_formula,refined_formulas,vars,bound,solver,filename);
 
@@ -143,6 +147,7 @@ public class PreciseModelCountingEvaluation {
         long initialTOTALTime = System.currentTimeMillis();
         int num_of_formulas = refined_formulas.size();
         List<BigInteger>[] solutions = new List [num_of_formulas];
+        List<Integer> timeout_formulas = new LinkedList<>();
         int index = 0;
         System.out.println("Counting...");
         for(Formula ref : refined_formulas) {
@@ -163,8 +168,10 @@ public class PreciseModelCountingEvaluation {
                 }
                 solutions[index] = result;
             }
-            else
+            else {
                 System.out.println("MC Timeout reached.");
+                timeout_formulas.add(index);
+            }
             index++;
         }
         System.out.println("Formula ranking for bounds 1..k");
@@ -174,10 +181,14 @@ public class PreciseModelCountingEvaluation {
             for(int i = 0; i < num_of_formulas; i++){
                 if (solutions[i] != null)
                     k_values.add(solutions[i].get(k));
+                else
+                    k_values.add(null);
             }
 
             SortedMap<BigInteger,List<Integer>> order = new TreeMap<>();
             for(int i = 0; i < num_of_formulas; i++){
+                if (timeout_formulas.contains(i))
+                    continue;
                 BigInteger key = k_values.get(i);
                 List<Integer> value ;
                 if (order.containsKey(key))
@@ -225,16 +236,34 @@ public class PreciseModelCountingEvaluation {
             }
         }
 
-        String global = "[";
-        int i = 0;
+        String global = "";
+        String flatten_ranking_str = "";
+        int[] formula_ranking = new int[num_of_formulas];
+//        int i = 0;
+        int pos = 0;
         for(BigInteger key : global_ranking.keySet()){
+            global += global_ranking.get(key)+"\n";
+//            i += global_ranking.get(key).size();
+//            if (i < num_of_formulas-1)
+//                global +=", ";
+//            else
+//                global +="]";
+            for(Integer f_pos : global_ranking.get(key)) {
+                //int f_pos = refined_formulas.indexOf(f);
+                formula_ranking[f_pos] = pos;
+                flatten_ranking_str += f_pos+ "\n";
+            }
+            pos++;
+        }
 
-            global += ""+global_ranking.get(key);
-            i += global_ranking.get(key).size();
-            if (i < num_of_formulas-1)
-                global +=", ";
-            else
-                global +="]";
+        global += "\nRanking Levels: " + pos +"\n";
+        if (!timeout_formulas.isEmpty()) {
+            global += "\nTimeout Formulas: " + timeout_formulas.toString();
+        }
+
+        String formula_ranking_str = "";
+        for(int i = 0; i < num_of_formulas; i++) {
+            formula_ranking_str += formula_ranking[i]+"\n";
         }
         System.out.println(global);
 
@@ -245,11 +274,14 @@ public class PreciseModelCountingEvaluation {
         String time = String.format("Time: %s m  %s s",min, sec);
         System.out.println(time);
 
-        if (outname != null)
+        if (outname != null) {
             writeRanking(outname.replace(".out", "-global.out"), global, time);
+            writeRanking(outname.replace(".out", "-ranking-by-formula.out"), formula_ranking_str, "");
+            writeRanking(outname.replace(".out", "-ranking.out"), flatten_ranking_str, "");
+        }
     }
 
-    static void runPrefixesMC(Formula original_formula, List<Formula> refined_formulas, List<String> vars, int bound, String outname) throws IOException, InterruptedException {
+    static void runPrefixesMC(boolean automaton, Formula original_formula, List<Formula> refined_formulas, List<String> vars, int bound, String outname) throws IOException, InterruptedException {
         long initialTOTALTime = System.currentTimeMillis();
         int num_of_formulas = refined_formulas.size();
         BigInteger[] solutions = new BigInteger [num_of_formulas];
@@ -258,7 +290,11 @@ public class PreciseModelCountingEvaluation {
         for(Formula ref : refined_formulas) {
             long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
-            BigInteger result = countExhaustiveAutomataBasedPrefixes(original_formula, ref, vars, bound);
+            BigInteger result ;
+            if (automaton)
+                result = countExhaustiveAutomataBasedPrefixes(original_formula, ref, vars, bound);
+            else
+                result = countExhaustivePrefixesRltl(original_formula, ref, vars, bound);
             System.out.println(result);
             long finalTime = System.currentTimeMillis();
             long totalTime = finalTime-initialTime;
@@ -267,7 +303,7 @@ public class PreciseModelCountingEvaluation {
             String time = String.format("Time: %s m  %s s",min, sec);
             System.out.println(time);
             if (outname != null) {
-                String filename = outname.replace(".out", index + ".out");
+                String filename = automaton?outname.replace(".out", "auto-"+index + ".out"):outname.replace(".out", "re-"+index + ".out");
                 writeFile(filename, List.of(result), time);
             }
             solutions[index] = result;
@@ -276,22 +312,47 @@ public class PreciseModelCountingEvaluation {
 
 
         System.out.println("Global ranking...");
-        int[] global_ranking = new int [num_of_formulas];
-        List<BigInteger> totalNumOfModels = new LinkedList<>();
+        SortedMap<BigInteger,List<Integer>> global_ranking = new TreeMap<>();
         for(int i = 0; i < num_of_formulas; i++){
-            totalNumOfModels.add(solutions[i]);
+            BigInteger key = solutions[i];
+            if (key != null) {
+                List<Integer> value;
+                if (global_ranking.containsKey(key))
+                    value = global_ranking.get(key);
+                else
+                    value = new LinkedList<>();
+                value.add(i);
+                global_ranking.put(key, value);
+            }
         }
-        List<BigInteger> total_values_copy =  List.copyOf(totalNumOfModels);
-        Collections.sort(totalNumOfModels);
-        String global = "[";
-        for(int i = 0; i < num_of_formulas; i++){
-            global_ranking[i] = total_values_copy.indexOf(totalNumOfModels.get(i));
-            global += ""+global_ranking[i];
-            if (i < num_of_formulas-1)
-                global +=", ";
-            else
-                global +="]";
+
+        String global = "";
+        String flatten_ranking_str = "";
+        int[] formula_ranking = new int[num_of_formulas];
+//        int i = 0;
+        int pos = 0;
+        for(BigInteger key : global_ranking.keySet()){
+            global += global_ranking.get(key)+"\n";
+//            i += global_ranking.get(key).size();
+//            if (i < num_of_formulas-1)
+//                global +=", ";
+//            else
+//                global +="]";
+
+            for(Integer f_pos : global_ranking.get(key)) {
+                //int f_pos = refined_formulas.indexOf(f);
+                formula_ranking[f_pos] = pos;
+                flatten_ranking_str += f_pos+ "\n";
+            }
+            pos++;
         }
+
+        global += "\nRanking Levels: " + pos +"\n";
+        String formula_ranking_str = "";
+        for(int i = 0; i < num_of_formulas; i++) {
+            formula_ranking_str += formula_ranking[i]+"\n";
+        }
+
         System.out.println(global);
 
         long finalTOTALTime = System.currentTimeMillis();
@@ -301,8 +362,14 @@ public class PreciseModelCountingEvaluation {
         String time = String.format("Time: %s m  %s s",min, sec);
         System.out.println(time);
 
-        if (outname != null)
-            writeRanking(outname.replace(".out", "-global.out"), global, time);
+        if (outname != null) {
+            String filename = automaton ? outname.replace(".out", "auto-global.out") : outname.replace(".out", "re-global.out");
+            writeRanking(filename, global, time);
+            String ranking_formula_filename = automaton ? outname.replace(".out", "auto-ranking-by-formula.out") : outname.replace(".out", "re-ranking-by-formula.out");
+            writeRanking(ranking_formula_filename, formula_ranking_str, "");
+            String ranking_filename = automaton ? outname.replace(".out", "auto-ranking.out") : outname.replace(".out", "re-ranking.out");
+            writeRanking(ranking_filename, flatten_ranking_str, "");
+        }
     }
 
     static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
@@ -460,6 +527,14 @@ public class PreciseModelCountingEvaluation {
         return result;
     }
 
+    static BigInteger countExhaustivePrefixesRltl(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
+        List<BigInteger> partial = countPrefixesRltl(original,refined,vars,bound);
+        BigInteger result = BigInteger.ZERO;
+        for(BigInteger res : partial) {
+            result.add(res);
+        }
+        return result;
+    }
     static BigInteger countExhaustiveAutomataBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
 
         Formula conj_lost = Conjunction.of(original, refined.not());

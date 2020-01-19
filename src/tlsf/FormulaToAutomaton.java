@@ -8,9 +8,8 @@ import jhoafparser.ast.AtomAcceptance;
 import jhoafparser.ast.AtomLabel;
 import jhoafparser.ast.BooleanExpression;
 import owl.automaton.Automaton;
-import owl.automaton.acceptance.BooleanExpressions;
-import owl.automaton.acceptance.EmersonLeiAcceptance;
-import owl.automaton.acceptance.OmegaAcceptance;
+import owl.automaton.MutableAutomaton;
+import owl.automaton.acceptance.*;
 import owl.automaton.edge.Edge;
 import owl.automaton.output.HoaPrinter;
 import owl.collections.ValuationSet;
@@ -21,8 +20,10 @@ import owl.run.DefaultEnvironment;
 import owl.run.Environment;
 import owl.translations.LTL2DAFunction;
 import owl.translations.LTL2DAFunction.Constructions;
+import owl.translations.LTL2NAFunction;
 import owl.translations.delag.DelagBuilder;
 import owl.translations.delag.State;
+import owl.translations.ltl2nba.SymmetricNBAConstruction;
 
 import javax.annotation.Nullable;
 import javax.swing.tree.DefaultTreeModel;
@@ -86,10 +87,12 @@ public class FormulaToAutomaton<S> {
 
 
     public <S> automata.Automaton formulaToDfa(LabelledFormula formula){
-//        SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), OmegaAcceptance.class);
-//        Automaton<S, OmegaAcceptance> automaton = translator.apply(formula);
-
-//        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.GENERALIZED_BUCHI));
+//        SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
+//        System.out.println(formula);
+//        var automaton = translator.apply(formula);
+        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.GENERALIZED_BUCHI));//class));
+        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
+//        LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
 //        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
 //        if (automaton.size() == 0)
 //            return null;
@@ -97,11 +100,11 @@ public class FormulaToAutomaton<S> {
 //        System.out.println(automaton.acceptance().booleanExpression());
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        System.out.println(HoaPrinter.toString(automaton));
-//        return nbaToDfa(automaton);
-        System.out.println("Parsing...");
-        DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
-        Automaton<State<Object>, EmersonLeiAcceptance> automaton = translator.apply(formula);
-        return telaToDfa(automaton);
+        return nbaToDfa(automaton);
+//        System.out.println("Parsing...");
+//        DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
+//        Automaton<State<Object>, EmersonLeiAcceptance> automaton = translator.apply(formula);
+//        return telaToDfa(automaton);
     }
 
     private Object2IntMap stateNumbers;

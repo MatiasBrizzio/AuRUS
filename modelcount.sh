@@ -1,2 +1,2 @@
 #!/bin/bash
-java -Xmx8g -Djava.library.path=/usr/local/lib -cp bin/.:lib/*:lib/ejml/* main.PreciseModelCountingEvaluation "$@"
+java -ea -Xmx8g -Djava.library.path=/usr/local/lib -cp "bin:lib/rltlconv.jar:lib/JFLAP-7.0_With_Source.jar:lib/owl-18.10-snapshot.jar:lib/ejml/ejml-core-0.34.jar:lib/ejml/ejml-cdense-0.34.jar:lib/ejml/ejml-ddense-0.34.jar:lib/ejml/ejml-fdense-0.34.jar:lib/ejml/ejml-simple-0.34.jar:lib/ejml/ejml-zdense-0.34.jar:lib/ejml/ejml-dsparse-0.34.jar:lib/ejml/ejml-experimental-0.34.jar:lib/ltl2buchi.jar" main.PreciseModelCountingEvaluation "$@"
