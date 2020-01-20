@@ -55,7 +55,7 @@ public class CountRltlConv {
     	String aux = "";
     	String out = "";
 	    while ((aux = bufferedreader.readLine()) != null) {
-            System.out.println("AUX: " + aux);
+           // System.out.println("AUX: " + aux);
 	    	out = aux.toString();
 	    }
 	    
@@ -66,20 +66,20 @@ public class CountRltlConv {
     	
 	    
 	 // Leer el error del programa.
-    	InputStream err = p.getErrorStream();
-    	InputStreamReader errread = new InputStreamReader(err);
-    	BufferedReader errbufferedreader = new BufferedReader(errread);
+    	//InputStream err = p.getErrorStream();
+    	//InputStreamReader errread = new InputStreamReader(err);
+    	//BufferedReader errbufferedreader = new BufferedReader(errread);
     	
-	    while ((aux = errbufferedreader.readLine()) != null) {
-            System.out.println("FORMULA: " + ltl);
-	    	System.out.println("ERR: " + aux);
-	    	System.out.println("BOUND: " + bound);
-	    	System.out.println("OUT: " + out);
-	    }
+	    //while ((aux = errbufferedreader.readLine()) != null) {
+           // System.out.println("FORMULA: " + ltl);
+	    	//System.out.println("ERR: " + aux);
+	    	//System.out.println("BOUND: " + bound);
+	    	//System.out.println("OUT: " + out);
+	    //}
 	    // Close the ErrorStream
-   		errbufferedreader.close();
-   		errread.close();
-   		err.close();
+   		//errbufferedreader.close();
+   		//errread.close();
+   		//err.close();
 	    // Check for failure
 //		if (p.waitFor() != 0) {
 //			System.out.println("exit value = " + p.exitValue());
