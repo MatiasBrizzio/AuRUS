@@ -95,8 +95,9 @@ public class PreciseModelCountingEvaluation {
     	
     		refined_formulas = new ArrayList<Formula>();
     		line = reader.readLine();
-    		while (line != null && !line.startsWith("--")) {
-    			refined_formulas.add(LtlParser.syntax(line, vars));
+    		while (line != null ) {
+    		    if (!line.startsWith("--"))
+        			refined_formulas.add(LtlParser.syntax(line, vars));
     			line = reader.readLine();
     		}
     		reader.close();
@@ -528,11 +529,16 @@ public class PreciseModelCountingEvaluation {
     }
 
     static BigInteger countExhaustivePrefixesRltl(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
-        List<BigInteger> partial = countPrefixesRltl(original,refined,vars,bound);
-        BigInteger result = BigInteger.ZERO;
-        for(BigInteger res : partial) {
-            result.add(res);
-        }
+        Formula conj_lost = Conjunction.of(original, refined.not());
+        LabelledFormula form_lost = LabelledFormula.of(conj_lost, vars);
+        CountRltlConv counter = new CountRltlConv();
+        BigInteger lostModels = counter.countPrefixes(form_lost,bound);
+
+        Formula conj_won = Conjunction.of(original.not(), refined);
+        LabelledFormula form_won = LabelledFormula.of(conj_won, vars);
+        CountRltlConv counter2 = new CountRltlConv();
+        BigInteger wonModels = counter2.countPrefixes(form_won,bound);
+        BigInteger result = lostModels.add(wonModels);
         return result;
     }
     static BigInteger countExhaustiveAutomataBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
