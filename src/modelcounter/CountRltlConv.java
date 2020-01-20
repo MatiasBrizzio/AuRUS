@@ -30,10 +30,9 @@ public class CountRltlConv {
 		String ltl = SolverUtils.toLambConvSyntax(label_formula.toString());
 		String alph = alphabet.toString();
 		
-		String form = "\"LTL="+ltl;
+		String form = "LTL="+ltl;
 		if(alph!=null && alph!="")
 			form += ",ALPHABET="+alph;
-		form += "\"";
 		return form;
 	}
 	
@@ -56,6 +55,7 @@ public class CountRltlConv {
     	String aux = "";
     	String out = "";
 	    while ((aux = bufferedreader.readLine()) != null) {
+            System.out.println("AUX: " + aux);
 	    	out = aux.toString();
 	    }
 	    
@@ -71,6 +71,7 @@ public class CountRltlConv {
     	BufferedReader errbufferedreader = new BufferedReader(errread);
     	
 	    while ((aux = errbufferedreader.readLine()) != null) {
+            System.out.println("FORMULA: " + ltl);
 	    	System.out.println("ERR: " + aux);
 	    	System.out.println("BOUND: " + bound);
 	    	System.out.println("OUT: " + out);
