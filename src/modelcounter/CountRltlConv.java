@@ -30,10 +30,10 @@ public class CountRltlConv {
 		String ltl = SolverUtils.toLambConvSyntax(label_formula.toString());
 		String alph = alphabet.toString();
 		
-		String form = "LTL="+ltl;
+		String form = "\"LTL="+ltl;
 		if(alph!=null && alph!="")
 			form += ",ALPHABET="+alph;
-		
+		form += "\"";
 		return form;
 	}
 	
