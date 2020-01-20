@@ -18,14 +18,14 @@ public class SolverUtils {
 	
 	public static String toLambConvSyntax(Formula f) {
 		String LTLFormula = f.toString();
-//		LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
+		LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
 		LTLFormula = LTLFormula.replaceAll("&", "&&");
 		LTLFormula = LTLFormula.replaceAll("\\|", "||");
 		return new String(LTLFormula); 
 	}
 	
 	public static String toLambConvSyntax(String LTLFormula) {
-//		LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
+		LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
 		LTLFormula = LTLFormula.replaceAll("&", "&&");
 		LTLFormula = LTLFormula.replaceAll("\\|", "||");
 		return new String(LTLFormula); 
