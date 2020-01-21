@@ -89,21 +89,6 @@ public class MatrixBigIntegerModelCounting {
 
 	
 
-	public String genRltlString(LabelledFormula formula) throws IOException, InterruptedException{
-//		String ltl = SolverUtils.toLambConvSyntax(formula.formula().toString());
-//		String alph = SolverUtils.createLambConvAlphabet(formula);
-		List<String> alphabet = SolverUtils.genAlphabet(formula.variables().size());
-		LabelledFormula label_formula = LabelledFormula.of(formula.formula(), alphabet);
-		String ltl = SolverUtils.toLambConvSyntax(label_formula.toString());
-		String alph = alphabet.toString();
-
-		String form = "LTL="+ltl;
-		if(alph!=null && alph!="")
-			form += ",ALPHABET="+alph;
-
-		return form;
-	}
-
 
 	public  BigInteger count(int k){
 		//We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,
