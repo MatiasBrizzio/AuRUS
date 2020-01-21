@@ -154,7 +154,7 @@ public class PreciseModelCountingEvaluation {
         for(Formula ref : refined_formulas) {
             long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
-            List<BigInteger> result = countModels(original_formula, ref, vars.size(), bound, solver);
+            List<BigInteger> result = countModelsExact(original_formula, ref, vars.size(), bound, solver);
             if (result != null) {
                 System.out.println(result);
                 long finalTime = System.currentTimeMillis();
@@ -374,42 +374,75 @@ public class PreciseModelCountingEvaluation {
     }
 
     static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
-        List<BigInteger> lostModels = new LinkedList<>();
-        for(int k = 1; k <= bound; k++) {
-            PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
-            counter.BOUND = k;
-            if (solver==1)
-                counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
-            else if (solver == 2)
-            	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
-            Formula f = Conjunction.of(original, refined.not());
-            BigInteger r = counter.count(f, vars);
-            if (r == null)
-                return null;
-            lostModels.add(r);
-        }
-
-        List<BigInteger> wonModels = new LinkedList<>();
-        for(int k = 1; k <= bound; k++) {
-            PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
-            counter.BOUND = k;
-            if (solver==1)
-                counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
-            else if (solver == 2)
-            	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
-            Formula f = Conjunction.of(original.not(), refined);
-            BigInteger r = counter.count(f, vars);
-            if (r == null)
-                return null;
-            wonModels.add(r);
-        }
+//        List<BigInteger> lostModels = new LinkedList<>();
+//        for(int k = 1; k <= bound; k++) {
+//            PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
+//            counter.BOUND = k;
+//            if (solver==1)
+//                counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
+//            else if (solver == 2)
+//            	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
+//            Formula f = Conjunction.of(original, refined.not());
+//            BigInteger r = counter.count(f, vars);
+//            if (r == null)
+//                return null;
+//            lostModels.add(r);
+//        }
+//
+//        List<BigInteger> wonModels = new LinkedList<>();
+//        for(int k = 1; k <= bound; k++) {
+//            PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
+//            counter.BOUND = k;
+//            if (solver==1)
+//                counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
+//            else if (solver == 2)
+//            	counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
+//            Formula f = Conjunction.of(original.not(), refined);
+//            BigInteger r = counter.count(f, vars);
+//            if (r == null)
+//                return null;
+//            wonModels.add(r);
+//        }
         List<BigInteger> result = new LinkedList<>();
-        for(int i = 0; i < bound; i++) {
-            BigInteger neg = lostModels.get(i);
-            BigInteger pos = wonModels.get(i);
-            result.add(neg.add(pos));
-        }
+//        for(int i = 0; i < bound; i++) {
+//            BigInteger neg = lostModels.get(i);
+//            BigInteger pos = wonModels.get(i);
+//            result.add(neg.add(pos));
+//        }
+//
+        return result;
+    }
 
+    static List<BigInteger> countModelsExact(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
+
+        PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
+        counter.BOUND = bound;
+        if (solver==1)
+            counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
+        else if (solver == 2)
+            counter.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
+        Formula f = Conjunction.of(original, refined.not());
+        BigInteger lostModels = counter.count(f, vars);
+        if (lostModels == null)
+            return null;
+
+
+        PreciseLTLModelCounter counter2 = new PreciseLTLModelCounter();
+        counter2.BOUND = bound;
+        if (solver==1)
+            counter2.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.CACHET;
+        else if (solver == 2)
+            counter2.modelcounter = PreciseLTLModelCounter.MODEL_COUNTER.GANAK;
+        Formula f2 = Conjunction.of(original.not(), refined);
+        BigInteger wonModels = counter2.count(f2, vars);
+        if (wonModels == null)
+            return null;
+
+        List<BigInteger> result = new LinkedList<>();
+        for(int i = 0; i < bound-1; i++) {
+            result.add(BigInteger.ZERO);
+        }
+        result.add(lostModels.add(wonModels));
         return result;
     }
 
@@ -545,12 +578,12 @@ public class PreciseModelCountingEvaluation {
 
         Formula conj_lost = Conjunction.of(original, refined.not());
         LabelledFormula form_lost = LabelledFormula.of(conj_lost, vars);
-        AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form_lost,true);
+        AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form_lost,false);
         BigInteger lostModels = counter.count(bound);
 
         Formula conj_won = Conjunction.of(original.not(), refined);
         LabelledFormula form_won = LabelledFormula.of(conj_won, vars);
-        AutomataBasedModelCounting counter2 = new AutomataBasedModelCounting(form_won,true);
+        AutomataBasedModelCounting counter2 = new AutomataBasedModelCounting(form_won,false);
         BigInteger wonModels = counter2.count(bound);
         BigInteger result = lostModels.add(wonModels);
         return result;
