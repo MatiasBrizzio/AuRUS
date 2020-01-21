@@ -1,9 +1,6 @@
 package main;
 
-import modelcounter.AutomataBasedModelCounting;
-import modelcounter.Count;
-import modelcounter.CountRltlConv;
-import modelcounter.Rltlconv_LTLModelCounter;
+import modelcounter.*;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.Disjunction;
@@ -578,12 +575,12 @@ public class PreciseModelCountingEvaluation {
 
         Formula conj_lost = Conjunction.of(original, refined.not());
         LabelledFormula form_lost = LabelledFormula.of(conj_lost, vars);
-        AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form_lost,false);
+        MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost,false);
         BigInteger lostModels = counter.count(bound);
 
         Formula conj_won = Conjunction.of(original.not(), refined);
         LabelledFormula form_won = LabelledFormula.of(conj_won, vars);
-        AutomataBasedModelCounting counter2 = new AutomataBasedModelCounting(form_won,false);
+        MatrixBigIntegerModelCounting counter2 = new MatrixBigIntegerModelCounting(form_won,false);
         BigInteger wonModels = counter2.count(bound);
         BigInteger result = lostModels.add(wonModels);
         return result;
