@@ -49,9 +49,11 @@ public class PotentiallyRealizabilityChecker<S> {
             input_vars = new ArrayList<>(formula.player1Variables());
         } catch (TimeoutException e) {
             System.out.println("PotentiallyRealizabilityChecker: TIMEOUT parsing.");
+            System.err.println(formula);
         }
         catch (InterruptedException | ExecutionException e) {
             System.err.println("PotentiallyRealizabilityChecker: ERROR while parsing. " + e.getMessage());
+            System.err.println(formula);
         }
 //        System.out.println("Parsed...");
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
@@ -104,9 +106,11 @@ public class PotentiallyRealizabilityChecker<S> {
             return result;
         } catch (TimeoutException e) {
             System.out.println("PotentiallyRealizabilityChecker::isPotentiallyRealizable TIMEOUT.");
+            System.err.println(formula);
         }
         catch (InterruptedException | ExecutionException e) {
             System.err.println("PotentiallyRealizabilityChecker::isPotentiallyRealizable ERROR. " + e.getMessage());
+            System.err.println(formula);
         }
         return null;
     }

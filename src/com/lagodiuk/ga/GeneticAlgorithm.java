@@ -120,19 +120,19 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			
 //			newPopulation.sortPopulationByFitness(chromosomesComparator);
 //			List<C> arrayChromosome = this.getListFromPop(newPopulation);
-			int op = Settings.RANDOM_GENERATOR.nextInt(3);
-			if (op == 0 && newPopulation.getSize() >= 2) {
-				chromosome = newPopulation.getChromosomeByIndex(0);
-				otherChromosome = newPopulation.getChromosomeByIndex(1);
-			}
-			else if (op == 1) {
-				chromosome = newPopulation.getChromosomeByIndex(0);
-				otherChromosome = newPopulation.getRandomChromosome();
-			}
-			else {
+//			int op = Settings.RANDOM_GENERATOR.nextInt(3);
+//			if (op == 0 && newPopulation.getSize() >= 2) {
+//				chromosome = newPopulation.getChromosomeByIndex(0);
+//				otherChromosome = newPopulation.getChromosomeByIndex(1);
+//			}
+//			else if (op == 1) {
+//				chromosome = newPopulation.getChromosomeByIndex(0);
+//				otherChromosome = newPopulation.getRandomChromosome();
+//			}
+//			else {
 				chromosome = newPopulation.getRandomChromosome();
 				otherChromosome = newPopulation.getRandomChromosome();
-			}
+//			}
 			
 			List<C> crossovered = chromosome.crossover(otherChromosome);
 			for (C c : crossovered) {
