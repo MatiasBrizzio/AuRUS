@@ -17,6 +17,12 @@ export ANT_HOME=/home/users/rdegiovanni/envlib/ant/
 export PATH=$PATH:$JAVA_HOME/bin:$ANT_HOME:bin
 
 pushd ${BASEDIR}
+echo $JAVA_HOME
+echo $PATH
+
+echo $(java -version)
+echo $(javac -version)
+
 ant compile
 ./unreal-repair.sh "$@"
 
