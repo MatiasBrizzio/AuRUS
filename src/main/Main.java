@@ -26,6 +26,7 @@ public class Main {
 		double semantic_factor = -1.0d;
 		boolean allowGuaranteesRemoval = false;
 		boolean allowAssumptionsAddition = false;
+		boolean onlyInputsInAssumptions = false;
 		boolean no_check_realizability = false;
 		boolean strong_SAT = false;
 		int bound = 0;
@@ -80,6 +81,9 @@ public class Main {
 			else if(args[i].startsWith("-addA")){
 				allowAssumptionsAddition = true;
 			}
+			else if(args[i].startsWith("-onlyInputsA")){
+				onlyInputsInAssumptions = true;
+			}
 			else if(args[i].startsWith("-GATO=")){
 				ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
 			}
@@ -127,6 +131,7 @@ public class Main {
 		if (precise) Settings.MC_EXHAUSTIVE = false;
 		if (allowAssumptionsAddition) Settings.allowAssumptionAddition = true;
 		if (allowGuaranteesRemoval) Settings.allowGuaranteeRemoval = true;
+		if (onlyInputsInAssumptions) Settings.only_inputs_in_assumptions = true;
 		if (no_check_realizability) Settings.check_REALIZABILITY = false;
 		if (strong_SAT) Settings.check_STRONG_SAT = true;
 		if (random_GA_selector) Settings.GA_RANDOM_SELECTOR = true;
