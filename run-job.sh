@@ -14,8 +14,9 @@ export BASEDIR=/home/users/rdegiovanni/unreal-repair
 
 export JAVA_HOME=/home/users/rdegiovanni/envlib/java-11-oracle/
 export ANT_HOME=/home/users/rdegiovanni/envlib/ant/
-export LIB_HOME=/home/users/rdegiovanni/envlib/lib/.
-export PATH=$PATH:$JAVA_HOME/bin:$ANT_HOME/bin:$LIB_HOME
+export LIB_HOME=/home/users/rdegiovanni/envlib/lib/
+#export LD_LIBRARY_PATH=~/envlib/lib/:~/envlib/clib/:$LD_LIBRARY_PATH
+export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$LIB_HOME:$PATH
 
 pushd ${BASEDIR}
 echo $JAVA_HOME
