@@ -95,7 +95,8 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		// if the specifications will not lead us to a consistent specification, then do a random merge.
 //		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
 		int level = 0;
-		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) //assumptions can be modified
+		//if assumptions and guarantees can be modified
+		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0 && Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100)
 			level = Settings.RANDOM_GENERATOR.nextInt(3);
 
 		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
