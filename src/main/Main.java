@@ -165,7 +165,7 @@ public class Main {
 		bw.write(ga.print_execution_time()+"\n");
 		bw.write(ga.print_config()+"\n");
 		bw.close();
-
+		return;
 	}
 	
 	private static void correctUssage(){
