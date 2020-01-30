@@ -284,7 +284,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
 		double value = res.doubleValue();
-		System.out.print(numOfLostModels + " " + numOfModels + " ");
+//		System.out.print(numOfLostModels + " " + numOfModels + " ");
 		if (res.doubleValue() > 1.0d) {
 //			System.out.println("\nBROKEN formula: " + formula);
 //			throw new RuntimeException("lost models major than 1.0: " + refined.toFormula());
@@ -330,7 +330,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		BigDecimal res = numOfWonModels.divide(numOfRefinedModels, 2, RoundingMode.HALF_UP);
 
 		double value = res.doubleValue();
-		System.out.print(numOfWonModels + " " + numOfRefinedModels + " ");
+//		System.out.print(numOfWonModels + " " + numOfRefinedModels + " ");
 		if (res.doubleValue() > 1.0d) {
 			System.out.println("\nWARNING: increase the bound. ");
 			return 1.0d;
