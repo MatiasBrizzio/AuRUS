@@ -122,7 +122,7 @@ public class Main {
 		if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
 		if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) Settings.GA_MUTATION_RATE = mutationRate;
-		if (guaranteePreferenceRate > 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
+		if (guaranteePreferenceRate >= 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
 		if (generations > 0) Settings.GA_GENERATIONS = generations;
 		if (ga_timeout > 0) Settings.GA_EXECUTION_TIMEOUT = ga_timeout;
 		if (sat_timeout > 0) Settings.SAT_TIMEOUT = sat_timeout;
