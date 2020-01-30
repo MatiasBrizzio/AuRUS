@@ -173,6 +173,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		startRunningTime = Instant.now();
 		for (int i = 0; i < count; i++) {
 			checkTermination();
+			iterationStartTime = Instant.now();
 			if (this.terminate) {
 				break;
 			}
@@ -182,11 +183,13 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 				l.update(this);
 			}
 			this.select();
+			printExecutionTime();
 		}
 	}
 
 	private int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
 	private Instant startRunningTime = null;
+	private Instant iterationStartTime = null;
 	public void setTIMEOUT(int timeout) {
 		this.EXECUTION_TIMEOUT = timeout;
 	}
@@ -202,6 +205,16 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 				System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
 				terminate();
 			}
+		}
+	}
+
+	private void printExecutionTime() {
+		Duration current = Duration.between(startRunningTime, Instant.now());
+		if (iterationStartTime != null) {
+			Duration itduration = Duration.between(iterationStartTime, Instant.now());
+			String timeStr = String.format("Iteration Time: %s m  %s s", itduration.toMinutes(), itduration.toSecondsPart()) + "\n" +
+					String.format("Elapsed Time: %s m  %s s", current.toMinutes(), current.toSecondsPart());
+			System.out.println(timeStr);
 		}
 	}
 
