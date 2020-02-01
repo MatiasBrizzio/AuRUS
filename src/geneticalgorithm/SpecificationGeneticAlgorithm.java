@@ -147,13 +147,57 @@ public class SpecificationGeneticAlgorithm {
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		population.addChromosome(init);
 
-		for(int i = 0; i < spec.numberOfInputs(); i++) {
-			Literal input = Literal.of(i);
-			Formula new_assumption = GOperator.of(FOperator.of(input));
-			List<Formula>  assumes = Formula_Utils.splitConjunction(spec.assume());
-			assumes.add(new_assumption);
-			Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
-			population.addChromosome(new SpecificationChromosome(input_spec));
+		//add simple assumptions
+		if (Settings.allowAssumptionAddition && Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
+			for (int i = 0; i < spec.numberOfInputs(); i++) {
+				Literal input = Literal.of(i);
+				Formula new_assumption = GOperator.of(FOperator.of(input));
+				if (Settings.RANDOM_GENERATOR.nextBoolean())
+					new_assumption = new_assumption.not();
+				List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
+				assumes.add(new_assumption);
+				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
+				population.addChromosome(new SpecificationChromosome(input_spec));
+			}
+		}
+
+		//modify assumptions
+		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
+			for (Formula as : Formula_Utils.splitConjunction(spec.assume())) {
+				int i = Settings.RANDOM_GENERATOR.nextInt(spec.numberOfInputs());
+				Literal input = Literal.of(i);
+				if (Settings.RANDOM_GENERATOR.nextBoolean())
+					input = input.not();
+				Formula new_assumption = null;
+				if (Settings.RANDOM_GENERATOR.nextBoolean())
+					new_assumption = Formula_Utils.replaceSubformula(as,input);
+				else
+					new_assumption = Formula_Utils.combineSubformula(as,input);
+				List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
+				assumes.remove(as);
+				assumes.add(new_assumption);
+				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
+				population.addChromosome(new SpecificationChromosome(input_spec));
+			}
+		}
+
+		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0) {
+			for (Formula g : spec.guarantee()) {
+				int i = spec.numberOfInputs() + Settings.RANDOM_GENERATOR.nextInt(spec.variables().size()-spec.numberOfInputs());
+				Literal output = Literal.of(i);
+				if (Settings.RANDOM_GENERATOR.nextBoolean())
+					output = output.not();
+				Formula new_guarantee = null;
+				if (Settings.RANDOM_GENERATOR.nextBoolean())
+					new_guarantee = Formula_Utils.replaceSubformula(g,output);
+				else
+					new_guarantee = Formula_Utils.combineSubformula(g,output);
+				List<Formula> guarantees = new LinkedList<>(spec.guarantee());
+				guarantees.remove(g);
+				guarantees.add(new_guarantee);
+				Tlsf input_spec = TLSF_Utils.change_guarantees(spec, guarantees);
+				population.addChromosome(new SpecificationChromosome(input_spec));
+			}
 		}
 //		for (Formula g : spec.guarantee()) {
 //			Tlsf g_spec = TLSF_Utils.fromSpec(spec);
