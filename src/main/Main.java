@@ -34,6 +34,7 @@ public class Main {
 		int ga_timeout = 0;
 		int sat_timeout = 0;
 		int mc_timeout = 0;
+		double threshold = 0.0d;
 		String filename = "";
 		for (int i = 0; i< args.length; i++ ){
 			if(args[i].startsWith("-Gen=")){
@@ -93,6 +94,9 @@ public class Main {
 			else if(args[i].startsWith("-MCTO=")){
 				mc_timeout = Integer.parseInt(args[i].replace("-MCTO=", ""));
 			}
+			else if(args[i].startsWith("-sol=")){
+				threshold = Double.valueOf(args[i].replace("-sol=", ""));
+			}
 			else if(args[i].startsWith("-factors")){
 				String[] factors = args[i].replace("-factors=", "").split(",");
 				if (factors == null || factors.length != 3) {
@@ -122,6 +126,7 @@ public class Main {
 		if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
 		if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) Settings.GA_MUTATION_RATE = mutationRate;
+		if (threshold > 0.0d) Settings.GA_THRESHOLD = threshold;
 		if (guaranteePreferenceRate >= 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
 		if (generations > 0) Settings.GA_GENERATIONS = generations;
 		if (ga_timeout > 0) Settings.GA_EXECUTION_TIMEOUT = ga_timeout;
@@ -171,7 +176,7 @@ public class Main {
 	private static void correctUssage(){
 		System.out.println("Use ./unreal-repair.sh \n" +
 								"\t[ -onlySAT | -strongSAT | -no-docker | -random | \n" +
-								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | \n" +
+								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | sol=THRESHOLD \n" +
 								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
 								"\t -removeGuarantees | -addAssumptions | -GA_random_selector | -GPR=guarantee_preference_rate | \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
