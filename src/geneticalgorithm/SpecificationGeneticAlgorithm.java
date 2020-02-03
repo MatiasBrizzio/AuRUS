@@ -183,7 +183,7 @@ public class SpecificationGeneticAlgorithm {
 
 		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0) {
 			for (Formula g : spec.guarantee()) {
-				int i = spec.numberOfInputs() + Settings.RANDOM_GENERATOR.nextInt(spec.variables().size()-spec.numberOfInputs());
+				int i = spec.variables().size();//spec.numberOfInputs() + Settings.RANDOM_GENERATOR.nextInt(spec.variables().size()-spec.numberOfInputs());
 				Literal output = Literal.of(i);
 				if (Settings.RANDOM_GENERATOR.nextBoolean())
 					output = output.not();
