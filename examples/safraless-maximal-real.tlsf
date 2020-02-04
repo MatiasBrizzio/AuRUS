@@ -1,0 +1,25 @@
+//Taken from: Safraless LTL synthesis considering maximal realizability. T. Tomita et al.
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+	 req1;
+   req2;
+  }
+  OUTPUTS {
+	 res;
+  }
+  
+
+
+  GUARANTEE {
+	 G(req1 -> X (res));
+	 G(req2 -> X (!res));
+	 G ((res) <-> X(!res)) ;
+  }
+}

@@ -1,0 +1,24 @@
+//Taken from: Minimal Strongly Unsatisfiable Subsets of Reactive System Specifications. Shigeki Hagihara et al.
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+	 x1; x2; x3;
+  }
+  OUTPUTS {
+	 y;
+  }
+  
+
+
+  GUARANTEE {
+	 G(x1 -> F (y));
+	 G(x2 -> !y);
+	 G ((x3 && y) -> (y U x2)) ;
+  }
+}
