@@ -23,50 +23,35 @@ MAIN {
   
   REQUIRE {
     //Trains do not stop
-    (ta -> !tc);
-    (tc -> !ta);
+    (!ta || !tc);
 //    (tl -> !ta && !tc);  
-    ta -> X(tc);
-    tc -> X(!tc);
+    (ta -> X(tc));
+    (tc -> X(!tc));
     //Cars cross only when the gate is opened.
-    (ca -> !cc);
-    (cc -> !ca);
-    //(cl -> !(ca && !cc);)
-    (X(cc) -> (ca && go));
+    (!ca || !cc);
     (cc -> X(!cc));
   }
 
 
   PRESET {
-    !go;
+    go;
   }
-
-//  ASSERT {
-//    (gc -> !go);
-//    (go -> !gc);
-//  }
 
   //ASSUMPTIONS{
-  //  GF(ta);
-  //  GF(ca);
+    //G F(!ta);
+    //G F(!ca);
+    //G (ca -> (ca U cc) );
   //}
 
-
-
-  GUARANTEE {
-  //When the train is approaching (ta), then the gate should be closed (tc) so the train can cross (tc). 
-    G (ta -> X(!go)) ;
+ GUARANTEE {
+    //When the train is approaching (ta), then the gate should be closed (tc) so the train can cross (tc). 
+    G(ta -> X(!go)) ;
     //When a car approaches to the crossing (ca), then the gate opens (go) and car crosses (cc). 
-    G (ca -> X(go)) ;
-    //Of course, the train and the car cannot be crossing at the same time.
-    G (tc -> cc);
-    //GF(tc);
-    //GF(cc);
+    G((ca && !ta && !tc)  -> X(go)) ;
+
+   //Of course, the train and the car cannot be crossing at the same time.
+    G (tc -> !cc);
+    //G F(tc);
+    //G F(cc);
   }
 }
-
-
-
-
-
-
