@@ -169,16 +169,18 @@ public class Main {
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write(ga.print_execution_time()+"\n");
 		bw.write(ga.print_config()+"\n");
+		bw.write("\n");
+		bw.write(Settings.print_settings()+"\n");
 		bw.close();
 		return;
 	}
 	
 	private static void correctUssage(){
 		System.out.println("Use ./unreal-repair.sh \n" +
-								"\t[ -onlySAT | -strongSAT | -no-docker | -random | \n" +
-								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | sol=THRESHOLD \n" +
+								"\t[ -onlySAT | -strongSAT | -no-docker | -random | -GA_random_selector | \n" +
+								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | -sol=THRESHOLD | \n" +
 								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
-								"\t -removeGuarantees | -addAssumptions | -GA_random_selector | -GPR=guarantee_preference_rate | \n" +
+								"\t -removeGuarantees | -addAssumptions | -onlyInputsA | -GPR=guarantee_preference_rate | \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
 								"\t -GATO=GA_timeout | -SatTO=sat_timeout | MCTO=model_counting_timeout] \n" +
 								"\tinput-file.tlsf");

@@ -101,6 +101,9 @@ public class SpecificationGeneticAlgorithm {
 		System.out.println(print_execution_time());
 		System.out.println(print_config());
 		fitness.print_config();
+
+		System.out.println();
+		System.out.println(Settings.print_settings());
 	}
 	
 	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
