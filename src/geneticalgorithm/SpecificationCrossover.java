@@ -2,6 +2,7 @@ package geneticalgorithm;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
+import org.apache.xpath.operations.Bool;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
@@ -185,7 +186,10 @@ public class SpecificationCrossover {
 								}
 							}
 							subformulas.removeAll(to_remove);
-							merge_ass1 = (Formula)subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(subformulas.size())];
+							if (!subformulas.isEmpty())
+								merge_ass1 = (Formula)subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(subformulas.size())];
+							else
+								merge_ass1 = BooleanConstant.TRUE;
 						}
 
 						Formula merged_assumption = null;
