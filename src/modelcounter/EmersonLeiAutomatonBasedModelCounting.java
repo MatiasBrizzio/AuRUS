@@ -10,6 +10,7 @@ import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.apache.commons.math3.linear.FieldMatrix;
 import owl.automaton.Automaton;
 import owl.automaton.acceptance.EmersonLeiAcceptance;
+import owl.automaton.acceptance.OmegaAcceptance;
 import owl.automaton.edge.Edge;
 import owl.collections.ValuationSet;
 import owl.factories.FactorySupplier;
@@ -17,6 +18,7 @@ import owl.factories.ValuationSetFactory;
 import owl.ltl.LabelledFormula;
 import owl.run.DefaultEnvironment;
 import owl.run.Environment;
+import owl.translations.LTL2NAFunction;
 import owl.translations.delag.DelagBuilder;
 import solvers.SolverUtils;
 
@@ -50,7 +52,6 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		catch (InterruptedException | ExecutionException e) {
 			System.err.println("EmersonLeiAutomatonBasedModelCounting: ERROR while parsing. " + e.getMessage());
 		}
-
 	}
 
 	private String parse() {
@@ -63,11 +64,10 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 	}
 
 
-
 	public  BigInteger count(int bound) {
 		//We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,
 		// and v is the column vector where vi = 1 if and only if i is an accepting state and 0 otherwise.
-		if (automaton == null || automaton.states() == null || automaton.size() == 0 || states == null)
+		if (states == null)
 			return BigInteger.ZERO;
 		BOUND = bound;
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -91,36 +91,10 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		int n = T.getRowDimension();
 
 		//set initial states
-		FieldMatrix u = createMatrix(1,n);
-		Set<S> initial_states = automaton.initialStates();
-		for(int j = 0; j < n; j++) {
-			if (initial_states.contains(states[j]))
-				u.addToEntry(0, j,new BigFraction(1));
-//			else
-//				u.addToEntry(0, j,new BigFraction(0));
-		}
+		FieldMatrix u = buildInitialStates() ;
 
 		//set final states
-		Set<S> final_states = new HashSet<>();
-        for (S s : automaton.states()) {
-            Set<Edge<S>> edges = automaton.edges(s);
-            for(Edge<S> edge : edges) {
-                //check if it is an acceptance transition
-                IntArrayList acceptanceSets = new IntArrayList();
-                if (edge.acceptanceSetIterator().hasNext())
-                    edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
-                    final_states.add(edge.successor());
-                }
-            }
-		}
-
-		FieldMatrix v =  createMatrix(n,1);
-		for(int i = 0; i < n; i++) {
-            if (final_states.contains(states[i])) {
-				v.addToEntry(i, 0, new BigFraction(1));
-            }
-        }
+		FieldMatrix v =  buildFinalStates();
 
 		// count models
 		FieldMatrix T_res = T.power(BOUND);
@@ -140,6 +114,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 	   */
 	  long transitions = 0;
 	  public  FieldMatrix buildTransferMatrix() {
+
 		  int n = automaton.size();
 		  BigFraction[][] pData = new BigFraction[n][n];
 		  for (int i = 0;i<n;i++) {
@@ -160,6 +135,46 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		  }
 		  return new Array2DRowFieldMatrix<BigFraction>(pData, false);
 	  }
+
+	  public FieldMatrix buildInitialStates() {
+		  int n = T.getRowDimension();
+		  //set initial states
+		  FieldMatrix u = createMatrix(1,n);
+		  Set<S> initial_states = automaton.initialStates();
+		  for(int j = 0; j < n; j++) {
+			  if (initial_states.contains(states[j]))
+				  u.addToEntry(0, j,new BigFraction(1));
+//			else
+//				u.addToEntry(0, j,new BigFraction(0));
+		  }
+		  return u;
+	  }
+
+	public FieldMatrix buildFinalStates() {
+		int n = T.getRowDimension();
+		//set final states
+		Set<S> final_states = new HashSet<>();
+		for (S s : automaton.states()) {
+			Set<Edge<S>> edges = automaton.edges(s);
+			for (Edge<S> edge : edges) {
+				//check if it is an acceptance transition
+				IntArrayList acceptanceSets = new IntArrayList();
+				if (edge.acceptanceSetIterator().hasNext())
+					edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+				if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
+					final_states.add(edge.successor());
+				}
+			}
+		}
+
+		FieldMatrix v = createMatrix(n, 1);
+		for (int i = 0; i < n; i++) {
+			if (final_states.contains(states[i])) {
+				v.addToEntry(i, 0, new BigFraction(1));
+			}
+		}
+		return v;
+	}
 
 	public FieldMatrix createMatrix(int row, int column) {
 		BigFraction[][] pData = new BigFraction[row][column];
