@@ -18,6 +18,8 @@ import owl.ltl.Formula;
 import owl.ltl.GOperator;
 import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
+import owl.ltl.visitors.FormulaWeakening;
+import owl.ltl.visitors.SubformulaReplacer;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.Formula_Utils;
@@ -150,7 +152,7 @@ public class SpecificationGeneticAlgorithm {
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		population.addChromosome(init);
 
-		//add simple assumptions
+		//add simple assumptions G F input
 		if (Settings.allowAssumptionAddition && Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
 			for (int i = 0; i < spec.numberOfInputs(); i++) {
 				Literal input = Literal.of(i);
@@ -164,7 +166,7 @@ public class SpecificationGeneticAlgorithm {
 			}
 		}
 
-		//modify assumptions
+		//combine or replace sub formulas by one input
 		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
 			for (Formula as : Formula_Utils.splitConjunction(spec.assume())) {
 				int i = Settings.RANDOM_GENERATOR.nextInt(spec.numberOfInputs());
@@ -179,6 +181,26 @@ public class SpecificationGeneticAlgorithm {
 				List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
 				assumes.remove(as);
 				assumes.add(new_assumption);
+				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
+				population.addChromosome(new SpecificationChromosome(input_spec));
+			}
+		}
+
+		// weaken some sub formula
+		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
+			for (Formula as : Formula_Utils.splitConjunction(spec.assume())) {
+				int n = Formula_Utils.formulaSize(as);
+				Formula to_replace = (Formula) Formula_Utils.subformulas(as).toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
+				List<String> variables = spec.variables();
+				if (Settings.only_inputs_in_assumptions)
+					variables = variables.subList(0,spec.numberOfInputs());
+				FormulaWeakening formVisitor = new FormulaWeakening(variables, n, n);
+				Formula weaken_subformula = to_replace.nnf().accept(formVisitor);
+				SubformulaReplacer visitor = new SubformulaReplacer(to_replace,weaken_subformula);
+				Formula weaken_assumption = as.accept(visitor);
+				List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
+				assumes.remove(as);
+				assumes.add(weaken_assumption);
 				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
 				population.addChromosome(new SpecificationChromosome(input_spec));
 			}
