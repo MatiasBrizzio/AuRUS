@@ -5,13 +5,13 @@ import main.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
+import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
+import owl.ltl.visitors.PropositionVariablesExtractor;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SpecificationCrossover {
 
@@ -171,6 +171,23 @@ public class SpecificationCrossover {
 					Formula merge_ass1 = assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
 					// merge ass0 and ass1
 					if (merge_ass0 != null && merge_ass1 != null) {
+						if (Settings.only_inputs_in_assumptions) {
+							Set<Formula> subformulas = Formula_Utils.subformulas(merge_ass1);
+							Set<Formula> to_remove = new LinkedHashSet<>();
+							for (Formula f : subformulas) {
+								PropositionVariablesExtractor prop_visitor = new PropositionVariablesExtractor();
+								Set<Literal> props = f.accept(prop_visitor);
+								for (Literal l : props) {
+									if (l.getAtom() >= spec0.numberOfInputs()) {
+										to_remove.add(f);
+										break;
+									}
+								}
+							}
+							subformulas.removeAll(to_remove);
+							merge_ass1 = (Formula)subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(subformulas.size())];
+						}
+
 						Formula merged_assumption = null;
 						if (Settings.RANDOM_GENERATOR.nextBoolean())
 							merged_assumption = Formula_Utils.replaceSubformula(merge_ass0, merge_ass1);
