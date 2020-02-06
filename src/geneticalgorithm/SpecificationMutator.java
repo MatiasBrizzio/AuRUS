@@ -36,19 +36,19 @@ public class SpecificationMutator {
 				vars = vars.subList(0,spec.numberOfInputs());
 			
 			Formula new_assumption = BooleanConstant.TRUE;
-			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
-			if (modification == 0) {
-				// arbitrary mutation
-				new_assumption = applyGeneralMutation(assumption_to_mutate,vars);
-			}
-			else if (modification == 1) {
+//			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
+//			if (modification == 0) {
+//				// arbitrary mutation
+//				new_assumption = applyGeneralMutation(assumption_to_mutate,vars);
+//			}
+//			else if (modification == 1) {
 				// weaken mutation
 				new_assumption = weakenFormula(assumption_to_mutate, vars);
-			}
-			else {
-				// strengthen mutation
-				new_assumption = strengthenFormula(assumption_to_mutate, vars);
-			}
+//			}
+//			else {
+//				// strengthen mutation
+//				new_assumption = strengthenFormula(assumption_to_mutate, vars);
+//			}
 
 
 //			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);

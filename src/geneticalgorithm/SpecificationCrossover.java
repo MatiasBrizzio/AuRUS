@@ -51,15 +51,25 @@ public class SpecificationCrossover {
 		}
 		else if (level == 1) {
 			// set assume
-			assumptionConjuncts.addAll(selectRandomly(assumesspec0));
-			for(Formula f : selectRandomly(assumesspec1))
-				if (!assumptionConjuncts.contains(f))
-					assumptionConjuncts.add(f);
+			//if the assumptions can be modified
+			if ( Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
+				assumptionConjuncts.addAll(selectRandomly(assumesspec0));
+				for (Formula f : selectRandomly(assumesspec1))
+					if (!assumptionConjuncts.contains(f))
+						assumptionConjuncts.add(f);
+			}
+			else
+				assumptionConjuncts.addAll(assumesspec0);
 			// set guarantee
-			guaranteeConjuncts.addAll(selectRandomly(spec0.guarantee()));
-			for(Formula f : selectRandomly(spec1.guarantee()))
-				if (!guaranteeConjuncts.contains(f))
-					guaranteeConjuncts.add(f);
+			//if the guarantees can be modified
+			if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0) {
+				guaranteeConjuncts.addAll(selectRandomly(spec0.guarantee()));
+				for (Formula f : selectRandomly(spec1.guarantee()))
+					if (!guaranteeConjuncts.contains(f))
+						guaranteeConjuncts.add(f);
+			}
+			else
+				guaranteeConjuncts.addAll(spec0.guarantee());
 
 		}
 //		else if (level == 2) {
@@ -152,49 +162,52 @@ public class SpecificationCrossover {
 //		}
 		else { //level == 4 and by default
 			// set assume
-			assumptionConjuncts.addAll(selectRandomly(assumesspec0));
-			for(Formula f : selectRandomly(assumesspec1))
-				if (!assumptionConjuncts.contains(f))
-					assumptionConjuncts.add(f);
-
-			int size = assumptionConjuncts.size();
-			if (size >= 2) {
-				Formula merge_ass0 = assumptionConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size / 2));
-				Formula merge_ass1 = assumptionConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size - 1));
-				// merge ass0 and ass1
-				if (merge_ass0 != null && merge_ass1 != null) {
-					Formula merged_assumption = null;
-					if (Settings.RANDOM_GENERATOR.nextBoolean())
-						merged_assumption = Formula_Utils.replaceSubformula(merge_ass0, merge_ass1);
-					else {
-						merged_assumption = Formula_Utils.combineSubformula(merge_ass0, merge_ass1);
+			//if assumptions can be modified
+			if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100 && assumesspec0.size()>0 && assumesspec1.size()>0) {
+				assumptionConjuncts.addAll(assumesspec0);
+				int size = assumptionConjuncts.size();
+				if (size >= 1) {
+					Formula merge_ass0 = assumptionConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size ));
+					Formula merge_ass1 = assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
+					// merge ass0 and ass1
+					if (merge_ass0 != null && merge_ass1 != null) {
+						Formula merged_assumption = null;
+						if (Settings.RANDOM_GENERATOR.nextBoolean())
+							merged_assumption = Formula_Utils.replaceSubformula(merge_ass0, merge_ass1);
+						else {
+							merged_assumption = Formula_Utils.combineSubformula(merge_ass0, merge_ass1);
+						}
+						if (merged_assumption != null && Formula_Utils.numOfTemporalOperators(merged_assumption) <= 2)
+							assumptionConjuncts.add(merged_assumption);
 					}
-					if (merged_assumption != null && Formula_Utils.numOfTemporalOperators(merged_assumption) <= 2)
-						assumptionConjuncts.add(merged_assumption);
 				}
 			}
+			else
+				assumptionConjuncts.addAll(assumesspec0);
 
 			// set guarantee
-			guaranteeConjuncts.addAll(selectRandomly(spec0.guarantee()));
-			for(Formula f : selectRandomly(spec1.guarantee()))
-				if (!guaranteeConjuncts.contains(f))
-					guaranteeConjuncts.add(f);
-			int size_g = guaranteeConjuncts.size();
-			if (size_g >= 2) {
-				Formula merge_g0 = guaranteeConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size_g / 2));
-				Formula merge_g1 = guaranteeConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size_g - 1));
-				// merge g0 and g1
-				if (merge_g0 != null && merge_g1 != null) {
-					Formula merged_g = null;
-					if (Settings.RANDOM_GENERATOR.nextBoolean())
-						merged_g = Formula_Utils.replaceSubformula(merge_g0, merge_g1);
-					else {
-						merged_g = Formula_Utils.combineSubformula(merge_g0, merge_g1);
+			//if assumptions can be modified
+			if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0 && spec0.guarantee().size()>0 && spec1.guarantee().size()>0) {
+				guaranteeConjuncts.addAll(spec0.guarantee());
+				int size_g = guaranteeConjuncts.size();
+				if (size_g >= 1) {
+					Formula merge_g0 = guaranteeConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size_g));
+					Formula merge_g1 = spec1.guarantee().get(Settings.RANDOM_GENERATOR.nextInt(spec1.guarantee().size()));
+					// merge g0 and g1
+					if (merge_g0 != null && merge_g1 != null) {
+						Formula merged_g = null;
+						if (Settings.RANDOM_GENERATOR.nextBoolean())
+							merged_g = Formula_Utils.replaceSubformula(merge_g0, merge_g1);
+						else {
+							merged_g = Formula_Utils.combineSubformula(merge_g0, merge_g1);
+						}
+						if (merged_g != null && Formula_Utils.numOfTemporalOperators(merged_g) <= 2)
+							guaranteeConjuncts.add(merged_g);
 					}
-					if (merged_g != null && Formula_Utils.numOfTemporalOperators(merged_g) <= 2)
-						guaranteeConjuncts.add(merged_g);
 				}
 			}
+			else
+				guaranteeConjuncts.addAll(spec0.guarantee());
 		}
 		if (!guaranteeConjuncts.isEmpty()) {
 			Tlsf new_spec = TLSF_Utils.change_assume(spec0, assumptionConjuncts);

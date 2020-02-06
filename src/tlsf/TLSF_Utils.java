@@ -1129,11 +1129,11 @@ public class TLSF_Utils {
 		}
 
 		if (spec.assume().compareTo(BooleanConstant.TRUE) != 0) {
-			new_tlsf_spec += "  ASSUMPTIONS {\n"
-				+ "    "
-			    + toSolverSyntax(LabelledFormula.of(spec.assume(),spec.variables())) + ";\n"
-			    + "  }\n"
-			    + '\n';
+			new_tlsf_spec += "  ASSUMPTIONS {\n" ;
+			for (Formula as : Formula_Utils.splitConjunction(spec.assume())) {
+				new_tlsf_spec += "    " + toSolverSyntax(LabelledFormula.of(as, spec.variables())) + ";\n";
+			}
+			new_tlsf_spec += "  }\n" + '\n';
 		}
 
 		if (!spec.guarantee().isEmpty()) {

@@ -67,7 +67,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 	public  BigInteger count(int bound) {
 		//We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,
 		// and v is the column vector where vi = 1 if and only if i is an accepting state and 0 otherwise.
-		if (automaton == null || automaton.states() == null || automaton.size() == 0)
+		if (automaton == null || automaton.states() == null || automaton.size() == 0 || states == null)
 			return BigInteger.ZERO;
 		BOUND = bound;
 		ExecutorService executorService = Executors.newSingleThreadExecutor();

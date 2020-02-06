@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.lagodiuk.ga.Fitness;
 import com.lagodiuk.ga.GeneticAlgorithm;
@@ -19,6 +20,7 @@ import owl.ltl.GOperator;
 import owl.ltl.Literal;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaWeakening;
+import owl.ltl.visitors.GeneralFormulaMutator;
 import owl.ltl.visitors.SubformulaReplacer;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
@@ -76,7 +78,9 @@ public class SpecificationGeneticAlgorithm {
 		ga.setParentChromosomesSurviveCount(Settings.GA_POPULATION_SIZE);
 		ga.setMaximumNumberOfIndividuals(Settings.GA_MAX_NUM_INDIVIDUALS);
 		ga.setTIMEOUT(Settings.GA_EXECUTION_TIMEOUT);
+		System.out.println();
 		print_config();
+		System.out.println();
 		ga.evolve(Settings.GA_GENERATIONS);
 		searchExecutionTime = Instant.now();
 		if (!Settings.check_REALIZABILITY || Settings.check_STRONG_SAT) {
@@ -189,18 +193,19 @@ public class SpecificationGeneticAlgorithm {
 		// weaken some sub formula
 		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
 			for (Formula as : Formula_Utils.splitConjunction(spec.assume())) {
-				int n = Formula_Utils.formulaSize(as);
-				Formula to_replace = (Formula) Formula_Utils.subformulas(as).toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
+				Set<Formula> subformulas = Formula_Utils.subformulas(as);
+				int n = subformulas.size();
+				Formula to_replace = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
 				List<String> variables = spec.variables();
 				if (Settings.only_inputs_in_assumptions)
 					variables = variables.subList(0,spec.numberOfInputs());
-				FormulaWeakening formVisitor = new FormulaWeakening(variables, n, n);
-				Formula weaken_subformula = to_replace.nnf().accept(formVisitor);
-				SubformulaReplacer visitor = new SubformulaReplacer(to_replace,weaken_subformula);
-				Formula weaken_assumption = as.accept(visitor);
+				GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, n, 1);
+				Formula mutated_subformula = to_replace.nnf().accept(formVisitor);
+				SubformulaReplacer visitor = new SubformulaReplacer(to_replace,mutated_subformula);
+				Formula mutated_assumption = as.accept(visitor);
 				List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
 				assumes.remove(as);
-				assumes.add(weaken_assumption);
+				assumes.add(mutated_assumption);
 				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
 				population.addChromosome(new SpecificationChromosome(input_spec));
 			}
@@ -224,12 +229,26 @@ public class SpecificationGeneticAlgorithm {
 				population.addChromosome(new SpecificationChromosome(input_spec));
 			}
 		}
-//		for (Formula g : spec.guarantee()) {
-//			Tlsf g_spec = TLSF_Utils.fromSpec(spec);
-//			g_spec = TLSF_Utils.change_guarantees(g_spec, g);
-//			SpecificationChromosome g_init = new SpecificationChromosome(g_spec);
-//			population.addChromosome(g_init);
-//		}
+
+		if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0) {
+			for (Formula g : spec.guarantee()) {
+				Set<Formula> subformulas = Formula_Utils.subformulas(g);
+				int n = subformulas.size();
+				Formula to_replace = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
+				List<String> variables = spec.variables();
+				GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, n, 1);
+				Formula mutated_subformula = to_replace.nnf().accept(formVisitor);
+				SubformulaReplacer visitor = new SubformulaReplacer(to_replace,mutated_subformula);
+				Formula mutated_guarantee = g.accept(visitor);
+				List<Formula> guarantees = new LinkedList<>(spec.guarantee());
+				guarantees.remove(g);
+				guarantees.add(mutated_guarantee);
+				Tlsf input_spec = TLSF_Utils.change_guarantees(spec, guarantees);
+				population.addChromosome(new SpecificationChromosome(input_spec));
+			}
+		}
+
+
 		return population;
 	}
 	
