@@ -68,7 +68,7 @@ public class PotentiallyRealizabilityChecker<S> {
 //            states.put(s,index);
 //            index++;
 //        }
-        //From A0 we construct the (n + 1) × (n + 1) transfer matrix T. A0 has n + 1
+        //From A0 we construct the (n + 1) x (n + 1) transfer matrix T. A0 has n + 1
         //states s1, s2, . . . sn+1. The matrix entry Ti,j is the number of transitions from
         //state si to state sj
 //        T = buildInputAutomatonTransferMatrix();
