@@ -267,15 +267,20 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			return 0.0d;
 
 		Formula refined_formula = refined.toFormula().formula();
-		if (refined_formula == BooleanConstant.TRUE)
+		if (refined_formula == BooleanConstant.TRUE || refined_formula == BooleanConstant.FALSE)
 			return 0.0d;
-		if (refined_formula == BooleanConstant.FALSE)
-			return 1.0d;
+//		if (refined_formula == BooleanConstant.TRUE)
+//			return 1.0d;
+//		if (refined_formula == BooleanConstant.FALSE)
+//			return 0.0d;
 		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
-		if (lostModels == BooleanConstant.TRUE)
+		if (lostModels == BooleanConstant.TRUE || lostModels == BooleanConstant.FALSE)
 			return 0.0d;
-		if (lostModels == BooleanConstant.FALSE)
-			return 1.0d;
+
+//		if (lostModels == BooleanConstant.TRUE)
+//			return 1.0d;
+//		if (lostModels == BooleanConstant.FALSE)
+//			return 0.0d;
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
 		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
@@ -305,7 +310,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		}
 
 		if (refined.toFormula().formula() == BooleanConstant.FALSE)
-			return 0.0d;
+			return 0.0d; //1.0d
 
 		BigInteger refinedNumOfModels = countModels(refined.toFormula());
 		if (refinedNumOfModels == BigInteger.ZERO)
@@ -318,10 +323,12 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		if (original_formula == BooleanConstant.FALSE)
 //			return 0.0d;
 		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula());
-		if (wonModels == BooleanConstant.TRUE)
+		if (wonModels == BooleanConstant.TRUE || wonModels == BooleanConstant.FALSE)
 			return 0.0d;
-		if (wonModels == BooleanConstant.FALSE)
-			return 1.0d;
+//		if (wonModels == BooleanConstant.TRUE)
+//			return 0.0d;
+//		if (wonModels == BooleanConstant.FALSE)
+//			return 1.0d;
 		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
 //		System.out.println("WON: "+formula);
 		//patch to avoid computing again this value;
