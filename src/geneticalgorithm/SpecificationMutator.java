@@ -113,28 +113,28 @@ public class SpecificationMutator {
 
 	public static Formula applyGeneralMutation (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, n, 1);
+		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula mutateFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaMutator formVisitor = new FormulaMutator(variables, n, 1);
+		FormulaMutator formVisitor = new FormulaMutator(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula weakenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaWeakening formVisitor = new FormulaWeakening(variables, n, 1);
+		FormulaWeakening formVisitor = new FormulaWeakening(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula strengthenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, n, 1);
+		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, n, n);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
