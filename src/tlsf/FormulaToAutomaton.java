@@ -23,6 +23,7 @@ import owl.translations.LTL2DAFunction.Constructions;
 import owl.translations.LTL2NAFunction;
 import owl.translations.delag.DelagBuilder;
 import owl.translations.delag.State;
+import owl.translations.ltl2dpa.LTL2DPAFunction;
 import owl.translations.ltl2nba.SymmetricNBAConstruction;
 
 import javax.annotation.Nullable;
@@ -90,8 +91,8 @@ public class FormulaToAutomaton<S> {
 //        SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
 //        System.out.println(formula);
 //        var automaton = translator.apply(formula);
-        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.GENERALIZED_BUCHI));//class));
-        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
+//        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.GENERALIZED_BUCHI));//class));
+//        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
 //        LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
 //        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
 //        if (automaton.size() == 0)
@@ -100,11 +101,17 @@ public class FormulaToAutomaton<S> {
 //        System.out.println(automaton.acceptance().booleanExpression());
 //        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //        System.out.println(HoaPrinter.toString(automaton));
-        return nbaToDfa(automaton);
+//        return nbaToDfa(automaton);
 //        System.out.println("Parsing...");
 //        DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
 //        Automaton<State<Object>, EmersonLeiAcceptance> automaton = translator.apply(formula);
 //        return telaToDfa(automaton);
+
+        var environment = DefaultEnvironment.standard();
+		var translator = new LTL2DPAFunction(environment, LTL2DPAFunction.RECOMMENDED_SYMMETRIC_CONFIG);
+
+		var automaton = (Automaton<S, ParityAcceptance>) translator.apply(formula);
+		return PAtoDfa(automaton);
     }
 
     private Object2IntMap stateNumbers;
@@ -317,6 +324,107 @@ public class FormulaToAutomaton<S> {
         automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
 //        System.out.println(dfa_minimized.toString());
         return dfa_minimized;
+    }
+
+    public <S> automata.Automaton PAtoDfa(Automaton<S, ParityAcceptance> automaton){
+//        System.out.println("Building DFA...");
+        automata.Automaton fsa = new FiniteStateAutomaton();
+        stateNumbers = new Object2IntOpenHashMap();
+        //Map nodes to states ids
+        Map<S,automata.State> ids = new HashMap<>();
+        for (S s : automaton.states()) {
+            int id = getStateId(s);
+            automata.State state = fsa.createStateWithId(new Point(),id);
+            ids.put(s, state);
+        }
+
+        int N = automaton.size();
+        //create one unique initial state
+        automata.State is = fsa.createStateWithId(new Point(),N+1);
+        fsa.setInitialState(is);
+
+        //create one unique final state
+        automata.State fs = fsa.createStateWithId(new Point(),N+2);
+        fsa.addFinalState(fs);
+
+        //get initial nodes
+        for(S in : automaton.initialStates()) {
+            //create and set initial state
+//            automata.State ais = fsa.createStateWithId(new Point(),getStateId(in));
+            automata.State ais = ids.get(in);
+            //initial node ids
+            FSATransition t = new FSATransition(is, ais, FSAToRegularExpressionConverter.LAMBDA);
+            fsa.addTransition(t);
+//            ids.put(in.toString(), ais.getID());
+//            System.out.println("initial: "+ in.toString());
+        }
+
+        for (S from : automaton.states()) {
+            Map<Edge<S>, ValuationSet> edgeMap = automaton.edgeMap(from);
+            edgeMap.forEach((edge, valuationSet) -> {
+                S to = edge.successor();
+                if (!valuationSet.isEmpty()) {
+                    valuationSet.forEach(bitSet -> {
+                        //checks if ID exists
+                        automata.State fromState = ids.get(from);
+
+                        //get Label
+                        List<BooleanExpression<AtomLabel>> conjuncts = new ArrayList<>(alphabetSize);
+                        for (int i = 0; i < alphabetSize; i++) {
+                            BooleanExpression<AtomLabel> atom = new BooleanExpression<>(AtomLabel.createAPIndex(i));
+
+                            if (bitSet.get(i)) {
+                                conjuncts.add(atom);
+                            } else {
+                                conjuncts.add(atom.not());
+                            }
+                        }
+                        String l = BooleanExpressions.createConjunction(conjuncts).toString();
+                        String label = labelIDs.get(l);
+
+                        //check if toState exists
+                        automata.State toState = ids.get(to);
+
+                        FSATransition t = new FSATransition(fromState, toState, label);
+                        fsa.addTransition(t);
+
+                        //check if it is an acceptance transition
+                        IntArrayList acceptanceSets = new IntArrayList();
+                        if (edge.acceptanceSetIterator().hasNext())
+                            edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+                        if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
+                            FSATransition final_t = new FSATransition(fromState, fs, label);
+                            fsa.addTransition(final_t);
+                        }
+                    });
+
+//              IntArrayList acceptanceSets = new IntArrayList();
+//              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+                    //add final states
+//                if (edge.acceptanceSetIterator().hasNext()) {
+//                    //get state
+//                    automata.State as = ids.get(to);
+//                    //add transition
+//                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
+//                    fsa.addTransition(t);
+//                    fsa.addFinalState(as);
+                }
+            });
+        }
+//        System.out.print("n");
+//        System.out.println(fsa.toString());
+//        System.out.println("Determinizing ...");
+//        NFAToDFA determinizer = new NFAToDFA();
+//        automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
+//        System.out.println(dfa.toString());
+
+//        Minimizer min = new Minimizer();
+//        min.initializeMinimizer();
+//        automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
+//        DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
+//        automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
+//        System.out.println(dfa_minimized.toString());
+        return fsa;
     }
 
     public boolean accConditionIsSatisfied(BooleanExpression<AtomAcceptance> acceptanceCondition, IntArrayList acceptanceSets) {

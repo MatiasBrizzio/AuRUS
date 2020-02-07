@@ -8,6 +8,7 @@ import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import owl.automaton.Automaton;
 import owl.automaton.acceptance.EmersonLeiAcceptance;
+import owl.automaton.acceptance.ParityAcceptance;
 import owl.automaton.edge.Edge;
 import owl.automaton.output.HoaPrinter;
 import owl.collections.ValuationSet;
@@ -17,6 +18,7 @@ import owl.ltl.LabelledFormula;
 import owl.run.DefaultEnvironment;
 import owl.run.Environment;
 import owl.translations.delag.DelagBuilder;
+import owl.translations.ltl2dpa.LTL2DPAFunction;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -26,12 +28,13 @@ import java.util.concurrent.*;
 import java.util.function.IntConsumer;
 
 import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
+import static owl.translations.ltl2dpa.LTL2DPAFunction.Configuration.*;
 
 public class PotentiallyRealizabilityChecker<S> {
 
 //    private DMatrixRMaj T = null;
 //    private DMatrixRMaj I = null;
-    private Automaton<S,EmersonLeiAcceptance> automaton = null;
+    private Automaton<S, EmersonLeiAcceptance> automaton = null;
     private LabelledFormula formula;
     private List<String> input_vars = null;
 //    private List<String> variables = null;
@@ -80,6 +83,15 @@ public class PotentiallyRealizabilityChecker<S> {
         // Convert the ltl formula to an automaton with OWL
         DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
         automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
+        var environment = DefaultEnvironment.standard();
+//        var translator = new LTL2DPAFunction(environment, EnumSet.of(
+//                OPTIMISE_INITIAL_STATE,
+//                COMPLEMENT_CONSTRUCTION,
+//                GREEDY,
+//                COMPRESS_COLOURS));
+//        LTL2DPAFunction.RECOMMENDED_SYMMETRIC_CONFIG);
+
+//        automaton = (Automaton<S, ParityAcceptance>) translator.apply(formula);
         return "OK";
     }
 

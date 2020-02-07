@@ -11,6 +11,7 @@ import org.apache.commons.math3.linear.FieldMatrix;
 import owl.automaton.Automaton;
 import owl.automaton.acceptance.EmersonLeiAcceptance;
 import owl.automaton.acceptance.OmegaAcceptance;
+import owl.automaton.acceptance.ParityAcceptance;
 import owl.automaton.edge.Edge;
 import owl.collections.ValuationSet;
 import owl.factories.FactorySupplier;
@@ -20,6 +21,7 @@ import owl.run.DefaultEnvironment;
 import owl.run.Environment;
 import owl.translations.LTL2NAFunction;
 import owl.translations.delag.DelagBuilder;
+import owl.translations.ltl2dpa.LTL2DPAFunction;
 import solvers.SolverUtils;
 
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntConsumer;
+
+import static owl.translations.ltl2dpa.LTL2DPAFunction.Configuration.*;
 
 public class EmersonLeiAutomatonBasedModelCounting<S> {
 
@@ -58,8 +62,19 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		// Convert the ltl formula to an automaton with OWL
 		DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
 		automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
+
+//		var environment = DefaultEnvironment.standard();
+//		var translator = new LTL2DPAFunction(environment, EnumSet.of(
+////				OPTIMISE_INITIAL_STATE,
+//				COMPLEMENT_CONSTRUCTION,
+//				GREEDY,
+//				COMPRESS_COLOURS));
+////				LTL2DPAFunction.RECOMMENDED_SYMMETRIC_CONFIG);
+//
+//		automaton = (Automaton<S, ParityAcceptance>) translator.apply(formula);
+
 		states = automaton.states().toArray();
-		T = buildTransferMatrix();
+
 		return "OK";
 	}
 
@@ -88,6 +103,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 
 	int BOUND = 0;
 	private BigInteger countModels() {
+		T = buildTransferMatrix();
 		int n = T.getRowDimension();
 
 		//set initial states

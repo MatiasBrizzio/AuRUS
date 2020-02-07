@@ -2,6 +2,7 @@ package geneticalgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
@@ -10,10 +11,7 @@ import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.SyntacticFragments;
 import owl.ltl.tlsf.Tlsf;
-import owl.ltl.visitors.FormulaMutator;
-import owl.ltl.visitors.FormulaStrengthening;
-import owl.ltl.visitors.FormulaWeakening;
-import owl.ltl.visitors.GeneralFormulaMutator;
+import owl.ltl.visitors.*;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
@@ -34,22 +32,29 @@ public class SpecificationMutator {
 			List<String> vars = spec.variables();
 			if (Settings.only_inputs_in_assumptions)
 				vars = vars.subList(0,spec.numberOfInputs());
-			
-			Formula new_assumption = BooleanConstant.TRUE;
+
+			//select subformula to mutate
+			Set<Formula> subformulas = Formula_Utils.subformulas(assumption_to_mutate);
+			int n = subformulas.size();
+			Formula to_mutate = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
+
+
+			Formula mutated_subformula = BooleanConstant.TRUE;
 			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
 			if (modification == 0) {
 				// arbitrary mutation
-				new_assumption = applyGeneralMutation(assumption_to_mutate,vars);
+				mutated_subformula = applyGeneralMutation(to_mutate,vars);
 			}
 			else if (modification == 1) {
 				// weaken mutation
-				new_assumption = weakenFormula(assumption_to_mutate, vars);
+				mutated_subformula = weakenFormula(to_mutate, vars);
 			}
 			else {
 				// strengthen mutation
-				new_assumption = strengthenFormula(assumption_to_mutate, vars);
+				mutated_subformula = strengthenFormula(to_mutate, vars);
 			}
-
+			SubformulaReplacer visitor = new SubformulaReplacer(to_mutate,mutated_subformula);
+			Formula new_assumption = assumption_to_mutate.accept(visitor);
 
 //			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);
 			if (new_assumption != BooleanConstant.FALSE) {
@@ -64,22 +69,29 @@ public class SpecificationMutator {
 				guarantees.add(BooleanConstant.TRUE);
 			int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(guarantees.size());
 			Formula guarantee_to_mutate = guarantees.get(index_to_mutate);
-			
-			Formula new_guarantee = BooleanConstant.TRUE;
+
+			//select subformula to mutate
+			Set<Formula> subformulas = Formula_Utils.subformulas(guarantee_to_mutate);
+			int n = subformulas.size();
+			Formula to_mutate = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
+
+			Formula mutated_subformula = BooleanConstant.TRUE;
 			int modification =  Settings.RANDOM_GENERATOR.nextInt(3);
 			if (modification == 0) {
 				// arbitrary mutation
-				new_guarantee = strengthenFormula(guarantee_to_mutate, spec.variables());
+				mutated_subformula = strengthenFormula(to_mutate, spec.variables());
 			}
 			else if (modification == 1){
 				// weaken mutation
-				new_guarantee = weakenFormula(guarantee_to_mutate, spec.variables());
+				mutated_subformula = weakenFormula(to_mutate, spec.variables());
 			}
 			else {
 				// weaken mutation
-				new_guarantee = applyGeneralMutation(guarantee_to_mutate, spec.variables());
+				mutated_subformula = applyGeneralMutation(to_mutate, spec.variables());
 			}
-			
+
+			SubformulaReplacer visitor = new SubformulaReplacer(to_mutate,mutated_subformula);
+			Formula new_guarantee = guarantee_to_mutate.accept(visitor);
 			
 //			List<String> vars = spec.variables();
 //			if (Settings.RANDOM_GENERATOR.nextBoolean())

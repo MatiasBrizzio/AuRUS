@@ -5,6 +5,7 @@ import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
 import modelcounter.EmersonLeiAutomatonBasedModelCounting;
+import modelcounter.MatrixBigIntegerModelCounting;
 import owl.ltl.*;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
@@ -255,6 +256,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		LabelledFormula simp_formula = LabelledFormula.of(simplified, formula.variables());
 //		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula, Settings.MC_EXHAUSTIVE);
 		EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(simp_formula);
+//		MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(simp_formula, false);
 		BigInteger numOfModels = counter.count(Settings.MC_BOUND);
 		return numOfModels;
 	}
@@ -297,6 +299,11 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	private BigDecimal commonNumOfModels = null;
 	private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
+		if (commonNumOfModels == null || commonNumOfModels == BigDecimal.ZERO) {
+			commonNumOfModels = null;
+			return 0.0d;
+		}
+
 		if (refined.toFormula().formula() == BooleanConstant.FALSE)
 			return 0.0d;
 
