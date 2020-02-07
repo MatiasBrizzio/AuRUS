@@ -145,7 +145,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			// if both specifications are consistent, then we will compute the percentage of models that are maintained after the refinement
 			try {
 				lost_models_fitness = compute_lost_models_porcentage(originalSpecification, chromosome.spec);
-				System.out.print(lost_models_fitness + " ");
+				System.out.print(String.format("%.2f ",lost_models_fitness));
 			}
 			catch (Exception e) { e.printStackTrace(); }
 		}
@@ -156,7 +156,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			// if both specifications are consistent, then we will compute the percentage of models that are added after the refinement (or removed from the complement of the original specifiction)
 			try {
 				won_models_fitness = compute_won_models_porcentage(originalSpecification, chromosome.spec);
-				System.out.print(won_models_fitness + " ");
+				System.out.print(String.format("%.2f ",won_models_fitness));
 			}
 			catch (Exception e) { e.printStackTrace(); }
 		}
@@ -267,30 +267,25 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 			return 0.0d;
 
 		Formula refined_formula = refined.toFormula().formula();
-		if (refined_formula == BooleanConstant.TRUE || refined_formula == BooleanConstant.FALSE)
+		if (refined_formula == BooleanConstant.TRUE)
+			return 1.0d;
+		if (refined_formula == BooleanConstant.FALSE)
 			return 0.0d;
-//		if (refined_formula == BooleanConstant.TRUE)
-//			return 1.0d;
-//		if (refined_formula == BooleanConstant.FALSE)
-//			return 0.0d;
-		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula);
-		if (lostModels == BooleanConstant.TRUE || lostModels == BooleanConstant.FALSE)
-			return 0.0d;
-
+		Formula lostModels = Conjunction.of(original.toFormula().formula(), refined_formula.not());
 //		if (lostModels == BooleanConstant.TRUE)
-//			return 1.0d;
-//		if (lostModels == BooleanConstant.FALSE)
 //			return 0.0d;
+//		if (lostModels == BooleanConstant.FALSE)
+//			return 1.0d;
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
 		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
 		//patch to avoid computing again this value;
-		commonNumOfModels = numOfLostModels;
+//		commonNumOfModels = numOfLostModels;
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 //        BigDecimal numOfModels = new BigDecimal(UNIVERSE);
 
 		BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
-		double value = res.doubleValue();
+		double value = 1.0d - res.doubleValue();
 //		System.out.print(numOfLostModels + " " + numOfModels + " ");
 		if (res.doubleValue() > 1.0d) {
 //			System.out.println("\nBROKEN formula: " + formula);
@@ -304,13 +299,12 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	private BigDecimal commonNumOfModels = null;
 	private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
-		if (commonNumOfModels == null || commonNumOfModels == BigDecimal.ZERO) {
-			commonNumOfModels = null;
-			return 0.0d;
-		}
+//		if (commonNumOfModels == null || commonNumOfModels == BigDecimal.ZERO) {
+//			return 0.0d;
+//		}
 
-		if (refined.toFormula().formula() == BooleanConstant.FALSE)
-			return 0.0d; //1.0d
+//		if (refined.toFormula().formula() == BooleanConstant.FALSE)
+//			return 1.0d;
 
 		BigInteger refinedNumOfModels = countModels(refined.toFormula());
 		if (refinedNumOfModels == BigInteger.ZERO)
@@ -322,28 +316,27 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //			return 1.0d;
 //		if (original_formula == BooleanConstant.FALSE)
 //			return 0.0d;
-		Formula wonModels = Conjunction.of(original_formula, refined.toFormula().formula());
-		if (wonModels == BooleanConstant.TRUE || wonModels == BooleanConstant.FALSE)
-			return 0.0d;
+		Formula wonModels = Conjunction.of(original_formula.not(), refined.toFormula().formula());
+
 //		if (wonModels == BooleanConstant.TRUE)
-//			return 0.0d;
-//		if (wonModels == BooleanConstant.FALSE)
 //			return 1.0d;
+//		if (wonModels == BooleanConstant.FALSE)
+//			return 0.0d;
 		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
 //		System.out.println("WON: "+formula);
 		//patch to avoid computing again this value;
 		BigDecimal numOfWonModels = null;
-		if (commonNumOfModels != null)
-			numOfWonModels = commonNumOfModels;
-		else
+//		if (commonNumOfModels != null)
+//			numOfWonModels = commonNumOfModels;
+//		else
 			numOfWonModels = new BigDecimal(countModels(formula));
-		commonNumOfModels = null;
+//		commonNumOfModels = null;
 		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
 //        BigDecimal numOfRefinedModels = new BigDecimal(UNIVERSE);
 //        BigDecimal numOfRefinedModels = new BigDecimal(originalNegationNumOfModels);
 		BigDecimal res = numOfWonModels.divide(numOfRefinedModels, 2, RoundingMode.HALF_UP);
 
-		double value = res.doubleValue();
+		double value = 1.0d - res.doubleValue();
 //		System.out.print(numOfWonModels + " " + numOfRefinedModels + " ");
 		if (res.doubleValue() > 1.0d) {
 			System.out.println("\nWARNING: increase the bound. ");
