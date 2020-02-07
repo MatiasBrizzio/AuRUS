@@ -160,9 +160,9 @@ public class SpecificationGeneticAlgorithm {
 		if (Settings.allowAssumptionAddition && Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
 			for (int i = 0; i < spec.numberOfInputs(); i++) {
 				Literal input = Literal.of(i);
-				Formula new_assumption = GOperator.of(FOperator.of(input));
 				if (Settings.RANDOM_GENERATOR.nextBoolean())
-					new_assumption = new_assumption.not();
+					input = input.not();
+				Formula new_assumption = GOperator.of(FOperator.of(input));
 				List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
 				assumes.add(new_assumption);
 				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
