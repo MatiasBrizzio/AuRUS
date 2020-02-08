@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.lagodiuk.ga;
 
+import main.Settings;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,7 +30,7 @@ public class Population<C extends Chromosome<C>> implements Iterable<C> {
 
 	private List<C> chromosomes = new ArrayList<C>(DEFAULT_NUMBER_OF_CHROMOSOMES);
 
-	private final Random random = new Random();
+	private final Random random = Settings.RANDOM_GENERATOR;
 
 	public void addChromosome(C chromosome) {
 		this.chromosomes.add(chromosome);

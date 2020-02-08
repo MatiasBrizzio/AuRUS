@@ -69,6 +69,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 	// number of chromosomes visited during the search
 	private int numberOfVisitedIndividuals = 0;
+	private Set allVisitedChromosomes;
 	// number of chromosomes visited during the search
 	private int MAXIMUM_NUM_OF_INDIVIDUALS =  Integer.MAX_VALUE;
 
@@ -84,6 +85,12 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		this.fitnessFunc = fitnessFunc;
 		this.chromosomesComparator = new ChromosomesComparator();
 		this.population.sortPopulationByFitness(this.chromosomesComparator);
+
+		//keep all visited chromosomes
+		allVisitedChromosomes = new HashSet();
+		for (int i = 0; (i < population.getSize()); i++) {
+			allVisitedChromosomes.add(this.population.getChromosomeByIndex(i));
+		}
 	}
 
 	public void evolve() {
@@ -102,10 +109,11 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			if (mut < MUTATION_RATE){
 				C chromosome = this.population.getChromosomeByIndex(i);
 				C mutated = chromosome.mutate();
-				if (mutated != null && !chromosome.equals(mutated)) {
+				if (mutated != null && !allVisitedChromosomes.contains(mutated)) {
 					newPopulation.addChromosome(mutated);
 					//update number of visited chromosomes
 					this.numberOfVisitedIndividuals++;
+					allVisitedChromosomes.add(mutated);
 				}
 			}
 			checkTermination();
@@ -117,29 +125,17 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		for (int i = 0; (i < numOfCrossovers) && !terminate; i++) {
 			C chromosome = null;
 			C otherChromosome = null;
-			
-//			newPopulation.sortPopulationByFitness(chromosomesComparator);
-//			List<C> arrayChromosome = this.getListFromPop(newPopulation);
-//			int op = Settings.RANDOM_GENERATOR.nextInt(3);
-//			if (op == 0 && newPopulation.getSize() >= 2) {
-//				chromosome = newPopulation.getChromosomeByIndex(0);
-//				otherChromosome = newPopulation.getChromosomeByIndex(1);
-//			}
-//			else if (op == 1) {
-//				chromosome = newPopulation.getChromosomeByIndex(0);
-//				otherChromosome = newPopulation.getRandomChromosome();
-//			}
-//			else {
-				chromosome = newPopulation.getRandomChromosome();
-				otherChromosome = newPopulation.getRandomChromosome();
-//			}
-			
+
+			chromosome = newPopulation.getRandomChromosome();
+			otherChromosome = newPopulation.getRandomChromosome();
+
 			List<C> crossovered = chromosome.crossover(otherChromosome);
 			for (C c : crossovered) {
-				if (!c.equals(chromosome) && !c.equals(otherChromosome)) {
+				if (!c.equals(chromosome) && !allVisitedChromosomes.contains(c)) {
 					newPopulation.addChromosome(c);
 					//update number of visited chromosomes
 					this.numberOfVisitedIndividuals++;
+					allVisitedChromosomes.add(c);
 				}
 			}
 
