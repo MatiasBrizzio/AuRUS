@@ -109,7 +109,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			if (mut < MUTATION_RATE){
 				C chromosome = this.population.getChromosomeByIndex(i);
 				C mutated = chromosome.mutate();
-				if (mutated != null && !newPopulation.contains(mutated)) {
+				if (mutated != null && !chromosome.equals(mutated)){//!newPopulation.contains(mutated)) {
 					newPopulation.addChromosome(mutated);
 					//update number of visited chromosomes
 					this.numberOfVisitedIndividuals++;
@@ -131,7 +131,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 			List<C> crossovered = chromosome.crossover(otherChromosome);
 			for (C c : crossovered) {
-				if (!newPopulation.contains(c)) {
+				if (!c.equals(chromosome)){ //!newPopulation.contains(c)) {
 					newPopulation.addChromosome(c);
 					//update number of visited chromosomes
 					this.numberOfVisitedIndividuals++;
