@@ -152,8 +152,8 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		if (getClass() != obj.getClass())
 			return false;
 		SpecificationChromosome other = (SpecificationChromosome) obj;
-		if (Double.doubleToLongBits(fitness) != Double.doubleToLongBits(other.fitness))
-			return false;
+		if (fitness > 0.0d && other.fitness > 0.0d && Double.doubleToLongBits(fitness) != Double.doubleToLongBits(other.fitness))
+				return false;
 		if (spec == null) {
 			if (other.spec != null)
 				return false;
@@ -161,10 +161,12 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 			SyntacticSimplifier simp = new SyntacticSimplifier();
 			Formula thiz = spec.toFormula().formula().accept(simp);
 			Formula that = other.spec.toFormula().formula().accept(simp);
+//			String thiz = spec.toFormula().toString();
+//			String that = other.spec.toFormula().toString();
 			if (!thiz.equals(that))
 				return false;
 		}
-		if (status != other.status)
+		if (fitness > 0.0d && other.fitness > 0.0d && status != other.status)
 			return false;
 		return true;
 	}
