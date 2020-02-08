@@ -26,7 +26,7 @@ import java.util.Random;
 
 public class Population<C extends Chromosome<C>> implements Iterable<C> {
 
-	private static final int DEFAULT_NUMBER_OF_CHROMOSOMES = 32;
+	private static final int DEFAULT_NUMBER_OF_CHROMOSOMES = 100;
 
 	private List<C> chromosomes = new ArrayList<C>(DEFAULT_NUMBER_OF_CHROMOSOMES);
 
@@ -73,4 +73,7 @@ public class Population<C extends Chromosome<C>> implements Iterable<C> {
 		return this.chromosomes.iterator();
 	}
 
+	public boolean contains(C chromosome) {
+		return chromosomes.contains(chromosome);
+	}
 }

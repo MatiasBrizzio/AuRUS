@@ -69,7 +69,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 	// number of chromosomes visited during the search
 	private int numberOfVisitedIndividuals = 0;
-	private Set allVisitedChromosomes;
+//	private Set allVisitedChromosomes;
 	// number of chromosomes visited during the search
 	private int MAXIMUM_NUM_OF_INDIVIDUALS =  Integer.MAX_VALUE;
 
@@ -86,11 +86,11 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 		this.chromosomesComparator = new ChromosomesComparator();
 		this.population.sortPopulationByFitness(this.chromosomesComparator);
 
-		//keep all visited chromosomes
-		allVisitedChromosomes = new HashSet();
-		for (int i = 0; (i < population.getSize()); i++) {
-			allVisitedChromosomes.add(this.population.getChromosomeByIndex(i));
-		}
+//		//keep all visited chromosomes
+//		allVisitedChromosomes = new HashSet();
+//		for (int i = 0; (i < population.getSize()); i++) {
+//			allVisitedChromosomes.add(this.population.getChromosomeByIndex(i));
+//		}
 	}
 
 	public void evolve() {
@@ -109,11 +109,11 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 			if (mut < MUTATION_RATE){
 				C chromosome = this.population.getChromosomeByIndex(i);
 				C mutated = chromosome.mutate();
-				if (mutated != null && !allVisitedChromosomes.contains(mutated)) {
+				if (mutated != null && !newPopulation.contains(mutated)) {
 					newPopulation.addChromosome(mutated);
 					//update number of visited chromosomes
 					this.numberOfVisitedIndividuals++;
-					allVisitedChromosomes.add(mutated);
+//					allVisitedChromosomes.add(mutated);
 				}
 			}
 			checkTermination();
@@ -131,11 +131,11 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
 			List<C> crossovered = chromosome.crossover(otherChromosome);
 			for (C c : crossovered) {
-				if (!c.equals(chromosome) && !allVisitedChromosomes.contains(c)) {
+				if (!newPopulation.contains(c)) {
 					newPopulation.addChromosome(c);
 					//update number of visited chromosomes
 					this.numberOfVisitedIndividuals++;
-					allVisitedChromosomes.add(c);
+//					allVisitedChromosomes.add(c);
 				}
 			}
 
