@@ -17,6 +17,8 @@ public class Main {
 		int maxNumOfInd = 0;
 		int crossoverRate = 0;
 		int mutationRate = 0;
+		int gene_mutationRate = 0;
+		int gene_num_of_mutations = 0;
 		int guaranteePreferenceRate = 0;
 		boolean random_GA_selector = false;
 		int generations = 0;
@@ -54,6 +56,12 @@ public class Main {
 			}
 			else if(args[i].startsWith("-MR=")){
 				mutationRate = Integer.parseInt(args[i].replace("-MR=", ""));
+			}
+			else if(args[i].startsWith("-geneMR=")){
+				gene_mutationRate = Integer.parseInt(args[i].replace("-geneMR=", ""));
+			}
+			else if(args[i].startsWith("-geneNUM=")){
+				gene_num_of_mutations = Integer.parseInt(args[i].replace("-geneNUM=", ""));
 			}
 			else if(args[i].startsWith("-k=")){
 				bound = Integer.parseInt(args[i].replace("-k=", ""));
@@ -126,6 +134,8 @@ public class Main {
 		if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
 		if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) Settings.GA_MUTATION_RATE = mutationRate;
+		if (gene_mutationRate > 0) Settings.GA_GENE_MUTATION_RATE = gene_mutationRate;
+		if (gene_num_of_mutations > 0) Settings.GA_GENE_NUM_OF_MUTATIONS = gene_num_of_mutations;
 		if (threshold > 0.0d) Settings.GA_THRESHOLD = threshold;
 		if (guaranteePreferenceRate >= 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
 		if (generations > 0) Settings.GA_GENERATIONS = generations;
@@ -180,6 +190,7 @@ public class Main {
 								"\t[ -onlySAT | -strongSAT | -no-docker | -random | -GA_random_selector | \n" +
 								"\t -Max=max_num_of_individuals | -Gen=num_of_generations | -sol=THRESHOLD | \n" +
 								"\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
+								"\t -geneMR=gene_mutation_rate | -geneNUM=num_of_genes_to_mutate | \n" +
 								"\t -removeGuarantees | -addAssumptions | -onlyInputsA | -GPR=guarantee_preference_rate | \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
 								"\t -GATO=GA_timeout | -SatTO=sat_timeout | MCTO=model_counting_timeout] \n" +

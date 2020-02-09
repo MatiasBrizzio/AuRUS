@@ -113,28 +113,33 @@ public class SpecificationMutator {
 
 	public static Formula applyGeneralMutation (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, 1, 1);
+		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+
+		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula mutateFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaMutator formVisitor = new FormulaMutator(variables, 1, 1);
+		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+		FormulaMutator formVisitor = new FormulaMutator(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula weakenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaWeakening formVisitor = new FormulaWeakening(variables, 1, 1);
+		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+		FormulaWeakening formVisitor = new FormulaWeakening(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
 
 	public static Formula strengthenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
-		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, 1, 1);
+		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
