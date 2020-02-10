@@ -13,7 +13,7 @@ public class Settings {
 	public static int GA_POPULATION_SIZE = 30;
 	public static int GA_CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int GA_MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
-	public static int GA_GENE_MUTATION_RATE = 100; // Probability with which the mutation is applied to each gene of the chromosome
+	public static int GA_GENE_MUTATION_RATE = 0; // Probability with which the mutation is applied to each gene of the chromosome
 	public static int GA_GENE_NUM_OF_MUTATIONS = 1; // Number of allowed genes to be mutated
 
 	public static int GA_EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
