@@ -19,7 +19,7 @@ public class Main {
 		int mutationRate = 0;
 		int gene_mutationRate = 0;
 		int gene_num_of_mutations = 0;
-		int guaranteePreferenceRate = 0;
+		int guaranteePreferenceRate = -1;
 		boolean random_GA_selector = false;
 		int generations = 0;
 		boolean randomGen = false;

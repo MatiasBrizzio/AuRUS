@@ -78,8 +78,8 @@ public class SpecificationGeneticAlgorithm {
 		ga.setParentChromosomesSurviveCount(Settings.GA_POPULATION_SIZE);
 		ga.setMaximumNumberOfIndividuals(Settings.GA_MAX_NUM_INDIVIDUALS);
 		ga.setTIMEOUT(Settings.GA_EXECUTION_TIMEOUT);
-		System.out.println();
-		print_config();
+		System.out.println(print_config());
+		fitness.print_config();
 		System.out.println();
 		ga.evolve(Settings.GA_GENERATIONS);
 		searchExecutionTime = Instant.now();
