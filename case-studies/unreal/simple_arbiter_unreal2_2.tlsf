@@ -64,8 +64,9 @@ MAIN {
     /* Making the benchmark unrealizable: ask for two grants at the same time, 
      * eventually.
      */
-    G (&&[0 <= i <n] ( &&[i < j < n] (r[i] && X r[j] -> 
-      F (g[i] && g[j])) ) ); 
+    G(&&[0 <= i <n] ( &&[i < j < n] (r[i] && X r[j] -> 
+      F (g[i] && g[j])) )); 
+  
   }
   
 }

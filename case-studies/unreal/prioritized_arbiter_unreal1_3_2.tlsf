@@ -1,13 +1,13 @@
 INFO {
-  TITLE:       "Full Arbiter, unrealizable variant 1"
-  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  TITLE:       "Prioritized Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter with a unique master process which has priority angainst others"
   SEMANTICS:   Mealy
   TARGET:      Mealy
 }
 
 GLOBAL {
   PARAMETERS {
-    n = 2;
+    n = 3;      
     u = 2;
   }
 
@@ -43,42 +43,47 @@ GLOBAL {
 MAIN {
 
   INPUTS {
-    r[n]; // request signals
+    r[n]; // request signals of the standard processes
+    r_m;  // request signal of the master process
   } 
 
   OUTPUTS {
-    g[n]; // grant signals
+    g[n]; // grant signals of the standard processes
+    g_m; // grant signal of the master process
+  }
+
+  ASSUMPTIONS {
+    // The master cannot starve the others
+    G F !r_m;
   }
 
   INVARIANTS {
-    // no spurious grants
-    &&[0 <= i < n] (
-      (g[i] && G !r[i] -> F !g[i]) &&
-      (g[i] && X (!r[i] && !g[i]) -> X (r[i] R !g[i]))
-    );
+    // ensure mutual exclusion between the standard grants
+    mutual_exclusion(g);
 
-    // ensure mutual exclusion on the output bus
-    mutual_exclusion(g);   
+    // ensure mutual exclusion against the master
+    &&[0 <= i < n]
+      !(g_m && g[i]);   
       
   }
 
   GUARANTEES {
-    &&[0 <= i < n] (
-      // no grant before any request    
-      (r[i] R !g[i]) && 
-      // every request is eventually granted    
-      G (r[i] -> F g[i])
-    );
+    // every standard request is eventually granted
+    &&[0 <= i < n]
+      G (r[i] -> F g[i]);
+
+    // a master request is granted before any other request
+    G (r_m -> X (&&[0 <= i < n] !g[i] U g_m));
 
     /* Making the benchmark unrealizable: ask for two grants at the same time, 
      * after u steps.
      */
     G (&&[0 <= i <n] ( &&[i < j < n] (r[i] && X r[j] -> 
-      X[u] (g[i] && g[j])) ) ); 
+      X[u] (g[i] && g[j])) )); 
+
   }
   
 }
-
 //#!SYNTCOMP
 //STATUS : unrealizable
 //REF_SIZE : -1

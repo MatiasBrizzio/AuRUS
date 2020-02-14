@@ -62,16 +62,17 @@ MAIN {
     &&[0 <= i < n] (X grant[i] -> request[i]);
     &&[0 < i < n] (request[0] -> grant[i]);
     !idle -> X &&[0 <= i < n] !grant[i];    
+      
   }
 
   GUARANTEES {
     &&[0 <= i < n] ! F G (request[i] && X !grant[i]);
-
+  
     /* Making the benchmark unrealizable: ask for two grants at the same time, 
      * after u steps.
      */
-    G (&&[0 <= i <n] ( &&[i < j < n] (request[i] && X request[j] -> 
-      X[u] (grant[i] && grant[j])) ) ); 
+    G( &&[0 <= i <n] ( &&[i < j < n] (request[i] && X request[j] -> 
+      X[u] (grant[i] && grant[j])) )); 
   }
 
 }
