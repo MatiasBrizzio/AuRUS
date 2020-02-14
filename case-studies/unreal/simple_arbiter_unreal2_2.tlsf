@@ -1,14 +1,13 @@
 INFO {
-  TITLE:       "Full Arbiter, unrealizable variant 1"
-  DESCRIPTION: "Parameterized Arbiter, where no spurious grants are allowed"
+  TITLE:       "Simple Arbiter, unrealizable variant 2"
+  DESCRIPTION: "Parameterized Arbiter, where each request has to be eventually granted"
   SEMANTICS:   Mealy
   TARGET:      Mealy
 }
 
 GLOBAL {
   PARAMETERS {
-    n = 3;
-    u = 4;
+    n = 2;      
   }
 
   DEFINITIONS {
@@ -50,36 +49,27 @@ MAIN {
     g[n]; // grant signals
   }
 
-  INVARIANTS {
-    // no spurious grants
-    &&[0 <= i < n] (
-      (g[i] && G !r[i] -> F !g[i]) &&
-      (g[i] && X (!r[i] && !g[i]) -> X (r[i] R !g[i]))
-    );
 
+  INVARIANTS {
     // ensure mutual exclusion on the output bus
-    mutual_exclusion(g);   
+    mutual_exclusion(g);  
       
   }
 
   GUARANTEES {
-    &&[0 <= i < n] (
-      // no grant before any request    
-      (r[i] R !g[i]) && 
-      // every request is eventually granted    
-      G (r[i] -> F g[i])
-    );
+    // every request is eventually granted
+    &&[0 <= i < n]
+      G (r[i] -> F g[i]);
 
     /* Making the benchmark unrealizable: ask for two grants at the same time, 
-     * after u steps.
+     * eventually.
      */
     G (&&[0 <= i <n] ( &&[i < j < n] (r[i] && X r[j] -> 
-      X[u] (g[i] && g[j])) ) ); 
+      F (g[i] && g[j])) ) ); 
   }
   
 }
-
 //#!SYNTCOMP
 //STATUS : unrealizable
-//REF_SIZE : -1
+//REF_SIZE : 0
 //#.

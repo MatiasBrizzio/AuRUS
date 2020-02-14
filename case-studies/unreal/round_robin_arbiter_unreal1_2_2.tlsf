@@ -1,13 +1,14 @@
 INFO {
-  TITLE:       "Simple Arbiter, unrealizable variant 2"
-  DESCRIPTION: "Parameterized Arbiter, where each request has to be eventually granted"
+  TITLE:       "Round Robin Arbiter, unrealizable variant 1"
+  DESCRIPTION: "Parameterized Arbiter, where requst signals have to remain HIGH until they are granted"
   SEMANTICS:   Mealy
   TARGET:      Mealy
 }
 
 GLOBAL {
   PARAMETERS {
-    n = 3;      
+    n = 2;       
+    u = 2;
   }
 
   DEFINITIONS {
@@ -49,11 +50,21 @@ MAIN {
     g[n]; // grant signals
   }
 
+  ASSUMPTIONS {
+    G &&[0 <= i < n] (
+      // every request signal remains HIGH until it is granted
+      ( r[i] && !g[i] -> X  r[i]) &&
+      // every request signal swaps to LOW when granted     
+      (!r[i] &&  g[i] -> X !r[i]) &&
+      // fairness: the arbiter cannot be starved by a process
+      F !(r[i] && g[i])
+    );    
+  }
 
   INVARIANTS {
     // ensure mutual exclusion on the output bus
-    mutual_exclusion(g);  
-      
+    mutual_exclusion(g);      
+
   }
 
   GUARANTEES {
@@ -62,14 +73,15 @@ MAIN {
       G (r[i] -> F g[i]);
 
     /* Making the benchmark unrealizable: ask for two grants at the same time, 
-     * eventually.
+     * after u steps.
      */
     G (&&[0 <= i <n] ( &&[i < j < n] (r[i] && X r[j] -> 
-      F (g[i] && g[j])) ) ); 
+      X[u] (g[i] && g[j])) ) );
+
   }
   
 }
 //#!SYNTCOMP
 //STATUS : unrealizable
-//REF_SIZE : 0
+//REF_SIZE : -1
 //#.
