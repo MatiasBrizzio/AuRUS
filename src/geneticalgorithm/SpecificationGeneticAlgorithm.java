@@ -113,7 +113,7 @@ public class SpecificationGeneticAlgorithm {
 	}
 	
 	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
-		long initialTime = System.currentTimeMillis();
+		initialExecutionTime = Instant.now();
 		//create random population
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
@@ -123,6 +123,8 @@ public class SpecificationGeneticAlgorithm {
 			SpecificationChromosome c = init.mutate();
 			population.addChromosome(c);
 		}
+
+		searchExecutionTime = Instant.now();
 
 		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 		System.out.println("Checking for realizability..." );
@@ -144,6 +146,7 @@ public class SpecificationGeneticAlgorithm {
 			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
 		}
+		finalExecutionTime = Instant.now();
 		System.out.println(print_execution_time());
 		System.out.println(print_config());
 	}
