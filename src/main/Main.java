@@ -34,6 +34,7 @@ public class Main {
 		int bound = 0;
 		boolean precise = false;
 		int ga_timeout = 0;
+		int real_timeout = 0;
 		int sat_timeout = 0;
 		int mc_timeout = 0;
 		double threshold = 0.0d;
@@ -96,6 +97,9 @@ public class Main {
 			else if(args[i].startsWith("-GATO=")){
 				ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
 			}
+			else if(args[i].startsWith("-RTO=")){
+				real_timeout = Integer.parseInt(args[i].replace("-RTO=", ""));
+			}
 			else if(args[i].startsWith("-SatTO=")){
 				sat_timeout = Integer.parseInt(args[i].replace("-SatTO=", ""));
 			}
@@ -140,6 +144,7 @@ public class Main {
 		if (guaranteePreferenceRate >= 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
 		if (generations > 0) Settings.GA_GENERATIONS = generations;
 		if (ga_timeout > 0) Settings.GA_EXECUTION_TIMEOUT = ga_timeout;
+		if (real_timeout > 0) Settings.STRIX_TIMEOUT = real_timeout;
 		if (sat_timeout > 0) Settings.SAT_TIMEOUT = sat_timeout;
 		if (mc_timeout > 0) Settings.MC_TIMEOUT = mc_timeout;
 		if (bound > 0) Settings.MC_BOUND = bound;
@@ -193,7 +198,7 @@ public class Main {
 								"\t -geneMR=gene_mutation_rate | -geneNUM=num_of_genes_to_mutate | \n" +
 								"\t -removeGuarantees | -addAssumptions | -onlyInputsA | -GPR=guarantee_preference_rate | \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
-								"\t -GATO=GA_timeout | -SatTO=sat_timeout | MCTO=model_counting_timeout] \n" +
+								"\t -RTO=strix_timeout -GATO=GA_timeout | -SatTO=sat_timeout | -MCTO=model_counting_timeout] \n" +
 								"\tinput-file.tlsf");
 	}
 
