@@ -1,0 +1,33 @@
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Mealy
+  TARGET:      Moore
+}
+
+MAIN {
+  INPUTS {
+	cancel_signal_high;
+	request;
+  }
+  OUTPUTS {
+	grant_high;
+	valid_signal_high;
+  }
+  
+  GUARANTEES {
+	G (request -> X (F grant_high));
+	G ( (cancel_signal_high || grant_high) -> X !grant_high);
+	G (cancel_signal_high -> !valid_signal_high);
+	G F (grant_high && valid_signal_high);
+  }
+}
+
+ // ASSUMPTIONS{
+	//Assumptions to be added to make the specification realizable	
+	//G F (!cancel_signal_high)
+	//G (!request -> X !cancel_signal_high)
+	//G (!request -> !cancel_signal_high)
+	//G F (!request)
+  //}
+
