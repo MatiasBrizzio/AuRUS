@@ -116,6 +116,7 @@ public class StrixHelper {
 		if (timeout){
 			realizable = RealizabilitySolverResult.TIMEOUT;
 			pr.destroy();
+			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-stop.sh"});
 		}
 		else {
 			
