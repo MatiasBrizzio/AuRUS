@@ -1,0 +1,43 @@
+INFO {
+  TITLE:       "GyroAspect"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    frontdistsense;backdistsense;isready;
+  }
+  OUTPUTS {
+    balancer_0;balancer_1;balancer_2;
+  }
+
+  INITIALLY {
+    (!frontdistsense && !backdistsense && !isready &&  G (((balancer_0 && !balancer_1 && !balancer_2) || (!balancer_0 && !balancer_1 && !balancer_2) ||  F (!frontdistsense) ||  F ((balancer_0 && !balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && !balancer_2)))) &&  G (((!balancer_0 && balancer_1 && !balancer_2) || (!balancer_0 && !balancer_1 && !balancer_2) ||  F (!backdistsense) ||  F ((!balancer_0 && balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && !balancer_2)))));
+  }
+
+  PRESET {
+    (!balancer_0 && !balancer_1 && !balancer_2);
+  }
+
+  REQUIRE {
+     G ((!isready ||  X (isready)));
+  }
+
+  ASSERT {
+     G ((isready || (!balancer_0 && !balancer_1 && !balancer_2)));
+     G ((!frontdistsense || !balancer_0 || balancer_1 || balancer_2));
+     G ((!backdistsense || balancer_0 || !balancer_1 || balancer_2));
+     G ((frontdistsense || !isready || (balancer_0 && !balancer_1 && !balancer_2)));
+  }
+
+  ASSUMPTIONS {
+     G ( F (isready));
+  }
+
+  GUARANTEES {
+     G ( F ((balancer_0 && !balancer_1 && !balancer_2)));
+     G (( F ((balancer_0 && balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && balancer_2))));
+  }
+}

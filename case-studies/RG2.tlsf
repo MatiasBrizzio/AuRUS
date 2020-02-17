@@ -18,7 +18,7 @@ MAIN {
   ASSUMPTIONS{
 	//Assumptions to be added to make the specification realizable	
 	//!( G(!req || !cancel) && G(req || !cancel) );
-	G (!cancel);
+	//G (!cancel);
   }
 
   GUARANTEE {
