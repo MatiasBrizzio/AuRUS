@@ -4,7 +4,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
+import geneticalgorithm.AutomataBasedModelCountingSpecificationFitness;
 import geneticalgorithm.SpecificationChromosome;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
 import owl.ltl.tlsf.Tlsf;
@@ -13,6 +18,7 @@ import tlsf.TLSF_Utils;
 public class Main {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+		List<Tlsf> referenceSolutions = new LinkedList<>();
 		int popSize = 0;
 		int maxNumOfInd = 0;
 		int crossoverRate = 0;
@@ -119,6 +125,11 @@ public class Main {
 				syntactic_factor = Double.valueOf(factors[1]);
 				semantic_factor = Double.valueOf(factors[2]);
 			}
+			else if(args[i].startsWith("-ref=")){
+				String ref_name = args[i].replace("-ref=","");
+				Tlsf ref_sol = TLSF_Utils.toBasicTLSF(new File(ref_name));
+				referenceSolutions.add(ref_sol);
+			}
 			else if(args[i].startsWith("-") || (!args[i].endsWith(".tlsf") && !args[i].endsWith(".spectra"))){
 				correctUssage();
 				return;
@@ -162,32 +173,111 @@ public class Main {
 		
 		if (ga.solutions.isEmpty())
 			return;
-		
+
+		//compute statistics
+		double bestFitness = 0.0d;
+		double sumFitness = 0.0d;
+
 		String directoryName = filename.substring(0, filename.lastIndexOf('.'));
 		File outfolder = new File(directoryName);
 		if (!outfolder.exists())
 			outfolder.mkdir();
+		List<Tlsf> solutions = new LinkedList<>();
 		for (int i = 0; i < ga.solutions.size(); i++) {
 			SpecificationChromosome sol = ga.solutions.get(i);
-			File file = new File(directoryName + "/spec"+i+".tlsf");
+			String sol_name = directoryName + "/spec"+i+".tlsf";
+			File file = new File(sol_name);
 	        FileWriter fw = new FileWriter(file.getAbsoluteFile());
 	        BufferedWriter bw = new BufferedWriter(fw);
 	        bw.write(TLSF_Utils.adaptTLSFSpec(sol.spec));
 	        bw.write("\n//fitness: " + sol.fitness);
-	        bw.close(); 
+	        bw.close();
+
+	        if (bestFitness < sol.fitness)
+	        	bestFitness = sol.fitness;
+
+			sumFitness += sol.fitness;
+
+			solutions.add(sol.spec);
+		}
+
+		System.out.println(String.format("Best fitness: %.2f\n", bestFitness));
+		System.out.println(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
+		double genuineBestFitness = 0.0d;
+		double genuineAvgFitness = 0.0d;
+		double moregeneralBestFitness = 0.0d;
+		double moregeneralAvgFitness = 0.0d;
+		double lessgeneralBestFitness = 0.0d;
+		double lessgeneralAvgFitness = 0.0d;
+		double genuinesSumFitness = 0.0d;
+		double moregeneralSumFitness = 0.0d;
+		double lessgeneralSumFitness = 0.0d;
+		if (!referenceSolutions.isEmpty()) {
+			//check if some genuine solution has been found
+			GenuineSolutionsAnalysis.calculateGenuineStatistics(referenceSolutions,solutions);
+
+			for(Integer index : GenuineSolutionsAnalysis.genuineSolutionsFound) {
+				SpecificationChromosome c = ga.solutions.get(index);
+				genuinesSumFitness += c.fitness;
+				if (c.fitness > genuineBestFitness)
+					genuineBestFitness = c.fitness;
+			}
+			genuineAvgFitness = genuinesSumFitness / (double) GenuineSolutionsAnalysis.genuineSolutionsFound.size();
+			for(Integer index : GenuineSolutionsAnalysis.moreGeneralSolutions) {
+				SpecificationChromosome c = ga.solutions.get(index);
+				moregeneralSumFitness += c.fitness;
+				if (c.fitness > moregeneralBestFitness)
+					moregeneralBestFitness = c.fitness;
+			}
+			moregeneralAvgFitness = moregeneralSumFitness / (double)GenuineSolutionsAnalysis.moreGeneralSolutions.size();
+			for(Integer index : GenuineSolutionsAnalysis.lessGeneralSolutions) {
+				SpecificationChromosome c = ga.solutions.get(index);
+				lessgeneralSumFitness += c.fitness;
+				if (c.fitness > lessgeneralBestFitness)
+					lessgeneralBestFitness = c.fitness;
+			}
+			lessgeneralAvgFitness = lessgeneralSumFitness / (double)GenuineSolutionsAnalysis.lessGeneralSolutions.size();
+
+			System.out.println("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
+			System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
+			System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
+			System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
+			System.out.println(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
+			System.out.println(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
+			System.out.println("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
+			System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
+			System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
+			System.out.println(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)referenceSolutions.size())));
+
 		}
 
 		//saving the time execution and configuration details
-
 		File file = new File(directoryName + "/out.txt");
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
+
+		bw.write(String.format("Best fitness: %.2f\n", bestFitness));
+		bw.write(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
+		if (!referenceSolutions.isEmpty()) {
+			System.out.println("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
+			System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
+			System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
+			System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
+			System.out.println(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
+			System.out.println(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
+			System.out.println("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
+			System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
+			System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
+			System.out.println(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)referenceSolutions.size())));
+		}
+
 		bw.write(ga.print_execution_time()+"\n");
 		bw.write(ga.print_config()+"\n");
 		bw.write("\n");
 		bw.write(Settings.print_settings()+"\n");
 		bw.close();
-		return;
+
+		System.exit(0);
 	}
 	
 	private static void correctUssage(){
@@ -198,7 +288,8 @@ public class Main {
 								"\t -geneMR=gene_mutation_rate | -geneNUM=num_of_genes_to_mutate | \n" +
 								"\t -removeGuarantees | -addAssumptions | -onlyInputsA | -GPR=guarantee_preference_rate | \n" +
 								"\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
-								"\t -RTO=strix_timeout -GATO=GA_timeout | -SatTO=sat_timeout | -MCTO=model_counting_timeout] \n" +
+								"\t -RTO=strix_timeout -GATO=GA_timeout | -SatTO=sat_timeout | -MCTO=model_counting_timeout | \n" +
+								"\t -ref=TLSF_reference_solution]\n" +
 								"\tinput-file.tlsf");
 	}
 
