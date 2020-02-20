@@ -1,0 +1,26 @@
+INFO {
+  TITLE:       "TLSF - Test Specification"
+  DESCRIPTION: "Test Test Test"
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+    methane;
+    high_water;
+  }
+  OUTPUTS {
+    pump_on;
+  }
+
+
+  ASSUMPTIONS {
+    G (pump_on -> (!high_water || X(!high_water || X(!high_water))));
+  }
+
+  GUARANTEES {
+    G (high_water -> X (pump_on));
+    G (methane -> X (!pump_on));
+  }
+}

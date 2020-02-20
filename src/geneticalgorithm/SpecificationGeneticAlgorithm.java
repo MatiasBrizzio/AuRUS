@@ -113,19 +113,29 @@ public class SpecificationGeneticAlgorithm {
 	}
 	
 	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
-		long initialTime = System.currentTimeMillis();
+		initialExecutionTime = Instant.now();
 		//create random population
 		Population<SpecificationChromosome> population = new Population<>();
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		//population.addChromosome(init);
+		System.out.println("Random mutation of the Specifications..." );
 		for (int i = 0; i < Settings.GA_POPULATION_SIZE; i++) {
 			SpecificationChromosome c = init.mutate();
 			population.addChromosome(c);
 		}
 
+		searchExecutionTime = Instant.now();
+
+		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
+		System.out.println("Checking for realizability..." );
 		for (SpecificationChromosome c : population) {
-			RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
-			if (status == RealizabilitySolverResult.REALIZABLE) {
+			Double f = fitness.calculate(c);
+//			RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
+//			System.out.print("." );
+//			if (status == RealizabilitySolverResult.REALIZABLE) {
+			if (c.fitness < Settings.GA_THRESHOLD) continue;
+			if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c)){
+				System.out.print("R" );
 				solutions.add(c);
 			}
 		}
@@ -136,6 +146,7 @@ public class SpecificationGeneticAlgorithm {
 			System.out.println(String.format("Solution N: %s\tFitness: %.2f", i, s.fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(s.spec));
 		}
+		finalExecutionTime = Instant.now();
 		System.out.println(print_execution_time());
 		System.out.println(print_config());
 	}
