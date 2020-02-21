@@ -1,0 +1,32 @@
+INFO {
+  TITLE:       "TLSF - Test Specification"
+  DESCRIPTION: "Test Test Test"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+	//environment variables
+	a;
+	r1;
+	r2;
+
+  }
+
+  OUTPUTS {
+	//System variables   
+	g1;
+	g2;
+  }
+
+  ASSUMPTIONS {
+  	true;
+  }
+
+  GUARANTEES {
+	G (r1 -> F g1);
+	G (r2 -> F g2);
+	G (!a -> (!g1 && !g2));
+  }
+}
