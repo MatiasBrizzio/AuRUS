@@ -259,16 +259,16 @@ public class Main {
 		bw.write(String.format("Best fitness: %.2f\n", bestFitness));
 		bw.write(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
 		if (!referenceSolutions.isEmpty()) {
-			System.out.println("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
-			System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
-			System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
-			System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
-			System.out.println(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
-			System.out.println(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
-			System.out.println("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
-			System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
-			System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
-			System.out.println(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)referenceSolutions.size())));
+			bw.write("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
+			bw.write(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
+			bw.write(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
+			bw.write("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
+			bw.write(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
+			bw.write(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
+			bw.write("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
+			bw.write(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
+			bw.write(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
+			bw.write(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)referenceSolutions.size())));
 		}
 
 		bw.write(ga.print_execution_time()+"\n");
