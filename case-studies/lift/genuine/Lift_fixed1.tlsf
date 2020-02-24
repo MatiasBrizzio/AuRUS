@@ -1,0 +1,48 @@
+INFO {
+  TITLE:       "Cavezza"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    b1;b2;b3;
+  }
+  OUTPUTS {
+    f1;f2;f3;
+  }
+
+  INITIALLY {
+    (!b1 && !b2 && !b3);
+  }
+
+  PRESET {
+    (f1 && !f2 && !f3);
+  }
+
+  REQUIRE {
+    ( G ((!b1 || f1 ||  X (b1))) &&  G ((!b1 || !f1 ||  X (!b1))) &&  G ((!b2 || f2 ||  X (b2))) &&  G ((!b2 || !f2 ||  X (!b2))) &&  G ((!b3 || f3 ||  X (b3))) &&  G ((!b3 || !f3 ||  X (!b3))));
+  }
+
+  ASSERT {
+    ( G ((!f1 || !f2)) &&  G ((!f1 || !f3)) &&  G ((!f2 || !f3)));
+     G ((!f1 ||  X (f1) ||  X (f2)));
+     G ((!f2 ||  X (f1) ||  X (f2) ||  X (f3)));
+     G ((!f3 ||  X (f2) ||  X (f3)));
+     G ((b1 || b2 || b3 || ((!f1 ||  X (!f2)) && (!f2 ||  X (!f1)) && (!f2 ||  X (!f3)) && (!f3 ||  X (!f2)))));
+  }
+
+  ASSUMPTIONS {
+    G((!b1 && !b2 && !b3) -> X(b1 || b2 || b3));
+  }
+
+  GUARANTEES {
+     G (( F (!b1) ||  F (f1)));
+     G (( F (!b2) ||  F (f2)));
+     G (( F (!b3) ||  F (f3)));
+     G ( F (f1));
+     G ( F (f2));
+     G ( F (f3));
+  }
+}

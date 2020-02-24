@@ -33,6 +33,10 @@ MAIN {
      G ((b1 || b2 || b3 || ((!f1 ||  X (!f2)) && (!f2 ||  X (!f1)) && (!f2 ||  X (!f3)) && (!f3 ||  X (!f2)))));
   }
 
+  ASSUMPTIONS {
+    G F(b1 || b2 || b3);
+  }
+
   GUARANTEES {
      G (( F (!b1) ||  F (f1)));
      G (( F (!b2) ||  F (f2)));
