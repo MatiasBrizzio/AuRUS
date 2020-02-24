@@ -116,8 +116,8 @@ public class GenuineSolutionsAnalysis {
                         break;
                 }
             }
-            System.out.println();
         }
+        System.out.println();
     }
 
     private static String toSolverSyntax(Formula f) {
