@@ -1,0 +1,34 @@
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Mealy
+  TARGET:      Mealy
+}
+
+MAIN {
+  INPUTS {
+	cancel_signal_high;
+	request;
+  }
+  OUTPUTS {
+	grant_high;
+	valid_signal_high;
+  }
+  
+  ASSUMPTIONS{
+	 //Assumptions to be added to make the specification realizable	
+	 //Taken from: Symbolic Repairs for GR(1) Specifications
+	 G F((cancel_signal_high || grant_high) && (!cancel_signal_high || valid_signal_high));
+  }
+
+  GUARANTEES {
+	G (request -> X (F grant_high));
+	G ( (cancel_signal_high || grant_high) -> X !grant_high);
+	G (cancel_signal_high -> !valid_signal_high);
+	G F (grant_high && valid_signal_high);
+  }
+
+}
+
+
+
