@@ -15,11 +15,10 @@ MAIN {
 	grant;
   }
   
-  ASSUMPTIONS{
+  ASSUMPTIONS {
 	//Assumptions to be added to make the specification realizable	
 	//!( G(!req || !cancel) && G(req || !cancel) );
-	//G (!cancel);
-    true;
+	G (!cancel);
   }
 
   GUARANTEE {
