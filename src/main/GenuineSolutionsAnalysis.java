@@ -67,6 +67,7 @@ public class GenuineSolutionsAnalysis {
         //comparison with genuine solutions
         for (int i = 0; i < solutions.size(); i++) {
             Tlsf solution = solutions.get(i);
+            System.out.print(".");
             if (genuineSolutions.contains(solution)) {
                 genuineSolutionsFound.add(i);
             }
@@ -115,6 +116,7 @@ public class GenuineSolutionsAnalysis {
                         break;
                 }
             }
+            System.out.println();
         }
     }
 

@@ -213,6 +213,7 @@ public class Main {
 		double moregeneralSumFitness = 0.0d;
 		double lessgeneralSumFitness = 0.0d;
 		if (!referenceSolutions.isEmpty()) {
+			System.out.println("Computing genuine statistics...");
 			//check if some genuine solution has been found
 			GenuineSolutionsAnalysis.calculateGenuineStatistics(referenceSolutions,solutions);
 
