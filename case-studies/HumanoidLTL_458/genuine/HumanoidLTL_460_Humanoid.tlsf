@@ -17,18 +17,21 @@ MAIN {
      G ((!inputmovemode_1 || !inputmovemode_0 ||  X (!obstacle) ||  X ((inputmovemode_1 || inputmovemode_0))));
   }
 
-  GUARANTEES {
+  ASSERT {
      G ((inputmovemode_1 || inputmovemode_0 || !obstacle || (outputmovemode_1 && !outputmovemode_0 && rightmotor_2 && !rightmotor_1 && rightmotor_0 && leftmotor_2 && !leftmotor_1 && leftmotor_0)));
      G ((inputmovemode_1 || !inputmovemode_0 || obstacle || (!outputmovemode_1 && !outputmovemode_0 && !rightmotor_2 && !rightmotor_1 && rightmotor_0 && !leftmotor_2 && !leftmotor_1 && !leftmotor_0)));
-     G ((!inputmovemode_1 || !inputmovemode_0 ||  X ((rightmotor_2 && rightmotor_1 && !rightmotor_0 && leftmotor_2 && leftmotor_1 && !leftmotor_0)) ||  X ((inputmovemode_1 || inputmovemode_0))));
-     G (((inputmovemode_1 && inputmovemode_0) ||  X ((!rightmotor_2 && !rightmotor_1 && !rightmotor_0 && !leftmotor_2 && !leftmotor_1 && !leftmotor_0)) ||  X ((inputmovemode_1 || inputmovemode_0 || obstacle))));
      G ((!obstacle || outputmovemode_1 || outputmovemode_0));
      G (((inputmovemode_1 && !inputmovemode_0 && outputmovemode_1 && outputmovemode_0) || ((!inputmovemode_1 || inputmovemode_0) && (!outputmovemode_1 || !outputmovemode_0))));
-     G ((!inputmovemode_1 || inputmovemode_0 || (!rightmotor_2 && rightmotor_1 && rightmotor_0 && !leftmotor_2 && !leftmotor_1 && !leftmotor_0)));
-     G ((!inputmovemode_1 || !inputmovemode_0 || (rightmotor_2 && !rightmotor_1 && !rightmotor_0 && !leftmotor_2 && !leftmotor_1 && leftmotor_0)));
-     G (((inputmovemode_1 && inputmovemode_0) || (inputmovemode_1 && !inputmovemode_0) || ((!rightmotor_2 || rightmotor_1 || rightmotor_0) && (!leftmotor_2 || leftmotor_1 || leftmotor_0) && (rightmotor_2 || !rightmotor_1 || !rightmotor_0 || leftmotor_2 || !leftmotor_1 || !leftmotor_0))));
-     G (((headmotor_1 && !headmotor_0) || ((!inputmovemode_1 || inputmovemode_0) && (!inputmovemode_1 || !inputmovemode_0))));
-     G ((!inputmovemode_1 || !inputmovemode_0 || obstacle || (!outputmovemode_1 && !outputmovemode_0)));
+      G ((!inputmovemode_1 || inputmovemode_0 || (!rightmotor_2 && rightmotor_1 && rightmotor_0 && !leftmotor_2 && !leftmotor_1 && !leftmotor_0)));
+      G ((!inputmovemode_1 || !inputmovemode_0 || (rightmotor_2 && !rightmotor_1 && !rightmotor_0 && !leftmotor_2 && !leftmotor_1 && leftmotor_0)));
+      G (((inputmovemode_1 && inputmovemode_0) || (inputmovemode_1 && !inputmovemode_0) || ((!rightmotor_2 || rightmotor_1 || rightmotor_0) && (!leftmotor_2 || leftmotor_1 || leftmotor_0) && (rightmotor_2 || !rightmotor_1 || !rightmotor_0 || leftmotor_2 || !leftmotor_1 || !leftmotor_0))));
+      G (((headmotor_1 && !headmotor_0) || ((!inputmovemode_1 || inputmovemode_0) && (!inputmovemode_1 || !inputmovemode_0))));
+      G ((!inputmovemode_1 || !inputmovemode_0 || obstacle || (!outputmovemode_1 && !outputmovemode_0)));
+  }
+
+  GUARANTEES {
+     G ((!inputmovemode_1 || !inputmovemode_0 ||  X ((rightmotor_2 && rightmotor_1 && !rightmotor_0 && leftmotor_2 && leftmotor_1 && !leftmotor_0)) ||  X ((inputmovemode_1 || inputmovemode_0))));
+     G (((inputmovemode_1 && inputmovemode_0) ||  X ((!rightmotor_2 && !rightmotor_1 && !rightmotor_0 && !leftmotor_2 && !leftmotor_1 && !leftmotor_0)) ||  X ((inputmovemode_1 || inputmovemode_0 || obstacle))));
   }
 
 }
