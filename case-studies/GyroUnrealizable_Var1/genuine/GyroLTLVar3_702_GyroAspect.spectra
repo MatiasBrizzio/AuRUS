@@ -1,0 +1,77 @@
+// Initial file contents for AspectLTL aspect file (*.altl)
+module GyroAspect
+		env {CLEAR, BLOCKED} frontDistSense ;
+		env {CLEAR, BLOCKED} backDistSense ;
+		env boolean isReady ;
+		sys {STP, FWD, BWD, TURN_LEFT, TURN_RIGHT} balancer ;
+
+// Initial state.
+guarantee
+	balancer=STP;
+
+// Stop while the robot is not ready to move.
+guarantee
+	G (!isReady -> balancer=STP);
+
+// Move forward only when there are no obstacles ahead.
+guarantee 
+	G ((balancer=FWD) -> (frontDistSense=CLEAR));
+
+// Move backward only when there are no obstacles behind.
+guarantee 
+	G ((balancer=BWD) -> (backDistSense=CLEAR));
+
+// When in auto mode, eventually move forward.
+guarantee 
+  GF (balancer=FWD);
+
+guarantee
+  GF (balancer=TURN_RIGHT|balancer=TURN_LEFT);
+
+guarantee
+	G ((isReady & frontDistSense=CLEAR) -> balancer=FWD);
+	
+// The robot needs to be stabilized at first and it is not ready to move.
+assumption
+	!isReady;
+
+// Robot starts when not blocked forward and backward
+assumption
+	frontDistSense=CLEAR & backDistSense=CLEAR;
+
+// Eventually the robot will be ready to move.
+assumption
+  GF (isReady);
+
+// When the robot is ready, it will stay that way.
+assumption
+	G (isReady -> next(isReady));
+
+define 
+  	moveAwayFromFrontObstacle := !(balancer=FWD | balancer=STP); 
+
+// Front surface becomes clear responds to continuously moving away from obstacle.
+assumption
+  respondsTo(moveAwayFromFrontObstacle,(!moveAwayFromFrontObstacle|frontDistSense=CLEAR));
+
+define 
+  	moveAwayFromBackObstacle := !(balancer=BWD | balancer=STP); 
+
+// Back surface becomes clear responds to continuously moving away from obstacle.
+assumption
+  respondsTo(moveAwayFromBackObstacle,(!moveAwayFromBackObstacle|backDistSense=CLEAR));
+
+// Front surface becomes blocked responds to continuously moving forward.
+assumption
+  respondsTo(balancer=FWD,(!(balancer=FWD)|frontDistSense=BLOCKED));
+	
+// Back surface becomes blocked responds to continuously moving backward
+assumption
+  respondsTo(balancer=BWD,(!(balancer=BWD)|backDistSense=BLOCKED));
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}
