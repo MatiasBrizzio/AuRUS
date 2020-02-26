@@ -1,0 +1,113 @@
+module Humanoid
+		env {CLEAR, BLOCKED} Obstacle ;
+		//ext Button : {FREE, PRESSED};
+		//ext Noise : {QUIET, NOISE};
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} LeftMotor ;
+		sys {FWD, BWD, STOP, TURN_FWD, TURN_BWD, CALIB_TURN, CALIB_FWD} RightMotor ;
+		sys {FWD, BWD, STOP} HeadMotor ;
+		sys {FWD, BWD, TURN_LEFT_1, TURN_LEFT_2} moveMode ;
+		sys {Q0,Q1,Q2,Q3} state ;
+		
+//to prevant robot from going FWD<-->BWD indefinitely 
+//////////////////////////////////////////////
+//LTLSPEC
+	//state = Q0;
+	
+guarantee 
+	G((state = Q0 & moveMode = FWD & next(moveMode = BWD)) -> next(state = Q1));
+
+guarantee 
+	G((state = Q1 & moveMode = BWD & next(moveMode = FWD)) -> next(state = Q2));
+	
+guarantee
+	G((state = Q2 & moveMode = FWD & next(moveMode = BWD)) -> next(state = Q3));
+
+guarantee 
+	G((state = Q1 & next(moveMode = BWD)) -> (next(state = Q1)));
+
+guarantee 
+	G((state = Q2 & next(moveMode = FWD)) -> (next(state = Q2)));
+	
+guarantee
+	G(( (moveMode = TURN_LEFT_1) | (moveMode = TURN_LEFT_1)) -> next(state = Q0));
+guarantee
+	G(!(state = Q3));
+//////////////////////////////////////////////
+	
+guarantee
+	G((Obstacle = BLOCKED) -> !(moveMode = FWD));
+	
+guarantee
+	--G((Y(moveMode = BWD) & (moveMode = FWD)) <-> (LeftMotor = FWD & RightMotor = BWD));
+	G(((moveMode = BWD) & next(moveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
+
+guarantee
+	--G((Y(moveMode = FWD) & (moveMode = BWD)) <-> (LeftMotor = BWD & RightMotor = FWD));
+	G(((moveMode = FWD) & next(moveMode = BWD)) <-> next(LeftMotor = BWD & RightMotor = FWD));
+	
+guarantee
+  GF (moveMode=FWD);
+	
+//LTLSPEC
+	//G ((moveMode = TURN_LEFT_2 & Obstacle = BLOCKED) -> next(moveMode = TURN_LEFT_1));
+//calibrate before turn
+guarantee
+	--G ((moveMode = BWD) -> (Y(moveMode = FWD) | Y(moveMode = BWD)));
+	G (next(moveMode = BWD) -> ((moveMode = FWD) | (moveMode = BWD)));
+
+guarantee
+	--G (Y (moveMode = TURN_LEFT_2) -> !(moveMode = BWD));
+	G ((moveMode = TURN_LEFT_2) -> !next(moveMode = BWD));
+
+guarantee
+	--G  ((Y(moveMode = FWD) & moveMode = TURN_LEFT_1) <-> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+	G  (((moveMode = FWD) & next(moveMode = TURN_LEFT_1)) <-> next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+	
+guarantee
+	--G ( (Y(moveMode = BWD)) -> (moveMode != TURN_LEFT_1)) ;
+	G ( ((moveMode = BWD)) -> next(moveMode != TURN_LEFT_1)) ;
+
+//calibrate after turn
+guarantee
+	--G  ((Y(moveMode = FWD) & Y(Y(moveMode = TURN_LEFT_2))) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+	G  ((next(moveMode = FWD) & (moveMode = TURN_LEFT_2)) <-> next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD)));
+
+guarantee
+	--G (Y(moveMode = TURN_LEFT_1) <-> moveMode = TURN_LEFT_2);
+	G ((moveMode = TURN_LEFT_1) <-> next(moveMode = TURN_LEFT_2));
+
+guarantee
+	--G (Y(moveMode = TURN_LEFT_1) -> (LeftMotor = FWD & RightMotor = TURN_FWD));
+	G ((moveMode = TURN_LEFT_1) -> next(LeftMotor = FWD & RightMotor = TURN_FWD));
+	
+guarantee
+	--G (Y(moveMode = TURN_LEFT_2) -> (LeftMotor = BWD & RightMotor = TURN_BWD));
+	G ((moveMode = TURN_LEFT_2) -> next(LeftMotor = BWD & RightMotor = TURN_BWD));
+	
+guarantee
+	--G (!(Y(moveMode = TURN_LEFT_1) | Y(moveMode = TURN_LEFT_2)) -> !(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD));
+	G (!((moveMode = TURN_LEFT_1) | (moveMode = TURN_LEFT_2)) -> !next(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD));
+
+
+assumption
+  respondsTo((moveMode!=FWD),(Obstacle=CLEAR));
+
+assumption
+	G((moveMode = BWD & Obstacle = CLEAR) -> (next(Obstacle != BLOCKED)));
+	
+assumption
+  --GF ((Y(moveMode=TURN_LEFT_2)&Obstacle=CLEAR));
+  GF ((moveMode=TURN_LEFT_2) & next(Obstacle=CLEAR));
+
+assumption
+	--G((Y(Y(moveMode = TURN_LEFT_2)) & Y(moveMode = FWD)) -> Obstacle = CLEAR);
+	G((((moveMode = TURN_LEFT_2)) & next(moveMode = FWD)) -> next(next(Obstacle = CLEAR)));
+
+//LTLSPECENV
+	//G F(Obstacle = CLEAR);
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}
