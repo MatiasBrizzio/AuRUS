@@ -108,7 +108,7 @@ public class StrixHelper {
 	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
 		Process pr = null;
 		if (Settings.USE_DOCKER)
-			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh"});
+			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", path});
 		else
 			pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
 		boolean timeout = false;
