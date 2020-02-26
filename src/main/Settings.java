@@ -55,9 +55,9 @@ public class Settings {
 
 	//Strix setting
 	public static int STRIX_TIMEOUT = 180;
-	public static String STRIX_FILENAME = "docker/Spec.tlsf";
+	public static String STRIX_PATH = "docker/Spec.tlsf";
 	public static void setStrixName(String outname) {
-		STRIX_FILENAME = outname + "/Spec.tlsf";
+		STRIX_PATH = outname + "/Spec.tlsf";
 	}
 	//SAT solver setting
 	public static int STRONG_SAT_TIMEOUT = 180;

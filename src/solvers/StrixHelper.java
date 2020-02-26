@@ -76,10 +76,16 @@ public class StrixHelper {
 		String spec_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
 		File file = null;
 		
-		if (Settings.USE_DOCKER)
-			file = new File(Settings.STRIX_FILENAME);
+		if (Settings.USE_DOCKER) {
+			String directoryName =  Settings.STRIX_PATH;
+			File outfolder = new File(directoryName);
+			if (!outfolder.exists())
+				outfolder.mkdir();
+			file = new File(directoryName+"/Spec.tlsf");
+		}
 		else
 			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
+		file.createNewFile(); // if file already exists will do nothing
 		//Create the file
 		try {
 			writer = new FileWriter(file);
