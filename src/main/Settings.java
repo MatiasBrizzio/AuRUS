@@ -55,9 +55,9 @@ public class Settings {
 
 	//Strix setting
 	public static int STRIX_TIMEOUT = 180;
-	public static String STRIX_PATH = "docker";
+	public static String STRIX_PATH = "docker/";
 	public static void setStrixName(String outname) {
-		STRIX_PATH = outname + "/Spec.tlsf";
+		STRIX_PATH = outname + "/";
 	}
 	//SAT solver setting
 	public static int STRONG_SAT_TIMEOUT = 180;
