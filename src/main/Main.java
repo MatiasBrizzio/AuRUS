@@ -45,6 +45,7 @@ public class Main {
 		int mc_timeout = 0;
 		double threshold = 0.0d;
 		String filename = "";
+		String outname = "";
 		for (int i = 0; i< args.length; i++ ){
 			if(args[i].startsWith("-Gen=")){
 				generations = Integer.parseInt(args[i].replace("-Gen=", ""));
@@ -130,6 +131,9 @@ public class Main {
 				Tlsf ref_sol = TLSF_Utils.toBasicTLSF(new File(ref_name));
 				referenceSolutions.add(ref_sol);
 			}
+			else if(args[i].startsWith("-out=")){
+				outname = args[i].replace("-out=","");
+			}
 			else if(args[i].startsWith("-") || (!args[i].endsWith(".tlsf") && !args[i].endsWith(".spectra"))){
 				correctUssage();
 				return;
@@ -166,6 +170,9 @@ public class Main {
 		if (no_check_realizability) Settings.check_REALIZABILITY = false;
 		if (strong_SAT) Settings.check_STRONG_SAT = true;
 		if (random_GA_selector) Settings.GA_RANDOM_SELECTOR = true;
+
+		if (outname != null && outname != "") Settings.setStrixName(outname);
+
 		if (randomGen)
 			ga.runRandom(tlsf);
 		else
@@ -179,6 +186,8 @@ public class Main {
 		double sumFitness = 0.0d;
 
 		String directoryName = filename.substring(0, filename.lastIndexOf('.'));
+		if (outname != null && outname != "")
+			directoryName = outname;
 		File outfolder = new File(directoryName);
 		if (!outfolder.exists())
 			outfolder.mkdir();

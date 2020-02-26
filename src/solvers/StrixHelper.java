@@ -77,7 +77,7 @@ public class StrixHelper {
 		File file = null;
 		
 		if (Settings.USE_DOCKER)
-			file = new File("docker/Spec.tlsf");
+			file = new File(Settings.STRIX_FILENAME);
 		else
 			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 		//Create the file
