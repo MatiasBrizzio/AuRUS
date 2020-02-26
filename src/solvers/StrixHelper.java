@@ -85,7 +85,7 @@ public class StrixHelper {
 		}
 		else
 			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
-		file.createNewFile(); // if file already exists will do nothing
+//		file.createNewFile(); // if file already exists will do nothing
 		//Create the file
 		try {
 			writer = new FileWriter(file);
