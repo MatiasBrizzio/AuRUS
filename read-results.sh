@@ -5,8 +5,8 @@
 
 for K in {2..9}
 do
-DIR=$1
-file=$DIR-$K/out.txt
+DIR=$1-$K
+file=$DIR/out.txt
 
 GAtime=$(grep "GA Time:" $file | grep -o ..........$)
 Sol=$(ls -1q $DIR/spec* | wc -l)
