@@ -22,6 +22,6 @@ SSol=$(grep "Stronger Solutions found" $file | awk -F"," '{print NF-1}')
 SBestFit=$(grep "Best Stronger fitness:" $file | grep -o ....$)
 SAvgFit=$(grep "AVG Stronger fitness:" $file | grep -o ....$)
 
-echo -e "${GAtime} ${Sol}\t ${BestFit} \t${AvgFit} \t${GenSol} \t${GenBestFit} \t${GenAvgFit} \t${WSol} \t${WBestFit} \t${WAvgFit} \t${SSol} \t${SBestFit} \t${SAvgFit}"
+echo -e "${GAtime}\t${Sol}\t${BestFit}\t${AvgFit}\t${GenSol}\t${GenBestFit}\t${GenAvgFit}\t${WSol}\t${WBestFit}\t${WAvgFit}\t${SSol}\t${SBestFit}\t${SAvgFit}"
 
 
