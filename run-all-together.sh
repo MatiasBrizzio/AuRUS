@@ -6,7 +6,7 @@
 #SBATCH --time=0-24:00:00
 #SBATCH -p batch
 #SBATCH --qos=qos-batch
-#SBATCH -J $1-Unreal-Repair
+#SBATCH -J Unreal-Repair
 #SBATCH --mail-user=renzo.degiovanni@uni.lu
 #SBATCH --mail-type=all
 
