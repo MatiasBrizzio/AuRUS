@@ -209,7 +209,7 @@ public class Main {
 
 			solutions.add(sol.spec);
 		}
-
+		System.out.println("Num. of Solutions:" + solutions.size() + "\n");
 		System.out.println(String.format("Best fitness: %.2f\n", bestFitness));
 		System.out.println(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
 		double genuineBestFitness = 0.0d;
@@ -248,7 +248,7 @@ public class Main {
 			}
 			lessgeneralAvgFitness = lessgeneralSumFitness / (double)GenuineSolutionsAnalysis.lessGeneralSolutions.size();
 
-			System.out.println("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
+			System.out.println("Genuine Solutions found: " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
 			System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
 			System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
 			System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
@@ -265,7 +265,7 @@ public class Main {
 		File file = new File(directoryName + "/out.txt");
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
-
+		bw.write("Num. of Solutions: " + solutions.size() + "\n");
 		bw.write(String.format("Best fitness: %.2f\n", bestFitness));
 		bw.write(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
 		if (!referenceSolutions.isEmpty()) {
