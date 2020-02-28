@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import main.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
 import owl.ltl.FOperator;
@@ -106,7 +107,7 @@ public class TLSF_Utils {
 			}
 			System.out.println(p.waitFor());*/
 			
-			file = new File("out2.tlsf");
+			file = new File(Settings.STRIX_PATH,"/out2.tlsf");
 			FileWriter fileWriter = new FileWriter(file);
 			fileWriter.write(spec);
 			fileWriter.flush();
