@@ -2,8 +2,11 @@
 
 #echo -e "\t\t\t\t\tGenuine\t\tWeaker\t\tStronger\t"
 #echo -e "time(s)  \t#Sol.  Best Fit.  AVG Fit.  #Sol Found Best Fit. AVG Fit. #Sol Found Best Fit. AVG Fit. #Sol Found Best Fit. AVG Fit."
-file=$1
-DIR="$(dirname "$1")"
+
+for K in {2..9}
+do
+DIR=$1
+file=$DIR-$K/out.txt
 
 GAtime=$(grep "GA Time:" $file | grep -o ..........$)
 Sol=$(ls -1q $DIR/spec* | wc -l)
@@ -24,4 +27,4 @@ SAvgFit=$(grep "AVG Stronger fitness:" $file | grep -o ....$)
 
 echo -e "${GAtime}\t${Sol}\t${BestFit}\t${AvgFit}\t${GenSol}\t${GenBestFit}\t${GenAvgFit}\t${WSol}\t${WBestFit}\t${WAvgFit}\t${SSol}\t${SBestFit}\t${SAvgFit}"
 
-
+done
