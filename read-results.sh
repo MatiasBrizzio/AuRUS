@@ -8,7 +8,7 @@ do
 DIR=$1-$K
 file=$DIR/out.txt
 
-GAtime=$(grep "Time:" $file | grep -o ..........$)
+GAtime=$(grep '^Time:' $file | grep -o ..........$)
 Sol=$(ls -1q $DIR/spec* | wc -l)
 BestFit=$(grep "Best fitness:" $file | grep -o ....$)
 AvgFit=$(grep "AVG fitness:" $file | grep -o ....$)
