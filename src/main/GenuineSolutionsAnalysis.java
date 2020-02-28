@@ -102,18 +102,15 @@ public class GenuineSolutionsAnalysis {
                             isLessGeneral = true;
                         }
                     }
-                    if (isMoreGeneral && isLessGeneral) {
+                    if (isMoreGeneral && isLessGeneral && !genuineSolutionsFound.contains(i)) {
                         genuineSolutionsFound.add(i);
                     }
-                    else if (isMoreGeneral) {
+                    else if (isMoreGeneral && !moreGeneralSolutions.contains(i)) {
                         moreGeneralSolutions.add(i);
                     }
-                    else if (isLessGeneral) {
+                    else if (isLessGeneral && !lessGeneralSolutions.contains(i)) {
                         lessGeneralSolutions.add(i);
                     }
-
-                    if (isLessGeneral || isMoreGeneral)
-                        break;
                 }
             }
         }
