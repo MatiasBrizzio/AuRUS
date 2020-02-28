@@ -158,8 +158,9 @@ public class SpecificationGeneticAlgorithm {
 	public String print_execution_time() {
 		Duration search = Duration.between(initialExecutionTime, searchExecutionTime);
 		Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
-		String timeStr = String.format("GA Time: %s m  %s s",search.toMinutes(), search.toSecondsPart()) + "\n" +
-				String.format("Time: %s m  %s s",duration.toMinutes(), duration.toSecondsPart());
+
+		String timeStr = String.format("GA Time: %s",search.toSeconds()) + "\n" +
+				String.format("Time: %s", duration.toSeconds());
 		return timeStr;
 	}
 	private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec){

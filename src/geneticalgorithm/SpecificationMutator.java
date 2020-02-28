@@ -114,8 +114,10 @@ public class SpecificationMutator {
 	public static Formula applyGeneralMutation (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
 		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
-
-		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		int num_of_mut = n;
+		if (Settings.GA_GENE_NUM_OF_MUTATIONS>0)
+			num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, MR, num_of_mut);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
@@ -123,7 +125,10 @@ public class SpecificationMutator {
 	public static Formula mutateFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
 		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
-		FormulaMutator formVisitor = new FormulaMutator(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		int num_of_mut = n;
+		if (Settings.GA_GENE_NUM_OF_MUTATIONS>0)
+			num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		FormulaMutator formVisitor = new FormulaMutator(variables, MR, num_of_mut);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
@@ -131,7 +136,10 @@ public class SpecificationMutator {
 	public static Formula weakenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
 		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
-		FormulaWeakening formVisitor = new FormulaWeakening(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		int num_of_mut = n;
+		if (Settings.GA_GENE_NUM_OF_MUTATIONS>0)
+			num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		FormulaWeakening formVisitor = new FormulaWeakening(variables, MR, num_of_mut);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}
@@ -139,7 +147,10 @@ public class SpecificationMutator {
 	public static Formula strengthenFormula (Formula f, List<String> variables) {
 		int n = Formula_Utils.formulaSize(f);
 		int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
-		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, MR, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		int num_of_mut = n;
+		if (Settings.GA_GENE_NUM_OF_MUTATIONS>0)
+			num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
+		FormulaStrengthening formVisitor = new FormulaStrengthening(variables, MR, num_of_mut);
 		Formula m = f.nnf().accept(formVisitor);
 		return m;
 	}

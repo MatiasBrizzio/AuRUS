@@ -248,12 +248,15 @@ public class Main {
 			}
 			lessgeneralAvgFitness = lessgeneralSumFitness / (double)GenuineSolutionsAnalysis.lessGeneralSolutions.size();
 
+			System.out.println("Genuine Solutions: " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
 			System.out.println("Genuine Solutions found: " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
 			System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
 			System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
+			System.out.println("Weaker Solutions:" + GenuineSolutionsAnalysis.moreGeneralSolutions.size() + "\n");
 			System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
 			System.out.println(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
 			System.out.println(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
+			System.out.println("Stronger Solutions:" + GenuineSolutionsAnalysis.lessGeneralSolutions.size() + "\n");
 			System.out.println("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
 			System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
 			System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
@@ -265,16 +268,19 @@ public class Main {
 		File file = new File(directoryName + "/out.txt");
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("Num. of Solutions: " + solutions.size() + "\n");
+		bw.write("Num. of Solutions:   " + solutions.size() + "\n");
 		bw.write(String.format("Best fitness: %.2f\n", bestFitness));
 		bw.write(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
 		if (!referenceSolutions.isEmpty()) {
+			bw.write("Genuine Solutions:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
 			bw.write("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
 			bw.write(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
 			bw.write(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
+			bw.write("Weaker Solutions:   " + GenuineSolutionsAnalysis.moreGeneralSolutions.size() + "\n");
 			bw.write("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
 			bw.write(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
 			bw.write(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
+			bw.write("Stronger Solutions:    " + GenuineSolutionsAnalysis.lessGeneralSolutions.size() + "\n");
 			bw.write("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
 			bw.write(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
 			bw.write(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
