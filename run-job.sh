@@ -3,7 +3,7 @@
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -c 4
-#SBATCH --time=0-02:00:00
+#SBATCH --time=0-05:00:00
 #SBATCH -J Unreal-Repair
 #SBATCH --mail-user=renzo.degiovanni@uni.lu
 #SBATCH --mail-type=all

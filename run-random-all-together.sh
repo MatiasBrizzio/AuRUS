@@ -4,7 +4,9 @@
 #SBATCH -N 1
 #SBATCH -c 4
 #SBATCH --time=0-24:00:00
-#SBATCH -J Unreal-Repair
+#SBATCH -p batch
+#SBATCH --qos=qos-batch
+#SBATCH -J Random-Unreal-Repair
 #SBATCH --mail-user=renzo.degiovanni@uni.lu
 #SBATCH --mail-type=all
 
@@ -29,8 +31,9 @@ echo $(javac -version)
 
 ant compile
 
-for K in {0..0}
-do
+K=$1
+#for K in {9..9}
+#do
 echo "Running Minepump..."
 ./unreal-repair.sh -Max=1000 -Gen=1000 -Pop=1000 -k=20 -GATO=7200 -addA -onlyInputsA -random -ref=case-studies/minepump/genuine/minepump_fixed0.tlsf -ref=case-studies/minepump/genuine/minepump_fixed1.tlsf -ref=case-studies/minepump/genuine/minepump_fixed2.tlsf -out=result/minepump/minepump-random-$K case-studies/minepump/minepump.tlsf > result/minepump/minepump-random-$K.out 
 
@@ -60,6 +63,7 @@ echo "Running GyroUnrealizable_Var1..."
 
 echo "Running GyroUnrealizable_Var2..."
 ./unreal-repair.sh -Max=1000 -Gen=1000 -Pop=1000 -k=20 -GATO=7200 -addA -onlyInputsA -random -ref=case-studies/GyroUnrealizable_Var2/genuine/GyroLTLVar3_702_GyroAspect.tlsf -out=result/GyroUnrealizable_Var2/GyroUnrealizable_Var2-random-$K case-studies/GyroUnrealizable_Var2/GyroUnrealizable_Var2_710_GyroAspect_unrealizable.tlsf > result/GyroUnrealizable_Var2/GyroUnrealizable_Var2-random-$K.out 
-done
+#done
+echo "Finished."
 
 popd
