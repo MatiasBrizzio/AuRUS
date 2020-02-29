@@ -106,7 +106,10 @@ public class TLSF_Utils {
 				fileWriter2.close();
 			}
 			System.out.println(p.waitFor());*/
-			
+			String directoryName =  Settings.STRIX_PATH;
+			File outfolder = new File(directoryName);
+			if (!outfolder.exists())
+				outfolder.mkdirs();
 			file = new File(Settings.STRIX_PATH,"/out2.tlsf");
 			FileWriter fileWriter = new FileWriter(file);
 			fileWriter.write(spec);
