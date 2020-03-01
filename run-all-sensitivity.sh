@@ -33,7 +33,9 @@ ant compile
 
 K=$1
 FACTOR=$2
-CONFIG=$3
+CONFIG='-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA -onlyInputsA -geneNUM=0 -onlySAT -factors=.0,.5,.5'
+#CONFIG='-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA -onlyInputsA -geneNUM=0 -factors=.5,.0,.5'
+#CONFIG='-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA -onlyInputsA -geneNUM=0 -factors=.5,.5,.0'
 
 echo "Running Minepump..."
 ./unreal-repair.sh $CONFIG -ref=case-studies/minepump/genuine/minepump_fixed0.tlsf -ref=case-studies/minepump/genuine/minepump_fixed1.tlsf -ref=case-studies/minepump/genuine/minepump_fixed2.tlsf -out=sensitivityresult/minepump/minepump-$FACTOR-$K case-studies/minepump/minepump.tlsf > sensitivityresult/minepump/minepump-$FACTOR-$K.out 

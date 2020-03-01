@@ -33,11 +33,11 @@ ant compile
 
 K=$1
 RESULT_DIR=$2
-CONFIG="-Max=1000 -Gen=1000 -Pop=1000 -k=20 -GATO=7200 -addA -onlyInputsA -random"
+CONFIG='-Max=1000 -Gen=1000 -Pop=1000 -k=20 -GATO=7200 -addA -onlyInputsA -random -geneNUM=0'
 #for K in {9..9}
 #do
 echo "Running Minepump..."
-./unreal-repair.sh  -ref=case-studies/minepump/genuine/minepump_fixed0.tlsf -ref=case-studies/minepump/genuine/minepump_fixed1.tlsf -ref=case-studies/minepump/genuine/minepump_fixed2.tlsf -out=$RESULT_DIR/minepump/minepump-random-$K case-studies/minepump/minepump.tlsf > $RESULT_DIR/minepump/minepump-random-$K.out 
+./unreal-repair.sh  $CONFIG -ref=case-studies/minepump/genuine/minepump_fixed0.tlsf -ref=case-studies/minepump/genuine/minepump_fixed1.tlsf -ref=case-studies/minepump/genuine/minepump_fixed2.tlsf -out=$RESULT_DIR/minepump/minepump-random-$K case-studies/minepump/minepump.tlsf > $RESULT_DIR/minepump/minepump-random-$K.out 
 
 echo "Running Arbiter..."
 ./unreal-repair.sh $CONFIG -ref=case-studies/arbiter/genuine/arbiter_fixed0.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed1.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed2.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed3.tlsf -out=$RESULT_DIR/arbiter/arbiter-random-$K case-studies/arbiter/arbiter.tlsf > $RESULT_DIR/arbiter/arbiter-random-$K.out  

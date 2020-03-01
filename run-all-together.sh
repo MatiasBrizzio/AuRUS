@@ -33,7 +33,7 @@ ant compile
 
 K=$1
 RESULT_DIR=$2
-CONFIG="-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA -onlyInputsA -geneNUM=0"
+CONFIG='-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA -onlyInputsA -geneNUM=0'
 #for K in {9..9}
 #do
 echo "Running Minepump..."

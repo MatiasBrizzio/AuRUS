@@ -49,13 +49,14 @@ public class SpecificationGeneticAlgorithm {
 
 
 	public void run(Tlsf spec, double status_factor,  double syntactic_factor, double semantic_factor) throws IOException, InterruptedException{
+		Settings.setFactors(status_factor,syntactic_factor,semantic_factor);
+		System.out.println(Settings.print_settings()+"\n");
 		initialExecutionTime = Instant.now();
 		long initialTime = System.currentTimeMillis();
 		Population<SpecificationChromosome> population = createInitialPopulation(spec);
 //		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
 //		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
 //		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
-		Settings.setFactors(status_factor,syntactic_factor,semantic_factor);
 		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 //		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
 //		fitness.setBound(Settings.MC_BOUND);
@@ -113,6 +114,7 @@ public class SpecificationGeneticAlgorithm {
 	}
 	
 	public void runRandom(Tlsf spec) throws IOException, InterruptedException{
+		System.out.println(Settings.print_settings()+"\n");
 		initialExecutionTime = Instant.now();
 		//create random population
 		Population<SpecificationChromosome> population = new Population<>();
