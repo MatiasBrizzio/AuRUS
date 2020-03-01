@@ -154,7 +154,7 @@ public class Main {
 		if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
 		if (mutationRate > 0) Settings.GA_MUTATION_RATE = mutationRate;
 		if (gene_mutationRate > 0) Settings.GA_GENE_MUTATION_RATE = gene_mutationRate;
-		if (gene_num_of_mutations > 0) Settings.GA_GENE_NUM_OF_MUTATIONS = gene_num_of_mutations;
+		if (gene_num_of_mutations >= 0) Settings.GA_GENE_NUM_OF_MUTATIONS = gene_num_of_mutations;
 		if (threshold > 0.0d) Settings.GA_THRESHOLD = threshold;
 		if (guaranteePreferenceRate >= 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
 		if (generations > 0) Settings.GA_GENERATIONS = generations;
