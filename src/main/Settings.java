@@ -15,7 +15,7 @@ public class Settings {
 	public static int GA_MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	public static int GA_GENE_MUTATION_RATE = 0; // Probability with which the mutation is applied to each gene of the chromosome
 												 // 0 means that the probability will be 1/size_of(formula)
-	public static int GA_GENE_NUM_OF_MUTATIONS = 1; // Number of allowed genes to be mutated
+	public static int GA_GENE_NUM_OF_MUTATIONS = 0; // Number of allowed genes to be mutated
 													// 0 means that it will be allowed to apply size_of(formula) mutations
 
 	public static int GA_EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
