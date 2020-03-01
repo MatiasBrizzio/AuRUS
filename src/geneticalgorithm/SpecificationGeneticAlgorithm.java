@@ -14,10 +14,7 @@ import com.lagodiuk.ga.Population;
 
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
-import owl.ltl.FOperator;
-import owl.ltl.Formula;
-import owl.ltl.GOperator;
-import owl.ltl.Literal;
+import owl.ltl.*;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.FormulaWeakening;
 import owl.ltl.visitors.GeneralFormulaMutator;
@@ -170,8 +167,9 @@ public class SpecificationGeneticAlgorithm {
 		SpecificationChromosome init = new SpecificationChromosome(spec);
 		population.addChromosome(init);
 
-		//add simple assumptions G F input
+
 		if (Settings.allowAssumptionAddition && Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
+			//add simple assumptions G F input
 			for (int i = 0; i < spec.numberOfInputs(); i++) {
 				Literal input = Literal.of(i);
 				if (Settings.RANDOM_GENERATOR.nextBoolean())
@@ -182,6 +180,24 @@ public class SpecificationGeneticAlgorithm {
 				Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
 				population.addChromosome(new SpecificationChromosome(input_spec));
 			}
+			//add simple assumptions: //G(!(i_1 & i_2))
+			List inputs = new LinkedList();
+			for (int i = 0; i < spec.numberOfInputs(); i++) {
+				inputs.add(Literal.of(i));
+			}
+
+			Formula new_assumption = GOperator.of(Conjunction.of(inputs).not());
+			List<Formula> assumes = Formula_Utils.splitConjunction(spec.assume());
+			assumes.add(new_assumption);
+			Tlsf input_spec = TLSF_Utils.change_assume(spec, assumes);
+			population.addChromosome(new SpecificationChromosome(input_spec));
+
+			//add simple assumptions: //GF (i_1 & i_2)
+			new_assumption = GOperator.of(FOperator.of(Conjunction.of(inputs)));
+			assumes = Formula_Utils.splitConjunction(spec.assume());
+			assumes.add(new_assumption);
+			input_spec = TLSF_Utils.change_assume(spec, assumes);
+			population.addChromosome(new SpecificationChromosome(input_spec));
 		}
 
 		//combine or replace sub formulas by one input
