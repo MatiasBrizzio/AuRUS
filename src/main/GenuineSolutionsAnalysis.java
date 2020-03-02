@@ -70,7 +70,7 @@ public class GenuineSolutionsAnalysis {
                     bestFitness = f;
                 sumFitness += f;
             }
-
+            System.out.println();
             System.out.println("Num. of Solutions:" + solutions.size() + "\n");
             System.out.println(String.format("Best fitness: %.2f\n", bestFitness));
             System.out.println(String.format("AVG fitness: %.2f\n", (sumFitness / (double)solutions.size())));
