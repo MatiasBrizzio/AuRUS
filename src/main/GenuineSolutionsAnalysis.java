@@ -120,9 +120,9 @@ public class GenuineSolutionsAnalysis {
                 System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
                 System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
                 System.out.println(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)genuineSolutions.size())));
-
             }
         }
+        System.exit(0);
     }
 
     public static Set<Integer> genuineSolutionsFound = new HashSet<>();
