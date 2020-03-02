@@ -329,6 +329,13 @@ public class SpecificationGeneticAlgorithm {
 								// ga.terminate();
 							}
 						}
+						else if (Settings.check_REALIZABILITY && Settings.check_STRONG_SAT) {
+							for (SpecificationChromosome c : ga.getPopulation()) {
+								if (c.fitness < Settings.GA_THRESHOLD) break;
+								if (c.status == SPEC_STATUS.REALIZABLE && !bestSolutions.contains(best))
+									bestSolutions.add(best);
+							}
+						}
 						else {
 							for (SpecificationChromosome c : ga.getPopulation()) {
 								if (c.fitness < Settings.GA_THRESHOLD) break;

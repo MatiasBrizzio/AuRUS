@@ -32,9 +32,9 @@ public class LTLSolver {
 		String currentOS = System.getProperty("os.name");
 		if (currentOS.startsWith("Mac"))
 //			if (useAalta)
-//				cmd = "./aalta";
+				cmd = "./lib/aalta";
 //			else
-				cmd = "./lib/pltl graph";
+//				cmd = "./lib/pltl graph";
 		else
 			cmd = "./lib/aalta_linux";
 		return cmd;
@@ -47,14 +47,14 @@ public class LTLSolver {
     	
 		if (formula != null) {
 			String cmd = getCommand();
-			p = Runtime.getRuntime().exec(cmd);
-	    	OutputStream out = p.getOutputStream();
-	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
-	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
-    		bufferedwriter.write(formula);
-	    	bufferedwriter.close();
-	    	bufout.close();
-	    	out.close();
+			p = Runtime.getRuntime().exec(new String[]{cmd,formula});
+//	    	OutputStream out = p.getOutputStream();
+//	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
+//	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
+//    		bufferedwriter.write(formula);
+//	    	bufferedwriter.close();
+//	    	bufout.close();
+//	    	out.close();
     	}
 
 		boolean timeout = false;
@@ -63,7 +63,7 @@ public class LTLSolver {
 			p.destroy(); // consider using destroyForcibly instead
 		}
 		
-		SolverResult sat = SolverResult.UNSAT;
+		SolverResult sat = SolverResult.ERROR;
 		String aux;
 		if (timeout){
 			numOfTimeout++;
@@ -74,6 +74,7 @@ public class LTLSolver {
 			InputStream in = p.getInputStream();
 	    	InputStreamReader inread = new InputStreamReader(in);
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
+			sat = SolverResult.UNSAT;
 		    while ((aux = bufferedreader.readLine()) != null) {
 		    	if ((aux.equals("sat")) || (aux.contains("Formula 1: satisfiable"))){
 		    		sat = SolverResult.SAT;
