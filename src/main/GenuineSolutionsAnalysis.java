@@ -107,16 +107,16 @@ public class GenuineSolutionsAnalysis {
                 }
                 lessgeneralAvgFitness = lessgeneralSumFitness / (double)GenuineSolutionsAnalysis.lessGeneralSolutions.size();
 
-                System.out.println("Genuine Solutions: " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
-                System.out.println("Genuine Solutions found: " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
+                System.out.println("Genuine Solutions:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
+                System.out.println("Genuine Solutions found:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
                 System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
                 System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
-                System.out.println("Weaker Solutions:" + GenuineSolutionsAnalysis.moreGeneralSolutions.size() + "\n");
-                System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
+                System.out.println("Weaker Solutions:   " + GenuineSolutionsAnalysis.moreGeneralSolutions.size() + "\n");
+                System.out.println("Weaker Solutions found:   " + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
                 System.out.println(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
                 System.out.println(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
-                System.out.println("Stronger Solutions:" + GenuineSolutionsAnalysis.lessGeneralSolutions.size() + "\n");
-                System.out.println("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
+                System.out.println("Stronger Solutions:   " + GenuineSolutionsAnalysis.lessGeneralSolutions.size() + "\n");
+                System.out.println("Stronger Solutions found:   " + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
                 System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
                 System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
                 System.out.println(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)genuineSolutions.size())));
