@@ -179,7 +179,7 @@ public class Main {
 			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor);
 		
 		if (ga.solutions.isEmpty())
-			return;
+			System.exit(0);
 
 		//compute statistics
 		double bestFitness = 0.0d;
