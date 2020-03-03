@@ -11,9 +11,7 @@ import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
 import tlsf.TLSF_Utils;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,6 +28,7 @@ public class GenuineSolutionsAnalysis {
     public static void main(String[] args) throws IOException, InterruptedException {
         List<Tlsf> genuineSolutions = new LinkedList<>();
         List<Tlsf> solutions = new LinkedList<>();
+        List<Double> sol_fitness = new LinkedList<>();
         String directoryName = "";
         Tlsf original = null;
         for (int i = 0; i< args.length; i++ ){
@@ -42,6 +41,9 @@ public class GenuineSolutionsAnalysis {
                 String orig_name = args[i].replace("-o=","");
                 original= TLSF_Utils.toBasicTLSF(new File(orig_name));
             }
+            else if (args[i].startsWith("-noFit")){
+                computeFitness = false;
+            }
             else {
                 directoryName = args[i];
                 Stream<Path> walk = Files.walk(Paths.get(directoryName));
@@ -49,23 +51,39 @@ public class GenuineSolutionsAnalysis {
                         .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
                 for (String filename : specifications) {
                     System.out.println(filename);
-                    FileReader f = new FileReader(filename);
                     Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
                     solutions.add(tlsf);
+                    //read the fitness from file
+                    if (!computeFitness) {
+                        FileReader f = new FileReader(filename);
+                        BufferedReader in = new BufferedReader (f);
+                        String  aux = "";
+                        double value = 0.0d;
+                        while ((aux = in.readLine()) != null) {
+                            if ((aux.startsWith("//fitness"))){
+                                value = Double.valueOf(aux.substring(10));
+                            }
+                        }
+                        sol_fitness.add(value);
+                    }
                 }
             }
         }
         calculateGenuineStatistics(genuineSolutions, solutions);
-        List<Double> sol_fitness = new LinkedList<>();
+
         if (original != null) {
-            AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(original);
+            if (computeFitness) {
+                AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(original);
+                for (Tlsf sol : solutions) {
+                    SpecificationChromosome c = new SpecificationChromosome(sol);
+                    Double f = fitness.calculate(c);
+                    sol_fitness.add(f);
+                }
+            }
             //compute statistics
             double bestFitness = 0.0d;
             double sumFitness = 0.0d;
-            for (Tlsf sol : solutions) {
-                SpecificationChromosome c = new SpecificationChromosome(sol);
-                Double f = fitness.calculate(c);
-                sol_fitness.add(f);
+            for (Double f : sol_fitness) {
                 if (bestFitness < f)
                     bestFitness = f;
                 sumFitness += f;
@@ -131,6 +149,7 @@ public class GenuineSolutionsAnalysis {
 
     public static Set<Integer> lessGeneralSolutions = new HashSet<>();
 
+    public static boolean computeFitness = true;
 
     public static void calculateGenuineStatistics(List<Tlsf> genuineSolutions, List<Tlsf> solutions) throws IOException, InterruptedException {
         SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
