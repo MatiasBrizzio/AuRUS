@@ -19,7 +19,7 @@ MAIN {
 
   ASSUMPTIONS {
     // A1 always(cancel -> next(go))
-    G (cancel -> X go)
+    G (cancel -> X go);
   } 
 
   GUARANTEES {
