@@ -94,9 +94,11 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 		List<SpecificationChromosome> result = new LinkedList<SpecificationChromosome>();
 		// if the specifications will not lead us to a consistent specification, then do a random merge.
 //		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
-		int level = Settings.RANDOM_GENERATOR.nextInt(3);
+		int assumption_level = Settings.RANDOM_GENERATOR.nextInt(3);
+		int guarantee_level = Settings.RANDOM_GENERATOR.nextInt(3);
 
-		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
+		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, assumption_level,guarantee_level);
+//		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
 //		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec);
 		for (Tlsf s : mergedSpecs) {
 			result.add(new SpecificationChromosome(s));
