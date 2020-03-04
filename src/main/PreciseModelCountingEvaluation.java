@@ -87,11 +87,11 @@ public class PreciseModelCountingEvaluation {
     		reader = new BufferedReader(new FileReader(filepath));
     		
     		//First formula as original one
-    		String line = reader.readLine();
-    		original_formula = LtlParser.syntax(line, vars);
+    		if (original_formula == null)
+        		original_formula = LtlParser.syntax(reader.readLine(), vars);
     	
     		refined_formulas = new ArrayList<Formula>();
-    		line = reader.readLine();
+    		String line = reader.readLine();
     		while (line != null ) {
     		    if (!line.startsWith("--"))
         			refined_formulas.add(LtlParser.syntax(line, vars));
