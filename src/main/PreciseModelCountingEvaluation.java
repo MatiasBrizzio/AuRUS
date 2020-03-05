@@ -39,7 +39,7 @@ public class PreciseModelCountingEvaluation {
         		filepath = val;
         		benchmarkusage = true;
         	}
-            if(args[i].startsWith("-k=")){
+            else if(args[i].startsWith("-k=")){
                 String val = args[i].replace("-k=","");
                 bound = Integer.parseInt(val);
             }
@@ -87,8 +87,10 @@ public class PreciseModelCountingEvaluation {
     		reader = new BufferedReader(new FileReader(filepath));
     		
     		//First formula as original one
-    		if (original_formula == null)
-        		original_formula = LtlParser.syntax(reader.readLine(), vars);
+    		if (formula == null)
+    		    formula = reader.readLine();
+
+    		original_formula = LtlParser.syntax(formula, vars);
     	
     		refined_formulas = new ArrayList<Formula>();
     		String line = reader.readLine();
@@ -147,7 +149,9 @@ public class PreciseModelCountingEvaluation {
         List<BigInteger>[] solutions = new List [num_of_formulas];
         List<Integer> timeout_formulas = new LinkedList<>();
         int index = 0;
+        System.out.println("Base: " +LabelledFormula.of(original_formula,vars));
         System.out.println("Counting...");
+
         for(Formula ref : refined_formulas) {
             long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(ref,vars));
