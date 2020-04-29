@@ -251,7 +251,7 @@ public class ModelCountingRanking {
             String time = String.format("Time: %s m  %s s",min, sec);
             System.out.println(time);
             if (outname != null) {
-                String filename = outname.replace(".out", "auto-"+index + ".out");
+                String filename = outname.replace(".out", (re_counting?"re-":"auto-")+index + ".out");
                 writeFile(filename, List.of(result), time);
             }
             solutions[index] = result;
@@ -311,11 +311,11 @@ public class ModelCountingRanking {
         System.out.println(time);
 
         if (outname != null) {
-            String filename = outname.replace(".out", "auto-global.out");
+            String filename = outname.replace(".out", (re_counting?"re-":"auto-")+"global.out");
             writeRanking(filename, global, time);
-            String ranking_formula_filename = outname.replace(".out", "auto-ranking-by-formula.out") ;
+            String ranking_formula_filename = outname.replace(".out", (re_counting?"re-":"auto-")+"ranking-by-formula.out") ;
             writeRanking(ranking_formula_filename, formula_ranking_str, "");
-            String ranking_filename = outname.replace(".out", "auto-ranking.out");
+            String ranking_filename = outname.replace(".out", (re_counting?"re-":"auto-")+"ranking.out");
             writeRanking(ranking_filename, flatten_ranking_str, "");
         }
     }
