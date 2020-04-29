@@ -2,6 +2,7 @@ package main;
 
 import modelcounter.AutomataBasedModelCounting;
 import modelcounter.CountRltlConv;
+import modelcounter.EmersonLeiAutomatonBasedModelCounting;
 import modelcounter.MatrixBigIntegerModelCounting;
 import owl.ltl.*;
 import owl.ltl.parser.LtlParser;
@@ -463,7 +464,8 @@ public class ModelCountingRanking {
     }
     static BigInteger countExhaustiveAutomataBasedPrefixes(Formula f,  List<String> vars, int bound) throws IOException, InterruptedException {
         LabelledFormula form_lost = LabelledFormula.of(f, vars);
-        MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost,false);
+//        MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost,false);
+        EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(form_lost);
         BigInteger result = counter.count(bound);
 
         return result;

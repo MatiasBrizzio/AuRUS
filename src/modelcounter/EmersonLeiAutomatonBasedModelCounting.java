@@ -13,6 +13,7 @@ import owl.automaton.acceptance.EmersonLeiAcceptance;
 import owl.automaton.acceptance.OmegaAcceptance;
 import owl.automaton.acceptance.ParityAcceptance;
 import owl.automaton.edge.Edge;
+import owl.automaton.output.HoaPrinter;
 import owl.collections.ValuationSet;
 import owl.factories.FactorySupplier;
 import owl.factories.ValuationSetFactory;
@@ -32,6 +33,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntConsumer;
 
+import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
 import static owl.translations.ltl2dpa.LTL2DPAFunction.Configuration.*;
 
 public class EmersonLeiAutomatonBasedModelCounting<S> {
@@ -62,7 +64,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		// Convert the ltl formula to an automaton with OWL
 		DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
 		automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
-
+//		System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
 //		var environment = DefaultEnvironment.standard();
 //		var translator = new LTL2DPAFunction(environment, EnumSet.of(
 ////				OPTIMISE_INITIAL_STATE,
@@ -104,6 +106,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 	int BOUND = 0;
 	private BigInteger countModels() {
 		T = buildTransferMatrix();
+//		printMatrix(T);
 		int n = T.getRowDimension();
 
 		//set initial states
@@ -114,6 +117,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 
 		// count models
 		FieldMatrix T_res = T.power(BOUND);
+//		printMatrix(T_res);
 		FieldMatrix reachable = u.multiply(T_res);
 //		System.out.println("reachable: " + reachable.toString());
 		FieldMatrix result = reachable.multiply(v);
@@ -202,6 +206,16 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		return new Array2DRowFieldMatrix<BigFraction>(pData, false);
 	}
 
+	public void printMatrix(FieldMatrix<BigFraction> M) {
+		int row = M.getRowDimension();
+		int column = M.getColumnDimension();
+		for (int i = 0; i<row; i++){
+			for (int j = 0; j<column; j++){
+				System.out.print(M.getEntry(i,j) + " ");
+			}
+			System.out.println();
+		}
+	}
 
 
     public boolean accConditionIsSatisfied(BooleanExpression<AtomAcceptance> acceptanceCondition, IntArrayList acceptanceSets) {
