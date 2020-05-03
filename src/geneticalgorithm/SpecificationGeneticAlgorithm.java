@@ -303,7 +303,7 @@ public class SpecificationGeneticAlgorithm {
 						SpecificationChromosome best = ga.getBest();
 						double bestFit = ga.fitness(best);
 						int iteration = ga.getIteration();
-						if (bestFit > 1.0d ) {
+						if (bestFit > Settings.MAX_FITNESS()) {
 							System.out.println(String.format("WRONG Fitness: %.2f",best.fitness));
 							System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
 							bestSolutions.add(best);
