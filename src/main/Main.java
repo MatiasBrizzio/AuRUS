@@ -178,8 +178,8 @@ public class Main {
 		else
 			ga.run(tlsf,status_factor,syntactic_factor,semantic_factor);
 		
-		if (ga.solutions.isEmpty())
-			System.exit(0);
+//		if (ga.solutions.isEmpty())
+//			System.exit(0);
 
 		//compute statistics
 		double bestFitness = 0.0d;
@@ -211,7 +211,7 @@ public class Main {
 		}
 		System.out.println("Num. of Solutions:" + solutions.size() + "\n");
 		System.out.println(String.format("Best fitness: %.2f\n", bestFitness));
-		System.out.println(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
+		System.out.println(String.format("AVG fitness: %.2f\n", (ga.solutions.size()>0)?(sumFitness / (double)ga.solutions.size()):0));
 		double genuineBestFitness = 0.0d;
 		double genuineAvgFitness = 0.0d;
 		double moregeneralBestFitness = 0.0d;
@@ -270,7 +270,7 @@ public class Main {
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("Num. of Solutions:   " + solutions.size() + "\n");
 		bw.write(String.format("Best fitness: %.2f\n", bestFitness));
-		bw.write(String.format("AVG fitness: %.2f\n", (sumFitness / (double)ga.solutions.size())));
+		bw.write(String.format("AVG fitness: %.2f\n", (ga.solutions.size()>0)?(sumFitness / (double)ga.solutions.size()):0));
 		if (!referenceSolutions.isEmpty()) {
 			bw.write("Genuine Solutions:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
 			bw.write("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
