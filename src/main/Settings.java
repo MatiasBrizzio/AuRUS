@@ -35,6 +35,10 @@ public class Settings {
 	public static double WON_MODELS_FACTOR = 0.1d;
 	//	public static final double SOLUTION = 0.8d;
 	public static double SYNTACTIC_FACTOR = 0.1d;
+	public static double MAX_FITNESS () {
+		return STATUS_FACTOR + LOST_MODELS_FACTOR + WON_MODELS_FACTOR + SYNTACTIC_FACTOR;
+	}
+
 	public static void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
 		if (status_factor >= 0.0d)
 			STATUS_FACTOR = status_factor;

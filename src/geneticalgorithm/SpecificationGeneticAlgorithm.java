@@ -87,7 +87,7 @@ public class SpecificationGeneticAlgorithm {
 //				System.out.println(TLSF_Utils.adaptTLSFSpec(c.spec));
 				System.out.print(".");
 				RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
-				if (status == RealizabilitySolverResult.REALIZABLE) {
+				if (status == RealizabilitySolverResult.REALIZABLE && !solutions.contains(c)) {
 					System.out.print("R");
 					solutions.add(c);
 				}
@@ -155,8 +155,12 @@ public class SpecificationGeneticAlgorithm {
 	}
 
 	public String print_execution_time() {
-		Duration search = Duration.between(initialExecutionTime, searchExecutionTime);
-		Duration duration = Duration.between(initialExecutionTime, finalExecutionTime);
+		Duration search = Duration.ZERO;
+		if (initialExecutionTime!=null && searchExecutionTime!=null)
+			search = Duration.between(initialExecutionTime, searchExecutionTime);
+		Duration duration = Duration.ZERO;
+		if (initialExecutionTime!=null && finalExecutionTime!=null)
+			duration = Duration.between(initialExecutionTime, finalExecutionTime);
 
 		String timeStr = String.format("GA Time:     %s",search.toSeconds()) + "\n" +
 				String.format("Time:      %s", duration.toSeconds());
@@ -299,7 +303,7 @@ public class SpecificationGeneticAlgorithm {
 						SpecificationChromosome best = ga.getBest();
 						double bestFit = ga.fitness(best);
 						int iteration = ga.getIteration();
-						if (bestFit > 1.0d ) {
+						if (bestFit > Settings.MAX_FITNESS()) {
 							System.out.println(String.format("WRONG Fitness: %.2f",best.fitness));
 							System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
 							bestSolutions.add(best);

@@ -165,7 +165,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		}
 		System.out.printf("f%.2f ",fitness);
 		chromosome.fitness = fitness;
-		if (fitness > 1.0d) {
+		if (fitness > Settings.MAX_FITNESS()) {
 			System.out.println(String.format("BROKEN Fitness: %.2f",fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(chromosome.spec));
 			throw new RuntimeException();
