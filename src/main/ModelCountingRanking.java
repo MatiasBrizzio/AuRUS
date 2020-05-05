@@ -8,8 +8,10 @@ import owl.ltl.*;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.NormalForms;
 import owl.ltl.rewriter.SyntacticSimplifier;
+import owl.ltl.tlsf.Tlsf;
 import solvers.PreciseLTLModelCounter;
 import tlsf.CountREModels;
+import tlsf.TLSF_Utils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -53,6 +55,31 @@ public class ModelCountingRanking {
         	 System.out.println("Use ./modelcounter.sh [-b=pathToFile] [-k=bound | -vars=a,b,c | -no-precise]");
         	 return;
         }
+        else if (filepath.endsWith(".tlsf")){
+            Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filepath));
+            formulas.add(tlsf.toFormula().formula());
+            vars = tlsf.variables();
+        }
+        else if (filepath.endsWith(".list")){
+            BufferedReader reader;
+            reader = new BufferedReader(new FileReader(filepath));
+
+            String line = reader.readLine();
+            int numOfVars = 0;
+            while (line != null ) {
+
+                if (!line.startsWith("--") && line.endsWith(".tlsf")) {
+                    Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(line));
+                    formulas.add(tlsf.toFormula().formula());
+                    numOfVars = Math.max(numOfVars,tlsf.variables().size());
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+            for (int i=0;i<numOfVars;i++){
+                vars.add("v"+i);
+            }
+        }
         else {
     		BufferedReader reader;
     		reader = new BufferedReader(new FileReader(filepath));
@@ -88,6 +115,7 @@ public class ModelCountingRanking {
         else
             runPreciseMC(formulas,vars,bound,filename);
 
+        System.exit(0);
     }
 
     static void runPreciseMC(List<Formula> formulas, List<String> vars, int bound, String outname) throws IOException, InterruptedException {
