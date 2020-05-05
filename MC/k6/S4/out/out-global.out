@@ -3,6 +3,7 @@
 [3, 7, 11, 27, 28, 41]
 [2, 14, 22, 30, 40, 45]
 [16, 21, 47]
+[37]
 [24]
 [31]
 [17]
@@ -15,7 +16,6 @@
 [25]
 [15]
 
-Ranking Levels: 16
+Ranking Levels: 17
 
-Timeout Formulas: [37]
-Time: 7 m  43 s
+Time: 9 m  39 s
