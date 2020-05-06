@@ -96,6 +96,11 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 //		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
 		int assumption_level = Settings.RANDOM_GENERATOR.nextInt(3);
 		int guarantee_level = Settings.RANDOM_GENERATOR.nextInt(3);
+		int random = Settings.RANDOM_GENERATOR.nextInt(100);
+		if (random >= Settings.GA_GUARANTEES_PREFERENCE_FACTOR)
+			guarantee_level = 0;
+		else
+			assumption_level = 0;
 
 		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, assumption_level,guarantee_level);
 //		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
