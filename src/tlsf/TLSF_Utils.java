@@ -17,6 +17,7 @@ import java.util.Set;
 import main.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Conjunction;
+import owl.ltl.Disjunction;
 import owl.ltl.FOperator;
 import owl.ltl.Formula;
 import owl.ltl.GOperator;
@@ -1256,5 +1257,85 @@ public class TLSF_Utils {
 		return TlsfParser.parse(new_tlsf_spec);
 	}
 	
+	public static String tlsf2spectra(Tlsf tlsf) {
+		String spectra_spec = "module TLSF2SPECTRA \n";
+		// set variables
+		int i = 0;
+		while (tlsf.inputs().get(i))
+			spectra_spec += "env boolean " + tlsf.variables().get(i++) + ";\n";
+		while (tlsf.outputs().get(i))
+			spectra_spec += "sys boolean " + tlsf.variables().get(i++) + ";\n";
+		
+		// set domain properties
+		Formula domain_properties = Conjunction.of(tlsf.initially(),tlsf.require(), tlsf.assume());
+		for (Formula domainP : Formula_Utils.splitConjunction(domain_properties)) {
+			if (hasGFPattern(domainP))
+				spectra_spec += "assumption\n GF "
+						+ toSpectraFormat(LabelledFormula.of(getFormulaWOGFpattern(domainP), tlsf.variables()), tlsf.variables()) + ";\n";
+			else
+				spectra_spec += "assumption\n"
+						+ toSpectraFormat(LabelledFormula.of(domainP, tlsf.variables()), tlsf.variables()) + ";\n";
+		}
+		
+		// set system properties
+		Formula system_properties = Conjunction.of(Conjunction.of(tlsf.preset()), Conjunction.of(tlsf.guarantee()), Conjunction.of(tlsf.assert_()));
+		for (Formula systemP : Formula_Utils.splitConjunction(system_properties)) {
+			if (hasGFPattern(systemP))
+				spectra_spec += "guarantee\n GF " 
+						+ toSpectraFormat(LabelledFormula.of(getFormulaWOGFpattern(systemP), tlsf.variables()), tlsf.variables()) + ";\n";
+			else
+				spectra_spec += "guarantee\n"
+						+ toSpectraFormat(LabelledFormula.of(systemP, tlsf.variables()), tlsf.variables()) + ";\n";
+		}
+		
+		return spectra_spec.replaceAll("X", "next");
+	}
+
+	private static String toSpectraFormat(LabelledFormula base, List<String> variables) {
+		String form = base.toString();
+		int i = 0;
+		for (i = 0; i < variables.size(); i++) {
+			form = form.replaceAll("!"+variables.get(i),"!"+i);
+			form = form.replaceAll(variables.get(i),variables.get(i)+"=true");
+		}
+		for (i = 0; i < variables.size(); i++) {
+			form = form.replaceAll("!\\b"+i+"\\b",variables.get(i)+"=false");
+		}
+		return form;
+	}
+	
+	public static boolean hasGFPattern(Formula source) {
+		if (source instanceof GOperator) {
+			var child = ((GOperator) source).operand;
+			if (child instanceof FOperator) {
+				return true;
+			}
+			else if (child instanceof Conjunction || child instanceof Disjunction) {
+				for (Formula c : child.children())
+					if (!(c instanceof FOperator))
+						return false;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static Formula getFormulaWOGFpattern(Formula source) {
+		List<Formula> res = new ArrayList<Formula>();
+		if (source instanceof GOperator) {
+			var child = ((GOperator) source).operand;
+			if (child instanceof FOperator) {
+				return ((FOperator) child).operand;
+			}
+			else if (child instanceof Conjunction || child instanceof Disjunction) {
+				child.children().forEach(c -> {
+					if (c instanceof FOperator) res.add(((FOperator)c).operand);
+				});
+				if (child instanceof Conjunction) return Conjunction.of(res);
+				else return Disjunction.of(res);
+			}
+		}
+		return null;
+	}
 	
 }

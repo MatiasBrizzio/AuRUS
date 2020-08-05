@@ -72,27 +72,44 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
-		SyntacticSimplifier simp = new SyntacticSimplifier();
-		Formula form = tlsf.toFormula().formula().accept(simp);
-		String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
-		String inputs = "";
-		String outputs = "";
-		int i = 0;
-		while (tlsf.inputs().get(i)) {
-			inputs += tlsf.variables().get(i) + ",";
-			i++;
+		if (Settings.USE_SPECTRA) {
+			File file = null;
+			if (Settings.USE_DOCKER) {
+				String directoryName =  Settings.STRIX_PATH;
+				File outfolder = new File(directoryName);
+				if (!outfolder.exists())
+					outfolder.mkdirs();
+				file = new File(directoryName,"/Spec.spectra");
+			}
+			else
+				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
+			try {
+				writer = new FileWriter(file.getPath());
+				writer.write(TLSF_Utils.tlsf2spectra(tlsf));
+				writer.flush();
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return executeStrix(file.getPath());
 		}
-		while (tlsf.outputs().get(i)) {
-			outputs += tlsf.variables().get(i) + ",";
-			i++;
+		else {
+			SyntacticSimplifier simp = new SyntacticSimplifier();
+			Formula form = tlsf.toFormula().formula().accept(simp);
+			String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
+			String inputs = "";
+			String outputs = "";
+			int i = 0;
+			while (tlsf.inputs().get(i)) {
+				inputs += tlsf.variables().get(i) + ",";
+				i++;
+			}
+			while (tlsf.outputs().get(i)) {
+				outputs += tlsf.variables().get(i) + ",";
+				i++;
+			}
+			return executeStrix(formula,inputs,outputs);
 		}
-//		for (String v : tlsf.variables()) { 
-//			inputs = inputs.replaceAll(v, v.toLowerCase());
-//			outputs = outputs.replaceAll(v, v.toLowerCase());
-//		}
-//		outputs = outputs.substring(0, outputs.length() - 1);
-//		inputs = inputs.substring(0, inputs.length() - 1);
-		return executeStrix(formula,inputs,outputs);
 	}
 
 	/**
@@ -104,10 +121,20 @@ public class StrixHelper {
 	 */
 	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
 		Process pr = null;
-		if (Settings.USE_DOCKER)
-			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", path});
-		else
-			pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
+		if (Settings.USE_SPECTRA) {
+			if (Settings.USE_DOCKER)
+				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", path});
+			else
+				pr = Runtime.getRuntime().exec( new String[]{"java", "-Djava.library.path=/usr/local/lib/",
+						"-jar", "lib/Spectra/spectra-cli.jar", "-i","./"+path});
+				
+		}
+		else {
+			if (Settings.USE_DOCKER)
+				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", path});
+			else
+				pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
+		}
 		boolean timeout = false;
 		if(!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
@@ -128,8 +155,12 @@ public class StrixHelper {
 	    	BufferedReader bufferedreader = new BufferedReader(inread);
 	    	
 		    while ((aux = bufferedreader.readLine()) != null) {
-		    	//System.out.println(aux);
-		    	if (aux.equals("REALIZABLE")){
+//		    	System.out.println(aux);
+		    	if (!Settings.USE_SPECTRA && aux.equals("REALIZABLE")){
+		    		realizable = RealizabilitySolverResult.REALIZABLE;
+		    		break;
+		    	}
+		    	else if (Settings.USE_SPECTRA && aux.contains("realizable") && !aux.contains("unrealizable")) {
 		    		realizable = RealizabilitySolverResult.REALIZABLE;
 		    		break;
 		    	}
