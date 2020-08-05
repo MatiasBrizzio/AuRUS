@@ -4,13 +4,14 @@ import java.util.Random;
 
 public class Settings {
 
+	public static boolean USE_SPECTRA = false;
 	public static boolean USE_DOCKER = true;
 	public static Random RANDOM_GENERATOR = new Random(System.currentTimeMillis());
 
 	//genetic algorithm setting
 	public static int GA_GENERATIONS = 10;
 	public static int GA_MAX_NUM_INDIVIDUALS = Integer.MAX_VALUE;
-	public static int GA_POPULATION_SIZE = 30;
+	public static int GA_POPULATION_SIZE = 100;
 	public static int GA_CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
 	public static int GA_MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
 	public static int GA_GENE_MUTATION_RATE = 0; // Probability with which the mutation is applied to each gene of the chromosome

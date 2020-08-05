@@ -80,6 +80,9 @@ public class Main {
 			else if(args[i].startsWith("-no-docker")){
 				Settings.USE_DOCKER = false;
 			}
+			else if(args[i].startsWith("-use-spectra")){
+				Settings.USE_SPECTRA = true;
+			}
 			else if(args[i].startsWith("-random")){
 				randomGen = true;
 			}
