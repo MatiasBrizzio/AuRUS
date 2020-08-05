@@ -13,7 +13,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import main.Settings;
+import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
+import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
@@ -70,32 +72,27 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
-		//Writes the tlsf object into file...
-		
-		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(TLSF_Utils.toTLSF((tlsf)));
-		String spec_string = TLSF_Utils.adaptTLSFSpec(tlsf2);
-		File file = null;
-
-		if (Settings.USE_DOCKER) {
-			String directoryName =  Settings.STRIX_PATH;
-			File outfolder = new File(directoryName);
-			if (!outfolder.exists())
-				outfolder.mkdirs();
-			file = new File(directoryName,"/Spec.tlsf");
+		SyntacticSimplifier simp = new SyntacticSimplifier();
+		Formula form = tlsf.toFormula().formula().accept(simp);
+		String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
+		String inputs = "";
+		String outputs = "";
+		int i = 0;
+		while (tlsf.inputs().get(i)) {
+			inputs += tlsf.variables().get(i) + ",";
+			i++;
 		}
-		else
-			file = new File( (tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
-//		file.createNewFile(); // if file already exists will do nothing
-		//Create the file
-		try {
-			writer = new FileWriter(file.getPath());
-			writer.write(spec_string);
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		while (tlsf.outputs().get(i)) {
+			outputs += tlsf.variables().get(i) + ",";
+			i++;
 		}
-		return executeStrix(file.getPath());
+//		for (String v : tlsf.variables()) { 
+//			inputs = inputs.replaceAll(v, v.toLowerCase());
+//			outputs = outputs.replaceAll(v, v.toLowerCase());
+//		}
+//		outputs = outputs.substring(0, outputs.length() - 1);
+//		inputs = inputs.substring(0, inputs.length() - 1);
+		return executeStrix(formula,inputs,outputs);
 	}
 
 	/**
@@ -175,6 +172,7 @@ public class StrixHelper {
    		
    		return realizable;
 	}
+	
 	/**
 	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
 	 * @param tlsf tlsf file containing all specification.
@@ -284,6 +282,7 @@ public class StrixHelper {
    		return realizable;
 		
 	}
+	
 	private static String toSolverSyntax(LabelledFormula f) {
 		String LTLFormula = f.toString();
 		

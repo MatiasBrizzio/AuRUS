@@ -1,15 +1,12 @@
 package tlsf;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,7 +27,6 @@ import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.tlsf.Tlsf.Semantics;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
-import solvers.StrixHelper.RealizabilitySolverResult;
 
 public class TLSF_Utils {
 	static Map<String, String> replacements = new HashMap<String, String>(){
@@ -135,7 +131,6 @@ public class TLSF_Utils {
 	}
 	
 	private static boolean isBasic(File spec) throws IOException, InterruptedException {
-	
 		String cmd = getCommand();
 		cmd += " -p "+ spec.getPath();
 		Process pr = Runtime.getRuntime().exec(cmd);
@@ -146,7 +141,6 @@ public class TLSF_Utils {
     	InputStreamReader inread = new InputStreamReader(in);
     	BufferedReader bufferedreader = new BufferedReader(inread);
     	String aux;
-   // 	boolean basic = false;
     	aux = bufferedreader.readLine();
     	return aux.length() == 0;
 	}
@@ -160,7 +154,7 @@ public class TLSF_Utils {
 			Tlsf tlsf = TLSF_Utils.fromSpectra(spectra);
 			String tlsf_name = spec.getAbsolutePath().replace(".spectra", ".tlsf");
 			FileWriter out = new FileWriter(tlsf_name);
-			out.write(toTLSF(tlsf));
+			out.write(adaptTLSFSpec(tlsf));
 			out.close();
 			spec = new File(tlsf_name);
 		}
@@ -335,20 +329,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					new_tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					new_tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					new_tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					new_tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					new_tlsf_spec += "  TARGET:   Moore\n";
 				else
-					new_tlsf_spec += "  TARGET:   Moore_Strict\n";
+					new_tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				new_tlsf_spec += "}\n"
 			    + '\n'
@@ -432,20 +426,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					new_tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					new_tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					new_tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					new_tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					new_tlsf_spec += "  TARGET:   Moore\n";
 				else
-					new_tlsf_spec += "  TARGET:   Moore_Strict\n";
+					new_tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				new_tlsf_spec += "}\n"
 			    + '\n'
@@ -529,20 +523,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					new_tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					new_tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					new_tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					new_tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					new_tlsf_spec += "  TARGET:   Moore\n";
 				else
-					new_tlsf_spec += "  TARGET:   Moore_Strict\n";
+					new_tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				new_tlsf_spec += "}\n"
 			    + '\n'
@@ -627,20 +621,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					new_tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					new_tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					new_tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					new_tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					new_tlsf_spec += "  TARGET:   Moore\n";
 				else
-					new_tlsf_spec += "  TARGET:   Moore_Strict\n";
+					new_tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				new_tlsf_spec += "}\n"
 			    + '\n'
@@ -722,20 +716,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					tlsf_spec += "  TARGET:   Moore\n";
 				else
-					tlsf_spec += "  TARGET:   Moore_Strict\n";
+					tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				tlsf_spec += "}\n"
 			    + '\n'
@@ -824,20 +818,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					tlsf_spec += "  TARGET:   Moore\n";
 				else
-					tlsf_spec += "  TARGET:   Moore_Strict\n";
+					tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				tlsf_spec += "}\n"
 			    + '\n'
@@ -919,20 +913,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					tlsf_spec += "  TARGET:   Moore\n";
 				else
-					tlsf_spec += "  TARGET:   Moore_Strict\n";
+					tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				tlsf_spec += "}\n"
 			    + '\n'
@@ -1063,20 +1057,20 @@ public class TLSF_Utils {
 				if (spec.semantics().equals(Semantics.MEALY))
 					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
 				else if (spec.semantics().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  SEMANTICS:   Mealy_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 				else if (spec.semantics().equals(Semantics.MOORE))
 					new_tlsf_spec += "  SEMANTICS:   Moore\n";
 				else
-					new_tlsf_spec += "  SEMANTICS:   Moore_Strict\n";
+					new_tlsf_spec += "  SEMANTICS:   Moore,Strict\n";
 										
 				if (spec.target().equals(Semantics.MEALY))
 					new_tlsf_spec += "  TARGET:   Mealy\n";
 				else if (spec.target().equals(Semantics.MEALY_STRICT)) 
-					new_tlsf_spec += "  TARGET:   Mealy_Strict\n";
+					new_tlsf_spec += "  TARGET:   Mealy,Strict\n";
 				else if (spec.target().equals(Semantics.MOORE))
 					new_tlsf_spec += "  TARGET:   Moore\n";
 				else
-					new_tlsf_spec += "  TARGET:   Moore_Strict\n";
+					new_tlsf_spec += "  TARGET:   Moore,Strict\n";
 				
 				new_tlsf_spec += "}\n"
 			    + '\n'
@@ -1178,7 +1172,7 @@ public class TLSF_Utils {
 		String new_tlsf_spec = "INFO {\n"
 			    + "  TITLE:       " + "\"" + spec.title() + "\"" + "\n"
 			    + "  DESCRIPTION: " + "\""+ "empty description" + "\""+ "\n";			    
-					new_tlsf_spec += "  SEMANTICS:   Mealy\n";
+					new_tlsf_spec += "  SEMANTICS:   Mealy,Strict\n";
 					new_tlsf_spec += "  TARGET:   Mealy\n";
 				new_tlsf_spec += "}\n"
 			    + '\n'
