@@ -75,7 +75,7 @@ public class StrixHelper {
 		if (Settings.USE_SPECTRA) {
 			File file = null;
 			if (Settings.USE_DOCKER) {
-				String directoryName =  Settings.STRIX_PATH;
+				String directoryName =  Settings.SPECTRA_PATH;
 				File outfolder = new File(directoryName);
 				if (!outfolder.exists())
 					outfolder.mkdirs();
@@ -123,7 +123,7 @@ public class StrixHelper {
 		Process pr = null;
 		if (Settings.USE_SPECTRA) {
 			if (Settings.USE_DOCKER)
-				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", path});
+				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-spectra.sh", path});
 			else
 				pr = Runtime.getRuntime().exec( new String[]{"java", "-Djava.library.path=/usr/local/lib/",
 						"-jar", "lib/Spectra/spectra-cli.jar", "-i","./"+path});
