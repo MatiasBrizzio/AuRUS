@@ -72,20 +72,26 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
-		if (Settings.USE_SPECTRA) {
+		if (Settings.USE_DOCKER) {
 			File file = null;
-			if (Settings.USE_DOCKER) {
-				String directoryName =  Settings.SPECTRA_PATH;
+
+				String directoryName =  Settings.USE_SPECTRA?Settings.SPECTRA_PATH:Settings.STRIX_PATH;
 				File outfolder = new File(directoryName);
 				if (!outfolder.exists())
 					outfolder.mkdirs();
+
+			if (Settings.USE_SPECTRA) {
 				file = new File(directoryName,"/Spec.spectra");
 			}
 			else
-				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
+				file = new File(directoryName,"/Spec.tlsf");
+//				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
 			try {
 				writer = new FileWriter(file.getPath());
-				writer.write(TLSF_Utils.tlsf2spectra(tlsf));
+				if (Settings.USE_SPECTRA)
+					writer.write(TLSF_Utils.tlsf2spectra(tlsf));
+				else
+					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
