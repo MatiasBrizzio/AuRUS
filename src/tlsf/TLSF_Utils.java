@@ -1294,12 +1294,12 @@ public class TLSF_Utils {
 	private static String toSpectraFormat(LabelledFormula base, List<String> variables) {
 		String form = base.toString();
 		int i = 0;
-		for (i = 0; i < variables.size(); i++) {
-			form = form.replaceAll("!"+variables.get(i),"!"+i);
-			form = form.replaceAll(variables.get(i),variables.get(i)+"=true");
+		for (i = variables.size() -1 ; i >= 0; i--) {
+			form = form.replaceAll("!"+variables.get(i),"!nagatedvar"+i);
+			form = form.replaceAll("\\b"+variables.get(i)+"\\b",variables.get(i)+"=true");
 		}
-		for (i = 0; i < variables.size(); i++) {
-			form = form.replaceAll("!\\b"+i+"\\b",variables.get(i)+"=false");
+		for (i = variables.size() -1 ; i >= 0; i--) {
+			form = form.replaceAll("!nagatedvar"+i,variables.get(i)+"=false");
 		}
 		return form;
 	}

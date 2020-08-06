@@ -108,6 +108,12 @@ public class StrixHelper {
 				outputs += tlsf.variables().get(i) + ",";
 				i++;
 			}
+			for (String v : tlsf.variables()) { 
+				inputs = inputs.replaceAll(v, v.toLowerCase());
+				outputs = outputs.replaceAll(v, v.toLowerCase());
+			}
+			outputs = outputs.substring(0, outputs.length() - 1);
+			inputs = inputs.substring(0, inputs.length() - 1);
 			return executeStrix(formula,inputs,outputs);
 		}
 	}
