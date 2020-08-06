@@ -3,12 +3,18 @@ package solvers;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import main.Settings;
 import org.junit.jupiter.api.Test;
 
 import owl.ltl.Formula;
@@ -246,7 +252,13 @@ class StrixHelperTest {
 	 
 	@Test
 	void testCheckRealizability7() throws IOException, InterruptedException {
-		assertTrue(StrixHelper.checkRealizability(new File("examples/minepump.tlsf")).equals(RealizabilitySolverResult.UNREALIZABLE));
+		String filename = "case-studies/lily02/genuine/lilydemo02_fixed.tlsf";
+//		String filename = "case-studies/HumanoidLTL_531/genuine/HumanoidLTL_533_Humanoid.tlsf";
+		FileReader f = new FileReader(filename);
+		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+		StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(tlsf);
+		System.out.println(res);
+		assertTrue(res.equals(RealizabilitySolverResult.REALIZABLE));
 	}
 
 	@Test
@@ -265,7 +277,7 @@ class StrixHelperTest {
 		 Spectra spectra = SpectraParser.parse(new FileReader("examples/HumanoidLTL_458_Humanoid_fixed_unrealizable.spectra"));	 
 		 assertTrue(StrixHelper.checkRealizability(spectra).equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
-	 
+	@Test
 	void testSpectra2() throws IOException, InterruptedException {
 		 Spectra spectra = SpectraParser.parse(new FileReader("examples/PCarLTL_Unrealizable_V_2_unrealizable.0_888_PCar_fixed_unrealizable.spectra"));	 
 		 assertTrue(StrixHelper.checkRealizability(spectra).equals(RealizabilitySolverResult.UNREALIZABLE));
@@ -273,10 +285,107 @@ class StrixHelperTest {
 	
 	@Test
 	void testSpectra3() throws IOException, InterruptedException {
-		 Spectra spectra = SpectraParser.parse(new FileReader("examples/HumanoidLTL_458_Humanoid_fixed_unrealizable.spectra"));	 
-		 assertTrue(StrixHelper.checkRealizability(TLSF_Utils.fromSpectra(spectra)).equals(RealizabilitySolverResult.UNREALIZABLE));
-	}
-	 
+		 Spectra spectra = SpectraParser.parse(new FileReader("case-studies/ColorSortLTL3/ColorSortLTL3_689_ColorSort_fixed_unrealizable.spectra"));
+//		Spectra spectra = SpectraParser.parse(new FileReader("case-studies/ColorSortLTL3/genuine/ColorSortLTL3_687_ColorSort_fixed.spectra"));
 
+//		Spectra spectra = SpectraParser.parse(new FileReader("examples/icse2019/SYNTECH15/HumanoidLTL_531_Humanoid_unrealizable.spectra"));
+
+//		Spectra spectra = SpectraParser.parse(new FileReader("/Users/renzo.degiovanni/Downloads/SYNTECH15/HumanoidLTL_462_Humanoid.spectra"));
+
+		Settings.STRIX_TIMEOUT = 600;
+		 StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(TLSF_Utils.fromSpectra(spectra));
+		System.out.println(res);
+		 assertTrue(res.equals(RealizabilitySolverResult.UNREALIZABLE));
+	}
+
+
+	@Test
+	public void testSyntCompReal() throws IOException {
+		Stream<Path> walk = Files.walk(Paths.get("/Users/renzo.degiovanni/Downloads/party-elli-master/benchmarks/tlsf/acaciaplus/"));
+
+			List<String> specifications = walk.map(x -> x.toString())
+					.filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
+
+			List<String> unreal = new LinkedList<>();
+			int errors = 0;
+			int numOfTimeout = 0;
+			int numOfReal = 0;
+			int numOfUnreal = 0;
+
+			for (String filename : specifications) {
+				Instant initialExecutionTime = Instant.now();
+				System.out.println(filename);
+				try {
+					FileReader f = new FileReader(filename);
+					Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(filename));
+					StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(tlsf);
+
+					System.out.println(res);
+					if (res == null)
+						numOfTimeout++;
+					else if (res == RealizabilitySolverResult.REALIZABLE)
+						numOfReal++;
+					else if (res == RealizabilitySolverResult.UNREALIZABLE){
+						numOfUnreal++;
+						unreal.add(filename);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					errors++;
+				}
+
+			}
+			System.out.printf("True:%d  False:%d  TIMEOUT:%d   ERRORS:%d", numOfReal,numOfUnreal,numOfTimeout, errors);
+
+			System.out.println(unreal);
+//		} catch (IOException | InterruptedException e) {
+//			e.printStackTrace();
+//		}
+	}
+
+
+	@Test
+	public void testSpectraReal() throws IOException {
+		Stream<Path> walk = Files.walk(Paths.get("examples/spectra_performance/AMBA_GenBuf_specs/amba-vmcai-unreal/"));
+
+		List<String> specifications = walk.map(x -> x.toString())
+				.filter(f -> f.endsWith(".spectra") && f.contains("01")).collect(Collectors.toList());
+
+		List<String> unreal = new LinkedList<>();
+		int errors = 0;
+		int numOfTimeout = 0;
+		int numOfReal = 0;
+		int numOfUnreal = 0;
+		Settings.USE_SPECTRA = true;
+		for (String filename : specifications) {
+			Instant initialExecutionTime = Instant.now();
+			System.out.println(filename);
+			try {
+				Spectra spectra = SpectraParser.parse(new FileReader(filename));
+				StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(TLSF_Utils.fromSpectra(spectra));
+				System.out.println(res);
+				if (res == null || res == RealizabilitySolverResult.ERROR)
+					errors++;
+				else if (res == RealizabilitySolverResult.TIMEOUT)
+					numOfTimeout++;
+				else if (res == RealizabilitySolverResult.REALIZABLE)
+					numOfReal++;
+				else if (res == RealizabilitySolverResult.UNREALIZABLE){
+					numOfUnreal++;
+					unreal.add(filename);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				errors++;
+			}
+
+		}
+		System.out.printf("True:%d  False:%d  TIMEOUT:%d   ERRORS:%d\n", numOfReal,numOfUnreal,numOfTimeout, errors);
+
+		System.out.println(unreal);
+//		} catch (IOException | InterruptedException e) {
+//			e.printStackTrace();
+//		}
+	}
 
 }

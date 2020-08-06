@@ -63,6 +63,8 @@ public class Settings {
 	//Strix setting
 	public static int STRIX_TIMEOUT = 180;
 	public static String STRIX_PATH = "docker/";
+	public static String SPECTRA_PATH = "docker-spectra/";
+
 	public static void setStrixName(String outname) {
 		STRIX_PATH = outname + "/";
 	}
