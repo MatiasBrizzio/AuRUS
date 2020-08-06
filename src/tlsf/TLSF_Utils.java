@@ -1278,15 +1278,24 @@ public class TLSF_Utils {
 		}
 		
 		// set system properties
-		Formula system_properties = Conjunction.of(Conjunction.of(tlsf.preset()), Conjunction.of(tlsf.guarantee()), Conjunction.of(tlsf.assert_()));
-		for (Formula systemP : Formula_Utils.splitConjunction(system_properties)) {
-			if (hasGFPattern(systemP))
-				spectra_spec += "guarantee\n GF " 
-						+ toSpectraFormat(LabelledFormula.of(getFormulaWOGFpattern(systemP), tlsf.variables()), tlsf.variables()) + ";\n";
-			else
-				spectra_spec += "guarantee\n"
-						+ toSpectraFormat(LabelledFormula.of(systemP, tlsf.variables()), tlsf.variables()) + ";\n";
+		List<List<Formula>> system_properties = List.of(tlsf.guarantee(), tlsf.assert_());
+		for (i = 0; i < system_properties.size(); i++) {
+			List<Formula> system = system_properties.get(i);
+			for (Formula systemP : system) {
+				if (hasGFPattern(systemP))
+					spectra_spec += "guarantee\n GF " 
+							+ toSpectraFormat(LabelledFormula.of(getFormulaWOGFpattern(systemP), tlsf.variables()), tlsf.variables()) + ";\n";
+				else
+					spectra_spec += "guarantee\n"
+							+ toSpectraFormat(LabelledFormula.of(systemP, tlsf.variables()), tlsf.variables()) + ";\n";
+			}
 		}
+		if (hasGFPattern(tlsf.preset()))
+			spectra_spec += "guarantee\n GF " 
+					+ toSpectraFormat(LabelledFormula.of(getFormulaWOGFpattern(tlsf.preset()), tlsf.variables()), tlsf.variables()) + ";\n";
+		else
+			spectra_spec += "guarantee\n"
+					+ toSpectraFormat(LabelledFormula.of(tlsf.preset(), tlsf.variables()), tlsf.variables()) + ";\n";
 		
 		return spectra_spec.replaceAll("X", "next");
 	}
