@@ -1,7 +1,7 @@
 INFO {
   TITLE:       "amba_ahb_wo_ass_fairness_amba_ahb_1"
   DESCRIPTION: "fairness assumption removed"
-  SEMANTICS:   Mealy
+  SEMANTICS:   Mealy,Strict
   TARGET:   Mealy
 }
 

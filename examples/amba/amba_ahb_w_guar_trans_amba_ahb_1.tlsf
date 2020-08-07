@@ -1,7 +1,7 @@
 INFO {
   TITLE:       "amba_ahb_w_guar_trans_amba_ahb_1"
   DESCRIPTION: "safety assert added"
-  SEMANTICS:   Mealy
+  SEMANTICS:   Mealy,Strict
   TARGET:   Mealy
 }
 
@@ -68,8 +68,8 @@ MAIN {
   }
 
   ASSUMPTIONS {
-     G ( F (hready));
      G ( F (!statea1_0));
+     G ( F (hready));
   }
 
   GUARANTEES {
