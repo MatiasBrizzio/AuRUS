@@ -1,0 +1,79 @@
+INFO {
+  TITLE:       "AMBA"
+  DESCRIPTION: "Genuine Solution"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    hready;hbusreq0;hlock0;hburst0;hburst1;
+  }
+  OUTPUTS {
+    hmaster0;hmastlock;start;decide;hlocked;hgrant0;statea1_0;stateg2_0;stateg3_0;stateg3_1;stateg3_2;
+  }
+
+  INITIALLY {
+    (!hready && !hbusreq0 && !hlock0 && !hburst0 && !hburst1);
+  }
+
+  PRESET {
+    (!hmaster0 && !hmastlock && start && decide && !hlocked && hgrant0 && !statea1_0 && !stateg2_0 && !stateg3_0 && !stateg3_1 && !stateg3_2);
+  }
+
+  REQUIRE {
+     G ((hbusreq0 || !hlock0));
+  }
+
+  ASSERT {
+     G ((statea1_0 || (!hburst0 && !hburst1 && hmastlock) ||  X (!statea1_0)));
+     G ((hburst0 || hburst1 || hmaster0 || !hmastlock || statea1_0 ||  X (statea1_0)));
+     G ((!hbusreq0 || !statea1_0 ||  X (statea1_0)));
+     G ((hbusreq0 || !statea1_0 ||  X (!statea1_0)));
+     G ((hready ||  X (!start)));
+     G ((hmastlock || stateg2_0 ||  X (!stateg2_0)));
+     G ((start || stateg2_0 ||  X (!stateg2_0)));
+     G ((!hburst0 || stateg2_0 ||  X (!stateg2_0)));
+     G ((!hburst1 || stateg2_0 ||  X (!stateg2_0)));
+     G ((!hmaster0 || stateg2_0 ||  X (!stateg2_0)));
+     G ((hburst0 || hburst1 || hmaster0 || !hmastlock || !start || stateg2_0 ||  X (stateg2_0)));
+     G ((!hbusreq0 || start || !stateg2_0 ||  X (stateg2_0)));
+     G ((!start || !stateg2_0));
+     G ((hbusreq0 || start || !stateg2_0 ||  X (!stateg2_0)));
+     G ((stateg3_0 || stateg3_1 || stateg3_2 || (!hburst0 && hburst1 && hmastlock && start) ||  X ((!stateg3_0 && !stateg3_1 && !stateg3_2))));
+     G ((hready || hburst0 || !hburst1 || !hmastlock || !start || stateg3_0 || stateg3_1 || stateg3_2 ||  X ((stateg3_0 && !stateg3_1 && !stateg3_2))));
+     G ((!hready || hburst0 || !hburst1 || !hmastlock || !start || stateg3_0 || stateg3_1 || stateg3_2 ||  X ((!stateg3_0 && stateg3_1 && !stateg3_2))));
+     G ((hready || start || !stateg3_0 || stateg3_1 || stateg3_2 ||  X ((stateg3_0 && !stateg3_1 && !stateg3_2))));
+     G ((!hready || start || !stateg3_0 || stateg3_1 || stateg3_2 ||  X ((!stateg3_0 && stateg3_1 && !stateg3_2))));
+     G ((!start || !stateg3_0 || stateg3_1 || stateg3_2));
+     G ((hready || start || stateg3_0 || !stateg3_1 || stateg3_2 ||  X ((!stateg3_0 && stateg3_1 && !stateg3_2))));
+     G ((!hready || start || stateg3_0 || !stateg3_1 || stateg3_2 ||  X ((stateg3_0 && stateg3_1 && !stateg3_2))));
+     G ((!start || stateg3_0 || !stateg3_1 || stateg3_2));
+     G ((hready || start || !stateg3_0 || !stateg3_1 || stateg3_2 ||  X ((stateg3_0 && stateg3_1 && !stateg3_2))));
+     G ((!hready || start || !stateg3_0 || !stateg3_1 || stateg3_2 ||  X ((!stateg3_0 && !stateg3_1 && stateg3_2))));
+     G ((!start || !stateg3_0 || !stateg3_1 || stateg3_2));
+     G ((hready || start || stateg3_0 || stateg3_1 || !stateg3_2 ||  X ((!stateg3_0 && !stateg3_1 && stateg3_2))));
+     G ((!hready || start || stateg3_0 || stateg3_1 || !stateg3_2 ||  X ((!stateg3_0 && !stateg3_1 && !stateg3_2))));
+     G ((!start || stateg3_0 || stateg3_1 || !stateg3_2));
+     G ((!hready || (hgrant0 &&  X (!hmaster0)) || (!hgrant0 &&  X (hmaster0))));
+     G ((!hready || (hlocked &&  X (hmastlock)) || (!hlocked &&  X (!hmastlock))));
+     G (( X (start) || (hmaster0 &&  X (hmaster0)) || (!hmaster0 &&  X (!hmaster0))));
+     G (( X (start) || (hmastlock &&  X (hmastlock)) || (!hmastlock &&  X (!hmastlock))));
+     G ((!hlock0 || !decide ||  X (hlocked) ||  X (!hgrant0)));
+     G ((hlock0 || !decide ||  X (!hlocked) ||  X (!hgrant0)));
+     G ((hbusreq0 || !decide ||  X (hgrant0)));
+     G ((decide || (hgrant0 &&  X (hgrant0)) || (!hgrant0 &&  X (!hgrant0))));
+     G ((decide || (hlocked &&  X (hlocked)) || (!hlocked &&  X (!hlocked))));
+  }
+
+  ASSUMPTIONS {
+     G ( F (!statea1_0));
+     G ( F (hready));
+  }
+
+  GUARANTEES {
+     G ( F (!stateg2_0));
+     G ( F ((!stateg3_0 && !stateg3_1 && !stateg3_2)));
+     G (( F (!hbusreq0) ||  F (!hmaster0)));
+  }
+}
