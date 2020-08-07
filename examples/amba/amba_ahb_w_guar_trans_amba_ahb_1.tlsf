@@ -68,8 +68,8 @@ MAIN {
   }
 
   ASSUMPTIONS {
-     G ( F (hready));
      G ( F (!statea1_0));
+     G ( F (hready));
   }
 
   GUARANTEES {

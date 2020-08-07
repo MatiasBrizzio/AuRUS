@@ -1,6 +1,6 @@
 INFO {
-  TITLE:       "amba_ahb_w_guar_fairness_amba_ahb_1"
-  DESCRIPTION: "fairness guarantee added"
+  TITLE:       "AMBA"
+  DESCRIPTION: "Genuine Solution"
   SEMANTICS:   Mealy,Strict
   TARGET:   Mealy
 }
@@ -72,7 +72,6 @@ MAIN {
   }
 
   GUARANTEES {
-     G ( F (stateg2_0));
      G ( F (!stateg2_0));
      G ( F ((!stateg3_0 && !stateg3_1 && !stateg3_2)));
      G (( F (!hbusreq0) ||  F (!hmaster0)));
