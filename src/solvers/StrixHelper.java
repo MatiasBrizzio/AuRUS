@@ -72,20 +72,16 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
+		String directoryName =  Settings.USE_SPECTRA?Settings.SPECTRA_PATH:Settings.STRIX_PATH;
+		File file = null;
 		if (Settings.USE_DOCKER) {
-			File file = null;
-
-				String directoryName =  Settings.USE_SPECTRA?Settings.SPECTRA_PATH:Settings.STRIX_PATH;
-				File outfolder = new File(directoryName);
-				if (!outfolder.exists())
-					outfolder.mkdirs();
-
-			if (Settings.USE_SPECTRA) {
-				file = new File(directoryName,"/Spec.spectra");
-			}
+			File outfolder = new File(directoryName);
+			if (!outfolder.exists())
+				outfolder.mkdirs();
+			if (Settings.USE_SPECTRA)
+				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
 			else
-				file = new File(directoryName,"/Spec.tlsf");
-//				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
+				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 			try {
 				writer = new FileWriter(file.getPath());
 				if (Settings.USE_SPECTRA)
@@ -100,27 +96,43 @@ public class StrixHelper {
 			return executeStrix(file.getPath());
 		}
 		else {
-			SyntacticSimplifier simp = new SyntacticSimplifier();
-			Formula form = tlsf.toFormula().formula().accept(simp);
-			String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
-			String inputs = "";
-			String outputs = "";
-			int i = 0;
-			while (tlsf.inputs().get(i)) {
-				inputs += tlsf.variables().get(i) + ",";
-				i++;
+			// No docker, no strix
+			if (Settings.USE_SPECTRA) {
+				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
+				try {
+					writer = new FileWriter(file.getPath());
+					writer.write(TLSF_Utils.tlsf2spectra(tlsf));
+					writer.flush();
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return executeStrix(file.getPath());
 			}
-			while (tlsf.outputs().get(i)) {
-				outputs += tlsf.variables().get(i) + ",";
-				i++;
+			// No docker, Strix
+			else {
+				SyntacticSimplifier simp = new SyntacticSimplifier();
+				Formula form = tlsf.toFormula().formula().accept(simp);
+				String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
+				String inputs = "";
+				String outputs = "";
+				int i = 0;
+				while (tlsf.inputs().get(i)) {
+					inputs += tlsf.variables().get(i) + ",";
+					i++;
+				}
+				while (tlsf.outputs().get(i)) {
+					outputs += tlsf.variables().get(i) + ",";
+					i++;
+				}
+				for (String v : tlsf.variables()) { 
+					inputs = inputs.replaceAll(v, v.toLowerCase());
+					outputs = outputs.replaceAll(v, v.toLowerCase());
+				}
+				outputs = outputs.substring(0, outputs.length() - 1);
+				inputs = inputs.substring(0, inputs.length() - 1);
+				return executeStrix(formula,inputs,outputs);
 			}
-			for (String v : tlsf.variables()) { 
-				inputs = inputs.replaceAll(v, v.toLowerCase());
-				outputs = outputs.replaceAll(v, v.toLowerCase());
-			}
-			outputs = outputs.substring(0, outputs.length() - 1);
-			inputs = inputs.substring(0, inputs.length() - 1);
-			return executeStrix(formula,inputs,outputs);
 		}
 	}
 
