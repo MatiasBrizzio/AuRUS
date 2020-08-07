@@ -72,22 +72,22 @@ public class StrixHelper {
 	 * @throws InterruptedException 
 	 */
 	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
-		String directoryName =  Settings.USE_SPECTRA?Settings.SPECTRA_PATH:Settings.STRIX_PATH;
+
 		File file = null;
-		if (Settings.USE_DOCKER) {
+		if (Settings.USE_SPECTRA) {
+			String directoryName =  Settings.USE_SPECTRA?Settings.SPECTRA_PATH:Settings.STRIX_PATH;
 			File outfolder = new File(directoryName);
 			if (!outfolder.exists())
 				outfolder.mkdirs();
-			if (Settings.USE_SPECTRA)
+//			if (Settings.USE_SPECTRA)
 				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
-			else
-				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
+//			else
+//				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 			try {
 				writer = new FileWriter(file.getPath());
-				if (Settings.USE_SPECTRA)
-					writer.write(TLSF_Utils.tlsf2spectra(tlsf));
-				else
-					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
+				writer.write(TLSF_Utils.tlsf2spectra(tlsf));
+//				else
+//					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
@@ -97,20 +97,20 @@ public class StrixHelper {
 		}
 		else {
 			// No docker, no strix
-			if (Settings.USE_SPECTRA) {
-				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
-				try {
-					writer = new FileWriter(file.getPath());
-					writer.write(TLSF_Utils.tlsf2spectra(tlsf));
-					writer.flush();
-					writer.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return executeStrix(file.getPath());
-			}
-			// No docker, Strix
-			else {
+//			if (Settings.USE_DOCKER) {
+//				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
+//				try {
+//					writer = new FileWriter(file.getPath());
+//					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
+//					writer.flush();
+//					writer.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//				return executeStrix(file.getPath());
+//			}
+//			// No docker, Strix
+//			else {
 				SyntacticSimplifier simp = new SyntacticSimplifier();
 				Formula form = tlsf.toFormula().formula().accept(simp);
 				String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
@@ -132,7 +132,7 @@ public class StrixHelper {
 				outputs = outputs.substring(0, outputs.length() - 1);
 				inputs = inputs.substring(0, inputs.length() - 1);
 				return executeStrix(formula,inputs,outputs);
-			}
+//			}
 		}
 	}
 
@@ -270,7 +270,7 @@ public class StrixHelper {
 	private static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
 		Process pr = null;
 		if (Settings.USE_DOCKER)
-			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh"});
+			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", formula, ins, outs});
 		else
 			pr = Runtime.getRuntime().exec( new String[]{"lib/new_strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
 		boolean timeout = false;
