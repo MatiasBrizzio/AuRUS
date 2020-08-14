@@ -1,0 +1,30 @@
+module Forklift
+    env {BLOCKED, CLEAR} obstacle ;
+    env boolean emgOff ;
+    sys {STOP, FWD, BWD} lMot ;
+    sys {STOP, FWD, BWD} rMot ;
+
+guarantee
+  (lMot=STOP & rMot=STOP);
+
+guarantee
+  G (obstacle=BLOCKED -> !(lMot=FWD & rMot=FWD));
+
+guarantee
+  G (emgOff -> (lMot=STOP & rMot=STOP));
+
+guarantee
+  GF (lMot=FWD&rMot=FWD|emgOff);
+  
+assumption
+  G (lMot=STOP & rMot=STOP -> next(obstacle) = obstacle); 
+
+assumption 
+  respondsTo((lMot=BWD|rMot=BWD),(obstacle=CLEAR|(lMot=STOP&rMot=STOP)));
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

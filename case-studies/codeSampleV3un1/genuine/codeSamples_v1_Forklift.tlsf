@@ -1,0 +1,35 @@
+INFO {
+  TITLE:       "Forklift"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    obstacle;
+  }
+  OUTPUTS {
+    lmot_0;lmot_1;rmot_0;rmot_1;
+  }
+
+  PRESET {
+    (!lmot_0 && !lmot_1 && !rmot_0 && !rmot_1);
+  }
+
+//  INITIALLY {
+//     G (( F (obstacle) || ((lmot_0 || !lmot_1) && (rmot_0 || !rmot_1))));
+//  }
+
+  ASSERT {
+     G ((obstacle || !lmot_0 || lmot_1 || !rmot_0 || rmot_1));
+  }
+
+  ASSUMPTIONS{
+     G (( F (obstacle) || ((lmot_0 || !lmot_1) && (rmot_0 || !rmot_1))));
+  }
+
+  GUARANTEES {
+     G ( F ((lmot_0 && !lmot_1 && rmot_0 && !rmot_1)));
+  }
+}

@@ -1,0 +1,16 @@
+module Forklift
+    env {BLOCKED, CLEAR} obstacle ;
+    sys {STOP, FWD, BWD} lMot ;
+    sys {STOP, FWD, BWD} rMot ;
+
+guarantee
+  (lMot=STOP & rMot=STOP);
+
+guarantee
+  G (obstacle=BLOCKED -> !(lMot=FWD & rMot=FWD));
+
+guarantee
+  GF (lMot=FWD&rMot=FWD);
+  
+assumption
+  G (lMot=STOP & rMot=STOP -> next(obstacle) = obstacle);  
