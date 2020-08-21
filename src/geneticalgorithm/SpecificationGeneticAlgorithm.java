@@ -125,15 +125,15 @@ public class SpecificationGeneticAlgorithm {
 
 		searchExecutionTime = Instant.now();
 
-		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
+//		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
 		System.out.println("Checking for realizability..." );
 		for (SpecificationChromosome c : population) {
-			Double f = fitness.calculate(c);
-//			RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
-//			System.out.print("." );
+//			Double f = fitness.calculate(c);
+			RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
+			System.out.print("." );
 //			if (status == RealizabilitySolverResult.REALIZABLE) {
-			if (c.fitness < Settings.GA_THRESHOLD) continue;
-			if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c)){
+//			if (c.fitness < Settings.GA_THRESHOLD) continue;
+			if (status == RealizabilitySolverResult.REALIZABLE && !solutions.contains(c)){
 				System.out.print("R" );
 				solutions.add(c);
 			}
