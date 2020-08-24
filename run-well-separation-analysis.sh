@@ -1,4 +1,36 @@
-#!/bin/bash
+#!/bin/bash -l
+
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 4
+#SBATCH --time=0-24:00:00
+#SBATCH -p batch
+#SBATCH --qos=qos-batch
+#SBATCH -J Unreal-Repair
+#SBATCH --mail-user=renzo.degiovanni@uni.lu
+#SBATCH --mail-type=all
+
+module purge
+
+export BASEDIR=/home/users/rdegiovanni/unreal-repair
+
+export JAVA_HOME=/home/users/rdegiovanni/envlib/java-11-oracle/
+export ANT_HOME=/home/users/rdegiovanni/envlib/ant/
+export LIB_HOME=/home/users/rdegiovanni/envlib/lib/
+#export LD_LIBRARY_PATH=~/envlib/lib/:~/envlib/clib/:$LD_LIBRARY_PATH
+export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$LIB_HOME:$PATH
+
+module load swenv/default-env/devel
+module load tools/Singularity/3.5.2
+
+pushd ${BASEDIR}
+echo $JAVA_HOME
+echo $PATH
+
+echo $(java -version)
+echo $(javac -version)
+
+ant compile
 
 # declare -a CASE_STUDIES=("arbiter" "minepump" "lilydemo02" "RG1" "RG2" "Lift" "HumanoidLTL_458" "GyroUnrealizable_Var1" "GyroUnrealizable_Var2")
 declare -a CASE_STUDIES=("detector" "full_arbiter" "lily02" "lily11" "lily15" "lily16" "load_balancer" "ltl2dba_R_2" "ltl2dba_theta_2" "ltl2dba27" "prioritized_arbiter" "round_robin" "simple_arbiter")
