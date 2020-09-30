@@ -266,13 +266,18 @@ public class ModelCountingRanking {
         for(Formula f : formulas) {
             long initialTime = System.currentTimeMillis();
             System.out.println(index+" Formula: "+ LabelledFormula.of(f,vars));
-            BigInteger result ;
+            BigInteger result = BigInteger.ZERO ;
 //            result = countExhaustiveAutomataBasedPrefixes(f, vars, bound);
-            if (!re_counting)
-                result = countExhaustiveAutomataBasedPrefixes(f, vars, bound);
-            else
-                result = countExhaustivePrefixesRltl(f, vars, bound);
-            System.out.println(result);
+            try {
+                if (!re_counting)
+                    result = countExhaustiveAutomataBasedPrefixes(f, vars, bound);
+                else
+                    result = countExhaustivePrefixesRltl(f, vars, bound);
+                System.out.println(result);
+            }
+            catch (Exception e){
+                System.out.println(e.toString());
+            }
             long finalTime = System.currentTimeMillis();
             long totalTime = finalTime-initialTime;
             int min = (int) (totalTime)/60000;
