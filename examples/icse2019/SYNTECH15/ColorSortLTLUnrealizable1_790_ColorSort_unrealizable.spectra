@@ -16,7 +16,7 @@ module ColorSort
 		sys {GREEN, BLACK, RED, BLUE,  YELLOW , WHITE} spec_currentColor;
 		sys boolean spec_dropping ;
 		
-		sys boolean spec_speedButtonValidPressed ;
+		sys boolean spec_speedButton_valid_pressed ;
 		
 	define
 		allsleep := verMot = SLEEP & horMot = SLEEP & botMot = STOP;
@@ -74,22 +74,24 @@ guarantee
 guarantee
 	motSpeed = LEVEL1 & !spec_dropping;
 
+--guarantee
+--	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButton_valid_pressed);
+
 guarantee
-	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
-
+	G (next(speedButton = PRESS) & speedButton = RELEASE <-> spec_speedButton_valid_pressed);
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & motSpeed = LEVEL1 -> next(motSpeed = LEVEL2));
+	G (spec_speedButton_valid_pressed & motSpeed = LEVEL1 -> next(motSpeed = LEVEL2));
 	
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & motSpeed = LEVEL2 -> next(motSpeed = LEVEL3));
+	G (spec_speedButton_valid_pressed & motSpeed = LEVEL2 -> next(motSpeed = LEVEL3));
 	
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & motSpeed = LEVEL3 -> next(motSpeed = LEVEL1));
+	G (spec_speedButton_valid_pressed & motSpeed = LEVEL3 -> next(motSpeed = LEVEL1));
 	 
 	 
 guarantee -- if the speed button is released, the speed remains the same
-	G (!spec_speedButtonValidPressed -> motSpeed = next(motSpeed));
+	G (!spec_speedButton_valid_pressed -> motSpeed = next(motSpeed));
 
 	
 -- environment specifications
