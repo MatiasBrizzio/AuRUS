@@ -21,8 +21,8 @@ module ColorSort
 		sys {GREEN, BLACK, RED, BLUE,  YELLOW , WHITE} spec_currentColor;
 		sys boolean spec_dropping ;
 		
-		sys boolean spec_speedButtonValidPressed ;
-		sys boolean spec_pauseButtonValidPressed ;
+		sys boolean spec_speedButton_valid_pressed;
+		sys boolean spec_pauseButton_valid_pressed;
 		sys {PAUSE, GO} spec_pausing ;
 		
 	define
@@ -86,34 +86,38 @@ guarantee
 guarantee
 	motSpeed = LEVEL1 & !spec_dropping;
 
+--guarantee
+--	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButton_valid_pressed);
+
 guarantee
-	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
-
+	G (next(speedButton = PRESS) & speedButton = RELEASE <-> spec_speedButton_valid_pressed);
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & motSpeed = LEVEL1 -> next(motSpeed = LEVEL2));
+	G (spec_speedButton_valid_pressed & motSpeed = LEVEL1 -> next(motSpeed = LEVEL2));
 	
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & motSpeed = LEVEL2 -> next(motSpeed = LEVEL3));
+	G (spec_speedButton_valid_pressed & motSpeed = LEVEL2 -> next(motSpeed = LEVEL3));
 	
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & motSpeed = LEVEL3 -> next(motSpeed = LEVEL1));
+	G (spec_speedButton_valid_pressed & motSpeed = LEVEL3 -> next(motSpeed = LEVEL1));
 	 
 	 
 guarantee -- if the speed button is released, the speed remains the same
-	G (!spec_speedButtonValidPressed -> motSpeed = next(motSpeed));
+	G (!spec_speedButton_valid_pressed -> motSpeed = next(motSpeed));
 
 -- the pause button
 
-guarantee
-	G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_pauseButtonValidPressed);
+--guarantee
+--	G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_pauseButton_valid_pressed);
 
 guarantee
-	G ((spec_pauseButtonValidPressed & spec_pausing = GO) | (!spec_pauseButtonValidPressed & spec_pausing = PAUSE)
+	G (next(haltButton = PRESS) & haltButton = RELEASE <-> spec_pauseButton_valid_pressed);
+guarantee
+	G ((spec_pauseButton_valid_pressed & spec_pausing = GO) | (!spec_pauseButton_valid_pressed & spec_pausing = PAUSE)
 		-> next(spec_pausing) = PAUSE);
 	
 guarantee
-	G ((!spec_pauseButtonValidPressed & spec_pausing = GO) | (spec_pauseButtonValidPressed & spec_pausing = PAUSE)
+	G ((!spec_pauseButton_valid_pressed & spec_pausing = GO) | (spec_pauseButton_valid_pressed & spec_pausing = PAUSE)
 		-> next(spec_pausing) = GO);
 
 assumption -- no pause is eternal
