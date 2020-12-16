@@ -33,10 +33,12 @@ define -- nonemove is true iff no motor moves
 	onlybotmoves := ack_ver = SLEEP & ack_hor = SLEEP & ack_bot = MOVE;
 
 guarantee
-	G (spec_prevBotMotReturn<->PREV(botMot = RETURN));
+	//G (spec_prevBotMotReturn<->PREV(botMot = RETURN));
+	G (next(spec_prevBotMotReturn)<->(botMot = RETURN));
 guarantee
-	G (spec_prevBotMotSeek<->PREV(botMot = SEEK));
-  
+	//G (spec_prevBotMotSeek<->PREV(botMot = SEEK));
+  	G (next(spec_prevBotMotSeek)<->(botMot = SEEK));
+
   sys boolean spec_prevBotMotReturn ;
   sys boolean spec_prevBotMotSeek ;
 
@@ -76,8 +78,9 @@ guarantee
 	G (color != BLACK & !spec_dropping -> verMot = MOVE & next(spec_currentColor) = color);
 
 guarantee
-	G (nonemove & spec_dropping & PREV(ack_ver = MOVE)-> botMot = SEEK);
- 
+	//G (nonemove & spec_dropping & PREV(ack_ver = MOVE)-> botMot = SEEK);
+	G (next(nonemove & spec_dropping) & (ack_ver = MOVE)-> next(botMot = SEEK));
+	 
 -- P19
 -- (spec_dropping & detect != spec_currentColor -> botMot = SEEK) is true between (spec_prevBotMotSeek & ack_bot = MOVE) and (spec_prevBotMotSeek & detect = spec_currentColor)
 guarantee -- initial assignments: initial spec_state_seek
@@ -98,10 +101,13 @@ guarantee -- equivalence of satisfaction
   GF (spec_state_seek=S0|spec_state_seek=S1|spec_state_seek=S3);
 
 guarantee
-	G (spec_dropping & onlybotmoves & detect = spec_currentColor & PREV(botMot = SEEK) <-> horMot = MOVE);
- 	
+	//G (spec_dropping & onlybotmoves & detect = spec_currentColor & PREV(botMot = SEEK) <-> horMot = MOVE);
+ 	G (next(spec_dropping & onlybotmoves & detect = spec_currentColor) & (botMot = SEEK) <-> next(horMot = MOVE));
+
 guarantee
-	G (nonemove & PREV(ack_hor = MOVE) & spec_dropping -> botMot = RETURN);
+	//G (nonemove & PREV(ack_hor = MOVE) & spec_dropping -> botMot = RETURN);
+	G (next(nonemove) & (ack_hor = MOVE) & next(spec_dropping) -> next(botMot = RETURN));
+
 -- P20
 -- (spec_dropping & onlybotmoves -> botMot = RETURN) is true after (spec_prevBotMotReturn & ack_bot = MOVE) until (spec_prevBotMotReturn & ack_bot = SLEEP)
 guarantee -- initial assignments: initial spec_state_return
@@ -128,32 +134,40 @@ guarantee
 	motSpeed = LEVEL1 & !spec_dropping;
 
 guarantee
-	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
+	//G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
+	G (next(speedButton = PRESS) & (speedButton = RELEASE) <-> next(spec_speedButtonValidPressed));
 
+guarantee -- if the speed button is pressed, increase the speed by one level
+	//G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL2);
+	G (next(spec_speedButtonValidPressed) & (motSpeed = LEVEL1) -> next(motSpeed = LEVEL2));
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL2);
-	
+	//G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL3);
+	G (next(spec_speedButtonValidPressed) & (motSpeed = LEVEL2) -> next(motSpeed = LEVEL3));
+
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL3);
-	
-guarantee -- if the speed button is pressed, increase the speed by one level
-	G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL1);
-	 
+	//G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL1);
+	G (next(spec_speedButtonValidPressed) & (motSpeed = LEVEL3) -> next(motSpeed = LEVEL1));
+
 	 
 guarantee -- if the speed button is released, the speed remains the same
-	G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL1);
-	
+	//G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL1);
+	G (next(!spec_speedButtonValidPressed) & (motSpeed = LEVEL1) -> next(motSpeed = LEVEL1));
+
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL2);
-	
+	//G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL2);
+	G (next(!spec_speedButtonValidPressed) & (motSpeed = LEVEL2) -> next(motSpeed = LEVEL2));
+
 guarantee -- if the speed button is pressed, increase the speed by one level
-	G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL3);
+	//G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL3);
+	G (next(!spec_speedButtonValidPressed) & (motSpeed = LEVEL3) -> next(motSpeed = LEVEL3));
+
 /* 
 -- pause button
 
 LTLSPEC
-	G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_haltButtonValidPressed);
+	//G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_haltButtonValidPressed);
+	G (next(haltButton = PRESS) & (haltButton = RELEASE) <-> next(spec_haltButtonValidPressed));
 
 LTLSPEC
 	G ((spec_haltButtonValidPressed & spec_pausing = GO) | (!spec_haltButtonValidPressed & spec_pausing = PAUSE)
