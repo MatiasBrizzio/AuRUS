@@ -19,8 +19,8 @@ module ColorSort
 		sys {RED, GREEN, BLUE, BLACK, YELLOW , WHITE} spec_currentColor;
 		sys boolean spec_dropping ;
 		
-		sys boolean spec_speedButtonValidPressed ;
-		/*ext spec_haltButtonValidPressed : boolean;
+		sys boolean spec_speedButton_valid_pressed ;
+		/*ext spec_haltButton_valid_pressed : boolean;
 		
 		ext spec_pausing : {PAUSE, GO};*/
 		
@@ -134,47 +134,47 @@ guarantee
 	motSpeed = LEVEL1 & !spec_dropping;
 
 guarantee
-	//G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButtonValidPressed);
-	G (next(speedButton = PRESS) & (speedButton = RELEASE) <-> next(spec_speedButtonValidPressed));
+	//G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButton_valid_pressed);
+	G (next(speedButton = PRESS) & (speedButton = RELEASE) <-> next(spec_speedButton_valid_pressed));
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	//G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL2);
-	G (next(spec_speedButtonValidPressed) & (motSpeed = LEVEL1) -> next(motSpeed = LEVEL2));
+	//G (spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL2);
+	G (next(spec_speedButton_valid_pressed) & (motSpeed = LEVEL1) -> next(motSpeed = LEVEL2));
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	//G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL3);
-	G (next(spec_speedButtonValidPressed) & (motSpeed = LEVEL2) -> next(motSpeed = LEVEL3));
+	//G (spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL3);
+	G (next(spec_speedButton_valid_pressed) & (motSpeed = LEVEL2) -> next(motSpeed = LEVEL3));
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	//G (spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL1);
-	G (next(spec_speedButtonValidPressed) & (motSpeed = LEVEL3) -> next(motSpeed = LEVEL1));
+	//G (spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL1);
+	G (next(spec_speedButton_valid_pressed) & (motSpeed = LEVEL3) -> next(motSpeed = LEVEL1));
 
 	 
 guarantee -- if the speed button is released, the speed remains the same
-	//G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL1);
-	G (next(!spec_speedButtonValidPressed) & (motSpeed = LEVEL1) -> next(motSpeed = LEVEL1));
+	//G (!spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL1);
+	G (next(!spec_speedButton_valid_pressed) & (motSpeed = LEVEL1) -> next(motSpeed = LEVEL1));
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	//G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL2);
-	G (next(!spec_speedButtonValidPressed) & (motSpeed = LEVEL2) -> next(motSpeed = LEVEL2));
+	//G (!spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL2) -> motSpeed = LEVEL2);
+	G (next(!spec_speedButton_valid_pressed) & (motSpeed = LEVEL2) -> next(motSpeed = LEVEL2));
 
 guarantee -- if the speed button is pressed, increase the speed by one level
-	//G (!spec_speedButtonValidPressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL3);
-	G (next(!spec_speedButtonValidPressed) & (motSpeed = LEVEL3) -> next(motSpeed = LEVEL3));
+	//G (!spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL3) -> motSpeed = LEVEL3);
+	G (next(!spec_speedButton_valid_pressed) & (motSpeed = LEVEL3) -> next(motSpeed = LEVEL3));
 
 /* 
 -- pause button
 
 LTLSPEC
-	//G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_haltButtonValidPressed);
-	G (next(haltButton = PRESS) & (haltButton = RELEASE) <-> next(spec_haltButtonValidPressed));
+	//G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_haltButton_valid_pressed);
+	G (next(haltButton = PRESS) & (haltButton = RELEASE) <-> next(spec_haltButton_valid_pressed));
 
 LTLSPEC
-	G ((spec_haltButtonValidPressed & spec_pausing = GO) | (!spec_haltButtonValidPressed & spec_pausing = PAUSE)
+	G ((spec_haltButton_valid_pressed & spec_pausing = GO) | (!spec_haltButton_valid_pressed & spec_pausing = PAUSE)
 		-> next(spec_pausing) = PAUSE);
 	
 LTLSPEC
-	G ((!spec_haltButtonValidPressed & spec_pausing = GO) | (spec_haltButtonValidPressed & spec_pausing = PAUSE)
+	G ((!spec_haltButton_valid_pressed & spec_pausing = GO) | (spec_haltButton_valid_pressed & spec_pausing = PAUSE)
 		-> next(spec_pausing) = GO);
 
 LTLSPECENV -- no pause is eternal
