@@ -49,10 +49,12 @@ guarantee
 	G (moveMode = TURN_LEFT_2 -> !(next(moveMode = BWD)));
 guarantee
 	G  ((moveMode = FWD & next(moveMode = TURN_LEFT_1)) <-> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+
+
 //calibrate after turn
 guarantee
-	G  ((moveMode = FWD & Y(moveMode = TURN_LEFT_2)) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
-
+	//G  ((moveMode = FWD & Y(moveMode = TURN_LEFT_2)) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+	G  ((next(moveMode = FWD) & (moveMode = TURN_LEFT_2)) <-> next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
 
 guarantee//for turning sequence (step 1 and then 2
 	G ((moveMode = TURN_LEFT_1) <-> (next(moveMode) = TURN_LEFT_2));
