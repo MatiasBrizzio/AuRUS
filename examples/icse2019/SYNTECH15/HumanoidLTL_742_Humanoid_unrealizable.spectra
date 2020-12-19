@@ -158,8 +158,10 @@ guarantee
 guarantee
 	G ((turnState = T0 & !(nextMoveMode = TURN_LEFT)) -> next(turnState) = T0);
 	
+--guarantee
+--	G ((nextMoveMode = TURN_LEFT & Y(nextMoveMode = FWD) & turnState = T0) -> next(turnState) = T1);
 guarantee
-	G ((nextMoveMode = TURN_LEFT & Y(nextMoveMode = FWD) & turnState = T0) -> next(turnState) = T1);
+	G ((next(nextMoveMode = TURN_LEFT) & (nextMoveMode = FWD) & turnState = T0) -> next(next(turnState) = T1));
 
 guarantee
 	G (turnState = T1  -> (next(turnState) = T2 & nextMoveMode = TURN_LEFT));
@@ -211,12 +213,17 @@ guarantee
  */
  ////////////////////////////////////////////////////////////////
 
+--assumption
+--	G ((Y(nextMoveMode = FWD) & Obstacle = BLOCKED) -> next(Obstacle = BLOCKED));
+--	//G((nextMoveMode != FWD) -> F(Obstacle = CLEAR));
 assumption
-	G ((Y(nextMoveMode = FWD) & Obstacle = BLOCKED) -> next(Obstacle = BLOCKED));
+	G (((nextMoveMode = FWD) & next(Obstacle = BLOCKED)) -> next(next(Obstacle = BLOCKED)));
 	//G((nextMoveMode != FWD) -> F(Obstacle = CLEAR));
 
+--assumption
+--	G((Y(nextMoveMode = BWD) & Obstacle = CLEAR) -> (next(Obstacle != BLOCKED)));
 assumption
-	G((Y(nextMoveMode = BWD) & Obstacle = CLEAR) -> (next(Obstacle != BLOCKED)));
+	G(((nextMoveMode = BWD) & next(Obstacle = CLEAR)) -> next((next(Obstacle != BLOCKED))));
 	
 //LTLSPECENV
 	//G((Y(Y(spec_nextMoveMode = TURN_LEFT_2)) & Y(spec_nextMoveMode = FWD)) -> Obstacle = CLEAR);

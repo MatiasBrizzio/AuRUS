@@ -15,11 +15,15 @@ guarantee
 	G((InputMoveMode = BWD & Obstacle = CLEAR) -> ((spec_OutputMoveMode = FWD & LeftMotor = FWD & RightMotor = BWD)));
 
 
+--guarantee
+--	G  ((InputMoveMode = FWD & Button = FREE & Y (InputMoveMode = TURN_LEFT_2)) -> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
 guarantee
-	G  ((InputMoveMode = FWD & Button = FREE & Y (InputMoveMode = TURN_LEFT_2)) -> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+	G  ((next(InputMoveMode = FWD) & next(Button = FREE) & (InputMoveMode = TURN_LEFT_2)) -> (next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD)));
 
+--guarantee
+--	G  ((InputMoveMode = FWD & Obstacle = CLEAR & Button = FREE & Y (InputMoveMode != TURN_LEFT_2)) -> (LeftMotor = FWD & RightMotor = FWD));
 guarantee
-	G  ((InputMoveMode = FWD & Obstacle = CLEAR & Button = FREE & Y (InputMoveMode != TURN_LEFT_2)) -> (LeftMotor = FWD & RightMotor = FWD));
+	G  ((next(InputMoveMode = FWD) & next(Obstacle = CLEAR) & next(Button = FREE) & (InputMoveMode != TURN_LEFT_2)) -> (next(LeftMotor = FWD & RightMotor = FWD)));
 
 guarantee
 	G ((Obstacle = BLOCKED) -> !(spec_OutputMoveMode = FWD));
@@ -61,5 +65,7 @@ guarantee
 guarantee
 	G (!(Button = PRESSED | InputMoveMode = DANCE) -> !(spec_OutputMoveMode = DANCE));
 
+--assumption
+--	G((InputMoveMode = FWD & Y (InputMoveMode = TURN_LEFT_2)) -> (Obstacle = CLEAR));
 assumption
-	G((InputMoveMode = FWD & Y (InputMoveMode = TURN_LEFT_2)) -> (Obstacle = CLEAR));
+	G((next(InputMoveMode = FWD) & (InputMoveMode = TURN_LEFT_2)) -> (next(Obstacle = CLEAR)));
