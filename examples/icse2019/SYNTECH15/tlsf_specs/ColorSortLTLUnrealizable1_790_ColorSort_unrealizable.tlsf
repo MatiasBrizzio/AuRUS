@@ -1,0 +1,64 @@
+INFO {
+  TITLE:       "ColorSort"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    color_0;color_1;color_2;detect_0;detect_1;detect_2;ack_ver;ack_hor;ack_bot;starting_pos;speedbutton;
+  }
+  OUTPUTS {
+    vermot;hormot;botmot_0;botmot_1;motspeed_0;motspeed_1;spec_currentcolor_0;spec_currentcolor_1;spec_currentcolor_2;spec_dropping;spec_speedbutton_valid_pressed;spec_waiting_ack_ver_mot;spec_waiting_ack_hor_mot;
+  }
+
+  INITIALLY {
+    ( G ((!spec_waiting_ack_ver_mot ||  F (ack_ver))) &&  G ((!spec_waiting_ack_hor_mot ||  F (ack_hor))));
+  }
+
+  PRESET {
+    (!motspeed_0 && !motspeed_1 && !spec_dropping && !spec_waiting_ack_ver_mot && !spec_waiting_ack_hor_mot &&  G (((color_0 && !color_1 && !color_2) ||  F ((!hormot && ((detect_0 && spec_currentcolor_0) || (!detect_0 && !spec_currentcolor_0)) && ((detect_1 && spec_currentcolor_1) || (!detect_1 && !spec_currentcolor_1)) && ((detect_2 && spec_currentcolor_2) || (!detect_2 && !spec_currentcolor_2)))))));
+  }
+
+  REQUIRE {
+    ( G ((ack_ver || spec_waiting_ack_ver_mot)) &&  G ((ack_hor || spec_waiting_ack_hor_mot)));
+  }
+
+  ASSERT {
+     G ((vermot || (hormot && botmot_0 && !botmot_1)));
+     G ((hormot || (vermot && botmot_0 && !botmot_1)));
+     G (((vermot && hormot) || (botmot_0 && !botmot_1)));
+     G (((ack_ver && ack_hor) || (vermot && hormot && botmot_0 && !botmot_1)));
+     G (((vermot && ((spec_currentcolor_0 &&  X (spec_currentcolor_0)) || (!spec_currentcolor_0 &&  X (!spec_currentcolor_0))) && ((spec_currentcolor_1 &&  X (spec_currentcolor_1)) || (!spec_currentcolor_1 &&  X (!spec_currentcolor_1))) && ((spec_currentcolor_2 &&  X (spec_currentcolor_2)) || (!spec_currentcolor_2 &&  X (!spec_currentcolor_2)))) || (!vermot && (((spec_currentcolor_0 ||  X (spec_currentcolor_0)) && (!spec_currentcolor_0 ||  X (!spec_currentcolor_0))) || ((spec_currentcolor_1 ||  X (spec_currentcolor_1)) && (!spec_currentcolor_1 ||  X (!spec_currentcolor_1))) || ((spec_currentcolor_2 ||  X (spec_currentcolor_2)) && (!spec_currentcolor_2 ||  X (!spec_currentcolor_2)))))));
+     G ((((!vermot || !hormot) && (spec_dropping ||  X (spec_dropping)) && (!spec_dropping ||  X (!spec_dropping))) || (vermot && hormot && ((spec_dropping &&  X (spec_dropping)) || (!spec_dropping &&  X (!spec_dropping))))));
+     G (((ack_ver && ack_hor && starting_pos && !botmot_0 && botmot_1 && !spec_dropping) || ((botmot_0 || !botmot_1) && (!ack_ver || !ack_hor || !starting_pos || spec_dropping))));
+     G ((!color_0 || color_1 || color_2 || starting_pos || spec_dropping || (vermot && hormot && botmot_0 && !botmot_1)));
+     G ((vermot || (!spec_dropping && (!color_0 || color_1 || color_2))));
+     G (((ack_ver && ack_hor && ack_bot && !starting_pos && !vermot && !spec_dropping && (!color_0 || color_1 || color_2) && ((color_0 &&  X (spec_currentcolor_0)) || (!color_0 &&  X (!spec_currentcolor_0))) && ((color_1 &&  X (spec_currentcolor_1)) || (!color_1 &&  X (!spec_currentcolor_1))) && ((color_2 &&  X (spec_currentcolor_2)) || (!color_2 &&  X (!spec_currentcolor_2)))) || ((!ack_ver || !ack_hor || !ack_bot || starting_pos || spec_dropping || (color_0 && !color_1 && !color_2)) && (vermot || ((color_0 ||  X (spec_currentcolor_0)) && (!color_0 ||  X (!spec_currentcolor_0))) || ((color_1 ||  X (spec_currentcolor_1)) && (!color_1 ||  X (!spec_currentcolor_1))) || ((color_2 ||  X (spec_currentcolor_2)) && (!color_2 ||  X (!spec_currentcolor_2)))))));
+     G (((ack_ver && ack_hor && !botmot_0 && !botmot_1 && spec_dropping && ((detect_0 && !spec_currentcolor_0) || (!detect_0 && spec_currentcolor_0) || (detect_1 && !spec_currentcolor_1) || (!detect_1 && spec_currentcolor_1) || (detect_2 && !spec_currentcolor_2) || (!detect_2 && spec_currentcolor_2))) || ((botmot_0 || botmot_1) && (!ack_ver || !ack_hor || !spec_dropping || ((detect_0 || !spec_currentcolor_0) && (!detect_0 || spec_currentcolor_0) && (detect_1 || !spec_currentcolor_1) && (!detect_1 || spec_currentcolor_1) && (detect_2 || !spec_currentcolor_2) && (!detect_2 || spec_currentcolor_2))))));
+     G (((ack_ver && ack_hor && !hormot && spec_dropping && ((detect_0 && spec_currentcolor_0) || (!detect_0 && !spec_currentcolor_0)) && ((detect_1 && spec_currentcolor_1) || (!detect_1 && !spec_currentcolor_1)) && ((detect_2 && spec_currentcolor_2) || (!detect_2 && !spec_currentcolor_2))) || (hormot && (!ack_ver || !ack_hor || !spec_dropping || ((detect_0 || spec_currentcolor_0) && (!detect_0 || !spec_currentcolor_0)) || ((detect_1 || spec_currentcolor_1) && (!detect_1 || !spec_currentcolor_1)) || ((detect_2 || spec_currentcolor_2) && (!detect_2 || !spec_currentcolor_2))))));
+     G (((speedbutton &&  X (!speedbutton) &&  X (spec_speedbutton_valid_pressed)) || ( X (!spec_speedbutton_valid_pressed) && (!speedbutton ||  X (speedbutton)))));
+     G ((motspeed_0 || motspeed_1 || !spec_speedbutton_valid_pressed ||  X ((motspeed_0 && !motspeed_1))));
+     G ((!motspeed_0 || motspeed_1 || !spec_speedbutton_valid_pressed ||  X ((!motspeed_0 && motspeed_1))));
+     G ((motspeed_0 || !motspeed_1 || !spec_speedbutton_valid_pressed ||  X ((!motspeed_0 && !motspeed_1))));
+     G ((spec_speedbutton_valid_pressed || (((motspeed_0 &&  X (motspeed_0)) || (!motspeed_0 &&  X (!motspeed_0))) && ((motspeed_1 &&  X (motspeed_1)) || (!motspeed_1 &&  X (!motspeed_1))))));
+     G ((!vermot || spec_waiting_ack_ver_mot ||  X (!spec_waiting_ack_ver_mot)));
+     G ((vermot || spec_waiting_ack_ver_mot ||  X (spec_waiting_ack_ver_mot)));
+     G ((!ack_ver || !spec_waiting_ack_ver_mot ||  X (!spec_waiting_ack_ver_mot)));
+     G ((ack_ver || !spec_waiting_ack_ver_mot ||  X (spec_waiting_ack_ver_mot)));
+     G ((!hormot || spec_waiting_ack_hor_mot ||  X (!spec_waiting_ack_hor_mot)));
+     G ((hormot || spec_waiting_ack_hor_mot ||  X (spec_waiting_ack_hor_mot)));
+     G ((!ack_hor || !spec_waiting_ack_hor_mot ||  X (!spec_waiting_ack_hor_mot)));
+     G ((ack_hor || !spec_waiting_ack_hor_mot ||  X (spec_waiting_ack_hor_mot)));
+  }
+
+  ASSUMPTIONS {
+     G ( F (!ack_hor));
+     G (( F (!color_0) ||  F (color_1) ||  F (color_2)));
+  }
+
+  GUARANTEES {
+     G ( F (!hormot));
+  }
+}

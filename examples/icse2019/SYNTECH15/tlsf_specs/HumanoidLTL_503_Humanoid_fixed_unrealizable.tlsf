@@ -1,0 +1,42 @@
+INFO {
+  TITLE:       "Humanoid"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    obstacle;inputmovemode_0;inputmovemode_1;inputmovemode_2;button;noise;
+  }
+  OUTPUTS {
+    leftmotor_0;leftmotor_1;leftmotor_2;rightmotor_0;rightmotor_1;rightmotor_2;headmotor_0;headmotor_1;spec_outputmovemode_0;spec_outputmovemode_1;spec_outputmovemode_2;
+  }
+
+  REQUIRE {
+     G ((!inputmovemode_0 || !inputmovemode_1 || inputmovemode_2 ||  X (!obstacle) ||  X ((inputmovemode_0 || inputmovemode_1 || inputmovemode_2))));
+  }
+
+  ASSERT {
+     G ((!obstacle || inputmovemode_0 || inputmovemode_1 || inputmovemode_2 || (leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2 && !spec_outputmovemode_0 && spec_outputmovemode_1 && !spec_outputmovemode_2)));
+     G ((obstacle || !inputmovemode_0 || inputmovemode_1 || inputmovemode_2 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2 && !spec_outputmovemode_0 && !spec_outputmovemode_1 && !spec_outputmovemode_2)));
+     G ((!inputmovemode_0 || !inputmovemode_1 || inputmovemode_2 ||  X (button) ||  X ((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2)) ||  X ((inputmovemode_0 || inputmovemode_1 || inputmovemode_2))));
+     G (((inputmovemode_0 && inputmovemode_1 && !inputmovemode_2) ||  X (obstacle) ||  X (button) ||  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((inputmovemode_0 || inputmovemode_1 || inputmovemode_2))));
+     G ((!obstacle || spec_outputmovemode_0 || spec_outputmovemode_1 || spec_outputmovemode_2));
+     G (((!inputmovemode_0 && inputmovemode_1 && !inputmovemode_2 && spec_outputmovemode_0 && spec_outputmovemode_1 && !spec_outputmovemode_2) || ((inputmovemode_0 || !inputmovemode_1 || inputmovemode_2) && (!spec_outputmovemode_0 || !spec_outputmovemode_1 || spec_outputmovemode_2))));
+     G ((inputmovemode_0 || !inputmovemode_1 || inputmovemode_2 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && rightmotor_1 && !rightmotor_2)));
+     G ((!inputmovemode_0 || !inputmovemode_1 || inputmovemode_2 || (leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && rightmotor_2)));
+     G (((inputmovemode_0 && inputmovemode_1 && !inputmovemode_2) || (!inputmovemode_0 && inputmovemode_1 && !inputmovemode_2) || ((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2 || !rightmotor_0 || !rightmotor_1 || rightmotor_2))));
+     G (((!headmotor_0 && headmotor_1) || ((inputmovemode_0 || !inputmovemode_1 || inputmovemode_2) && (!inputmovemode_0 || !inputmovemode_1 || inputmovemode_2))));
+     G ((obstacle || !inputmovemode_0 || !inputmovemode_1 || inputmovemode_2 || (!spec_outputmovemode_0 && !spec_outputmovemode_1 && !spec_outputmovemode_2)));
+     G ((inputmovemode_0 || inputmovemode_1 || !inputmovemode_2 || spec_outputmovemode_0 || spec_outputmovemode_1 || !spec_outputmovemode_2 || (leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && !rightmotor_2 && headmotor_0 && headmotor_1) || (!leftmotor_0 && leftmotor_1 && !leftmotor_2 && !rightmotor_0 && rightmotor_1 && !rightmotor_2 && !headmotor_0 && headmotor_1)));
+     G ((inputmovemode_0 || inputmovemode_1 || !inputmovemode_2 || button || (((inputmovemode_0 && spec_outputmovemode_0) || (!inputmovemode_0 && !spec_outputmovemode_0)) && ((inputmovemode_1 && spec_outputmovemode_1) || (!inputmovemode_1 && !spec_outputmovemode_1)) && ((inputmovemode_2 && spec_outputmovemode_2) || (!inputmovemode_2 && !spec_outputmovemode_2)))));
+     G ((obstacle || inputmovemode_0 || inputmovemode_1 || inputmovemode_2 || !button || (leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2 && !spec_outputmovemode_0 && !spec_outputmovemode_1 && spec_outputmovemode_2)));
+     G ((obstacle || inputmovemode_0 || inputmovemode_1 || !inputmovemode_2 || !button || (!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2 && !spec_outputmovemode_0 && !spec_outputmovemode_1 && !spec_outputmovemode_2)));
+     G ((button || spec_outputmovemode_0 || spec_outputmovemode_1 || !spec_outputmovemode_2 || (!inputmovemode_0 && !inputmovemode_1 && inputmovemode_2)));
+  }
+
+  GUARANTEES {
+     G ( F ((leftmotor_0 && leftmotor_1 && leftmotor_2)));
+  }
+}

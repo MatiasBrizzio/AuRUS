@@ -90,14 +90,14 @@ guarantee
  guarantee 
 --	G ((Y(search = M0) & Noise = NOISE & Heading != next_head & Button != PRESSED) -> 
 --		(search = M1));
-	G (((search = M0) & (next(Noise) = NOISE) & (next(Heading) != next_head) & (next(Button) != PRESSED)) -> (next(search) = M1));
+	G (((search = M0) & (next(Noise = NOISE)) & (next(!(Heading = next_head))) & (next(!(Button = PRESSED)))) -> (next(search = M1)));
 
 guarantee
 --	G((Y(search = M1) & Heading = next_head) -> search = M0);
-	G((search = M1) & (next(Heading) = next_head) -> (next(search) = M0));
+	G(((search = M1) & (next(Heading = next_head))) -> (next(search = M0)));
  guarantee
  --	G((Y(search = M1) & Heading != next_head) -> search = M1);
-	G(((search = M1) & (next(Heading) != next_head)) -> (next(search) = M1));
+	G(((search = M1) & (next(!(Heading = next_head)))) -> (next(search = M1)));
  ////////////////////////////////////////////////////////////////
  	
  	
@@ -136,7 +136,7 @@ guarantee
 	//G((Obstacle = BLOCKED) -> (!(nextMoveMode = FWD)));
 	
 --	G((next(Obstacle = BLOCKED) & !((Y(nextMoveMode = TURN_LEFT_2)))) -> next(!(nextMoveMode = FWD)));
-	G(((next(next(Obstacle) = BLOCKED)) & !(((nextMoveMode = TURN_LEFT_2)))) -> (next(next(!(nextMoveMode = FWD)))));
+	G(((next(next(Obstacle = BLOCKED))) & !(((nextMoveMode = TURN_LEFT_2)))) -> (next(next(!(nextMoveMode = FWD)))));
 	
 guarantee
 	G(((nextMoveMode = BWD) & next(nextMoveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
@@ -182,7 +182,7 @@ guarantee // calibration movement to start turning
 	
 guarantee // Calibration at the end of turning
 --	G  (((nextMoveMode = FWD) & (Y(nextMoveMode = TURN_LEFT_2))) <-> next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
-	G  (((next(nextMoveMode) = FWD) & ((nextMoveMode = TURN_LEFT_2))) <-> (next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD))));	
+	G  (((next(nextMoveMode = FWD)) & ((nextMoveMode = TURN_LEFT_2))) <-> (next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD))));	
 guarantee //Cant start turning from backward movement
 	G ( ((nextMoveMode = BWD)) -> next(nextMoveMode != TURN_LEFT_1));
 
