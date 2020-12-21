@@ -118,7 +118,7 @@ guarantee // Calibration at the end of turning
 --	G ( (Y(spec_nextMoveMode = BWD)) -> (spec_nextMoveMode != TURN_LEFT_1)) ;
 
 guarantee //Cant start turning from backward movement
-	G ( ((spec_nextMoveMode = BWD)) -> next(spec_nextMoveMode != TURN_LEFT_1)) ;
+	G ( ((spec_nextMoveMode = BWD)) -> next(!(spec_nextMoveMode = TURN_LEFT_1)));
 	
 assumption
   respondsTo((spec_search=M1),(Heading=next_head));

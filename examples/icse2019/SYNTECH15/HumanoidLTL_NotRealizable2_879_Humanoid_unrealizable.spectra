@@ -78,15 +78,15 @@ LTLSPEC
 	
 guarantee
 --	G(((Obstacle = BLOCKED) & !(Y(Y(spec_nextMoveMode = TURN_LEFT_2)))) -> (!(spec_nextMoveMode = FWD)));
-	G(( (next(next(Obstacle)) = BLOCKED) & !(((spec_nextMoveMode = TURN_LEFT_2)))) -> (!(next(next(spec_nextMoveMode)) = FWD)));
+	G(((next(next(Obstacle = BLOCKED))) & !(((spec_nextMoveMode = TURN_LEFT_2)))) -> ((next(next(!(spec_nextMoveMode = FWD))))));
 	
 guarantee
 --	G((Y(spec_nextMoveMode = BWD) & (spec_nextMoveMode = FWD)) <-> (LeftMotor = FWD & RightMotor = BWD));
-	G(((spec_nextMoveMode = BWD) & (next(spec_nextMoveMode) = FWD)) <-> (next(LeftMotor) = FWD & next(RightMotor) = BWD));
+	G(((spec_nextMoveMode = BWD) & (next(spec_nextMoveMode = FWD))) <-> next((LeftMotor = FWD & RightMotor = BWD)));
 
 guarantee
 --	G((Y(spec_nextMoveMode = FWD) & (spec_nextMoveMode = BWD)) <-> (LeftMotor = BWD & RightMotor = FWD));
-	G(((spec_nextMoveMode = FWD) & (next(spec_nextMoveMode) = BWD)) <-> (next(LeftMotor) = BWD & next(RightMotor) = FWD));
+	G(((spec_nextMoveMode = FWD) & (next(spec_nextMoveMode = BWD))) <-> (next(LeftMotor = BWD & RightMotor = FWD)));
 	
 guarantee
   GF (spec_nextMoveMode=FWD);
@@ -102,22 +102,22 @@ guarantee
 
 guarantee
 --	G (Y(spec_nextMoveMode = TURN_LEFT_1) -> (LeftMotor = FWD & RightMotor = TURN_FWD));
-	G ((spec_nextMoveMode = TURN_LEFT_1) -> (next(LeftMotor) = FWD & next(RightMotor) = TURN_FWD));	
+	G ((spec_nextMoveMode = TURN_LEFT_1) -> (next(LeftMotor = FWD & RightMotor = TURN_FWD)));	
 guarantee
 --	G (Y(spec_nextMoveMode = TURN_LEFT_2) -> (LeftMotor = BWD & RightMotor = TURN_BWD));
-	G ((spec_nextMoveMode = TURN_LEFT_2) -> (next(LeftMotor) = BWD & next(RightMotor) = TURN_BWD));
+	G ((spec_nextMoveMode = TURN_LEFT_2) -> (next(LeftMotor = BWD & RightMotor = TURN_BWD)));
 	
 guarantee
 --	G (Y(spec_nextMoveMode = TURN_LEFT_1) <-> spec_nextMoveMode = TURN_LEFT_2);
-	G ((spec_nextMoveMode = TURN_LEFT_1) <-> next(spec_nextMoveMode) = TURN_LEFT_2);
+	G ((spec_nextMoveMode = TURN_LEFT_1) <-> next(spec_nextMoveMode = TURN_LEFT_2));
 	
 guarantee //This motor movements can only be used in turning
 --	G (!(Y(spec_nextMoveMode = TURN_LEFT_1) | Y(spec_nextMoveMode = TURN_LEFT_2)) -> !(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD));
-	G (!((spec_nextMoveMode = TURN_LEFT_1) | (spec_nextMoveMode = TURN_LEFT_2)) -> !(next(LeftMotor) = TURN_BWD | next(RightMotor) = TURN_BWD | next(LeftMotor) = TURN_FWD | next(RightMotor) = TURN_FWD));	
+	G (!((spec_nextMoveMode = TURN_LEFT_1) | (spec_nextMoveMode = TURN_LEFT_2)) -> (next(!(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD))));	
 	
 guarantee //Going backward can only start from a calibrated FWD movement
 --	G ((spec_nextMoveMode = BWD) -> (Y(spec_nextMoveMode = FWD) | Y(spec_nextMoveMode = BWD)));
-	G ((next(spec_nextMoveMode) = BWD) -> ((spec_nextMoveMode = FWD) | (spec_nextMoveMode = BWD)));
+	G ((next(spec_nextMoveMode = BWD)) -> ((spec_nextMoveMode = FWD) | (spec_nextMoveMode = BWD)));
 
 /* Trying to remove since ^^^ is more generalized 
 LTLSPEC
@@ -126,15 +126,15 @@ LTLSPEC
 
 guarantee // calibration movement to start turning
 --	G  ((Y(spec_nextMoveMode = FWD) & spec_nextMoveMode = TURN_LEFT_1) <-> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
-	G  (((spec_nextMoveMode = FWD) & (next(spec_nextMoveMode) = TURN_LEFT_1)) <-> (next(LeftMotor) = CALIB_TURN & next(RightMotor) = CALIB_TURN));
+	G  (((spec_nextMoveMode = FWD) & (next(spec_nextMoveMode = TURN_LEFT_1))) <-> next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
 	
 guarantee // Calibration at the end of turning
 --	G  ((Y(spec_nextMoveMode = FWD) & Y(Y(spec_nextMoveMode = TURN_LEFT_2))) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
-	G  (((next(spec_nextMoveMode) = FWD) & ((spec_nextMoveMode = TURN_LEFT_2))) <-> ((next(next(LeftMotor)) = CALIB_FWD) & (next(RightMotor) = CALIB_FWD)));
+	G  (((next(spec_nextMoveMode = FWD)) & ((spec_nextMoveMode = TURN_LEFT_2))) <-> next(next((LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD))));
 	
 guarantee //Cant start turning from backward movement
 --	G ( (Y(spec_nextMoveMode = BWD)) -> (spec_nextMoveMode != TURN_LEFT_1)) ;
-	G ( ((spec_nextMoveMode = BWD)) -> (next(spec_nextMoveMode) != TURN_LEFT_1)) ;
+	G ( ((spec_nextMoveMode = BWD)) -> (next(!(spec_nextMoveMode = TURN_LEFT_1))));
 	
 assumption
   respondsTo((spec_search=M1),(Heading=next_head));
@@ -153,7 +153,7 @@ assumption
 	
 assumption
 --    GF ((Y(spec_nextMoveMode=TURN_LEFT_2)&Obstacle=CLEAR));
-    GF (((spec_nextMoveMode=TURN_LEFT_2)&next(Obstacle)=CLEAR));
+    GF (((spec_nextMoveMode=TURN_LEFT_2)&next(Obstacle=CLEAR)));
 
 //LTLSPECENV
 	//G((Y(Y(spec_nextMoveMode = TURN_LEFT_2)) & Y(spec_nextMoveMode = FWD)) -> Obstacle = CLEAR);
