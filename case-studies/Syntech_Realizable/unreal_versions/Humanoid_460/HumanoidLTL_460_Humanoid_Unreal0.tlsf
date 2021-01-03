@@ -1,0 +1,33 @@
+INFO {
+  TITLE:       "Humanoid"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    obstacle;inputmovemode_0;inputmovemode_1;
+  }
+  OUTPUTS {
+    leftmotor_0;leftmotor_1;leftmotor_2;rightmotor_0;rightmotor_1;rightmotor_2;headmotor_0;headmotor_1;outputmovemode_0;outputmovemode_1;
+  }
+
+  ASSERT {
+     G ((!obstacle || inputmovemode_0 || inputmovemode_1 || (leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2 && !outputmovemode_0 && outputmovemode_1)));
+     G ((obstacle || !inputmovemode_0 || inputmovemode_1 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2 && !outputmovemode_0 && !outputmovemode_1)));
+     G ((!inputmovemode_0 || !inputmovemode_1 ||  X ((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2)) ||  X ((inputmovemode_0 || inputmovemode_1))));
+     G (((inputmovemode_0 && inputmovemode_1) ||  X (obstacle) ||  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((inputmovemode_0 || inputmovemode_1))));
+     G ((!obstacle || outputmovemode_0 || outputmovemode_1));
+     G (((!inputmovemode_0 && inputmovemode_1 && outputmovemode_0 && outputmovemode_1) || ((inputmovemode_0 || !inputmovemode_1) && (!outputmovemode_0 || !outputmovemode_1))));
+     G ((inputmovemode_0 || !inputmovemode_1 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && rightmotor_1 && !rightmotor_2)));
+     G ((!inputmovemode_0 || !inputmovemode_1 || (leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && rightmotor_2)));
+     G (((inputmovemode_0 && inputmovemode_1) || (!inputmovemode_0 && inputmovemode_1) || ((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2 || !rightmotor_0 || !rightmotor_1 || rightmotor_2))));
+     G (((!headmotor_0 && headmotor_1) || ((inputmovemode_0 || !inputmovemode_1) && (!inputmovemode_0 || !inputmovemode_1))));
+
+  }
+
+  GUARANTEES {
+     G ((obstacle || !inputmovemode_0 || !inputmovemode_1 || (!outputmovemode_0 && !outputmovemode_1)));
+  }
+}

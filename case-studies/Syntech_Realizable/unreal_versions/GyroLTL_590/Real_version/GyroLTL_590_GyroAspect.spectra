@@ -1,0 +1,99 @@
+// Initial file contents for AspectLTL aspect file (*.altl)
+module GyroAspect
+		env {CLEAR, BLOCKED} distSense ;
+		env boolean isReady ;
+		env {AUTO, NOP, FWD, BWD, TURN_LEFT, TURN_RIGHT} bluetoothCmd ;
+		env {OK, FELL} balancerStatus ;
+		sys {STP, FWD, BWD, TURN_LEFT, TURN_RIGHT} balancer ;
+		sys {OK, FELL} bluetoothStatus ;
+		//new spec_drivingMode : {AUTO, MANUAL};
+		//new spec_prevspec_drivingMode : boolean;
+
+//LTLSPEC
+//	spec_drivingMode=AUTO;
+
+guarantee -- initial state
+	balancer=STP;
+	
+guarantee
+	G (!isReady -> balancer=STP);
+
+guarantee -- safety requirement
+	G ((balancer=FWD) -> (distSense=CLEAR));
+
+guarantee -- goal of gyro
+  GF (bluetoothCmd=AUTO->balancer=FWD);
+	//G F (balancer=FWD);
+
+guarantee
+  GF (bluetoothCmd=AUTO->(balancer=TURN_RIGHT|balancer=TURN_LEFT));
+		
+//LTLSPEC
+//	G ((bluetoothCmd=AUTO) -> ((balancer=FWD) -> next((bluetoothCmd=AUTO) -> !(balancer=TURN_RIGHT | balancer=TURN_LEFT)))); 
+
+guarantee
+	G ((bluetoothCmd=AUTO) -> ((distSense=CLEAR & isReady) -> (balancer=FWD)));
+
+//!LTLSPEC
+	//!G ((bluetoothCmd=AUTO) -> ((distSense=BLOCKED & balancer=STP & isReady) -> next(!(balancer=STP)))); // maybe remove and replace with env assumptions
+	
+/*LTLSPEC
+	G ((bluetoothCmd=FWD) -> ((distSense=CLEAR & isReady)-> balancer=FWD));
+	
+LTLSPEC
+	G ((bluetoothCmd=BWD) -> (isReady -> balancer=BWD));
+	
+LTLSPEC
+	G ((bluetoothCmd=TURN_RIGHT) -> (isReady -> balancer=TURN_RIGHT));
+	
+LTLSPEC
+	G ((bluetoothCmd=TURN_LEFT) -> (isReady -> balancer=TURN_LEFT));
+	
+LTLSPEC
+	G ((bluetoothCmd=NOP) -> (isReady -> balancer=STP));
+*/
+
+define 
+  	moveAwayFromObstacle := !(balancer=FWD | balancer=STP); 
+  
+assumption
+  respondsTo(moveAwayFromObstacle,(!moveAwayFromObstacle|distSense=CLEAR));
+
+assumption
+  GF (isReady);
+	
+assumption
+	G (isReady -> next(isReady));
+
+assumption
+	!isReady;
+	
+assumption
+	bluetoothCmd=AUTO;
+	
+ 
+assumption
+	G ((distSense=CLEAR & (balancer=STP | balancer=BWD)) -> next(distSense=CLEAR));
+
+assumption
+	G ((distSense=BLOCKED & (balancer=STP | balancer=FWD)) -> next(distSense=BLOCKED));
+	
+assumption
+  respondsTo((balancer=FWD),(balancer!=FWD|distSense=BLOCKED));
+	
+/*
+LTLSPECENV
+	bluetoothStatus=OK & balancerStatus=OK;
+ 	
+LTLSPEC
+	G ((balancerStatus=OK) -> (bluetoothStatus=OK));
+
+LTLSPEC
+	G ((balancerStatus=FELL) -> (bluetoothStatus=FELL));
+	*/
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

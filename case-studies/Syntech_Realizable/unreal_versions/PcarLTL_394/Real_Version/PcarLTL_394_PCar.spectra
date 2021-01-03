@@ -1,0 +1,31 @@
+// Initial file contents for AspectLTL aspect file (*.altl)
+module PCar
+		env {CLEAR, BLOCKED, OBJECT} obstacle ;
+		env {CLEAR,P_O, BLOCKED} sideSense;
+
+		sys {FWD, BWD, STOP} throttle ;
+		sys {RIGHT,LEFT, CENTER} steer ;
+
+guarantee
+	G (obstacle=BLOCKED -> ( !(throttle = FWD) ));
+//LTLSPEC
+//	G ( (throttle = BWD & steer = LEFT)  -> next(!(throttle = FWD & steer = LEFT)));
+//LTLSPEC
+//	G ( (throttle = BWD & steer = RIGHT)  -> next(!(throttle = FWD & steer = RIGHT)));
+//LTLSPEC
+//	G (((obstacle = CLEAR) & (sideSense = BLOCKED)) ->  !((throttle = FWD) & (steer=RIGHT)));
+guarantee
+	G (((obstacle = CLEAR) & (sideSense = CLEAR)) ->  (steer = CENTER));
+guarantee
+  GF ((throttle=FWD)&(steer=CENTER));
+assumption
+	G ((throttle = BWD)  -> next(obstacle = CLEAR));
+assumption
+  respondsTo(((throttle=FWD)&(steer=CENTER)&(sideSense=BLOCKED)),(sideSense=CLEAR));
+
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}

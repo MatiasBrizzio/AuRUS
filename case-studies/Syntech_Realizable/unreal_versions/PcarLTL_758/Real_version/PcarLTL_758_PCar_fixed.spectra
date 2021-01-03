@@ -1,0 +1,124 @@
+// Initial file contents for AspectLTL aspect file (*.altl)
+module PCar
+ env {CLEAR, BLOCKED} obstacle ;
+ env {CLEAR,P_O, BLOCKED} sideSense;
+ env {NA,PARALLEL} parkResult;
+// new emgButton: boolean;
+ sys {FWD, BWD, STOP} throttle ;
+ sys {RIGHT,LEFT, CENTER} steer ;
+ sys {START,STOP,CHECK} parkCommand ;
+ sys {SEEKING,MEASURING,PARKING_0,PARKING_1,PARKING_2,PARKED} spec_policy;
+
+//LTLSPEC //initial state
+// (throttle = STOP & steer= CENTER & spec_policy = SEEKING & parkCommand = STOP & !spec_park);
+
+//initial state - NOT parking & currently seeking for a parking space
+guarantee
+( spec_policy=SEEKING |( spec_policy=MEASURING & parkCommand = START));
+
+//Goal State - be at a parked state.
+guarantee
+  GF (spec_policy=PARKED);
+
+//LTLSPEC
+// G F ( (throttle = FWD) & (steer = CENTER) ); 
+//LTLSPEC
+// G (!(spec_policy = PARKED) -> F !(throttle = STOP));
+
+
+guarantee
+ G (((spec_policy=SEEKING|spec_policy=MEASURING)& obstacle = BLOCKED)->(throttle = BWD)); 
+ 
+//If Blocked we don't want to drive into obstacles. 
+guarantee
+ G ((obstacle = BLOCKED)->!(throttle = FWD));
+
+//If Blocked from the right, don't drive into the wall.
+guarantee
+ G ((sideSense = BLOCKED) -> !((steer =RIGHT) &(throttle=FWD)));
+ 
+//spec_policy state tarnsition restrictions
+//LTLSPEC
+// G (((spec_policy = SEEKING) & (sideSense=BLOCKED) & (obstacle=CLEAR))
+// -> (next(spec_policy)=spec_policy) & throttle=FWD & parkCommand=STOP &steer = CENTER);
+//LTLSPEC
+// G (((spec_policy = SEEKING) & (sideSense=BLOCKED))
+// -> (next(spec_policy)=spec_policy) & parkCommand=STOP & steer = CENTER);
+
+guarantee
+G(((spec_policy = SEEKING) & (sideSense = BLOCKED)) ->  ((next(spec_policy) = spec_policy)));
+
+
+guarantee
+ G (((spec_policy = SEEKING) & (sideSense=CLEAR | sideSense = P_O) & (obstacle = CLEAR))
+ -> (next(spec_policy) = MEASURING)&throttle=FWD & parkCommand=START & steer = CENTER);
+ 
+guarantee
+ G (((spec_policy = MEASURING) & (sideSense=CLEAR | sideSense = P_O)& (obstacle = CLEAR) &(parkResult =NA))
+ -> (next(spec_policy) = spec_policy)&throttle=FWD & parkCommand=CHECK & steer = CENTER);
+guarantee
+ G (((spec_policy = MEASURING) & (sideSense=CLEAR | sideSense = P_O)& (obstacle = CLEAR) &(parkResult =PARALLEL))
+ -> (next(spec_policy) = PARKING_0) & (throttle = STOP) & (parkCommand = STOP) & steer = RIGHT);
+ 
+guarantee
+ G (((spec_policy = MEASURING) & (sideSense=BLOCKED) & (obstacle = CLEAR) & (parkResult =PARALLEL)) 
+ -> (next(spec_policy) = PARKING_0) & (throttle = STOP) & (parkCommand = STOP) & steer = RIGHT);
+ 
+guarantee
+ G (((spec_policy = MEASURING) & (sideSense=BLOCKED)& (obstacle = CLEAR) &(parkResult =NA))
+ -> (next(spec_policy) = SEEKING) & (throttle = FWD) & (parkCommand = STOP));
+ 
+guarantee
+ G ((spec_policy = PARKING_0)
+ -> (next(spec_policy) = PARKING_1) & (throttle = BWD) & steer = RIGHT & (parkCommand = STOP));
+ 
+guarantee
+ G ((spec_policy = PARKING_1)
+ -> (next(spec_policy) = PARKING_2) & (throttle = STOP) & steer = LEFT & (parkCommand = STOP));
+ 
+guarantee
+ G ((spec_policy = PARKING_2)
+ -> (next(spec_policy) = PARKED) & (throttle = BWD) & steer = LEFT & (parkCommand = STOP));
+ 
+guarantee
+ G (((spec_policy = PARKED))
+ -> (next(spec_policy) = spec_policy) & (throttle = STOP) & (steer = CENTER) & (parkCommand = STOP));
+ 
+guarantee
+ G(((obstacle=BLOCKED) &!(spec_policy=PARKING_0 |spec_policy=PARKING_1 |spec_policy=PARKING_2| spec_policy=PARKED))->(next(spec_policy) = SEEKING));
+ 
+guarantee
+ G((obstacle=BLOCKED)->(parkCommand=STOP));
+ 
+guarantee
+G (spec_policy = SEEKING -> (throttle != STOP));
+
+assumption
+  respondsTo((throttle=BWD),(obstacle=CLEAR));
+
+assumption
+ G ((throttle=STOP)->((obstacle=next(obstacle))&(sideSense=next(sideSense))));
+
+assumption
+  respondsTo((spec_policy=SEEKING)&(throttle=FWD),(spec_policy=PARKING_0));
+//LTLSPECENV
+// G ((spec_policy=SEEKING) -> (parkResult = NA));
+assumption
+ parkResult = NA ;
+
+
+
+//LTLSPEC
+// G ((spec_spec_park) ->F((obstacle = BLOCKED) & (sideSense = BLOCKED)));
+
+//LTLSPECENV
+// G((!((spec_policy = spec_parkING) | (spec_policy = MEASURING) | (spec_policy = spec_parkED )) -> !next(spec_park) ));
+//
+//LTLSPECENV
+// G((spec_park & (spec_policy = spec_parkED) -> next(spec_park)));
+pattern respondsTo(trigger, response) {
+  var boolean responded;
+  responded;
+  G (next(responded) iff (response or responded and !trigger));
+  GF (responded);
+}
