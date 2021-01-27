@@ -1170,6 +1170,8 @@ public class TLSF_Utils {
 	}
 	
 	public static Tlsf fromSpectra(Spectra spec) {
+		List<Formula> additionalAssumptions = new LinkedList<Formula>();
+		List<Formula> additionalGuarantee = new LinkedList<Formula>();
 		String new_tlsf_spec = "INFO {\n"
 			    + "  TITLE:       " + "\"" + spec.title() + "\"" + "\n"
 			    + "  DESCRIPTION: " + "\""+ "empty description" + "\""+ "\n";			    
@@ -1198,17 +1200,35 @@ public class TLSF_Utils {
 			    + '\n';
 		//init
 		
+		List<Formula> lst= new LinkedList<Formula>();
 		if (!spec.thetaE().isEmpty()) {
+			for (Formula f : spec.thetaE()) {
+				if (hasGFPattern(f)) 
+					additionalAssumptions.add(f);
+				else if (Formula_Utils.numOfTemporalOperators(f) > 0) 
+					additionalAssumptions.add(f);
+				else
+					lst.add(f);
+			}
 			new_tlsf_spec += "  INITIALLY {\n"
 				+ "    "
-			    + LabelledFormula.of(Conjunction.of(spec.thetaE()),spec.variables()) + ";\n"
+			    + LabelledFormula.of(Conjunction.of(lst),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
 		if (!spec.thetaS().isEmpty()) {
+			lst.clear();
+			for (Formula f : spec.thetaS()) {
+				if (hasGFPattern(f)) 
+					additionalGuarantee.add(f);
+				else if (Formula_Utils.numOfTemporalOperators(f) > 0) 
+					additionalGuarantee.add(f);
+				else
+					lst.add(f);
+			}
 			new_tlsf_spec += "  PRESET {\n"
 				+ "    "
-			    + LabelledFormula.of(Conjunction.of(spec.thetaS()),spec.variables()) + ";\n"
+			    + LabelledFormula.of(Conjunction.of(lst),spec.variables()) + ";\n"
 			    + "  }\n"
 			    + '\n';
 		}
@@ -1232,18 +1252,19 @@ public class TLSF_Utils {
 			+ '\n';
 		}
 
-		if (!spec.phiE().isEmpty()) {
+		additionalAssumptions.addAll(spec.phiE());
+		if (!additionalAssumptions.isEmpty()) {
 			new_tlsf_spec += "  ASSUMPTIONS {\n";
-		    for(Formula a : spec.phiE())
-		    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(a)),spec.variables()) + ";\n";
+		    for(Formula a : additionalAssumptions)
+		    	new_tlsf_spec += "    " + LabelledFormula.of(a,spec.variables()) + ";\n";
 			new_tlsf_spec += "  }\n"
 							+ '\n';
 		}
-
-		if (!spec.phiS().isEmpty()) {
+		additionalGuarantee.addAll(spec.phiS());
+		if (!additionalGuarantee.isEmpty()) {
 			new_tlsf_spec += "  GUARANTEES {\n";
 			
-		    for (Formula f : spec.phiS()) {
+		    for (Formula f : additionalGuarantee) {
 		    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(f)),spec.variables()) + ";\n"	;
 		    }
 		    new_tlsf_spec += "  }\n";
@@ -1322,7 +1343,7 @@ public class TLSF_Utils {
 			else if (child instanceof Conjunction || child instanceof Disjunction) {
 				for (Formula c : child.children())
 					if (!(c instanceof FOperator))
-						return false;
+						continue;
 				return true;
 			}
 		}
