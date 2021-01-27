@@ -129,8 +129,14 @@ public class StrixHelper {
 					inputs = inputs.replaceAll(v, v.toLowerCase());
 					outputs = outputs.replaceAll(v, v.toLowerCase());
 				}
-				outputs = outputs.substring(0, outputs.length() - 1);
-				inputs = inputs.substring(0, inputs.length() - 1);
+				if (outputs.length() != 0)
+					outputs = outputs.substring(0, outputs.length() - 1);
+				else
+					outputs = "";
+				if (inputs.length() != 0)
+					inputs = inputs.substring(0, inputs.length() - 1);
+				else inputs = "";
+//				System.out.println(formula);
 				return executeStrix(formula,inputs,outputs);
 //			}
 		}
@@ -145,6 +151,7 @@ public class StrixHelper {
 	 */
 	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
 		Process pr = null;
+		System.out.println(path);
 		if (Settings.USE_SPECTRA) {
 			if (Settings.USE_DOCKER)
 				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-spectra.sh", path});
@@ -269,11 +276,16 @@ public class StrixHelper {
 	 */
 	private static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
 		Process pr = null;
+		if (outs.length() == 0) outs = "\"\"";
+		if (ins.length() == 0) ins = "\"\"";
 		if (Settings.USE_DOCKER)
 			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", formula, ins, outs});
-		else
+		else {
+//			System.out.println(outs + " "+ ins);
 			pr = Runtime.getRuntime().exec( new String[]{"lib/new_strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
-		boolean timeout = false;
+			pr.toString();
+		}
+			boolean timeout = false;
 		if(!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
 		    timeout = true; //kill the process. 
 			pr.destroy(); // consider using destroyForcibly instead
