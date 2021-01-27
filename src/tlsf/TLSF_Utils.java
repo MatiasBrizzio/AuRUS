@@ -1255,8 +1255,12 @@ public class TLSF_Utils {
 		additionalAssumptions.addAll(spec.phiE());
 		if (!additionalAssumptions.isEmpty()) {
 			new_tlsf_spec += "  ASSUMPTIONS {\n";
-		    for(Formula a : additionalAssumptions)
-		    	new_tlsf_spec += "    " + LabelledFormula.of(a,spec.variables()) + ";\n";
+		    for(Formula a : additionalAssumptions) {
+		    	if (Formula_Utils.numOfTemporalOperators(a)>0)
+		    		new_tlsf_spec += "    " + LabelledFormula.of(a,spec.variables()) + ";\n";
+		    	else
+			    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(a)),spec.variables()) + ";\n"	;
+		    }
 			new_tlsf_spec += "  }\n"
 							+ '\n';
 		}
@@ -1265,7 +1269,10 @@ public class TLSF_Utils {
 			new_tlsf_spec += "  GUARANTEES {\n";
 			
 		    for (Formula f : additionalGuarantee) {
-		    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(f)),spec.variables()) + ";\n"	;
+		    	if (Formula_Utils.numOfTemporalOperators(f)>0)
+		    		new_tlsf_spec += "    " + LabelledFormula.of(f,spec.variables()) + ";\n";
+		    	else
+			    	new_tlsf_spec += "    " + LabelledFormula.of(GOperator.of(FOperator.of(f)),spec.variables()) + ";\n"	;
 		    }
 		    new_tlsf_spec += "  }\n";
 		}
