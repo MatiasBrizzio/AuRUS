@@ -14,7 +14,7 @@ MAIN {
   }
 
   INITIALLY {
-    (!frontdistsense && !backdistsense && !isready &&  G (((balancer_0 && !balancer_1 && !balancer_2) || (!balancer_0 && !balancer_1 && !balancer_2) ||  F (!frontdistsense) ||  F ((balancer_0 && !balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && !balancer_2)))) &&  G (((!balancer_0 && balancer_1 && !balancer_2) || (!balancer_0 && !balancer_1 && !balancer_2) ||  F (!backdistsense) ||  F ((!balancer_0 && balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && !balancer_2)))));
+    (!frontdistsense && !backdistsense && !isready);
   }
 
   PRESET {
@@ -33,7 +33,9 @@ MAIN {
   }
 
   ASSUMPTIONS {
+     G (((balancer_0 && !balancer_1 && !balancer_2) || (!balancer_0 && !balancer_1 && !balancer_2) ||  F (!frontdistsense) ||  F ((balancer_0 && !balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && !balancer_2))));
      G ( F (isready));
+     G (((!balancer_0 && balancer_1 && !balancer_2) || (!balancer_0 && !balancer_1 && !balancer_2) ||  F (!backdistsense) ||  F ((!balancer_0 && balancer_1 && !balancer_2)) ||  F ((!balancer_0 && !balancer_1 && !balancer_2))));
   }
 
   GUARANTEES {

@@ -13,12 +13,8 @@ MAIN {
     vermot;hormot;botmot_0;botmot_1;motspeed_0;motspeed_1;spec_currentcolor_0;spec_currentcolor_1;spec_currentcolor_2;spec_dropping;spec_speedbutton_valid_pressed;spec_waiting_ack_ver_mot;spec_waiting_ack_hor_mot;
   }
 
-  INITIALLY {
-    ( G ((!spec_waiting_ack_ver_mot ||  F (ack_ver))) &&  G ((!spec_waiting_ack_hor_mot ||  F (ack_hor))));
-  }
-
   PRESET {
-    (!motspeed_0 && !motspeed_1 && !spec_dropping && !spec_waiting_ack_ver_mot && !spec_waiting_ack_hor_mot &&  G (((color_0 && !color_1 && !color_2) ||  F ((!hormot && ((detect_0 && spec_currentcolor_0) || (!detect_0 && !spec_currentcolor_0)) && ((detect_1 && spec_currentcolor_1) || (!detect_1 && !spec_currentcolor_1)) && ((detect_2 && spec_currentcolor_2) || (!detect_2 && !spec_currentcolor_2)))))));
+    (!motspeed_0 && !motspeed_1 && !spec_dropping && !spec_waiting_ack_ver_mot && !spec_waiting_ack_hor_mot);
   }
 
   REQUIRE {
@@ -54,11 +50,14 @@ MAIN {
   }
 
   ASSUMPTIONS {
-     G ( F (!ack_hor));
      G (( F (!color_0) ||  F (color_1) ||  F (color_2)));
+     G ((!spec_waiting_ack_hor_mot ||  F (ack_hor)));
+     G ((!spec_waiting_ack_ver_mot ||  F (ack_ver)));
+     G ( F (!ack_hor));
   }
 
   GUARANTEES {
+     G (((color_0 && !color_1 && !color_2) ||  F ((!hormot && ((detect_0 && spec_currentcolor_0) || (!detect_0 && !spec_currentcolor_0)) && ((detect_1 && spec_currentcolor_1) || (!detect_1 && !spec_currentcolor_1)) && ((detect_2 && spec_currentcolor_2) || (!detect_2 && !spec_currentcolor_2))))));
      G ( F (!hormot));
   }
 }

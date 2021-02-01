@@ -14,7 +14,7 @@ MAIN {
   }
 
   INITIALLY {
-    (sidesense_0 && !sidesense_1 && !sidesense_2 && !parkresult &&  G ((!throttle_0 || throttle_1 || throttle_2 ||  F (!obstacle))));
+    (sidesense_0 && !sidesense_1 && !sidesense_2 && !parkresult);
   }
 
   PRESET {
@@ -59,6 +59,7 @@ MAIN {
 
   ASSUMPTIONS {
      G ( F ((!obstacle && parkresult && policy_0 && !policy_1 && !policy_2)));
+     G ((!throttle_0 || throttle_1 || throttle_2 ||  F (!obstacle)));
   }
 
   GUARANTEES {
