@@ -1,0 +1,57 @@
+INFO {
+  TITLE:       "PCar"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    obstacle;sidesense;parkresult;
+  }
+  OUTPUTS {
+    throttle_0;throttle_1;steer_0;steer_1;parkcommand_0;parkcommand_1;spec_policy_0;spec_policy_1;spec_policy_2;
+  }
+
+  INITIALLY {
+    (sidesense && !parkresult);
+  }
+
+  PRESET {
+    (!spec_policy_0 && !spec_policy_1 && !spec_policy_2);
+  }
+
+  REQUIRE {
+    ( G ((spec_policy_0 || spec_policy_1 || spec_policy_2 ||  X (!parkresult))) &&  G ((throttle_0 || !throttle_1 || (((obstacle &&  X (obstacle)) || (!obstacle &&  X (!obstacle))) && ((sidesense &&  X (sidesense)) || (!sidesense &&  X (!sidesense)))))));
+  }
+
+  ASSERT {
+     G ((spec_policy_0 || spec_policy_1 || spec_policy_2 || ( X (spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2)) || ( X (!spec_policy_0) &&  X (spec_policy_1) &&  X (!spec_policy_2)) || ( X (!spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2))));
+     G ((!spec_policy_0 || spec_policy_1 || spec_policy_2 || ( X (spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2)) || ( X (!spec_policy_0) &&  X (spec_policy_1) &&  X (!spec_policy_2)) || ( X (!spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2))));
+     G ((spec_policy_0 || !spec_policy_1 || spec_policy_2 || ( X (spec_policy_0) &&  X (spec_policy_1) &&  X (!spec_policy_2))));
+     G ((!spec_policy_0 || !spec_policy_1 || spec_policy_2 || ( X (!spec_policy_0) &&  X (!spec_policy_1) &&  X (spec_policy_2))));
+     G ((spec_policy_0 || spec_policy_1 || !spec_policy_2 || ( X (spec_policy_0) &&  X (!spec_policy_1) &&  X (spec_policy_2))));
+     G ((!obstacle || throttle_0 || throttle_1));
+     G ((!sidesense || throttle_0 || throttle_1 || steer_0 || steer_1));
+     G ((!obstacle || ((spec_policy_0 || spec_policy_1 || spec_policy_2) && (!spec_policy_0 || spec_policy_1 || spec_policy_2)) || ( X (!spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2))));
+     G ((!obstacle || (parkcommand_0 && !parkcommand_1)));
+     G ((parkresult || throttle_0 || !throttle_1 || spec_policy_0 || spec_policy_1 || spec_policy_2));
+     G ((!sidesense || parkresult || spec_policy_0 || spec_policy_1 || spec_policy_2 || (parkcommand_0 && !parkcommand_1 && ((spec_policy_0 &&  X (spec_policy_0)) || (!spec_policy_0 &&  X (!spec_policy_0))) && ((spec_policy_1 &&  X (spec_policy_1)) || (!spec_policy_1 &&  X (!spec_policy_1))) && ((spec_policy_2 &&  X (spec_policy_2)) || (!spec_policy_2 &&  X (!spec_policy_2))))));
+     G ((obstacle || sidesense || parkresult || spec_policy_0 || spec_policy_1 || spec_policy_2 || (!throttle_0 && !throttle_1 && !steer_0 && steer_1 && !parkcommand_0 && !parkcommand_1 &&  X (spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2))));
+     G ((!sidesense || parkresult || !spec_policy_0 || spec_policy_1 || spec_policy_2 || (parkcommand_0 && !parkcommand_1 &&  X (!spec_policy_0) &&  X (!spec_policy_1) &&  X (!spec_policy_2))));
+     G ((obstacle || sidesense || parkresult || !spec_policy_0 || spec_policy_1 || spec_policy_2 || (!throttle_0 && !throttle_1 && !steer_0 && steer_1 && !parkcommand_0 && parkcommand_1 && ((spec_policy_0 &&  X (spec_policy_0)) || (!spec_policy_0 &&  X (!spec_policy_0))) && ((spec_policy_1 &&  X (spec_policy_1)) || (!spec_policy_1 &&  X (!spec_policy_1))) && ((spec_policy_2 &&  X (spec_policy_2)) || (!spec_policy_2 &&  X (!spec_policy_2))))));
+     G (( X (obstacle) ||  X (!parkresult) || ( X ((!throttle_0 && throttle_1)) &&  X ((!steer_0 && !steer_1)) &&  X ((parkcommand_0 && !parkcommand_1)) &&  X ( X (!spec_policy_0)) &&  X ( X (spec_policy_1)) &&  X ( X (!spec_policy_2))) || ( X ((!spec_policy_0 || spec_policy_1 || spec_policy_2)) && (!spec_policy_0 || spec_policy_1 || spec_policy_2 ||  X ((spec_policy_0 || spec_policy_1 || spec_policy_2))))));
+     G ((spec_policy_0 || !spec_policy_1 || spec_policy_2 || (throttle_0 && !throttle_1 && !steer_0 && !steer_1 && parkcommand_0 && !parkcommand_1 &&  X (spec_policy_0) &&  X (spec_policy_1) &&  X (!spec_policy_2))));
+     G ((!spec_policy_0 || !spec_policy_1 || spec_policy_2 || (!throttle_0 && throttle_1 && steer_0 && !steer_1 && parkcommand_0 && !parkcommand_1 &&  X (!spec_policy_0) &&  X (!spec_policy_1) &&  X (spec_policy_2))));
+     G ((spec_policy_0 || spec_policy_1 || !spec_policy_2 || (throttle_0 && !throttle_1 && steer_0 && !steer_1 && parkcommand_0 && !parkcommand_1 &&  X (spec_policy_0) &&  X (!spec_policy_1) &&  X (spec_policy_2))));
+     G ((!spec_policy_0 || spec_policy_1 || !spec_policy_2 || (!throttle_0 && throttle_1 && !steer_0 && steer_1 && parkcommand_0 && !parkcommand_1 && ((spec_policy_0 &&  X (spec_policy_0)) || (!spec_policy_0 &&  X (!spec_policy_0))) && ((spec_policy_1 &&  X (spec_policy_1)) || (!spec_policy_1 &&  X (!spec_policy_1))) && ((spec_policy_2 &&  X (spec_policy_2)) || (!spec_policy_2 &&  X (!spec_policy_2))))));
+  }
+
+  ASSUMPTIONS {
+     G ((!throttle_0 || throttle_1 ||  F (!obstacle)));
+  }
+
+  GUARANTEES {
+     G ( F ((spec_policy_0 && !spec_policy_1 && spec_policy_2)));
+  }
+}

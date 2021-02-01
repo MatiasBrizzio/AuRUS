@@ -13,10 +13,6 @@ MAIN {
     leftmotor_0;leftmotor_1;leftmotor_2;rightmotor_0;rightmotor_1;rightmotor_2;headmotor_0;headmotor_1;nextmovemode_0;nextmovemode_1;spec_state_0;spec_state_1;search;next_head;
   }
 
-  INITIALLY {
-    ( G ((!nextmovemode_0 || !nextmovemode_1 ||  F ((!obstacle && nextmovemode_0 && nextmovemode_1)))) &&  G ((!search ||  F ((heading && next_head)) ||  F ((!heading && !next_head)))));
-  }
-
   PRESET {
     (!spec_state_0 && !spec_state_1 && !search);
   }
@@ -45,6 +41,11 @@ MAIN {
      G (((!nextmovemode_0 && !nextmovemode_1 &&  X ((!nextmovemode_0 && nextmovemode_1)) &&  X ((leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2))) || ( X ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2)) && (nextmovemode_0 || nextmovemode_1 ||  X ((nextmovemode_0 || !nextmovemode_1))))));
      G ((((!nextmovemode_0 || !nextmovemode_1 ||  X ((nextmovemode_0 || nextmovemode_1))) &&  X ( X ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2)))) || (nextmovemode_0 && nextmovemode_1 &&  X ((!nextmovemode_0 && !nextmovemode_1)) &&  X ( X ((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2))))));
      G ((!nextmovemode_0 || nextmovemode_1 ||  X ((nextmovemode_0 || !nextmovemode_1))));
+  }
+
+  ASSUMPTIONS {
+     G ((!search ||  F ((heading && next_head)) ||  F ((!heading && !next_head))));
+     G ((!nextmovemode_0 || !nextmovemode_1 ||  F ((!obstacle && nextmovemode_0 && nextmovemode_1))));
   }
 
   GUARANTEES {
