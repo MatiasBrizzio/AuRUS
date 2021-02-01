@@ -20,7 +20,8 @@ guarantee
 ////////////////////////////	
 
 guarantee//for turning sequence (step 1 and then 2
-	G ((InputMoveMode = TURN_LEFT_1) <-> (OutputMoveMode = TURN_LEFT_2));
+--	G ((InputMoveMode = TURN_LEFT_1) <-> (OutputMoveMode = TURN_LEFT_2));
+	G (((InputMoveMode = TURN_LEFT_1) -> (OutputMoveMode = TURN_LEFT_2)) & ((OutputMoveMode = TURN_LEFT_2) -> (InputMoveMode = TURN_LEFT_1)));
 
 guarantee
 	G ((InputMoveMode = TURN_LEFT_1) -> (LeftMotor = FWD & RightMotor = TURN_FWD));

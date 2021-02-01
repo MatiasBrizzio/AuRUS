@@ -139,10 +139,14 @@ guarantee
 	G(((next(next(Obstacle = BLOCKED))) & !(((nextMoveMode = TURN_LEFT_2)))) -> (next(next(!(nextMoveMode = FWD)))));
 	
 guarantee
-	G(((nextMoveMode = BWD) & next(nextMoveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
+--	G(((nextMoveMode = BWD) & next(nextMoveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
+	G( (((nextMoveMode = BWD) & next(nextMoveMode = FWD)) -> next(LeftMotor = FWD & RightMotor = BWD)) &
+	(next(LeftMotor = FWD & RightMotor = BWD) -> ((nextMoveMode = BWD) & next(nextMoveMode = FWD))));
 
 guarantee
-	G(((nextMoveMode = FWD) & next(nextMoveMode = BWD)) <-> next(LeftMotor = BWD & RightMotor = FWD));
+--	G(((nextMoveMode = FWD) & next(nextMoveMode = BWD)) <-> next(LeftMotor = BWD & RightMotor = FWD));
+	G( (((nextMoveMode = FWD) & next(nextMoveMode = BWD)) -> next(LeftMotor = BWD & RightMotor = FWD)) &
+	(next(LeftMotor = BWD & RightMotor = FWD) -> ((nextMoveMode = FWD) & next(nextMoveMode = BWD))));
 	
 guarantee //Going backward can only start from a calibrated FWD movement
 	G (next(nextMoveMode = BWD) -> ((nextMoveMode = FWD) | (nextMoveMode = BWD)));
@@ -172,17 +176,27 @@ guarantee
 	G ((nextMoveMode = TURN_LEFT_2) -> next(LeftMotor = BWD & RightMotor = TURN_BWD));
 	
 guarantee
-	G ((nextMoveMode = TURN_LEFT_1) <-> next(nextMoveMode = TURN_LEFT_2));
+--	G ((nextMoveMode = TURN_LEFT_1) <-> next(nextMoveMode = TURN_LEFT_2));
+	G ( ((nextMoveMode = TURN_LEFT_1) -> next(nextMoveMode = TURN_LEFT_2)) & 
+	(next(nextMoveMode = TURN_LEFT_2) -> (nextMoveMode = TURN_LEFT_1)));
+	
 	
 guarantee //This motor movements can only be used in turning
 	G (!((nextMoveMode = TURN_LEFT_1) | (nextMoveMode = TURN_LEFT_2)) -> next(!(LeftMotor = TURN_BWD | RightMotor = TURN_BWD | LeftMotor = TURN_FWD | RightMotor = TURN_FWD)));	
 	
 guarantee // calibration movement to start turning
-	G  (((nextMoveMode = FWD) & next(nextMoveMode = TURN_LEFT_1)) <-> next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+--	G  (((nextMoveMode = FWD) & next(nextMoveMode = TURN_LEFT_1)) <-> next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN));
+	G  ( (((nextMoveMode = FWD) & next(nextMoveMode = TURN_LEFT_1)) -> next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN)) &
+	(next(LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN) -> ((nextMoveMode = FWD) & next(nextMoveMode = TURN_LEFT_1))));
+
 	
 guarantee // Calibration at the end of turning
 --	G  (((nextMoveMode = FWD) & (Y(nextMoveMode = TURN_LEFT_2))) <-> next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
-	G  (((next(nextMoveMode = FWD)) & ((nextMoveMode = TURN_LEFT_2))) <-> (next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD))));	
+--	G  (((next(nextMoveMode = FWD)) & ((nextMoveMode = TURN_LEFT_2))) <-> (next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD))));
+	G  ( (((next(nextMoveMode = FWD)) & ((nextMoveMode = TURN_LEFT_2))) -> (next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD)))) &
+	((next(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD))) -> ((next(nextMoveMode = FWD)) & ((nextMoveMode = TURN_LEFT_2)))));	
+
+
 guarantee //Cant start turning from backward movement
 	G ( ((nextMoveMode = BWD)) -> next(nextMoveMode != TURN_LEFT_1));
 

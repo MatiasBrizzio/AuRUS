@@ -130,10 +130,13 @@ guarantee
 	//G((next(Obstacle = BLOCKED) & !((Y(nextMoveMode = TURN_LEFT_2)))) -> next(!(nextMoveMode = FWD)));
 	
 guarantee
-	G(((nextMoveMode = BWD) & next(nextMoveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
-
+--	G(((nextMoveMode = BWD) & next(nextMoveMode = FWD)) <-> next(LeftMotor = FWD & RightMotor = BWD));
+	G( (((nextMoveMode = BWD) & next(nextMoveMode = FWD)) -> next(LeftMotor = FWD & RightMotor = BWD)) &
+	   (next(LeftMotor = FWD & RightMotor = BWD) -> ((nextMoveMode = BWD) & next(nextMoveMode = FWD))));
 guarantee
-	G(((nextMoveMode = FWD) & next(nextMoveMode = BWD)) <-> next(LeftMotor = BWD & RightMotor = FWD));
+--	G(((nextMoveMode = FWD) & next(nextMoveMode = BWD)) <-> next(LeftMotor = BWD & RightMotor = FWD));
+	G( (((nextMoveMode = FWD) & next(nextMoveMode = BWD)) -> next(LeftMotor = BWD & RightMotor = FWD)) &
+	   (next(LeftMotor = BWD & RightMotor = FWD) -> ((nextMoveMode = FWD) & next(nextMoveMode = BWD))));
 	
 guarantee //Going backward can only start from a calibrated FWD movement
 	G (next(nextMoveMode = BWD) -> ((nextMoveMode = FWD) | (nextMoveMode = BWD)));
@@ -195,16 +198,24 @@ guarantee
  ////////////////////////////////////////////////////////////////
 
 guarantee
-	G ((turnState = T0 & next(turnState) = T1) <-> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN)); 
+--	G ((turnState = T0 & next(turnState) = T1) <-> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN)); 
+	G (((turnState = T0 & next(turnState) = T1) -> (LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN)) & 
+	  ((LeftMotor = CALIB_TURN & RightMotor = CALIB_TURN) -> (turnState = T0 & next(turnState) = T1)));
 
 guarantee
-	G (next(turnState) = T2 <-> (LeftMotor = FWD & RightMotor = TURN_FWD));
+--	G (next(turnState) = T2 <-> (LeftMotor = FWD & RightMotor = TURN_FWD));
+	G ((next(turnState) = T2 -> (LeftMotor = FWD & RightMotor = TURN_FWD)) & 
+	  ((LeftMotor = FWD & RightMotor = TURN_FWD) -> next(turnState) = T2));
 	
 guarantee
-	G (turnState = T2 <-> (LeftMotor = BWD & RightMotor = TURN_BWD));
+--	G (turnState = T2 <-> (LeftMotor = BWD & RightMotor = TURN_BWD));
+	G ((turnState = T2 -> (LeftMotor = BWD & RightMotor = TURN_BWD)) & 
+	  ((LeftMotor = BWD & RightMotor = TURN_BWD) -> turnState = T2));
 	
 guarantee
-	G ((turnState = T3 & turnState = T0) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+--	G ((turnState = T3 & turnState = T0) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
+	G (((turnState = T3 & turnState = T0) -> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD)) &
+	  ((LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD) -> (turnState = T3 & turnState = T0)));
 
 ////////////////////////////////////////////////////////////////
 /*

@@ -18,16 +18,16 @@ MAIN {
      G ((obstacle || !inputmovemode_0 || inputmovemode_1 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2 && !outputmovemode_0 && !outputmovemode_1)));
      G ((obstacle || inputmovemode_0 || inputmovemode_1 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2)));
      G ((!obstacle || outputmovemode_0 || outputmovemode_1));
-     G (((!inputmovemode_0 && inputmovemode_1 && outputmovemode_0 && outputmovemode_1) || ((inputmovemode_0 || !inputmovemode_1) && (!outputmovemode_0 || !outputmovemode_1))));
+    ( G ((inputmovemode_0 || !inputmovemode_1 || (outputmovemode_0 && outputmovemode_1))) &&  G ((!outputmovemode_0 || !outputmovemode_1 || (!inputmovemode_0 && inputmovemode_1))));
      G ((inputmovemode_0 || !inputmovemode_1 || (!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && rightmotor_1 && !rightmotor_2)));
      G ((!inputmovemode_0 || !inputmovemode_1 || (leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && rightmotor_2)));
      G (((inputmovemode_0 && inputmovemode_1) || (!inputmovemode_0 && inputmovemode_1) || ((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2 || !rightmotor_0 || !rightmotor_1 || rightmotor_2))));
      G (((!headmotor_0 && headmotor_1) || ((inputmovemode_0 || !inputmovemode_1) && (!inputmovemode_0 || !inputmovemode_1))));
      G ((!inputmovemode_0 || !inputmovemode_1 || (!outputmovemode_0 && outputmovemode_1) || (!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2)));
-     G ((obstacle || !inputmovemode_0 || !inputmovemode_1 || (!outputmovemode_0 && !outputmovemode_1)));
+     //G ((obstacle || !inputmovemode_0 || !inputmovemode_1 || (!outputmovemode_0 && !outputmovemode_1)));
   }
 
   GUARANTEES {
-    true;
+    G ((obstacle || !inputmovemode_0 || !inputmovemode_1 || (!outputmovemode_0 && !outputmovemode_1)));
   }
 }

@@ -29,8 +29,8 @@ MAIN {
      G ((specstate_0 || !specstate_1 || ( X (!specstate_0) &&  X (specstate_1)) ||  X ((nextmovemode_0 || nextmovemode_1))));
      G ((nextmovemode_0 || !nextmovemode_1 ||  X ((!specstate_0 && !specstate_1))));
      G ((!obstacle || nextmovemode_0 || nextmovemode_1));
-     G (((nextmovemode_0 && !nextmovemode_1 &&  X ((!nextmovemode_0 && !nextmovemode_1)) &&  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2))) || ( X ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2)) && (!nextmovemode_0 || nextmovemode_1 ||  X ((nextmovemode_0 || nextmovemode_1))))));
-     G (((!nextmovemode_0 && !nextmovemode_1 &&  X ((nextmovemode_0 && !nextmovemode_1)) &&  X ((leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2))) || ( X ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2)) && (nextmovemode_0 || nextmovemode_1 ||  X ((!nextmovemode_0 || nextmovemode_1))))));
+    ( G ((!nextmovemode_0 || nextmovemode_1 ||  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((nextmovemode_0 || nextmovemode_1)))) &&  G (( X ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2)) || (nextmovemode_0 && !nextmovemode_1 &&  X ((!nextmovemode_0 && !nextmovemode_1))))));
+    ( G ((nextmovemode_0 || nextmovemode_1 ||  X ((leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((!nextmovemode_0 || nextmovemode_1)))) &&  G (( X ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2)) || (!nextmovemode_0 && !nextmovemode_1 &&  X ((nextmovemode_0 && !nextmovemode_1))))));
      G (((nextmovemode_0 && !nextmovemode_1) || (!nextmovemode_0 && !nextmovemode_1) ||  X ((!nextmovemode_0 || nextmovemode_1))));
      G ((!nextmovemode_0 || nextmovemode_1 ||  X (((nextmovemode_0 && !nextmovemode_1) || (!nextmovemode_0 && !nextmovemode_1)))));
      G (((turnstate_0 && turnstate_1) || (!turnstate_0 && !turnstate_1) ||  X (turnstate_0) ||  X (turnstate_1)));
@@ -42,10 +42,10 @@ MAIN {
      G ((nextmovemode_0 || nextmovemode_1 || !turnstate_0 || !turnstate_1 ||  X ((!turnstate_0 && !turnstate_1))));
      G ((!turnstate_0 || !turnstate_1 || (!nextmovemode_0 && !nextmovemode_1) ||  X ((!turnstate_0 && turnstate_1))));
      G ((obstacle || turnstate_0 || !turnstate_1 || (!nextmovemode_0 && !nextmovemode_1)));
-     G (((leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2 && !turnstate_0 && !turnstate_1 &&  X (turnstate_0) &&  X (!turnstate_1)) || ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2) && (turnstate_0 || turnstate_1 ||  X (!turnstate_0) ||  X (turnstate_1)))));
-     G (((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && rightmotor_1 && !rightmotor_2 &&  X (!turnstate_0) &&  X (turnstate_1)) || ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || !rightmotor_1 || rightmotor_2) && ( X (turnstate_0) ||  X (!turnstate_1)))));
-     G (((leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && rightmotor_2 && !turnstate_0 && turnstate_1) || ((turnstate_0 || !turnstate_1) && (!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || !rightmotor_2))));
-     G (((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2 && turnstate_0 && !turnstate_0 && turnstate_1 && !turnstate_1) || ((turnstate_0 || !turnstate_0 || turnstate_1 || !turnstate_1) && (leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2))));
+    ( G ((turnstate_0 || turnstate_1 || (leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2) ||  X (!turnstate_0) ||  X (turnstate_1))) &&  G ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2 || (!turnstate_0 && !turnstate_1 &&  X (turnstate_0) &&  X (!turnstate_1)))));
+    ( G (((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && rightmotor_1 && !rightmotor_2) ||  X (turnstate_0) ||  X (!turnstate_1))) &&  G ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || !rightmotor_1 || rightmotor_2 || ( X (!turnstate_0) &&  X (turnstate_1)))));
+    ( G ((turnstate_0 || !turnstate_1 || (leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && rightmotor_2))) &&  G ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || !rightmotor_2 || (!turnstate_0 && turnstate_1))));
+    ( G ((turnstate_0 || !turnstate_0 || turnstate_1 || !turnstate_1 || (!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2))) &&  G ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2 || (turnstate_0 && !turnstate_0 && turnstate_1 && !turnstate_1))));
   }
 
   GUARANTEES {
