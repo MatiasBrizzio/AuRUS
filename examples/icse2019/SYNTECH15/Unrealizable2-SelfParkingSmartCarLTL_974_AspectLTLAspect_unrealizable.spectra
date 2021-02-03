@@ -42,14 +42,14 @@ module AspectLTLAspect
 	define
 		Stop := (engineMot != FWD & engineMot != PARKING_FWD & engineMot != PARKING_BWD & engineMot != BWD);
 	
-	define
-		suitableParallelPS := 5;
+--	define
+--		suitableParallelPS := 5;
 		
-	define
-		suitablePerpendicularPS := 2;
+--	define
+--		suitablePerpendicularPS := 2;
 		
-	define
-		preparingParallelSteps := 1;
+--	define
+--		preparingParallelSteps := 1;
 		
 	define
 		keepCarStatus := (next(spec_carStatus) = spec_carStatus);
@@ -231,19 +231,19 @@ module AspectLTLAspect
 	guarantee
 		G((spec_carStatus = MEASURE_PARKING & 
 			(weGotSideSensorMeasuringValues) & 
-			(spec_blankSpotsCounter < suitableParallelPS)
+			(spec_blankSpotsCounter < 5)
 		) -> 
 			(keepCarStatus)
 		);
 	
 	/*do not count over the limit */
 	guarantee
-		G((spec_blankSpotsCounter <= suitableParallelPS));
+		G((spec_blankSpotsCounter <= 5));
 		
 	/*if the parking spot ended and there is no sufficient parking spot space, keep seeking for another parking spot. */
 	guarantee
 		G((spec_carStatus = MEASURE_PARKING & 
-			(weGotSideSensorSeekingValues) & obstacle = CLEAR & spec_blankSpotsCounter < suitableParallelPS & spec_capablePerpendicular = NO
+			(weGotSideSensorSeekingValues) & obstacle = CLEAR & spec_blankSpotsCounter < 5 & spec_capablePerpendicular = NO
 		) -> 
 			(next(spec_carStatus = SEEKING_FOR_PS)) 
 		);
@@ -251,7 +251,7 @@ module AspectLTLAspect
 	/*if the parking spot ended and we can park perpendicular, move to park perpendicular */
 	guarantee
 		G((spec_carStatus = MEASURE_PARKING & 
-			(weGotSideSensorSeekingValues) & obstacle = CLEAR & spec_blankSpotsCounter < suitableParallelPS & spec_capablePerpendicular = YES
+			(weGotSideSensorSeekingValues) & obstacle = CLEAR & spec_blankSpotsCounter < 5 & spec_capablePerpendicular = YES
 		) -> 
 			(next(spec_carStatus = PERPENDICULAR) &
 				next(spec_parkingPerpendicularPhase = FIRST_PHASE)
@@ -260,13 +260,20 @@ module AspectLTLAspect
 	
 	/*increase counter if needed */
 	guarantee
-		G((spec_carStatus = MEASURE_PARKING & obstacle = CLEAR & engineMot = FWD & spec_blankSpotsCounter < suitableParallelPS) ->
-			(next(spec_blankSpotsCounter) = (spec_blankSpotsCounter + 1))
+--		G((spec_carStatus = MEASURE_PARKING & obstacle = CLEAR & engineMot = FWD & spec_blankSpotsCounter < 5) ->
+--			(next(spec_blankSpotsCounter) = (spec_blankSpotsCounter + 1))
+--		);
+		G((spec_carStatus = MEASURE_PARKING & obstacle = CLEAR & engineMot = FWD & spec_blankSpotsCounter < 5) ->
+			( (spec_blankSpotsCounter = 0 & next(spec_blankSpotsCounter) = 1) 
+			| (spec_blankSpotsCounter = 1 & next(spec_blankSpotsCounter) = 2) 
+			| (spec_blankSpotsCounter = 2 & next(spec_blankSpotsCounter) = 3) 
+			| (spec_blankSpotsCounter = 3 & next(spec_blankSpotsCounter) = 4) 
+			| (spec_blankSpotsCounter = 4 & next(spec_blankSpotsCounter) = 5))
 		);
 	
 	/*  */
 	guarantee
-		G ((spec_carStatus = MEASURE_PARKING & spec_blankSpotsCounter = suitableParallelPS  & obstacle = CLEAR
+		G ((spec_carStatus = MEASURE_PARKING & spec_blankSpotsCounter = 5  & obstacle = CLEAR
 		) -> 
 			(
 				(next(engineMot) = STOP) &
@@ -280,11 +287,11 @@ module AspectLTLAspect
 		
 	/* How to achieve the goal above */
 	assumption 
-  respondsTo(engineMot=FWD,(spec_blankSpotsCounter=suitableParallelPS|spec_blankSpotsCounter=suitablePerpendicularPS));
+  respondsTo(engineMot=FWD,(spec_blankSpotsCounter=5|spec_blankSpotsCounter=2));
 		
 //	/* How to achieve the goal above */
 //	LTLSPECENV 
-//		G(engineMot = FWD -> F(spec_blankSpotsCounter = suitableParallelPS | spec_capablePerpendicular = YES)); //HERE
+//		G(engineMot = FWD -> F(spec_blankSpotsCounter = 5 | spec_capablePerpendicular = YES)); //HERE
 //	
 	/* If we are not measuring ps, we are not capable of parking perpendicular */	
 	guarantee
@@ -294,8 +301,8 @@ module AspectLTLAspect
 	guarantee
 		G((
 			(spec_carStatus = MEASURE_PARKING) & 
-			(spec_blankSpotsCounter >= suitablePerpendicularPS) & 
-			(spec_blankSpotsCounter < suitableParallelPS)
+			(spec_blankSpotsCounter >= 2) & 
+			(spec_blankSpotsCounter < 5)
 		) 
 			-> (spec_capablePerpendicular = YES)
 		);
@@ -305,14 +312,14 @@ module AspectLTLAspect
 	guarantee
 		G((
 			(spec_carStatus = MEASURE_PARKING) & 
-			(spec_blankSpotsCounter < suitablePerpendicularPS)
+			(spec_blankSpotsCounter < 2)
 		) 
 			-> (spec_capablePerpendicular = NO)
 		);
 	
 //		
 //	LTLSPECENV
-//		G((spec_carStatus = MEASURE_PARKING & obstacle=CLEAR & engineMot = FWD) -> F(spec_blankSpotsCounter = suitableParallelPS));
+//		G((spec_carStatus = MEASURE_PARKING & obstacle=CLEAR & engineMot = FWD) -> F(spec_blankSpotsCounter = 5));
 
 
 
@@ -330,21 +337,26 @@ module AspectLTLAspect
 		
 	
 	guarantee
+--		G((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & obstacle = CLEAR & engineMot = FWD 
+--			& spec_prepareParallelCounter < 1
+--		) ->
+--			(next(spec_prepareParallelCounter) = (spec_prepareParallelCounter + 1))
+--		);
 		G((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & obstacle = CLEAR & engineMot = FWD 
-			& spec_prepareParallelCounter < preparingParallelSteps
+			& spec_prepareParallelCounter < 1
 		) ->
-			(next(spec_prepareParallelCounter) = (spec_prepareParallelCounter + 1))
+			( (next(spec_prepareParallelCounter = 1)))
 		);
 		
 	guarantee
 		G((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & 
-			(spec_prepareParallelCounter < preparingParallelSteps)
+			(spec_prepareParallelCounter < 1)
 		) -> 
 			(keepCarStatus)
 		);
 		
 	guarantee
-		G ((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & spec_prepareParallelCounter = preparingParallelSteps & obstacle = CLEAR
+		G ((spec_carStatus = PREPARE_FOR_PARALLEL_PARKING & spec_prepareParallelCounter = 1 & obstacle = CLEAR
 		) -> 
 			( 
 				(next(spec_carStatus) = PARALLEL) &
@@ -353,10 +365,10 @@ module AspectLTLAspect
 
     /* Liveness: Perform the necessary actions in order to reach the suitable number of steps before parking */
 	guarantee
-  respondsTo(spec_carStatus=PREPARE_FOR_PARALLEL_PARKING,(spec_prepareParallelCounter=preparingParallelSteps));
+  respondsTo(spec_carStatus=PREPARE_FOR_PARALLEL_PARKING,(spec_prepareParallelCounter=1));
 		
 	assumption 
-  respondsTo((engineMot=FWD&spec_carStatus=PREPARE_FOR_PARALLEL_PARKING),(spec_prepareParallelCounter=preparingParallelSteps));
+  respondsTo((engineMot=FWD&spec_carStatus=PREPARE_FOR_PARALLEL_PARKING),(spec_prepareParallelCounter=1));
 		
 /**********************************************************************************/
 /******************************** parking parallel ********************************/
