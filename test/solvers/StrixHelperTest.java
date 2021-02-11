@@ -285,17 +285,32 @@ class StrixHelperTest {
 	
 	@Test
 	void testSpectra3() throws IOException, InterruptedException {
-		 Spectra spectra = SpectraParser.parse(new FileReader("case-studies/ColorSortLTL3/ColorSortLTL3_689_ColorSort_fixed_unrealizable.spectra"));
+//		 Spectra spectra = SpectraParser.parse(new FileReader("case-studies/ColorSortLTL3/ColorSortLTL3_689_ColorSort_fixed_unrealizable.spectra"));
 //		Spectra spectra = SpectraParser.parse(new FileReader("case-studies/ColorSortLTL3/genuine/ColorSortLTL3_687_ColorSort_fixed.spectra"));
 
-//		Spectra spectra = SpectraParser.parse(new FileReader("examples/icse2019/SYNTECH15/HumanoidLTL_531_Humanoid_unrealizable.spectra"));
+		Spectra spectra = SpectraParser.parse(new FileReader("examples/icse2019/SYNTECH15/ColorSortLTLUnrealizable1_790_ColorSort_unrealizable.spectra"));
 
 //		Spectra spectra = SpectraParser.parse(new FileReader("/Users/renzo.degiovanni/Downloads/SYNTECH15/HumanoidLTL_462_Humanoid.spectra"));
+		Tlsf tlsf = TLSF_Utils.fromSpectra(spectra);
+		System.out.println(TLSF_Utils.adaptTLSFSpec(tlsf));
+		Settings.STRIX_TIMEOUT = 600;
+		// StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(TLSF_Utils.fromSpectra(spectra));
+		//System.out.println(res);
+		// assertTrue(res.equals(RealizabilitySolverResult.UNREALIZABLE));
+	}
+
+	@Test
+	void testSpectraTlsf() throws IOException, InterruptedException {
+		String filename = "examples/icse2019/SYNTECH15/tlsf_specs/HumanoidLTL_NotRealizable2_879_Humanoid_unrealizable.tlsf";
+		String dummy = "docker/out2.tlsf";
+		Process pr = Runtime.getRuntime().exec( new String[]{"cp", filename, dummy});
+		pr.waitFor();
+		Tlsf tlsf = TLSF_Utils.toBasicTLSF(new File(dummy));
 
 		Settings.STRIX_TIMEOUT = 600;
-		 StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(TLSF_Utils.fromSpectra(spectra));
+		StrixHelper.RealizabilitySolverResult res = StrixHelper.checkRealizability(tlsf);
 		System.out.println(res);
-		 assertTrue(res.equals(RealizabilitySolverResult.UNREALIZABLE));
+		assertTrue(res.equals(RealizabilitySolverResult.UNREALIZABLE));
 	}
 
 

@@ -261,6 +261,27 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		return numOfModels;
 	}
 
+	public double compute_semantic_distance (Tlsf original, Tlsf refined)  {
+		double lost_models_fitness = 0.0d;
+		double won_models_fitness = 0.0d;
+		try {
+			if (Settings.LOST_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent()) {
+				lost_models_fitness = compute_lost_models_porcentage(original, refined);
+				System.out.print(String.format("%.2f ",lost_models_fitness));
+			}
+
+			if ( Settings.WON_MODELS_FACTOR > 0.0d && originalStatus.isSpecificationConsistent()) {
+				won_models_fitness = compute_won_models_porcentage(original, refined);
+				System.out.print(String.format("%.2f ",won_models_fitness));
+			}
+		}
+		catch (Exception e) { e.printStackTrace(); }
+
+		double semantic_distance =  (0.5d * lost_models_fitness) + (0.5d * won_models_fitness) ;
+		return semantic_distance;
+	}
+
+
 	private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
 		if (originalNumOfModels == BigInteger.ZERO)
