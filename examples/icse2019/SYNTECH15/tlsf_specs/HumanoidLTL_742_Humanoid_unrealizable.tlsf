@@ -35,7 +35,7 @@ MAIN {
      G ((!nextmovemode_0 || nextmovemode_1 ||  X (((nextmovemode_0 && !nextmovemode_1) || (!nextmovemode_0 && !nextmovemode_1)))));
      G (((turnstate_0 && turnstate_1) || (!turnstate_0 && !turnstate_1) ||  X (turnstate_0) ||  X (turnstate_1)));
      G ((turnstate_0 || turnstate_1 || (!nextmovemode_0 && nextmovemode_1) || ( X (!turnstate_0) &&  X (!turnstate_1))));
-     G ((nextmovemode_0 || nextmovemode_1 || turnstate_0 || turnstate_1 ||  X ((nextmovemode_0 || !nextmovemode_1)) ||  X (( X (turnstate_0) &&  X (!turnstate_1)))));
+     G ((nextmovemode_0 || nextmovemode_1 ||  X ((nextmovemode_0 || !nextmovemode_1)) ||  X ((turnstate_0 || turnstate_1)) ||  X (( X (turnstate_0) &&  X (!turnstate_1)))));
      G ((!turnstate_0 || turnstate_1 || (!nextmovemode_0 && nextmovemode_1 &&  X (!turnstate_0) &&  X (turnstate_1))));
      G ((nextmovemode_0 || !nextmovemode_1 || turnstate_0 || !turnstate_1 || ( X (turnstate_0) &&  X (!turnstate_1))));
      G ((nextmovemode_0 || nextmovemode_1 || turnstate_0 || !turnstate_1 || ( X (turnstate_0) &&  X (turnstate_1))));

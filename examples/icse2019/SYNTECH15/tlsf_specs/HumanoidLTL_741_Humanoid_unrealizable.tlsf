@@ -15,6 +15,8 @@ MAIN {
 
   PRESET {
     (!spec_state_0 && !spec_state_1 && !search);
+	(X ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2))); // Preset corresponding to Assert N.18
+	( X (!obstacle) ||  X ((nextmovemode_0 || nextmovemode_1)));  // Preset corresponding to Assert N.9
   }
 
   REQUIRE {
@@ -30,7 +32,7 @@ MAIN {
      G ((search ||  X (!noise) ||  X (button) ||  X (search) ||  X (((heading && next_head) || (!heading && !next_head)))));
      G ((!search ||  X (!search) ||  X (((heading || next_head) && (!heading || !next_head)))));
      G ((!search ||  X (search) ||  X (((heading && next_head) || (!heading && !next_head)))));
-     G (((nextmovemode_0 && nextmovemode_1) ||  X ( X (!obstacle)) ||  X ( X ((nextmovemode_0 || nextmovemode_1)))));
+    (G (((nextmovemode_0 && nextmovemode_1) ||  X ( X (!obstacle)) ||  X ( X ((nextmovemode_0 || nextmovemode_1))))));
     ( G ((!nextmovemode_0 || nextmovemode_1 ||  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((nextmovemode_0 || nextmovemode_1)))) &&  G (( X ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2)) || (nextmovemode_0 && !nextmovemode_1 &&  X ((!nextmovemode_0 && !nextmovemode_1))))));
     ( G ((nextmovemode_0 || nextmovemode_1 ||  X ((leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((!nextmovemode_0 || nextmovemode_1)))) &&  G (( X ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2)) || (!nextmovemode_0 && !nextmovemode_1 &&  X ((nextmovemode_0 && !nextmovemode_1))))));
      G (((nextmovemode_0 && !nextmovemode_1) || (!nextmovemode_0 && !nextmovemode_1) ||  X ((!nextmovemode_0 || nextmovemode_1))));
@@ -39,7 +41,7 @@ MAIN {
     ( G (((!nextmovemode_0 && nextmovemode_1) ||  X ((!nextmovemode_0 || !nextmovemode_1)))) &&  G ((nextmovemode_0 || !nextmovemode_1 ||  X ((nextmovemode_0 && nextmovemode_1)))));
      G (((nextmovemode_0 && nextmovemode_1) || (!nextmovemode_0 && nextmovemode_1) ||  X (((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!rightmotor_0 || !rightmotor_1 || rightmotor_2)))));
     ( G ((nextmovemode_0 || nextmovemode_1 ||  X ((leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2)) ||  X ((nextmovemode_0 || !nextmovemode_1)))) &&  G (( X ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2)) || (!nextmovemode_0 && !nextmovemode_1 &&  X ((!nextmovemode_0 && nextmovemode_1))))));
-    ( G (((nextmovemode_0 && nextmovemode_1 &&  X ((!nextmovemode_0 && !nextmovemode_1))) ||  X ( X ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2))))) &&  G ((!nextmovemode_0 || !nextmovemode_1 ||  X ((nextmovemode_0 || nextmovemode_1)) ||  X ( X ((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2))))));
+    (G (((nextmovemode_0 && nextmovemode_1 &&  X ((!nextmovemode_0 && !nextmovemode_1))) ||  X ( X ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2))))) &&  G ((!nextmovemode_0 || !nextmovemode_1 ||  X ((nextmovemode_0 || nextmovemode_1)) ||  X ( X ((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2))))));
      G ((!nextmovemode_0 || nextmovemode_1 ||  X ((nextmovemode_0 || !nextmovemode_1))));
   }
 

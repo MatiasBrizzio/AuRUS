@@ -164,7 +164,7 @@ guarantee
 --guarantee
 --	G ((nextMoveMode = TURN_LEFT & Y(nextMoveMode = FWD) & turnState = T0) -> next(turnState) = T1);
 guarantee
-	G ((next(nextMoveMode = TURN_LEFT) & (nextMoveMode = FWD) & turnState = T0) -> next(next(turnState) = T1));
+	G ((next(nextMoveMode = TURN_LEFT) & (nextMoveMode = FWD) & next(turnState = T0)) -> next(next(turnState) = T1));
 
 guarantee
 	G (turnState = T1  -> (next(turnState) = T2 & nextMoveMode = TURN_LEFT));

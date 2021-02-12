@@ -19,6 +19,7 @@ MAIN {
 
   PRESET {
     (!spec_policy_0 && !spec_policy_1 && !spec_policy_2);
+		(obstacle || !parkresult || !spec_policy_0 || spec_policy_1 || spec_policy_2 || (!throttle_0 && throttle_1 && !steer_0 && !steer_1 && parkcommand_0 && !parkcommand_1 &&  X ((!spec_policy_0 && spec_policy_1 && !spec_policy_2)))); // INITIAL STATE CORRESPONDING TO ASSERT N.15
   }
 
   REQUIRE {
