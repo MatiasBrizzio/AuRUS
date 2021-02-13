@@ -165,6 +165,9 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		}
 		System.out.printf("f%.2f ",fitness);
 		chromosome.fitness = fitness;
+		chromosome.syntactic_distance = syntactic_distance;
+		chromosome.semantic_distance = (0.5d * lost_models_fitness) + (0.5d * won_models_fitness);
+
 		if (fitness > Settings.MAX_FITNESS()) {
 			System.out.println(String.format("BROKEN Fitness: %.2f",fitness));
 			System.out.println(TLSF_Utils.adaptTLSFSpec(chromosome.spec));
