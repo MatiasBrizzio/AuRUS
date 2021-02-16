@@ -62,14 +62,24 @@ public class SynSemDistanceAnalysis {
                 BufferedReader in = new BufferedReader(f);
                 String aux = "";
                 double value = 0.0d;
+                double syntactic_distance = 0.0d;
+                double semantic_distance = 0.0d;
                 while ((aux = in.readLine()) != null) {
                     if ((aux.startsWith("//fitness"))) {
                         value = Double.valueOf(aux.substring(10));
                     }
+                    else if ((aux.startsWith("//syntactic"))) {
+                        syntactic_distance = Double.valueOf(aux.substring(12));
+                    }
+                    else if ((aux.startsWith("//semantic"))) {
+                        semantic_distance = Double.valueOf(aux.substring(11));
+                    }
                 }
                 sol_fitness.add(value);
-                double syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
-                double semantic_distance = fitness.compute_semantic_distance(original, tlsf);
+                if (syntactic_distance == 0.0d)
+                     syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
+                if (semantic_distance == 0.0d)
+                    semantic_distance = fitness.compute_semantic_distance(original, tlsf);
                 sol_syntactic.add(syntactic_distance);
                 sol_semantic.add(semantic_distance);
             }
