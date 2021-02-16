@@ -31,13 +31,23 @@ public class SynSemDistanceAnalysis {
             String directoryName = "";
             String out_name = "";
             Tlsf original = null;
+            boolean computeSyn = false;
+            boolean computeSem = false;
             for (int i = 0; i < args.length; i++) {
                 if (args[i].startsWith("-o=")) {
                     String orig_name = args[i].replace("-o=", "");
                     original = TLSF_Utils.toBasicTLSF(new File(orig_name));
                 } else if (args[i].startsWith("-out=")) {
                     out_name = args[i].replace("-out=", "");
-                } else {
+                } else if (args[i].startsWith("-all")) {
+                    computeSyn = true;
+                    computeSem = true;
+                } else if (args[i].startsWith("-syn")) {
+                    computeSyn = true;
+                } else if (args[i].startsWith("-sem")) {
+                    computeSem = true;
+                }
+                else {
                     directoryName = args[i];
                 }
             }
@@ -76,10 +86,10 @@ public class SynSemDistanceAnalysis {
                     }
                 }
                 sol_fitness.add(value);
-                if (syntactic_distance == 0.0d)
+                if (computeSyn)
                      syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
-                if (semantic_distance == 0.0d)
-                    semantic_distance = fitness.compute_semantic_distance(original, tlsf);
+                if (computeSem)
+                        semantic_distance = fitness.compute_semantic_distance(original, tlsf);
                 sol_syntactic.add(syntactic_distance);
                 sol_semantic.add(semantic_distance);
             }
