@@ -15,6 +15,16 @@ MAIN {
 
   PRESET {
     (!spec_search && !next_head_0 && !next_head_1 && !next_head_2);
+
+    ( (!obstacle) ||  (spec_nextmovemode_0 || spec_nextmovemode_1)) && X( (!obstacle) ||  (spec_nextmovemode_0 || spec_nextmovemode_1));
+    ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2));
+    ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2));
+    (!spec_nextmovemode_0 || !spec_nextmovemode_1);
+    (((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!rightmotor_0 || !rightmotor_1 || rightmotor_2)));
+    ((!spec_nextmovemode_0 || spec_nextmovemode_1));
+    ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2));
+    ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2)) && X((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2));
+
   }
 
   REQUIRE {
