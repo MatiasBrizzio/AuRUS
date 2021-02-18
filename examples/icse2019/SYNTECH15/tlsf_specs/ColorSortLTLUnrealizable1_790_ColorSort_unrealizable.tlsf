@@ -14,7 +14,7 @@ MAIN {
   }
 
   PRESET {
-    (!motspeed_0 && !motspeed_1 && !spec_dropping && !spec_waiting_ack_ver_mot && !spec_waiting_ack_hor_mot);
+    (!motspeed_0 && !motspeed_1 && !spec_dropping && !spec_waiting_ack_ver_mot && !spec_waiting_ack_hor_mot && !spec_speedButton_valid_pressed);
   }
 
   REQUIRE {
