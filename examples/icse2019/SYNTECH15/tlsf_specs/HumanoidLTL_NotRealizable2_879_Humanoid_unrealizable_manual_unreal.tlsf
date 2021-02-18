@@ -1,0 +1,87 @@
+INFO {
+  TITLE:       "Humanoid"
+  DESCRIPTION: "empty description"
+  SEMANTICS:   Mealy,Strict
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    obstacle;noise;heading_0;heading_1;heading_2;button;
+  }
+  OUTPUTS {
+    leftmotor_0;leftmotor_1;leftmotor_2;rightmotor_0;rightmotor_1;rightmotor_2;headmotor_0;headmotor_1;spec_nextmovemode_0;spec_nextmovemode_1;spec_state_0;spec_state_1;spec_search;next_head_0;next_head_1;next_head_2;
+  }
+
+  PRESET {
+    (!spec_search && !next_head_0 && !next_head_1 && !next_head_2);
+
+    ( (!obstacle) ||  (spec_nextmovemode_0 || spec_nextmovemode_1)) && X( (!obstacle) ||  (spec_nextmovemode_0 || spec_nextmovemode_1));
+    ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2));
+    ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2));
+    (!spec_nextmovemode_0 || !spec_nextmovemode_1);
+    (((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!rightmotor_0 || !rightmotor_1 || rightmotor_2)));
+    ((!spec_nextmovemode_0 || spec_nextmovemode_1));
+    ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2));
+    ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2)) && X((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2));
+
+  }
+
+  REQUIRE {
+     G ((obstacle || !spec_nextmovemode_0 || spec_nextmovemode_1 ||  X (!obstacle)));
+  }
+
+  ASSERT {
+     G ((spec_nextmovemode_0 || spec_nextmovemode_1 || spec_state_0 || spec_state_1 ||  X ((spec_state_0 && !spec_state_1)) ||  X ((!spec_nextmovemode_0 || spec_nextmovemode_1))));
+     G ((!spec_nextmovemode_0 || spec_nextmovemode_1 || !spec_state_0 || spec_state_1 ||  X ((!spec_state_0 && spec_state_1)) ||  X ((spec_nextmovemode_0 || spec_nextmovemode_1))));
+     G ((spec_nextmovemode_0 || spec_nextmovemode_1 || spec_state_0 || !spec_state_1 ||  X ((!spec_nextmovemode_0 || spec_nextmovemode_1))));
+     G ((!spec_state_0 || spec_state_1 ||  X ((spec_state_0 && !spec_state_1)) ||  X ((!spec_nextmovemode_0 || spec_nextmovemode_1))));
+     G ((spec_state_0 || !spec_state_1 ||  X ((!spec_state_0 && spec_state_1)) ||  X ((spec_nextmovemode_0 || spec_nextmovemode_1))));
+     G ((spec_nextmovemode_0 || !spec_nextmovemode_1 ||  X ((!spec_state_0 && !spec_state_1))));
+    ( G (!headmotor_0) &&  G (headmotor_1));
+     G ((!button || (((heading_0 && next_head_0) || (!heading_0 && !next_head_0)) && ((heading_1 && next_head_1) || (!heading_1 && !next_head_1)) && ((heading_2 && next_head_2) || (!heading_2 && !next_head_2)))));
+     G ((!noise || spec_nextmovemode_0 || spec_nextmovemode_1 || spec_search ||  X (spec_search) || ((heading_0 || !next_head_0) && (!heading_0 || next_head_0) && (heading_1 || !next_head_1) && (!heading_1 || next_head_1) && (heading_2 || !next_head_2) && (!heading_2 || next_head_2))));
+     G ((!spec_search ||  X (!spec_search) || ((heading_0 || next_head_0) && (!heading_0 || !next_head_0)) || ((heading_1 || next_head_1) && (!heading_1 || !next_head_1)) || ((heading_2 || next_head_2) && (!heading_2 || !next_head_2))));
+     
+     G (((spec_nextmovemode_0 && spec_nextmovemode_1) ||  X ( X (!obstacle)) ||  X ( X ((spec_nextmovemode_0 || spec_nextmovemode_1))))) ;
+     // && ( (!obstacle) ||  (spec_nextmovemode_0 || spec_nextmovemode_1)) && X( (!obstacle) ||  (spec_nextmovemode_0 || spec_nextmovemode_1));
+
+
+    G ((!spec_nextmovemode_0 || spec_nextmovemode_1 ||  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((spec_nextmovemode_0 || spec_nextmovemode_1))));
+    G (( X ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2)) || (spec_nextmovemode_0 && !spec_nextmovemode_1 &&  X ((!spec_nextmovemode_0 && !spec_nextmovemode_1))))); // && ((leftmotor_0 || leftmotor_1 || leftmotor_2 || !rightmotor_0 || rightmotor_1 || rightmotor_2));
+
+    G ((spec_nextmovemode_0 || spec_nextmovemode_1 ||  X ((leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && !rightmotor_2)) ||  X ((!spec_nextmovemode_0 || spec_nextmovemode_1))));
+    G (( X ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2)) || (!spec_nextmovemode_0 && !spec_nextmovemode_1 &&  X ((spec_nextmovemode_0 && !spec_nextmovemode_1))))) ;// && ((!leftmotor_0 || leftmotor_1 || leftmotor_2 || rightmotor_0 || rightmotor_1 || rightmotor_2));
+
+     G ((spec_nextmovemode_0 || !spec_nextmovemode_1 ||  X ((!leftmotor_0 && !leftmotor_1 && !leftmotor_2 && rightmotor_0 && rightmotor_1 && !rightmotor_2))));
+
+     G ((!spec_nextmovemode_0 || !spec_nextmovemode_1 ||  X ((leftmotor_0 && !leftmotor_1 && !leftmotor_2 && !rightmotor_0 && !rightmotor_1 && rightmotor_2))));
+
+    G ((spec_nextmovemode_0 || !spec_nextmovemode_1 ||  X ((spec_nextmovemode_0 && spec_nextmovemode_1))));
+    G (((!spec_nextmovemode_0 && spec_nextmovemode_1) ||  X ((!spec_nextmovemode_0 || !spec_nextmovemode_1)))); // && (!spec_nextmovemode_0 || !spec_nextmovemode_1);
+
+     G (((spec_nextmovemode_0 && spec_nextmovemode_1) || (!spec_nextmovemode_0 && spec_nextmovemode_1) ||  X (((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!rightmotor_0 || !rightmotor_1 || rightmotor_2))))); // && (((leftmotor_0 || leftmotor_1 || !leftmotor_2) && (!leftmotor_0 || !leftmotor_1 || leftmotor_2) && (rightmotor_0 || rightmotor_1 || !rightmotor_2) && (!rightmotor_0 || !rightmotor_1 || rightmotor_2)));
+
+
+     G (((spec_nextmovemode_0 && !spec_nextmovemode_1) || (!spec_nextmovemode_0 && !spec_nextmovemode_1) ||  X ((!spec_nextmovemode_0 || spec_nextmovemode_1)))) ; // && ((!spec_nextmovemode_0 || spec_nextmovemode_1));
+
+    G ((spec_nextmovemode_0 || spec_nextmovemode_1 ||  X ((leftmotor_0 && !leftmotor_1 && leftmotor_2 && rightmotor_0 && !rightmotor_1 && rightmotor_2)) ||  X ((spec_nextmovemode_0 || !spec_nextmovemode_1)))); 
+    G (( X ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2)) || (!spec_nextmovemode_0 && !spec_nextmovemode_1 &&  X ((!spec_nextmovemode_0 && spec_nextmovemode_1))))); // && ((!leftmotor_0 || leftmotor_1 || !leftmotor_2 || !rightmotor_0 || rightmotor_1 || !rightmotor_2));
+
+
+    G (((spec_nextmovemode_0 && spec_nextmovemode_1 &&  X ((!spec_nextmovemode_0 && !spec_nextmovemode_1))) ||  X ( X ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2))))) ; // && ((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2)) && X((leftmotor_0 || !leftmotor_1 || !leftmotor_2 || rightmotor_0 || !rightmotor_1 || !rightmotor_2));
+    G ((!spec_nextmovemode_0 || !spec_nextmovemode_1 ||  X ((spec_nextmovemode_0 || spec_nextmovemode_1)) ||  X ( X ((!leftmotor_0 && leftmotor_1 && leftmotor_2 && !rightmotor_0 && rightmotor_1 && rightmotor_2)))));
+
+     G ((!spec_nextmovemode_0 || spec_nextmovemode_1 ||  X ((spec_nextmovemode_0 || !spec_nextmovemode_1))));
+  }
+
+  ASSUMPTIONS {
+     G (((!spec_nextmovemode_0 && !spec_nextmovemode_1) ||  F (!obstacle)));
+     G ( F ((spec_nextmovemode_0 && spec_nextmovemode_1 &&  X (!obstacle))));
+     G ((!spec_search ||  F ((((heading_0 && next_head_0) || (!heading_0 && !next_head_0)) && ((heading_1 && next_head_1) || (!heading_1 && !next_head_1)) && ((heading_2 && next_head_2) || (!heading_2 && !next_head_2))))));
+  }
+
+  GUARANTEES {
+     G ( F ((!spec_nextmovemode_0 && !spec_nextmovemode_1)));
+  }
+}
