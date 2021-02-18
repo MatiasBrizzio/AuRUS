@@ -203,6 +203,8 @@ public class Main {
 	        BufferedWriter bw = new BufferedWriter(fw);
 	        bw.write(TLSF_Utils.adaptTLSFSpec(sol.spec));
 	        bw.write("\n//fitness: " + sol.fitness);
+			bw.write("\n//syntactic: " + sol.syntactic_distance);
+			bw.write("\n//semantic: " + sol.semantic_distance);
 	        bw.close();
 
 	        if (bestFitness < sol.fitness)

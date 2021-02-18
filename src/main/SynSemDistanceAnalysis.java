@@ -31,13 +31,23 @@ public class SynSemDistanceAnalysis {
             String directoryName = "";
             String out_name = "";
             Tlsf original = null;
+//            boolean computeSyn = false;
+//            boolean computeSem = false;
             for (int i = 0; i < args.length; i++) {
                 if (args[i].startsWith("-o=")) {
                     String orig_name = args[i].replace("-o=", "");
                     original = TLSF_Utils.toBasicTLSF(new File(orig_name));
                 } else if (args[i].startsWith("-out=")) {
                     out_name = args[i].replace("-out=", "");
-                } else {
+//                } else if (args[i].startsWith("-all")) {
+//                    computeSyn = true;
+//                    computeSem = true;
+//                } else if (args[i].startsWith("-syn")) {
+//                    computeSyn = true;
+//                } else if (args[i].startsWith("-sem")) {
+//                    computeSem = true;
+                }
+                else {
                     directoryName = args[i];
                 }
             }
@@ -62,14 +72,24 @@ public class SynSemDistanceAnalysis {
                 BufferedReader in = new BufferedReader(f);
                 String aux = "";
                 double value = 0.0d;
+                double syntactic_distance = 0.0d;
+                double semantic_distance = 0.0d;
                 while ((aux = in.readLine()) != null) {
                     if ((aux.startsWith("//fitness"))) {
                         value = Double.valueOf(aux.substring(10));
                     }
+                    else if ((aux.startsWith("//syntactic"))) {
+                        syntactic_distance = Double.valueOf(aux.substring(12));
+                    }
+                    else if ((aux.startsWith("//semantic"))) {
+                        semantic_distance = Double.valueOf(aux.substring(11));
+                    }
                 }
                 sol_fitness.add(value);
-                double syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
-                double semantic_distance = fitness.compute_semantic_distance(original, tlsf);
+                if (syntactic_distance == 0.0d)
+                     syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
+                if (semantic_distance == 0.0d)
+                        semantic_distance = fitness.compute_semantic_distance(original, tlsf);
                 sol_syntactic.add(syntactic_distance);
                 sol_semantic.add(semantic_distance);
             }
