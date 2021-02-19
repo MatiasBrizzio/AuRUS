@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class SynSemDistanceAnalysis {
@@ -31,6 +32,7 @@ public class SynSemDistanceAnalysis {
             String directoryName = "";
             String out_name = "";
             Tlsf original = null;
+            int N = -1;
 //            boolean computeSyn = false;
 //            boolean computeSem = false;
             for (int i = 0; i < args.length; i++) {
@@ -39,6 +41,7 @@ public class SynSemDistanceAnalysis {
                     original = TLSF_Utils.toBasicTLSF(new File(orig_name));
                 } else if (args[i].startsWith("-out=")) {
                     out_name = args[i].replace("-out=", "");
+                }
 //                } else if (args[i].startsWith("-all")) {
 //                    computeSyn = true;
 //                    computeSem = true;
@@ -46,6 +49,8 @@ public class SynSemDistanceAnalysis {
 //                    computeSyn = true;
 //                } else if (args[i].startsWith("-sem")) {
 //                    computeSem = true;
+                else if (args[i].startsWith("-n=")) {
+                   N = Integer.parseInt(args[i].replace("-n=", ""));
                 }
                 else {
                     directoryName = args[i];
@@ -56,9 +61,6 @@ public class SynSemDistanceAnalysis {
                 System.exit(0);
             }
 
-            //compute syntactic/semantic distance
-            Settings.check_REALIZABILITY = false;
-            AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(original);
 
             Stream<Path> walk = Files.walk(Paths.get(directoryName));
             List<String> specifications = walk.map(x -> x.toString())
@@ -86,10 +88,6 @@ public class SynSemDistanceAnalysis {
                     }
                 }
                 sol_fitness.add(value);
-                if (syntactic_distance == 0.0d)
-                     syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
-                if (semantic_distance == 0.0d)
-                        semantic_distance = fitness.compute_semantic_distance(original, tlsf);
                 sol_syntactic.add(syntactic_distance);
                 sol_semantic.add(semantic_distance);
             }
@@ -103,8 +101,32 @@ public class SynSemDistanceAnalysis {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write("id,fit,syn,sem\n");
 
-            for (int i = 0; i < solutions.size(); i++) {
-                bw.write(i + "," + sol_fitness.get(i) + "," + sol_syntactic.get(i) + "," + sol_semantic.get(i) + "\n");
+            int[] sortedIndices = IntStream.range(0, sol_fitness.size())
+                    .boxed().sorted((i, j) -> - sol_fitness.get(i).compareTo(sol_fitness.get(j)) )
+                    .mapToInt(ele -> ele).toArray();
+
+            //compute syntactic/semantic distance
+            Settings.check_REALIZABILITY = false;
+            AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(original);
+
+            int MAX = solutions.size();
+            if (N > 0)
+                MAX = N;
+            for (int i = 0; i < MAX; i++) {
+                int index = sortedIndices[i];
+                double value = sol_fitness.get(index);
+                double syntactic_distance = sol_syntactic.get(index);
+                double semantic_distance = sol_semantic.get(index);
+                Tlsf tlsf = solutions.get(index);
+                if (syntactic_distance == 0.0d)
+                    syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
+                if (semantic_distance == 0.0d)
+                    semantic_distance = fitness.compute_semantic_distance(original, tlsf);
+
+                bw.write(i + "," + value + "," + syntactic_distance + "," + semantic_distance + "\n");
+            }
+            if (N > 0) {
+                bw.write(solutions.size()-1+ ",0,0,0\n");
             }
             bw.flush();
             bw.close();
