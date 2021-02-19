@@ -34,10 +34,14 @@ define -- nonemove is true iff no motor moves
 
 guarantee
 	//G (spec_prevBotMotReturn<->PREV(botMot = RETURN));
-	G (next(spec_prevBotMotReturn)<->(botMot = RETURN));
+--	G (next(spec_prevBotMotReturn)<->(botMot = RETURN));
+	G ( (next(spec_prevBotMotReturn) -> (botMot = RETURN)) & ((botMot = RETURN) -> next(spec_prevBotMotReturn)) );
+
 guarantee
 	//G (spec_prevBotMotSeek<->PREV(botMot = SEEK));
-  	G (next(spec_prevBotMotSeek)<->(botMot = SEEK));
+--  	G (next(spec_prevBotMotSeek)<->(botMot = SEEK));
+	G ( (next(spec_prevBotMotSeek) -> (botMot = SEEK)) & ((botMot = SEEK) -> next(spec_prevBotMotSeek)) );
+
 
   sys boolean spec_prevBotMotReturn ;
   sys boolean spec_prevBotMotSeek ;
@@ -55,7 +59,10 @@ guarantee
 	G (verMot = SLEEP -> spec_currentColor = next(spec_currentColor));
 	
 guarantee
-	G (spec_dropping = next(spec_dropping) <-> verMot = SLEEP & !(spec_prevBotMotReturn & ack_bot = SLEEP));
+--	G (spec_dropping = next(spec_dropping) <-> verMot = SLEEP & !(spec_prevBotMotReturn & ack_bot = SLEEP));
+	G ( (spec_dropping = next(spec_dropping) -> (verMot = SLEEP & !(spec_prevBotMotReturn & ack_bot = SLEEP))) &
+	((verMot = SLEEP & !(spec_prevBotMotReturn & ack_bot = SLEEP)) -> spec_dropping = next(spec_dropping)));
+
 
 guarantee
 	G (ack_ver = MOVE | ack_hor = MOVE -> allsleep);
@@ -79,7 +86,7 @@ guarantee
 
 guarantee
 	//G (nonemove & spec_dropping & PREV(ack_ver = MOVE)-> botMot = SEEK);
-	G (next(nonemove & spec_dropping) & (ack_ver = MOVE)-> next(botMot = SEEK));
+	G (next(nonemove) & next(spec_dropping) & (ack_ver = MOVE)-> next(botMot = SEEK));
 	 
 -- P19
 -- (spec_dropping & detect != spec_currentColor -> botMot = SEEK) is true between (spec_prevBotMotSeek & ack_bot = MOVE) and (spec_prevBotMotSeek & detect = spec_currentColor)
@@ -102,7 +109,10 @@ guarantee -- equivalence of satisfaction
 
 guarantee
 	//G (spec_dropping & onlybotmoves & detect = spec_currentColor & PREV(botMot = SEEK) <-> horMot = MOVE);
- 	G (next(spec_dropping & onlybotmoves & detect = spec_currentColor) & (botMot = SEEK) <-> next(horMot = MOVE));
+-- 	G (next(spec_dropping & onlybotmoves & detect = spec_currentColor) & (botMot = SEEK) <-> next(horMot = MOVE));
+	G ( ((next(spec_dropping & onlybotmoves & detect = spec_currentColor) & (botMot = SEEK)) -> next(horMot = MOVE)) & 
+	(next(horMot = MOVE) -> (next(spec_dropping & onlybotmoves & detect = spec_currentColor) & (botMot = SEEK))));
+
 
 guarantee
 	//G (nonemove & PREV(ack_hor = MOVE) & spec_dropping -> botMot = RETURN);
@@ -135,7 +145,10 @@ guarantee
 
 guarantee
 	//G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButton_valid_pressed);
-	G (next(speedButton = PRESS) & (speedButton = RELEASE) <-> next(spec_speedButton_valid_pressed));
+--	G (next(speedButton = PRESS) & (speedButton = RELEASE) <-> next(spec_speedButton_valid_pressed));
+	G ( ((next(speedButton = PRESS) & (speedButton = RELEASE)) -> next(spec_speedButton_valid_pressed)) &
+	(next(spec_speedButton_valid_pressed) -> (next(speedButton = PRESS) & (speedButton = RELEASE))));
+
 
 guarantee -- if the speed button is pressed, increase the speed by one level
 	//G (spec_speedButton_valid_pressed & PREV(motSpeed = LEVEL1) -> motSpeed = LEVEL2);
@@ -167,7 +180,10 @@ guarantee -- if the speed button is pressed, increase the speed by one level
 
 LTLSPEC
 	//G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_haltButton_valid_pressed);
-	G (next(haltButton = PRESS) & (haltButton = RELEASE) <-> next(spec_haltButton_valid_pressed));
+--	G (next(haltButton = PRESS) & (haltButton = RELEASE) <-> next(spec_haltButton_valid_pressed));
+	G ( ((next(haltButton = PRESS) & (haltButton = RELEASE)) -> next(spec_haltButton_valid_pressed)) & 
+	(next(spec_haltButton_valid_pressed) -> (next(haltButton = PRESS) & (haltButton = RELEASE))));
+	
 
 LTLSPEC
 	G ((spec_haltButton_valid_pressed & spec_pausing = GO) | (!spec_haltButton_valid_pressed & spec_pausing = PAUSE)
