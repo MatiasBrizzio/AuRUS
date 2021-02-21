@@ -110,7 +110,7 @@ public class SynSemDistanceAnalysis {
             AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(original);
 
             int MAX = solutions.size();
-            if (N > 0)
+            if (N > 0 && MAX > 0)
                 MAX = N;
             for (int i = 0; i < MAX; i++) {
                 int index = sortedIndices[i];
