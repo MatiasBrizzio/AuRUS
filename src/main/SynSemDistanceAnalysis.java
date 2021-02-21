@@ -111,7 +111,7 @@ public class SynSemDistanceAnalysis {
 
             int MAX = solutions.size();
             if (N > 0 && MAX > 0)
-                MAX = N;
+                MAX = Integer.min(N,MAX);
             for (int i = 0; i < MAX; i++) {
                 int index = sortedIndices[i];
                 double value = sol_fitness.get(index);
