@@ -287,7 +287,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
 	private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("-");
-		if (originalNumOfModels == BigInteger.ZERO)
+		if (originalNumOfModels == null || originalNumOfModels == BigInteger.ZERO )
 			return 0.0d;
 
 		Formula refined_formula = refined.toFormula().formula();
@@ -326,7 +326,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 	private BigDecimal commonNumOfModels = null;
 	private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
 		System.out.print("+");
-		if (originalNumOfModels == BigInteger.ZERO)
+		if (originalNumOfModels == null || originalNumOfModels == BigInteger.ZERO)
 			return 0.0d;
 //		if (commonNumOfModels == null || commonNumOfModels == BigDecimal.ZERO) {
 //			return 0.0d;
