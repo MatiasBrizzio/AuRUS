@@ -85,7 +85,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		//We compute uTkv, where u is the row vector such that ui = 1 if and only if i is the start state and 0 otherwise,
 		// and v is the column vector where vi = 1 if and only if i is an accepting state and 0 otherwise.
 		if (states == null)
-			return BigInteger.ZERO;
+			return null;
 		BOUND = bound;
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		// Do the call in a separate thread, get a Future back
@@ -100,7 +100,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 		catch (InterruptedException | ExecutionException e) {
 			System.err.println("EmersonLeiAutomatonBasedModelCounting::count ERROR. " + e.getMessage());
 		}
-		return BigInteger.ZERO;
+		return null;
 	}
 
 	int BOUND = 0;

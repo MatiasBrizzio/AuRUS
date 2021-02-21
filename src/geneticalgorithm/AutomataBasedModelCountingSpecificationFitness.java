@@ -302,7 +302,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //			return 1.0d;
 
 		LabelledFormula formula = LabelledFormula.of(lostModels, original.variables());
-		BigDecimal numOfLostModels = new BigDecimal(countModels(formula));
+		BigInteger form_count = countModels(formula);
+		if (form_count==null)
+			return 0.0d;
+		BigDecimal numOfLostModels = new BigDecimal(form_count);
 		//patch to avoid computing again this value;
 //		commonNumOfModels = numOfLostModels;
 		BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
@@ -351,11 +354,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 		LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
 //		System.out.println("WON: "+formula);
 		//patch to avoid computing again this value;
-		BigDecimal numOfWonModels = null;
-//		if (commonNumOfModels != null)
-//			numOfWonModels = commonNumOfModels;
-//		else
-			numOfWonModels = new BigDecimal(countModels(formula));
+		BigInteger form_count = countModels(formula);
+		if (form_count==null)
+			return 0.0d;
+		BigDecimal numOfWonModels = new BigDecimal(form_count);
 //		commonNumOfModels = null;
 		BigDecimal numOfRefinedModels = new BigDecimal(refinedNumOfModels);
 //        BigDecimal numOfRefinedModels = new BigDecimal(UNIVERSE);
