@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-ifile = "executions-summary.csv"
+ifile = "executions-summary-sem1-removed.csv"
 
 
 data = pd.read_csv(ifile)
@@ -73,22 +73,22 @@ for I in range(len(data['config'])):
 
 fig = go.Figure() 
 x = data['config']
-fig.add_trace(go.Box(x=x, y=sol_values, name = 'SOL', marker_color='red')) 
-fig.add_trace(go.Box(x=x, y=data['syn'], name = 'SYN', marker_color='green'))
-fig.add_trace(go.Box(x=x, y=data['sem'], name = 'SEM', marker_color='blue'))
-fig.update_traces(quartilemethod="exclusive")
+fig.add_trace(go.Box(x=x, y=sol_values, name = '#SOL', marker_color='#FF851B', boxpoints='outliers')) 
+fig.add_trace(go.Box(x=x, y=data['syn'], name = 'SYN', marker_color='#FF4136', boxpoints='outliers'))
+fig.add_trace(go.Box(x=x, y=data['sem'], name = 'SEM', marker_color='#3D9970', boxpoints='outliers'))
+# fig.update_traces(quartilemethod="linear")
 
 fig.update_layout(
     boxmode='group',
-    # width=500,
+    width=1500,
     margin=dict(
         l=10,
         r=10,
         b=10,
         t=10,
-        pad=4
+        pad=8
     ),
-    # template="plotly_white", #"plotly", "plotly_white", "plotly_dark", "ggplot2", "seaborn", "simple_white", "none"
+    template="plotly_white", #"plotly", "plotly_white", "plotly_dark", "ggplot2", "seaborn", "simple_white", "none"
     # showlegend=False,
     xaxis=dict(
         title = 'Configuration',
@@ -97,14 +97,14 @@ fig.update_layout(
     ),
     yaxis=dict(
         title='Percentage of Solutions',
-        zeroline=False,
-        autorange=False, 
+        #zeroline=False,
+        #autorange=False, 
         range=[0,1.05]
     ),
 )
 
 #fig.show()
-ofile = "executions-summary-syn.pdf"
+ofile = "executions-summary-sem1-removed.pdf"
 fig.write_image(ofile)
 #py.iplot(fig, filename='random.pdf')
 
