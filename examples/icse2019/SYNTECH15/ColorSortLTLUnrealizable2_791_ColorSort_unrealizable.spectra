@@ -86,11 +86,17 @@ guarantee
 guarantee
 	motSpeed = LEVEL1 & !spec_dropping;
 
+-- FORMULA MANUALLY TRANSLATED
 --guarantee
 --	G (speedButton = PRESS & PREV(speedButton = RELEASE) <-> spec_speedButton_valid_pressed);
 
 guarantee
 	G (((next(speedButton = PRESS) & speedButton = RELEASE) <-> next(spec_speedButton_valid_pressed)));
+
+guarantee -- INITIAL STATE
+	!(spec_speedButton_valid_pressed);
+-- END OF FORMULA MANUALLY TRANSLATED
+
 
 guarantee -- if the speed button is pressed, increase the speed by one level
 	G (spec_speedButton_valid_pressed & motSpeed = LEVEL1 -> next(motSpeed = LEVEL2));
@@ -107,11 +113,16 @@ guarantee -- if the speed button is released, the speed remains the same
 
 -- the pause button
 
+-- FORMULA MANUALLY TRANSLATED
 --guarantee
 --	G (haltButton = PRESS & PREV(haltButton = RELEASE) <-> spec_pauseButton_valid_pressed);
 
 guarantee
 	G (((next(haltButton = PRESS) & haltButton = RELEASE) <-> next(spec_pauseButton_valid_pressed)));
+guarantee -- INITIAL STATE
+	!(spec_pauseButton_valid_pressed);
+-- END OF FORMULA MANUALLY TRANSLATED
+
 guarantee
 	G ((spec_pauseButton_valid_pressed & spec_pausing = GO) | (!spec_pauseButton_valid_pressed & spec_pausing = PAUSE)
 		-> next(spec_pausing) = PAUSE);

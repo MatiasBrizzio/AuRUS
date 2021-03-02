@@ -56,11 +56,16 @@ guarantee
 
 
 //calibrate after turn
-guarantee
+-- FORMULA MANUALLY TRANSLATED
+guarantee 
 	//G  ((moveMode = FWD & Y(moveMode = TURN_LEFT_2)) <-> (LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
 --	G  ((next(moveMode = FWD) & (moveMode = TURN_LEFT_2)) <-> next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD));
 	G  ( ((next(moveMode = FWD) & (moveMode = TURN_LEFT_2)) -> next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD)) &
 		(next(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD) -> (next(moveMode = FWD) & (moveMode = TURN_LEFT_2))));
+// initial state included
+guarantee
+	!(LeftMotor = CALIB_FWD & RightMotor = CALIB_FWD);
+-- END OF FORMULA MANUALLY TRANSLATED
 
 guarantee//for turning sequence (step 1 and then 2
 --	G ((moveMode = TURN_LEFT_1) <-> (next(moveMode) = TURN_LEFT_2));

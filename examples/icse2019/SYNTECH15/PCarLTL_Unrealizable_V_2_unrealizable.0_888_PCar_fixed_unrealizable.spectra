@@ -81,12 +81,17 @@ guarantee
  -> (next(spec_policy) = spec_policy)&throttle=FWD & parkCommand=CHECK & steer = CENTER);
 // 
  //Measuring --> Parking_0
+-- FORMULA MANUALLY TRANSLATED
 --guarantee
 -- G (((((spec_policy = MEASURING)|(spec_policy=SEEKING & PREV(spec_policy=MEASURING)))) & (obstacle = CLEAR) &(parkResult =PARALLEL))
 -- -> (next(spec_policy) = PARKING_0) & (throttle = STOP) & (parkCommand = STOP) & steer = RIGHT);
 guarantee
  G (((( next(spec_policy = MEASURING)| (next(spec_policy=SEEKING) & (spec_policy=MEASURING)))) & next(obstacle = CLEAR) & next(parkResult =PARALLEL))
  -> (next(next(spec_policy)) = PARKING_0) & next(throttle = STOP) & next(parkCommand = STOP) & next(steer = RIGHT));
+
+guarantee -- INITIAL STATE INCLUDED
+	(((spec_policy = MEASURING) & (obstacle = CLEAR) &(parkResult =PARALLEL)) -> (next(spec_policy = PARKING_0)) & (throttle = STOP) & (parkCommand = STOP) & steer = RIGHT);
+-- END OF FORMULA MANUALLY TRANSLATED
 //
 //
 //Parking_0--> Parking_1 

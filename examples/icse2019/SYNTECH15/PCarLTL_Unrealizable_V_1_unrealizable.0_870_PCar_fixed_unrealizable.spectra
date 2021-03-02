@@ -88,30 +88,40 @@ G ((policy = SEEKING & parkResult=NA) -> (throttle != STOP));
  guarantee
  G((policy=SEEKING & obstacle = CLEAR &  sideSense = CENTERED) -> (steer=CENTER));
  
+-- FORMULA MANUALLY TRANSLATED
  guarantee
  --G((policy = SEEKING & obstacle = CLEAR & PREV(sideSense = FAR) & sideSense = CENTERED) ->
  --(steer=EASY_LEFT & next(steer)=CENTER));
  G(( (next(policy) = SEEKING) & (next(obstacle) = CLEAR) & (sideSense = FAR) & (next(sideSense) = CENTERED)) ->
  (next(steer)=EASY_LEFT & next(next(steer))=CENTER));
+
+-- END OF FORMULA MANUALLY TRANSLATED
  
+-- FORMULA MANUALLY TRANSLATED
  guarantee
 -- G((policy = SEEKING & obstacle = CLEAR & PREV(sideSense = CLOSE) & sideSense = CENTERED) ->
 -- (steer=EASY_RIGHT & next(steer)=CENTER));
  G(((next(policy) = SEEKING) & (next(obstacle) = CLEAR) & (sideSense = CLOSE) & (next(sideSense) = CENTERED)) ->
  ((next(steer)=EASY_RIGHT) & next(next(steer))=CENTER));
 
+-- END OF FORMULA MANUALLY TRANSLATED
+
 //LTLSPECENV
 //G ((sideSense = CLOSE) & throttle != STOP -> F(sideSense != CLOSE));
 //LTLSPECENV
 //G ((sideSense = FAR) & throttle != STOP -> F(sideSense != FAR));
 
+-- FORMULA MANUALLY TRANSLATED
 assumption
 --G (PREV(sideSense = FAR) & sideSense = CENTERED -> next(sideSense) = CENTERED); 
 G ((sideSense = FAR) & (next(sideSense) = CENTERED) -> next(next(sideSense)) = CENTERED); 
+-- END OF FORMULA MANUALLY TRANSLATED
+
+-- FORMULA MANUALLY TRANSLATED
 assumption
 --G (PREV(sideSense = CLOSE) & sideSense = CENTERED -> next(sideSense) = CENTERED); 
 G ((sideSense = CLOSE) & (next(sideSense) = CENTERED) -> next(next(sideSense)) = CENTERED); 
-
+-- END OF FORMULA MANUALLY TRANSLATED
  
  
   //Allign left
@@ -157,10 +167,13 @@ guarantee
  -> (next(policy) = policy) & throttle=FWD & parkCommand=CHECK);
  
  //Measuring --> Parking_0
+-- FORMULA MANUALLY TRANSLATED
 guarantee
 -- G (((((policy = MEASURING & sideSense = PARALLEL_PARKING)|(policy=SEEKING & PREV(sideSense = PARALLEL_PARKING) & PREV(policy=MEASURING)))) & (obstacle = CLEAR) &(parkResult =PARALLEL))
  -- -> (next(policy) = PARKING_0) & (throttle = BLOCKING_FWD) & (parkCommand = STOP) );
  G (((((    (next(policy) = MEASURING) & (next(sideSense) = PARALLEL_PARKING)) | ((next(policy)=SEEKING) & (sideSense = PARALLEL_PARKING) & (policy=MEASURING)))) & (next(obstacle) = CLEAR) &( next(parkResult) =PARALLEL)) -> (next(next(policy)) = PARKING_0) & (next(throttle) = BLOCKING_FWD) & (next(parkCommand) = STOP) );
+
+-- END OF FORMULA MANUALLY TRANSLATED
 
 
 

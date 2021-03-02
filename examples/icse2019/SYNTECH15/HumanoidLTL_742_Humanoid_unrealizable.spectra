@@ -160,11 +160,13 @@ guarantee
 	
 guarantee
 	G ((turnState = T0 & !(nextMoveMode = TURN_LEFT)) -> next(turnState) = T0);
-	
+
+-- FORMULA MANUALLY TRANSLATED
 --guarantee
 --	G ((nextMoveMode = TURN_LEFT & Y(nextMoveMode = FWD) & turnState = T0) -> next(turnState) = T1);
 guarantee
 	G ((next(nextMoveMode = TURN_LEFT) & (nextMoveMode = FWD) & next(turnState = T0)) -> next(next(turnState) = T1));
+-- END OF FORMULA MANUALLY TRANSLATED
 
 guarantee
 	G (turnState = T1  -> (next(turnState) = T2 & nextMoveMode = TURN_LEFT));
@@ -223,18 +225,21 @@ guarantee
  * 
  */
  ////////////////////////////////////////////////////////////////
-
+-- FORMULA MANUALLY TRANSLATED
 --assumption
 --	G ((Y(nextMoveMode = FWD) & Obstacle = BLOCKED) -> next(Obstacle = BLOCKED));
 --	//G((nextMoveMode != FWD) -> F(Obstacle = CLEAR));
 assumption
 	G (((nextMoveMode = FWD) & next(Obstacle = BLOCKED)) -> next(next(Obstacle = BLOCKED)));
 	//G((nextMoveMode != FWD) -> F(Obstacle = CLEAR));
+-- END OF FORMULA MANUALLY TRANSLATED
 
+-- FORMULA MANUALLY TRANSLATED
 --assumption
 --	G((Y(nextMoveMode = BWD) & Obstacle = CLEAR) -> (next(Obstacle != BLOCKED)));
 assumption
 	G(((nextMoveMode = BWD) & next(Obstacle = CLEAR)) -> next((next(Obstacle != BLOCKED))));
+-- END OF FORMULA MANUALLY TRANSLATED
 	
 //LTLSPECENV
 	//G((Y(Y(spec_nextMoveMode = TURN_LEFT_2)) & Y(spec_nextMoveMode = FWD)) -> Obstacle = CLEAR);
