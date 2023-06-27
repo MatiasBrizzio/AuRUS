@@ -30,15 +30,16 @@ class FormulaMutarorTest {
 //	  System.out.println("After replace subformula! "+ m);
 //  }
   
-//@Test
-//void testMutate1() throws IOException {
-//	  List<String> vars = List.of("grant0","grant1");
-//	  LabelledFormula f = LtlParser.parse("G (grant0 && grant1 | grant1)", vars);
-//	  System.out.println("After replace subformula! "+ f.formula());
-//	  Formula m = FormulaMutator.mutate(f.formula(), vars);
-//	  System.out.println("After replace subformula! "+ m);
-//	  
-//}
+@Test
+void testMutate1() throws IOException {
+	  List<String> vars = List.of("grant0","grant1");
+	  LabelledFormula f = LtlParser.parse("(Z grant0)", vars);
+	  System.out.println("After replace subformula! "+ f.formula());
+		FormulaMutator visitor = new FormulaMutator(vars, Formula_Utils.formulaSize(f.formula()), 1);
+		Formula m = f.formula().accept(visitor);
+	  System.out.println("After replace subformula! "+ m);
+
+}
   
   @Test
   void testMutate0() throws IOException {
