@@ -2,6 +2,9 @@
 
 On this webpage, you will discover a set of guidelines that outline the process for replicating the experiments conducted in the research paper titled "Automated Repair of Unrealisable LTL Specifications Guided by Model Counting." The paper was presented at the Genetic and Evolutionary Computation Conference (GECCO) in 2023. By following these instructions, you can recreate the same experiments and obtain results that can be compared to those in the paper. The guidelines provided here will walk you through the necessary steps required to set up the experiment environment, execute the experiments, and analyze the results. 
 
+#### Acknowledgments
+If you utilize either the complete tool or any of the techniques presented herein for research purposes, we kindly request that you cite the corresponding paper: [Automated Repair of Unrealisable LTL Specifications.](https://arxiv.org/abs/2105.12595) Thank you :)
+
 ## Installation Instructions
 
 ### REQUIREMENTS
