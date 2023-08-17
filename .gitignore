@@ -1,0 +1,23 @@
+# Ignora archivos del sistema Mac
+.DS_store
+test/.DS_Store
+# Ignora la carpeta node_modules
+result
+examples
+docker
+lib/ltl-model-counter/result/
+lib/ltl-model-counter/
+MC
+bin
+out
+.idea
+cnf.dimacs
+
+# Ignora todos los archivos de texto
+*.txt
+
+# Ignora los archivos relacionados a API keys
+.env
+
+# Ignora archivos de configuración SASS
+.sass-cache

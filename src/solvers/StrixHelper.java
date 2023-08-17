@@ -149,7 +149,7 @@ public class StrixHelper {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	private static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
+	public static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
 		Process pr = null;
 		System.out.println(path);
 		if (Settings.USE_SPECTRA) {
@@ -274,7 +274,7 @@ public class StrixHelper {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	private static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
+	public static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
 		Process pr = null;
 		if (outs.length() == 0) outs = "\"\"";
 		if (ins.length() == 0) ins = "\"\"";
@@ -282,7 +282,7 @@ public class StrixHelper {
 			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", formula, ins, outs});
 		else {
 //			System.out.println(outs + " "+ ins);
-			pr = Runtime.getRuntime().exec( new String[]{"lib/new_strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
+			pr = Runtime.getRuntime().exec( new String[]{"lib/strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
 			pr.toString();
 		}
 			boolean timeout = false;
