@@ -1,7 +1,6 @@
 package modelcounter;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,16 +9,20 @@ import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
+import main.Settings;
 import org.junit.jupiter.api.Test;
 
 import owl.ltl.Conjunction;
+import owl.ltl.Disjunction;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.LtlParser;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.rewriter.NormalForms;
 import owl.ltl.tlsf.Tlsf;
+import solvers.LTLSolver;
 import solvers.SolverUtils;
+import solvers.StrixHelper;
 import tlsf.CountREModels;
 
 class CountTest {
@@ -59,6 +62,27 @@ class CountTest {
 			System.out.println(result);
 		}
 	}
+
+
+	@Test
+	public void testSimple2() throws IOException, InterruptedException{
+		List<String> vars = List.of("p", "e0", "e1", "h1","h0");
+		Settings.USE_DOCKER = false;
+		Formula assumption = LtlParser.parse("G(p) || G (!p)",vars).formula();
+		Formula g1 = LtlParser.parse("G(!e0 || !e1)",vars).formula();
+		Formula g2 = LtlParser.parse("G(F(!h0 || e0))",vars).formula();
+		Formula g3 = LtlParser.parse("G(F(!h1 || e1))",vars).formula();
+		Formula g4 = LtlParser.parse("G(p) -> G (!e0 && !e1)",vars).formula();
+		Formula spec = Disjunction.of(assumption.not(), Conjunction.of(g1,g2,g3,g4));
+		System.out.println(LabelledFormula.of(spec,vars).toString());
+		System.out.println(LTLSolver.isSAT(spec.toString()));
+		System.out.println(StrixHelper.executeStrix(LabelledFormula.of(spec,vars).toString(), "h1,h0,p", "e0,e1"));
+		Formula spec2 = Disjunction.of(assumption.not(), Conjunction.of(g2));
+		System.out.println(LTLSolver.isSAT(spec2.toString()));
+		System.out.println(StrixHelper.executeStrix(LabelledFormula.of(spec2,vars).toString(), "h1,h0,p", "e0,e1"));
+	}
+
+
 
 
 }
