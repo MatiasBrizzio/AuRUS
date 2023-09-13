@@ -39,7 +39,7 @@ public class TLSF_Utils {
             + "  }  \n"
             + '}';
     static Map<String, String> replacements = new HashMap<String, String>() {
-        @Serial
+//        @Serial
         private static final long serialVersionUID = 1L;
 
         {

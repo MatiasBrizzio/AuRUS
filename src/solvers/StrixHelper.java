@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class StrixHelper {
 
     static Map<String, String> replacements = new HashMap<String, String>() {
-        @Serial
+//        @Serial
         private static final long serialVersionUID = 1L;
 
         {
@@ -120,11 +120,11 @@ public class StrixHelper {
                 inputs = new StringBuilder(inputs.toString().replaceAll(v, v.toLowerCase()));
                 outputs = new StringBuilder(outputs.toString().replaceAll(v, v.toLowerCase()));
             }
-            if (!outputs.isEmpty())
+            if (outputs.length() != 0)
                 outputs = new StringBuilder(outputs.substring(0, outputs.length() - 1));
             else
                 outputs = new StringBuilder();
-            if (!inputs.isEmpty())
+            if (inputs.length() != 0)
                 inputs = new StringBuilder(inputs.substring(0, inputs.length() - 1));
             else inputs = new StringBuilder();
 //				System.out.println(formula);
