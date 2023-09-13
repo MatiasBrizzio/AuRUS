@@ -2,7 +2,17 @@ package owl.ltl.visitors;
 
 import owl.ltl.*;
 
-public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
+import java.util.List;
+
+public class ToPastLTLVisitor implements Visitor<Formula> {
+    private int max_x_deep;
+    private List<String> vars;
+
+    public ToPastLTLVisitor(int max_x_deep, List<String> vars) {
+        this.max_x_deep = max_x_deep;
+        this.vars = vars;
+    }
+
 
     @Override
     public Formula apply(Formula formula) {
@@ -13,9 +23,8 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
     public Formula visit(Biconditional biconditional) {
         Formula left = biconditional.left.accept(this);
         Formula right = biconditional.right.accept(this);
-//		return Biconditional.of(left, right);
-//		return Disjunction.of(Conjunction.of(left,right), Conjunction.of(left.not(),right.not()));
-        return Conjunction.of(Disjunction.of(left.not(), right), Disjunction.of(left, right.not()));
+//        return Conjunction.of(Disjunction.of(left.not(),right), Disjunction.of(left,right.not()));
+        return Biconditional.of(left, right);
     }
 
     @Override
@@ -35,14 +44,12 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(FOperator fOperator) {
-        Formula operand = fOperator.operand.accept(this);
-        return FOperator.of(operand);
+        throw new UnsupportedOperationException("ToPastLTL: Diamond Operator is not supported. Just Safety: ");
     }
 
     @Override
     public Formula visit(FrequencyG freq) {
-        Formula operand = freq.operand.accept(this);
-        return FrequencyG.of(operand);
+        throw new UnsupportedOperationException("ToPastLTL: FreqG Operator is not supported. Just Safety: ");
     }
 
     @Override
@@ -59,7 +66,15 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(Literal literal) {
-        return literal;
+        if (this.max_x_deep == 0) return literal;
+        if (LabelledFormula.of(literal, vars).toString().equals(new String("first"))) return literal;
+        if (LabelledFormula.of(literal, vars).toString().equals(new String("!first"))) return literal;
+
+        Formula result = ZOperator.of(literal);
+        for (int i = 0; i < max_x_deep - 1; i++) {
+            result = ZOperator.of(result);
+        }
+        return result;
     }
 
     @Override
@@ -67,7 +82,6 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
         // p M q" -> "q U (p & q)
         Formula left = mOperator.left.accept(this);
         Formula right = mOperator.right.accept(this);
-
         return UOperator.of(right, Conjunction.of(right, left));
     }
 
@@ -118,13 +132,27 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(XOperator xOperator) {
-        Formula operand = xOperator.operand.accept(this);
-        return XOperator.of(operand);
+        System.out.println(xOperator);
+        System.out.println(GOperator.of(xOperator).height());
+        System.out.println(xOperator.height() - 1);
+        int difference = this.max_x_deep - (xOperator.height() - 1);
+        Formula child = xOperator.children().iterator().next();
+        while (!(child instanceof Literal)) {
+            child = child.children().iterator().next();
+        }
+        if (difference == 0)
+            return child;
+        else {
+            Formula result = ZOperator.of(child);
+            for (int i = 0; i < difference - 1; i++) {
+                result = ZOperator.of(result);
+            }
+            return result;
+        }
     }
 
     @Override
     public Formula visit(YOperator yOperator) {
-
         Formula operand = yOperator.operand.accept(this);
         return YOperator.of(operand);
     }

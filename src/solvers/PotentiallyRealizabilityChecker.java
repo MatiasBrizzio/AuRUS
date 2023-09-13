@@ -4,13 +4,9 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import jhoafparser.ast.AtomAcceptance;
 import jhoafparser.ast.BooleanExpression;
 import main.Settings;
-import org.ejml.data.DMatrixRMaj;
-import org.ejml.dense.row.CommonOps_DDRM;
 import owl.automaton.Automaton;
 import owl.automaton.acceptance.EmersonLeiAcceptance;
-import owl.automaton.acceptance.ParityAcceptance;
 import owl.automaton.edge.Edge;
-import owl.automaton.output.HoaPrinter;
 import owl.collections.ValuationSet;
 import owl.factories.FactorySupplier;
 import owl.factories.ValuationSetFactory;
@@ -18,28 +14,31 @@ import owl.ltl.LabelledFormula;
 import owl.run.DefaultEnvironment;
 import owl.run.Environment;
 import owl.translations.delag.DelagBuilder;
-import owl.translations.ltl2dpa.LTL2DPAFunction;
 
-import java.math.BigInteger;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntConsumer;
 
-import static owl.automaton.output.HoaPrinter.HoaOption.SIMPLE_TRANSITION_LABELS;
-import static owl.translations.ltl2dpa.LTL2DPAFunction.Configuration.*;
-
 public class PotentiallyRealizabilityChecker<S> {
 
-//    private DMatrixRMaj T = null;
+    boolean isAcceptance = false;
+    boolean noAcceptance = false;
+    //    private DMatrixRMaj T = null;
 //    private DMatrixRMaj I = null;
     private Automaton<S, EmersonLeiAcceptance> automaton = null;
-    private LabelledFormula formula;
-    private List<String> input_vars = null;
-//    private List<String> variables = null;
+    //    private List<String> variables = null;
 //    private Map<S,Integer> states = null;
     //public static int TIMEOUT = 120;
+    private LabelledFormula formula;
+    private List<String> input_vars = null;
+
+//    public boolean isStrongSatisfiable() {
+//        BigInteger numOfModels = count(Settings.MC_BOUND);
+//        BigInteger expectedNumOfModels =  (BigInteger.valueOf(2).pow(input_vars.size())).pow(Settings.MC_BOUND);
+//        System.out.printf("numOfModels: %d   expected: %d\n", numOfModels,expectedNumOfModels);
+//        return (numOfModels.compareTo(expectedNumOfModels) >= 0);
+//
+//    }
 
     public PotentiallyRealizabilityChecker(LabelledFormula formula) {
         this.formula = formula;
@@ -53,8 +52,7 @@ public class PotentiallyRealizabilityChecker<S> {
         } catch (TimeoutException e) {
             System.out.println("PotentiallyRealizabilityChecker: TIMEOUT parsing.");
             System.err.println(formula);
-        }
-        catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.err.println("PotentiallyRealizabilityChecker: ERROR while parsing. " + e.getMessage());
             System.err.println(formula);
         }
@@ -95,17 +93,7 @@ public class PotentiallyRealizabilityChecker<S> {
         return "OK";
     }
 
-//    public boolean isStrongSatisfiable() {
-//        BigInteger numOfModels = count(Settings.MC_BOUND);
-//        BigInteger expectedNumOfModels =  (BigInteger.valueOf(2).pow(input_vars.size())).pow(Settings.MC_BOUND);
-//        System.out.printf("numOfModels: %d   expected: %d\n", numOfModels,expectedNumOfModels);
-//        return (numOfModels.compareTo(expectedNumOfModels) >= 0);
-//
-//    }
-
-    boolean isAcceptance = false;
-    boolean noAcceptance = false;
-//    long numOfAcceptanceTransition = 0;
+    //    long numOfAcceptanceTransition = 0;
     public Boolean checkPotentiallyRealizability() {
         if (automaton == null)
             return null;
@@ -119,8 +107,7 @@ public class PotentiallyRealizabilityChecker<S> {
         } catch (TimeoutException e) {
             System.out.println("PotentiallyRealizabilityChecker::isPotentiallyRealizable TIMEOUT.");
             System.err.println(formula);
-        }
-        catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.err.println("PotentiallyRealizabilityChecker::isPotentiallyRealizable ERROR. " + e.getMessage());
             System.err.println(formula);
         }
@@ -185,8 +172,7 @@ public class PotentiallyRealizabilityChecker<S> {
                             statesToAnalyse.add(succ);
                     }
                 }
-            }
-            else {
+            } else {
                 // current is a sink state with no successors
                 undesiredStates.add(current); //check if it can be avoided
             }
@@ -195,7 +181,7 @@ public class PotentiallyRealizabilityChecker<S> {
                 //check if there is a (controllable) way to avoid reaching the bad state
 //                List<S> list_undesired_states = new LinkedList<>(undesiredStates);
 //                while (!list_undesired_states.isEmpty()) {
-                for(S bad_state : undesiredStates) {
+                for (S bad_state : undesiredStates) {
                     for (S predecessor : automaton.predecessors(bad_state)) {
                         if (predecessor.equals(bad_state) || undesiredStates.contains(predecessor) || visitedUndesiredStates.contains(predecessor) || !visitedStates.contains(predecessor))
                             continue;
@@ -238,7 +224,7 @@ public class PotentiallyRealizabilityChecker<S> {
                         if (noAcceptance) {
 //                            if(automaton.initialStates().contains(predecessor)) { //no way to avoid this path
 //                                System.out.printf("ERROR: %s\n", bad_state);
-                                return false;
+                            return false;
 //                            }
                             //add predecessors of the path of undesired states to see if it is possible to avoid it
 //                            list_undesired_states.add(predecessor);
@@ -466,26 +452,27 @@ public class PotentiallyRealizabilityChecker<S> {
 
     public boolean accConditionIsSatisfied(BooleanExpression<AtomAcceptance> acceptanceCondition, IntArrayList acceptanceSets) {
         boolean accConditionSatisfied = false;
-        switch(acceptanceCondition.getType()) {
-            case EXP_TRUE: { accConditionSatisfied = true; break; }
-            case EXP_FALSE: break;
-            case EXP_ATOM:
-            {
+        switch (acceptanceCondition.getType()) {
+            case EXP_TRUE: {
+                accConditionSatisfied = true;
+                break;
+            }
+            case EXP_FALSE:
+                break;
+            case EXP_ATOM: {
                 if (acceptanceCondition.getAtom().getType() == AtomAcceptance.Type.TEMPORAL_INF)
                     accConditionSatisfied = (acceptanceSets.contains(acceptanceCondition.getAtom().getAcceptanceSet()));
                 else if (acceptanceCondition.getAtom().getType() == AtomAcceptance.Type.TEMPORAL_FIN) {
-                    accConditionSatisfied = ! (acceptanceSets.contains(acceptanceCondition.getAtom().getAcceptanceSet()));
+                    accConditionSatisfied = !(acceptanceSets.contains(acceptanceCondition.getAtom().getAcceptanceSet()));
                 }
                 break;
             }
-            case EXP_AND:
-            {
+            case EXP_AND: {
                 if (accConditionIsSatisfied(acceptanceCondition.getLeft(), acceptanceSets))
                     accConditionSatisfied = accConditionIsSatisfied(acceptanceCondition.getRight(), acceptanceSets);
                 break;
             }
-            case EXP_OR:
-            {
+            case EXP_OR: {
                 if (accConditionIsSatisfied(acceptanceCondition.getLeft(), acceptanceSets))
                     accConditionSatisfied = true;
                 else
@@ -500,8 +487,6 @@ public class PotentiallyRealizabilityChecker<S> {
 
         return accConditionSatisfied;
     }
-
-
 
 
 }

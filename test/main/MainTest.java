@@ -1,28 +1,26 @@
 package main;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-
 class MainTest {
 
-	@Test
-	void testMinePump() throws IOException, InterruptedException {
-		String [] args = {"examples/minepump.tlsf"};
-		Main.main(args);
-	}
+    @Test
+    void testMinePump() throws IOException, InterruptedException {
+        String[] args = {"examples/minepump.tlsf"};
+        Main.main(args);
+    }
 
-	@Test
-	void testMinePumpSafe() throws IOException, InterruptedException {
-		String [] args = {"examples/minepump-safe.tlsf"};
-		Main.main(args);
-	}
+    @Test
+    void testMinePumpSafe() throws IOException, InterruptedException {
+        String[] args = {"examples/minepump-safe.tlsf"};
+        Main.main(args);
+    }
 
-	@Test
-	void testSpectra() throws IOException, InterruptedException {
-		String [] args = {"examples/icse2019/Simple/RG1.spectra"};
-		Main.main(args);
-	}
+    @Test
+    void testSpectra() throws IOException, InterruptedException {
+        String[] args = {"examples/icse2019/Simple/RG1.spectra"};
+        Main.main(args);
+    }
 }

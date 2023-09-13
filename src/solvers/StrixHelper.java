@@ -1,17 +1,5 @@
 package solvers;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import main.Settings;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
@@ -20,83 +8,86 @@ import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 public class StrixHelper {
 
-	private static FileWriter writer;
-//	private static int TIMEOUT = 180;
-	
-	static Map<String, String> replacements = new HashMap<String, String>(){
-		private static final long serialVersionUID = 1L;
-	{
-        put("&", "&&");
-        put("|", "||");
-    }};
-	public static enum RealizabilitySolverResult {
-		REALIZABLE,
-		UNREALIZABLE,
-		TIMEOUT,
-		ERROR;
-		public boolean inconclusive () { return this == TIMEOUT || this == ERROR; }
-	}
-	
-	/**
-	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
-	 * @param tlsf a TLSF File containing all tlsf specifiaction
-	 * @return {@link solvers.StrixHelper.RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
-	public static RealizabilitySolverResult checkRealizability(File tlsf) throws IOException, InterruptedException {
-		TLSF_Utils.toBasicTLSF(tlsf);
-		String tlsfBasic = tlsf.getPath().replace(".tlsf","_basic.tlsf");
-		return executeStrix(tlsfBasic);
-	}
-	
-	/**
-	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
-	 * @param tlsf a string containing all tlsf specifiaction
-	 * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
-	public static RealizabilitySolverResult checkRealizability(String tlsf) throws IOException, InterruptedException {
-		Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(tlsf);
-		return checkRealizability(tlsf2);
-	}
-	
-	/**
-	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
-	 * @param tlsf tlsf file containing all specification.
-	 * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
-	public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
+    static Map<String, String> replacements = new HashMap<String, String>() {
+        @Serial
+        private static final long serialVersionUID = 1L;
 
-		File file = null;
-		if (Settings.USE_SPECTRA) {
-			String directoryName =  Settings.USE_SPECTRA?Settings.SPECTRA_PATH:Settings.STRIX_PATH;
-			File outfolder = new File(directoryName);
-			if (!outfolder.exists())
-				outfolder.mkdirs();
+        {
+            put("&", "&&");
+            put("|", "||");
+        }
+    };
+    //	private static int TIMEOUT = 180;
+    private static FileWriter writer;
+
+    /**
+     * Checks the realizability of the system specified by the TLSF spec passed as parameter
+     *
+     * @param tlsf a TLSF File containing all tlsf specifiaction
+     * @return {@link solvers.StrixHelper.RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static RealizabilitySolverResult checkRealizability(File tlsf) throws IOException, InterruptedException {
+        TLSF_Utils.toBasicTLSF(tlsf);
+        String tlsfBasic = tlsf.getPath().replace(".tlsf", "_basic.tlsf");
+        return executeStrix(tlsfBasic);
+    }
+
+    /**
+     * Checks the realizability of the system specified by the TLSF spec passed as parameter
+     *
+     * @param tlsf a string containing all tlsf specifiaction
+     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static RealizabilitySolverResult checkRealizability(String tlsf) throws IOException, InterruptedException {
+        Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(tlsf);
+        return checkRealizability(tlsf2);
+    }
+
+    /**
+     * Checks the realizability of the system specified by the TLSF spec passed as parameter
+     *
+     * @param tlsf tlsf file containing all specification.
+     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
+
+        File file;
+        if (Settings.USE_SPECTRA) {
+            String directoryName = Settings.SPECTRA_PATH;
+            File outfolder = new File(directoryName);
+            if (!outfolder.exists())
+                outfolder.mkdirs();
 //			if (Settings.USE_SPECTRA)
-				file = new File((tlsf.title().replace("\"", "")+".spectra").replaceAll("\\s",""));
+            file = new File((tlsf.title().replace("\"", "") + ".spectra").replaceAll("\\s", ""));
 //			else
 //				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
-			try {
-				writer = new FileWriter(file.getPath());
-				writer.write(TLSF_Utils.tlsf2spectra(tlsf));
+            try {
+                writer = new FileWriter(file.getPath());
+                writer.write(TLSF_Utils.tlsf2spectra(tlsf));
 //				else
 //					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
-				writer.flush();
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return executeStrix(file.getPath());
-		}
-		else {
-			// No docker, no strix
+                writer.flush();
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return executeStrix(file.getPath());
+        } else {
+            // No docker, no strix
 //			if (Settings.USE_DOCKER) {
 //				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
 //				try {
@@ -111,261 +102,263 @@ public class StrixHelper {
 //			}
 //			// No docker, Strix
 //			else {
-				SyntacticSimplifier simp = new SyntacticSimplifier();
-				Formula form = tlsf.toFormula().formula().accept(simp);
-				String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
-				String inputs = "";
-				String outputs = "";
-				int i = 0;
-				while (tlsf.inputs().get(i)) {
-					inputs += tlsf.variables().get(i) + ",";
-					i++;
-				}
-				while (tlsf.outputs().get(i)) {
-					outputs += tlsf.variables().get(i) + ",";
-					i++;
-				}
-				for (String v : tlsf.variables()) { 
-					inputs = inputs.replaceAll(v, v.toLowerCase());
-					outputs = outputs.replaceAll(v, v.toLowerCase());
-				}
-				if (outputs.length() != 0)
-					outputs = outputs.substring(0, outputs.length() - 1);
-				else
-					outputs = "";
-				if (inputs.length() != 0)
-					inputs = inputs.substring(0, inputs.length() - 1);
-				else inputs = "";
+            SyntacticSimplifier simp = new SyntacticSimplifier();
+            Formula form = tlsf.toFormula().formula().accept(simp);
+            String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
+            StringBuilder inputs = new StringBuilder();
+            StringBuilder outputs = new StringBuilder();
+            int i = 0;
+            while (tlsf.inputs().get(i)) {
+                inputs.append(tlsf.variables().get(i)).append(",");
+                i++;
+            }
+            while (tlsf.outputs().get(i)) {
+                outputs.append(tlsf.variables().get(i)).append(",");
+                i++;
+            }
+            for (String v : tlsf.variables()) {
+                inputs = new StringBuilder(inputs.toString().replaceAll(v, v.toLowerCase()));
+                outputs = new StringBuilder(outputs.toString().replaceAll(v, v.toLowerCase()));
+            }
+            if (!outputs.isEmpty())
+                outputs = new StringBuilder(outputs.substring(0, outputs.length() - 1));
+            else
+                outputs = new StringBuilder();
+            if (!inputs.isEmpty())
+                inputs = new StringBuilder(inputs.substring(0, inputs.length() - 1));
+            else inputs = new StringBuilder();
 //				System.out.println(formula);
-				return executeStrix(formula,inputs,outputs);
+            return executeStrix(formula, inputs.toString(), outputs.toString());
 //			}
-		}
-	}
+        }
+    }
 
-	/**
-	 * Calls strix program with the file in path
-	 * @param path path to TLSF file
-	 * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
-	public static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
-		Process pr = null;
-		System.out.println(path);
-		if (Settings.USE_SPECTRA) {
-			if (Settings.USE_DOCKER)
-				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-spectra.sh", path});
-			else
-				pr = Runtime.getRuntime().exec( new String[]{"java", "-Djava.library.path=/usr/local/lib/",
-						"-jar", "lib/Spectra/spectra-cli.jar", "-i","./"+path});
-				
-		}
-		else {
-			if (Settings.USE_DOCKER)
-				pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", path});
-			else
-				pr = Runtime.getRuntime().exec( new String[]{"lib/strix_tlsf.sh","./"+path, "-r"});
-		}
-		boolean timeout = false;
-		if(!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
-		    timeout = true; //kill the process. 
-			pr.destroy(); // consider using destroyForcibly instead
-		}
-		
-		RealizabilitySolverResult realizable = RealizabilitySolverResult.UNREALIZABLE;
-		String aux;
-		if (timeout){
-			realizable = RealizabilitySolverResult.TIMEOUT;
-			pr.destroy();
-			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-stop.sh"});
-		}
-		else {
-			
-			InputStream in = pr.getInputStream();
-	    	InputStreamReader inread = new InputStreamReader(in);
-	    	BufferedReader bufferedreader = new BufferedReader(inread);
-	    	
-		    while ((aux = bufferedreader.readLine()) != null) {
+    /**
+     * Calls strix program with the file in path
+     *
+     * @param path path to TLSF file
+     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
+        Process pr;
+        System.out.println(path);
+        if (Settings.USE_SPECTRA) {
+            if (Settings.USE_DOCKER)
+                pr = Runtime.getRuntime().exec(new String[]{"./run-docker-spectra.sh", path});
+            else
+                pr = Runtime.getRuntime().exec(new String[]{"java", "-Djava.library.path=/usr/local/lib/",
+                        "-jar", "lib/Spectra/spectra-cli.jar", "-i", "./" + path});
+
+        } else {
+            if (Settings.USE_DOCKER)
+                pr = Runtime.getRuntime().exec(new String[]{"./run-docker-strix.sh", path});
+            else
+                pr = Runtime.getRuntime().exec(new String[]{"lib/strix_tlsf.sh", "./" + path, "-r"});
+        }
+        boolean timeout = false;
+        if (!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
+            timeout = true; //kill the process.
+            pr.destroy(); // consider using destroyForcibly instead
+        }
+
+        RealizabilitySolverResult realizable = RealizabilitySolverResult.UNREALIZABLE;
+        String aux;
+        if (timeout) {
+            realizable = RealizabilitySolverResult.TIMEOUT;
+            pr.destroy();
+            pr = Runtime.getRuntime().exec(new String[]{"./run-docker-stop.sh"});
+        } else {
+
+            InputStream in = pr.getInputStream();
+            InputStreamReader inread = new InputStreamReader(in);
+            BufferedReader bufferedreader = new BufferedReader(inread);
+
+            while ((aux = bufferedreader.readLine()) != null) {
 //		    	System.out.println(aux);
-		    	if (!Settings.USE_SPECTRA && aux.equals("REALIZABLE")){
-		    		realizable = RealizabilitySolverResult.REALIZABLE;
-		    		break;
-		    	}
-		    	else if (Settings.USE_SPECTRA && aux.contains("realizable") && !aux.contains("unrealizable")) {
-		    		realizable = RealizabilitySolverResult.REALIZABLE;
-		    		break;
-		    	}
-		    	if (aux.contains("Error")){
-			    	System.out.println("ERR: " + aux);
-			    	realizable = RealizabilitySolverResult.ERROR;
-			    	break;
-			    }
-		    }
+                if (!Settings.USE_SPECTRA && aux.equals("REALIZABLE")) {
+                    realizable = RealizabilitySolverResult.REALIZABLE;
+                    break;
+                } else if (Settings.USE_SPECTRA && aux.contains("realizable") && !aux.contains("unrealizable")) {
+                    realizable = RealizabilitySolverResult.REALIZABLE;
+                    break;
+                }
+                if (aux.contains("Error")) {
+                    System.out.println("ERR: " + aux);
+                    realizable = RealizabilitySolverResult.ERROR;
+                    break;
+                }
+            }
 
-			//read program's error
-	    	InputStream err = pr.getErrorStream();
-	    	InputStreamReader errread = new InputStreamReader(err);
-	    	BufferedReader errbufferedreader = new BufferedReader(errread);
-		    while ((aux = errbufferedreader.readLine()) != null) {
-		    	System.out.println("ERR: " + aux);
-		    	realizable = RealizabilitySolverResult.ERROR;
-		    }
-		   
-		    // Check for failure
-			if (pr.waitFor() != 0) {
-				System.out.println("exit value = " + pr.exitValue());
-			}
-			
-			// Close the InputStream
-	    	bufferedreader.close();
-	    	inread.close();
-	    	in.close();
-	  
-	   		// Close the ErrorStream
-	   		errbufferedreader.close();
-	   		errread.close();
-	   		err.close();
-		}
-    		
-   		if (pr!=null) {
-  			OutputStream os = pr.getOutputStream();
-			if (os!=null) os.close();
-   		}
-   		
-   		return realizable;
-	}
-	
-	/**
-	 * Checks the realizability of the system specified by the TLSF spec passed as parameter
-	 * @param tlsf tlsf file containing all specification.
-	 * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
-	public static RealizabilitySolverResult checkRealizability(Spectra spectra) throws IOException, InterruptedException {
-		String formula = toSolverSyntax(spectra.toFormula());
-		String inputs = "";
-		String outputs = "";
-		int i = 0;
-		while (spectra.inputs().get(i)) {
-			inputs += spectra.variables().get(i) + ",";
-			i++;
-		}
-		while (spectra.outputs().get(i)) {
-			
-			outputs += spectra.variables().get(i) + ",";
-			i++;
-		}
-		for (String v : spectra.variables()) { 
-			inputs = inputs.replaceAll(v, v.toLowerCase());
-			outputs = outputs.replaceAll(v, v.toLowerCase());
-		}
-		outputs = outputs.substring(0, outputs.length() - 1);
-		inputs = inputs.substring(0, inputs.length() - 1);
-		return executeStrix(formula,inputs,outputs);
-		
-	}
-	
-	
-	/**
-	 * Calls strix program with the file in path
-	 * @param path path to TLSF file
-	 * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable 
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
-	public static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
-		Process pr = null;
-		if (outs.length() == 0) outs = "\"\"";
-		if (ins.length() == 0) ins = "\"\"";
-		if (Settings.USE_DOCKER)
-			pr = Runtime.getRuntime().exec( new String[]{"./run-docker-strix.sh", formula, ins, outs});
-		else {
+            //read program's error
+            InputStream err = pr.getErrorStream();
+            InputStreamReader errread = new InputStreamReader(err);
+            BufferedReader errbufferedreader = new BufferedReader(errread);
+            while ((aux = errbufferedreader.readLine()) != null) {
+                System.out.println("ERR: " + aux);
+                realizable = RealizabilitySolverResult.ERROR;
+            }
+
+            // Check for failure
+            if (pr.waitFor() != 0) {
+                System.out.println("exit value = " + pr.exitValue());
+            }
+
+            // Close the InputStream
+            bufferedreader.close();
+            inread.close();
+            in.close();
+
+            // Close the ErrorStream
+            errbufferedreader.close();
+            errread.close();
+            err.close();
+        }
+
+        if (pr != null) {
+            OutputStream os = pr.getOutputStream();
+            if (os != null) os.close();
+        }
+
+        return realizable;
+    }
+
+    /**
+     * Checks the realizability of the system specified by the TLSF spec passed as parameter
+     *
+     * @param tlsf tlsf file containing all specification.
+     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
+     */
+    public static RealizabilitySolverResult checkRealizability(Spectra spectra) throws IOException, InterruptedException {
+        String formula = toSolverSyntax(spectra.toFormula());
+        StringBuilder inputs = new StringBuilder();
+        StringBuilder outputs = new StringBuilder();
+        int i = 0;
+        while (spectra.inputs().get(i)) {
+            inputs.append(spectra.variables().get(i)).append(",");
+            i++;
+        }
+        while (spectra.outputs().get(i)) {
+
+            outputs.append(spectra.variables().get(i)).append(",");
+            i++;
+        }
+        for (String v : spectra.variables()) {
+            inputs = new StringBuilder(inputs.toString().replaceAll(v, v.toLowerCase()));
+            outputs = new StringBuilder(outputs.toString().replaceAll(v, v.toLowerCase()));
+        }
+        outputs = new StringBuilder(outputs.substring(0, outputs.length() - 1));
+        inputs = new StringBuilder(inputs.substring(0, inputs.length() - 1));
+        return executeStrix(formula, inputs.toString(), outputs.toString());
+
+    }
+
+    /**
+     * Calls strix program with the file in path
+     *
+     * @param path path to TLSF file
+     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
+     */
+    public static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
+        Process pr;
+        if (outs.isEmpty()) outs = "\"\"";
+        if (ins.isEmpty()) ins = "\"\"";
+        if (Settings.USE_DOCKER)
+            pr = Runtime.getRuntime().exec(new String[]{"./run-docker-strix.sh", formula, ins, outs});
+        else {
 //			System.out.println(outs + " "+ ins);
-			pr = Runtime.getRuntime().exec( new String[]{"lib/new_strix/strix","-f "+formula, "--ins=" + ins, "--outs="+outs});
-			pr.toString();
-		}
-			boolean timeout = false;
-		if(!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
-		    timeout = true; //kill the process. 
-			pr.destroy(); // consider using destroyForcibly instead
-		}
-		
-		RealizabilitySolverResult realizable = RealizabilitySolverResult.UNREALIZABLE;
-		String aux;
-		if (timeout){
-			realizable = RealizabilitySolverResult.TIMEOUT;
-			pr.destroy();
-		}
-		else {
-			
-			InputStream in = pr.getInputStream();
-	    	InputStreamReader inread = new InputStreamReader(in);
-	    	BufferedReader bufferedreader = new BufferedReader(inread);
-	    	
-		    while ((aux = bufferedreader.readLine()) != null) {
-		    	//System.out.println(aux);
-		    	if (aux.equals("REALIZABLE")){
-		    		realizable = RealizabilitySolverResult.REALIZABLE;
-		    		break;
-		    	}
-		    	if (aux.contains("Error")){
-			    	System.out.println("ERR: " + aux);
-			    	realizable = RealizabilitySolverResult.ERROR;
-			    	break;
-			    }
-		    }
+            pr = Runtime.getRuntime().exec(new String[]{"lib/new_strix/strix", "-f " + formula, "--ins=" + ins, "--outs=" + outs});
+        }
+        boolean timeout = false;
+        if (!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
+            timeout = true; //kill the process.
+            pr.destroy(); // consider using destroyForcibly instead
+        }
 
-			//read program's error
-	    	InputStream err = pr.getErrorStream();
-	    	InputStreamReader errread = new InputStreamReader(err);
-	    	BufferedReader errbufferedreader = new BufferedReader(errread);
-		    while ((aux = errbufferedreader.readLine()) != null) {
-		    	System.out.println("ERR: " + aux);
-		    	realizable = RealizabilitySolverResult.ERROR;
-		    }
-		   
-		    // Check for failure
-			if (pr.waitFor() != 0) {
-				System.out.println("exit value = " + pr.exitValue());
-			}
-			
-			// Close the InputStream
-	    	bufferedreader.close();
-	    	inread.close();
-	    	in.close();
-	  
-	   		// Close the ErrorStream
-	   		errbufferedreader.close();
-	   		errread.close();
-	   		err.close();
-		}
-    		
-   		if (pr!=null) {
-  			OutputStream os = pr.getOutputStream();
-			if (os!=null) os.close();
-   		}
-   		
-   		return realizable;
-		
-	}
-	
-	private static String toSolverSyntax(LabelledFormula f) {
-		String LTLFormula = f.toString();
-		
-		for (String v : f.variables()) 
-			LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());			
+        RealizabilitySolverResult realizable = RealizabilitySolverResult.UNREALIZABLE;
+        String aux;
+        if (timeout) {
+            realizable = RealizabilitySolverResult.TIMEOUT;
+            pr.destroy();
+        } else {
 
-		LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-		LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
-		
-		return new String(replaceLTLConstructions(LTLFormula)); 
-	}
-	
-	private static String replaceLTLConstructions(String line) {
-		Set<String> keys = replacements.keySet();
-	    for(String key: keys)
-	        line = line.replace(key, replacements.get(key));    
-		return line;
-	}
+            InputStream in = pr.getInputStream();
+            InputStreamReader inread = new InputStreamReader(in);
+            BufferedReader bufferedreader = new BufferedReader(inread);
+
+            while ((aux = bufferedreader.readLine()) != null) {
+                //System.out.println(aux);
+                if (aux.equals("REALIZABLE")) {
+                    realizable = RealizabilitySolverResult.REALIZABLE;
+                    break;
+                }
+                if (aux.contains("Error")) {
+                    System.out.println("ERR: " + aux);
+                    realizable = RealizabilitySolverResult.ERROR;
+                    break;
+                }
+            }
+
+            //read program's error
+            InputStream err = pr.getErrorStream();
+            InputStreamReader errread = new InputStreamReader(err);
+            BufferedReader errbufferedreader = new BufferedReader(errread);
+            while ((aux = errbufferedreader.readLine()) != null) {
+                System.out.println("ERR: " + aux);
+                realizable = RealizabilitySolverResult.ERROR;
+            }
+
+            // Check for failure
+            if (pr.waitFor() != 0) {
+                System.out.println("exit value = " + pr.exitValue());
+            }
+
+            // Close the InputStream
+            bufferedreader.close();
+            inread.close();
+            in.close();
+
+            // Close the ErrorStream
+            errbufferedreader.close();
+            errread.close();
+            err.close();
+        }
+
+        OutputStream os = pr.getOutputStream();
+        if (os != null) os.close();
+
+        return realizable;
+
+    }
+
+    private static String toSolverSyntax(LabelledFormula f) {
+        String LTLFormula = f.toString();
+
+        for (String v : f.variables())
+            LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());
+
+        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
+        LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
+
+        return new String(replaceLTLConstructions(LTLFormula));
+    }
+
+    private static String replaceLTLConstructions(String line) {
+        Set<String> keys = replacements.keySet();
+        for (String key : keys)
+            line = line.replace(key, replacements.get(key));
+        return line;
+    }
+
+    public static enum RealizabilitySolverResult {
+        REALIZABLE,
+        UNREALIZABLE,
+        TIMEOUT,
+        ERROR;
+
+        public boolean inconclusive() {
+            return this == TIMEOUT || this == ERROR;
+        }
+    }
 }

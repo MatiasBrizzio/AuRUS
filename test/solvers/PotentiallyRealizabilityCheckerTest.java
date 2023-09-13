@@ -1,5 +1,6 @@
 package solvers;
 
+import org.junit.Test;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
@@ -16,9 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class PotentiallyRealizabilityCheckerTest {
 
@@ -152,7 +152,7 @@ public class PotentiallyRealizabilityCheckerTest {
                 else //false
                     numOf_NOT_StrongSAT++;
             }
-            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT,numOf_NOT_StrongSAT,numOfTimeout);
+            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT, numOf_NOT_StrongSAT, numOfTimeout);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -203,7 +203,7 @@ public class PotentiallyRealizabilityCheckerTest {
                 else //false
                     numOf_NOT_StrongSAT++;
             }
-            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT,numOf_NOT_StrongSAT,numOfTimeout);
+            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT, numOf_NOT_StrongSAT, numOfTimeout);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

@@ -1,7 +1,6 @@
 package solvers;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.*;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
@@ -16,6 +15,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StrongSATSolverTest {
 

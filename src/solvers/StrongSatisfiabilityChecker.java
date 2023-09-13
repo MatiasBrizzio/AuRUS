@@ -21,14 +21,24 @@ import java.util.function.IntConsumer;
 
 public class StrongSatisfiabilityChecker<S> {
 
-//    private DMatrixRMaj T = null;
+    boolean isAcceptance = false;
+    boolean noAcceptance = false;
+    //    private DMatrixRMaj T = null;
 //    private DMatrixRMaj I = null;
-    private Automaton<S,EmersonLeiAcceptance> automaton = null;
-    private LabelledFormula formula;
-    private List<String> input_vars = null;
-//    private List<String> variables = null;
+    private Automaton<S, EmersonLeiAcceptance> automaton = null;
+    //    private List<String> variables = null;
 //    private Map<S,Integer> states = null;
     //public static int TIMEOUT = 120;
+    private LabelledFormula formula;
+    private List<String> input_vars = null;
+
+//    public boolean isStrongSatisfiable() {
+//        BigInteger numOfModels = count(Settings.MC_BOUND);
+//        BigInteger expectedNumOfModels =  (BigInteger.valueOf(2).pow(input_vars.size())).pow(Settings.MC_BOUND);
+//        System.out.printf("numOfModels: %d   expected: %d\n", numOfModels,expectedNumOfModels);
+//        return (numOfModels.compareTo(expectedNumOfModels) >= 0);
+//
+//    }
 
     public StrongSatisfiabilityChecker(LabelledFormula formula) {
         this.formula = formula;
@@ -41,8 +51,7 @@ public class StrongSatisfiabilityChecker<S> {
             input_vars = new ArrayList<>(formula.player1Variables());
         } catch (TimeoutException e) {
             System.out.println("StrongSatisfiabilityChecker: TIMEOUT parsing.");
-        }
-        catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.err.println("StrongSatisfiabilityChecker: ERROR while parsing. " + e.getMessage());
         }
 //        System.out.println("Parsed...");
@@ -73,17 +82,7 @@ public class StrongSatisfiabilityChecker<S> {
         return "OK";
     }
 
-//    public boolean isStrongSatisfiable() {
-//        BigInteger numOfModels = count(Settings.MC_BOUND);
-//        BigInteger expectedNumOfModels =  (BigInteger.valueOf(2).pow(input_vars.size())).pow(Settings.MC_BOUND);
-//        System.out.printf("numOfModels: %d   expected: %d\n", numOfModels,expectedNumOfModels);
-//        return (numOfModels.compareTo(expectedNumOfModels) >= 0);
-//
-//    }
-
-    boolean isAcceptance = false;
-    boolean noAcceptance = false;
-//    long numOfAcceptanceTransition = 0;
+    //    long numOfAcceptanceTransition = 0;
     public Boolean checkStrongSatisfiable() {
         if (automaton == null)
             return null;
@@ -96,8 +95,7 @@ public class StrongSatisfiabilityChecker<S> {
             return result;
         } catch (TimeoutException e) {
             System.out.println("StrongSatisfiabilityChecker::isStrongSAT TIMEOUT.");
-        }
-        catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.err.println("StrongSatisfiabilityChecker::isStrongSAT ERROR. " + e.getMessage());
         }
         return null;
@@ -159,8 +157,7 @@ public class StrongSatisfiabilityChecker<S> {
                     if (!visitedStates.contains(succ) && !statesToAnalyse.contains(succ))
                         statesToAnalyse.add(succ);
                 }
-            }
-            else {
+            } else {
                 // current is a sink state with no successors
                 undesiredStates.add(current); //check if it can be avoided
             }
@@ -170,7 +167,6 @@ public class StrongSatisfiabilityChecker<S> {
         System.out.printf("undesiredStates = %d \n", undesiredStates.size());
 
         if (undesiredStates.contains(automaton.onlyInitialState())) {
-            System.out.printf("here");
             return false;
         }
 
@@ -180,11 +176,11 @@ public class StrongSatisfiabilityChecker<S> {
         while (!undesiredStates.isEmpty()) {
             S bad_state = undesiredStates.remove(0);
             if (automaton.initialStates().contains(bad_state)) {
-                System.out.printf("there");
+                System.out.print("there");
                 return false;
             }
             visitedUndesiredStates.add(bad_state);
-            for(S predecessor : automaton.predecessors(bad_state)) {
+            for (S predecessor : automaton.predecessors(bad_state)) {
                 if (visitedUndesiredStates.contains(predecessor) || undesiredStates.contains(predecessor))
                     continue;
 
@@ -391,26 +387,27 @@ public class StrongSatisfiabilityChecker<S> {
 
     public boolean accConditionIsSatisfied(BooleanExpression<AtomAcceptance> acceptanceCondition, IntArrayList acceptanceSets) {
         boolean accConditionSatisfied = false;
-        switch(acceptanceCondition.getType()) {
-            case EXP_TRUE: { accConditionSatisfied = true; break; }
-            case EXP_FALSE: break;
-            case EXP_ATOM:
-            {
+        switch (acceptanceCondition.getType()) {
+            case EXP_TRUE: {
+                accConditionSatisfied = true;
+                break;
+            }
+            case EXP_FALSE:
+                break;
+            case EXP_ATOM: {
                 if (acceptanceCondition.getAtom().getType() == AtomAcceptance.Type.TEMPORAL_INF)
                     accConditionSatisfied = (acceptanceSets.contains(acceptanceCondition.getAtom().getAcceptanceSet()));
                 else if (acceptanceCondition.getAtom().getType() == AtomAcceptance.Type.TEMPORAL_FIN) {
-                    accConditionSatisfied = ! (acceptanceSets.contains(acceptanceCondition.getAtom().getAcceptanceSet()));
+                    accConditionSatisfied = !(acceptanceSets.contains(acceptanceCondition.getAtom().getAcceptanceSet()));
                 }
                 break;
             }
-            case EXP_AND:
-            {
+            case EXP_AND: {
                 if (accConditionIsSatisfied(acceptanceCondition.getLeft(), acceptanceSets))
                     accConditionSatisfied = accConditionIsSatisfied(acceptanceCondition.getRight(), acceptanceSets);
                 break;
             }
-            case EXP_OR:
-            {
+            case EXP_OR: {
                 if (accConditionIsSatisfied(acceptanceCondition.getLeft(), acceptanceSets))
                     accConditionSatisfied = true;
                 else
@@ -425,8 +422,6 @@ public class StrongSatisfiabilityChecker<S> {
 
         return accConditionSatisfied;
     }
-
-
 
 
 }

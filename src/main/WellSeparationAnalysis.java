@@ -10,7 +10,10 @@ import solvers.LTLSolver;
 import solvers.StrixHelper;
 import tlsf.TLSF_Utils;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,13 +35,12 @@ public class WellSeparationAnalysis {
             if (args[i].startsWith("-d=")) {
                 directoryName = args[i].replace("-d=", "");
                 System.out.println("directory: " + directoryName);
-            }
-            else if (args[i].startsWith("-out=")) {
+            } else if (args[i].startsWith("-out=")) {
                 outFile = args[i].replace("-out=", "");
                 System.out.println("out: " + outFile);
             }
         }
-        if (directoryName == "") {
+        if (directoryName.equals("")) {
             System.out.println("directory name is missing.");
             System.exit(0);
         }
@@ -60,7 +62,7 @@ public class WellSeparationAnalysis {
             try {
                 Tlsf spec = TLSF_Utils.toBasicTLSF(new File(filename));
                 Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), spec.assume(), Conjunction.of(spec.guarantee()));
-                SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
+                SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
                 Formula env_sys2 = env_sys.accept(visitor);
                 LTLSolver.SolverResult res = LTLSolver.isSAT(toSolverSyntax(env_sys2));
                 System.out.println(res);
@@ -77,8 +79,7 @@ public class WellSeparationAnalysis {
                         noWellSeparated.add(filename);
                         System.out.println(rel);
                     }
-                }
-                else if (res == LTLSolver.SolverResult.UNSAT){
+                } else if (res == LTLSolver.SolverResult.UNSAT) {
                     numOfUNSAT++;
                 }
             } catch (Exception ex) {
@@ -100,12 +101,12 @@ public class WellSeparationAnalysis {
             System.exit(0);
         //saving the time execution and configuration details
         File file = new File(outFile);
-        FileWriter fw = new FileWriter(file.getAbsoluteFile(),true);
+        FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
         BufferedWriter bw = new BufferedWriter(fw);
         boolean empty = !file.exists() || file.length() == 0;
         if (empty)
             bw.write("sat,nowellsep,wellsep,unsat,to,err\n");
-        bw.write(numOfSAT+","+numOfNoWellSeparated+","+(numOfSAT - numOfNoWellSeparated)+","+numOfUNSAT+","+numOfTimeout+","+errors+"\n");
+        bw.write(numOfSAT + "," + numOfNoWellSeparated + "," + (numOfSAT - numOfNoWellSeparated) + "," + numOfUNSAT + "," + numOfTimeout + "," + errors + "\n");
         bw.flush();
         bw.close();
     }

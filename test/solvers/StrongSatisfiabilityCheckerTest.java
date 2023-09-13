@@ -152,7 +152,7 @@ public class StrongSatisfiabilityCheckerTest {
                 else //false
                     numOf_NOT_StrongSAT++;
             }
-            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT,numOf_NOT_StrongSAT,numOfTimeout);
+            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT, numOf_NOT_StrongSAT, numOfTimeout);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -215,7 +215,7 @@ public class StrongSatisfiabilityCheckerTest {
                 else //false
                     numOf_NOT_StrongSAT++;
             }
-            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT,numOf_NOT_StrongSAT,numOfTimeout);
+            System.out.printf("True:%d  False:%d  TIMEOUT:%d", numOfStrongSAT, numOf_NOT_StrongSAT, numOfTimeout);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

@@ -2,7 +2,7 @@ package owl.ltl.visitors;
 
 import owl.ltl.*;
 
-public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
+public class PushDownXsVisitor implements Visitor<Formula> {
 
     @Override
     public Formula apply(Formula formula) {
@@ -13,10 +13,10 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
     public Formula visit(Biconditional biconditional) {
         Formula left = biconditional.left.accept(this);
         Formula right = biconditional.right.accept(this);
-//		return Biconditional.of(left, right);
-//		return Disjunction.of(Conjunction.of(left,right), Conjunction.of(left.not(),right.not()));
-        return Conjunction.of(Disjunction.of(left.not(), right), Disjunction.of(left, right.not()));
+//        return Conjunction.of(Disjunction.of(left.not(),right), Disjunction.of(left,right.not()));
+        return Biconditional.of(left, right);
     }
+
 
     @Override
     public Formula visit(BooleanConstant booleanConstant) {
@@ -35,14 +35,16 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(FOperator fOperator) {
-        Formula operand = fOperator.operand.accept(this);
-        return FOperator.of(operand);
+        return fOperator;
+//        Formula operand = fOperator.operand.accept(this);
+//        return FOperator.of(operand);
     }
 
     @Override
     public Formula visit(FrequencyG freq) {
-        Formula operand = freq.operand.accept(this);
-        return FrequencyG.of(operand);
+        return freq;
+//        Formula operand = freq.operand.accept(this);
+//        return FrequencyG.of(operand);
     }
 
     @Override
@@ -67,7 +69,6 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
         // p M q" -> "q U (p & q)
         Formula left = mOperator.left.accept(this);
         Formula right = mOperator.right.accept(this);
-
         return UOperator.of(right, Conjunction.of(right, left));
     }
 
@@ -118,13 +119,25 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(XOperator xOperator) {
-        Formula operand = xOperator.operand.accept(this);
-        return XOperator.of(operand);
+        Formula operand = xOperator.operand;
+        if (operand instanceof Disjunction) {
+            return Disjunction.of(((Disjunction) operand).children.stream().map(x -> XOperator.of(x).accept(this))).accept(this);
+        } else if (operand instanceof Conjunction) {
+            return Conjunction.of(((Conjunction) operand).children.stream().map(x -> XOperator.of(x).accept(this))).accept(this);
+        } else {
+            Formula op = xOperator.operand.accept(this);
+            if (op instanceof Disjunction) {
+                return Disjunction.of(((Disjunction) op).children.stream().map(x -> XOperator.of(x).accept(this))).accept(this);
+            } else if (op instanceof Conjunction) {
+                return Conjunction.of(((Conjunction) op).children.stream().map(x -> XOperator.of(x).accept(this))).accept(this);
+            } else {
+                return XOperator.of(op);
+            }
+        }
     }
 
     @Override
     public Formula visit(YOperator yOperator) {
-
         Formula operand = yOperator.operand.accept(this);
         return YOperator.of(operand);
     }

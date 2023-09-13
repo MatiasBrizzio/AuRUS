@@ -27,7 +27,7 @@ public class PropositionVariablesExtractor implements Visitor<Set<Literal>> {
     @Override
     public Set<Literal> visit(Conjunction conjunction) {
         Set<Literal> result = new HashSet();
-        for(Formula c : conjunction.children)
+        for (Formula c : conjunction.children)
             result.addAll(c.accept(this));
         return result;
     }
@@ -35,7 +35,7 @@ public class PropositionVariablesExtractor implements Visitor<Set<Literal>> {
     @Override
     public Set<Literal> visit(Disjunction disjunction) {
         Set<Literal> result = new HashSet();
-        for(Formula c : disjunction.children)
+        for (Formula c : disjunction.children)
             result.addAll(c.accept(this));
         return result;
     }

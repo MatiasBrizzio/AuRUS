@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2012 Yuriy Lagodiuk
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,275 +23,268 @@ import java.util.*;
 
 public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> {
 
-	private static final int ALL_PARENTAL_CHROMOSOMES = Integer.MAX_VALUE;
+    private static final int ALL_PARENTAL_CHROMOSOMES = Integer.MAX_VALUE;
+    private final ChromosomesComparator chromosomesComparator;
+    private final Fitness<C, T> fitnessFunc;
+    // listeners of genetic algorithm iterations (handle callback afterwards)
+    private final List<IterartionListener<C, T>> iterationListeners = new LinkedList<IterartionListener<C, T>>();
+    private Population<C> population;
+    private boolean terminate = false;
+    // number of parental chromosomes, which survive (and move to new
+    // population)
+    private int parentChromosomesSurviveCount = ALL_PARENTAL_CHROMOSOMES;
+    // number of chromosomes visited during the search
+    private int numberOfVisitedIndividuals = 0;
+    //	private Set allVisitedChromosomes;
+    // number of chromosomes visited during the search
+    private int MAXIMUM_NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
+    // Percentage of chromosomes that are selected for crossover
+    private int CROSSOVER_RATE = 10;
+    // Probability with which the mutation is applied to each chromosome
+    private int MUTATION_RATE = 100;
+    private int iteration = 0;
+    private int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
+    private Instant startRunningTime = null;
+    private Instant iterationStartTime = null;
 
 
-	private class ChromosomesComparator implements Comparator<C> {
-
-		private final Map<C, T> cache = new WeakHashMap<C, T>();
-
-		@Override
-		public int compare(C chr1, C chr2) {
-			T fit1 = this.fit(chr1);
-			T fit2 = this.fit(chr2);
-			int ret = fit2.compareTo(fit1);//reverse order
-			return ret;
-		}
-
-		public T fit(C chr) {
-			T fit = this.cache.get(chr);
-			if (fit == null) {
-				fit = GeneticAlgorithm.this.fitnessFunc.calculate(chr);
-				this.cache.put(chr, fit);
-			}
-			return fit;
-		};
-
-		public void clearCache() {
-			this.cache.clear();
-		}
-	}
-
-	private final ChromosomesComparator chromosomesComparator;
-
-	private final Fitness<C, T> fitnessFunc;
-
-	private Population<C> population;
-
-	// listeners of genetic algorithm iterations (handle callback afterwards)
-	private final List<IterartionListener<C, T>> iterationListeners = new LinkedList<IterartionListener<C, T>>();
-
-	private boolean terminate = false;
-
-	// number of parental chromosomes, which survive (and move to new
-	// population)
-	private int parentChromosomesSurviveCount = ALL_PARENTAL_CHROMOSOMES;
-
-	// number of chromosomes visited during the search
-	private int numberOfVisitedIndividuals = 0;
-//	private Set allVisitedChromosomes;
-	// number of chromosomes visited during the search
-	private int MAXIMUM_NUM_OF_INDIVIDUALS =  Integer.MAX_VALUE;
-
-	// Percentage of chromosomes that are selected for crossover
-	private int CROSSOVER_RATE = 10; 
-	// Probability with which the mutation is applied to each chromosome
-	private int MUTATION_RATE = 100;
-	
-	private int iteration = 0;
-
-	public GeneticAlgorithm(Population<C> population, Fitness<C, T> fitnessFunc) {
-		this.population = population;
-		this.fitnessFunc = fitnessFunc;
-		this.chromosomesComparator = new ChromosomesComparator();
-		this.population.sortPopulationByFitness(this.chromosomesComparator);
+    public GeneticAlgorithm(Population<C> population, Fitness<C, T> fitnessFunc) {
+        this.population = population;
+        this.fitnessFunc = fitnessFunc;
+        this.chromosomesComparator = new ChromosomesComparator();
+        this.population.sortPopulationByFitness(this.chromosomesComparator);
 
 //		//keep all visited chromosomes
 //		allVisitedChromosomes = new HashSet();
 //		for (int i = 0; (i < population.getSize()); i++) {
 //			allVisitedChromosomes.add(this.population.getChromosomeByIndex(i));
 //		}
-	}
+    }
 
-	public void evolve() {
-		int parentPopulationSize = this.population.getSize();
+    public void evolve() {
+        int parentPopulationSize = this.population.getSize();
 
-		Population<C> newPopulation = new Population<C>();
+        Population<C> newPopulation = new Population<C>();
 
-		for (int i = 0; (i < parentPopulationSize) && (i < this.parentChromosomesSurviveCount); i++) {
-			newPopulation.addChromosome(this.population.getChromosomeByIndex(i));
-		}
+        for (int i = 0; (i < parentPopulationSize) && (i < this.parentChromosomesSurviveCount); i++) {
+            newPopulation.addChromosome(this.population.getChromosomeByIndex(i));
+        }
 
-		// apply mutation
-		Random r = Settings.RANDOM_GENERATOR;
-		for (int i = 0; (i < parentPopulationSize) && !terminate; i++) {
-			int mut = r.nextInt(100);
-			if (mut < MUTATION_RATE){
-				C chromosome = this.population.getChromosomeByIndex(i);
-				C mutated = chromosome.mutate();
-				if (mutated != null && !chromosome.equals(mutated)){//!newPopulation.contains(mutated)) {
-					newPopulation.addChromosome(mutated);
-					//update number of visited chromosomes
-					this.numberOfVisitedIndividuals++;
+        // apply mutation
+        Random r = Settings.RANDOM_GENERATOR;
+        for (int i = 0; (i < parentPopulationSize) && !terminate; i++) {
+            int mut = r.nextInt(100);
+            if (mut < MUTATION_RATE) {
+                C chromosome = this.population.getChromosomeByIndex(i);
+                C mutated = chromosome.mutate();
+                if (mutated != null && !chromosome.equals(mutated)) {//!newPopulation.contains(mutated)) {
+                    newPopulation.addChromosome(mutated);
+                    //update number of visited chromosomes
+                    this.numberOfVisitedIndividuals++;
 //					allVisitedChromosomes.add(mutated);
-				}
-			}
-			checkTermination();
-		}
-		
-		// apply crossover
-		int numOfCrossovers = Math.max(10, parentPopulationSize*(CROSSOVER_RATE/100));
-		
-		for (int i = 0; (i < numOfCrossovers) && !terminate; i++) {
-			C chromosome = null;
-			C otherChromosome = null;
+                }
+            }
+            checkTermination();
+        }
 
-			chromosome = newPopulation.getRandomChromosome();
-			otherChromosome = newPopulation.getRandomChromosome();
+        // apply crossover
+        int numOfCrossovers = Math.max(10, parentPopulationSize * (CROSSOVER_RATE / 100));
 
-			List<C> crossovered = chromosome.crossover(otherChromosome);
-			for (C c : crossovered) {
-				if (!c.equals(chromosome)){ //!newPopulation.contains(c)) {
-					newPopulation.addChromosome(c);
-					//update number of visited chromosomes
-					this.numberOfVisitedIndividuals++;
+        for (int i = 0; (i < numOfCrossovers) && !terminate; i++) {
+            C chromosome;
+            C otherChromosome;
+
+            chromosome = newPopulation.getRandomChromosome();
+            otherChromosome = newPopulation.getRandomChromosome();
+
+            List<C> crossovered = chromosome.crossover(otherChromosome);
+            for (C c : crossovered) {
+                if (!c.equals(chromosome)) { //!newPopulation.contains(c)) {
+                    newPopulation.addChromosome(c);
+                    //update number of visited chromosomes
+                    this.numberOfVisitedIndividuals++;
 //					allVisitedChromosomes.add(c);
-				}
-			}
+                }
+            }
 
-			checkTermination();
-		}
+            checkTermination();
+        }
 
-		newPopulation.sortPopulationByFitness(this.chromosomesComparator);
+        newPopulation.sortPopulationByFitness(this.chromosomesComparator);
 //		if (newPopulation.getSize() > this.parentChromosomesSurviveCount)
 //			newPopulation.trim(this.parentChromosomesSurviveCount);
-		this.population = newPopulation;
-	}
+        this.population = newPopulation;
+    }
 
+    private List<C> getListFromPop(Population<C> newPopulation) {
+        Iterator<C> it = newPopulation.iterator();
+        List<C> res = new LinkedList<C>();
+        while (it.hasNext())
+            res.add(it.next());
+        return res;
+    }
 
-	private List<C> getListFromPop(Population<C> newPopulation) {
-		Iterator<C> it = newPopulation.iterator();
-		List<C> res =  new LinkedList<C>();
-		while (it.hasNext())
-			res.add(it.next());
-		return res;
-	}
+    public void select() {
+        //best selector
+        if (population.getSize() > this.parentChromosomesSurviveCount) {
+            if (Settings.GA_RANDOM_SELECTOR) {
+                //first, disorder individuals before trimming
+                population.shufflePopulation();
+            }
+            population.trim(this.parentChromosomesSurviveCount);
+        }
+    }
 
-	public void select() {
-		//best selector
-		if (population.getSize() > this.parentChromosomesSurviveCount) {
-			if (Settings.GA_RANDOM_SELECTOR) {
-				//first, disorder individuals before trimming
-				population.shufflePopulation();
-			}
-			population.trim(this.parentChromosomesSurviveCount);
-		}
-	}
-	public void evolve(int count) {
-		this.terminate = false;
-		startRunningTime = Instant.now();
-		for (int i = 0; i < count; i++) {
-			checkTermination();
-			iterationStartTime = Instant.now();
-			if (this.terminate) {
-				break;
-			}
-			this.evolve();
-			this.iteration = i;
-			for (IterartionListener<C, T> l : this.iterationListeners) {
-				l.update(this);
-			}
-			this.select();
-			printExecutionTime();
-		}
-	}
+    public void evolve(int count) {
+        this.terminate = false;
+        startRunningTime = Instant.now();
+        for (int i = 0; i < count; i++) {
+            checkTermination();
+            iterationStartTime = Instant.now();
+            if (this.terminate) {
+                break;
+            }
+            this.evolve();
+            this.iteration = i;
+            for (IterartionListener<C, T> l : this.iterationListeners) {
+                l.update(this);
+            }
+            this.select();
+            printExecutionTime();
+        }
+    }
 
-	private int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
-	private Instant startRunningTime = null;
-	private Instant iterationStartTime = null;
-	public void setTIMEOUT(int timeout) {
-		this.EXECUTION_TIMEOUT = timeout;
-	}
-	private void checkTermination() {
-		if (numberOfVisitedIndividuals >=  MAXIMUM_NUM_OF_INDIVIDUALS) {
-			terminate();
-			return;
-		}
-		//check if timeout has been reached
-		if (EXECUTION_TIMEOUT > 0) {
-			Duration current = Duration.between(startRunningTime, Instant.now());
-			if (current.toSeconds() > EXECUTION_TIMEOUT) {
-				System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
-				terminate();
-			}
-		}
-	}
+    public void setTIMEOUT(int timeout) {
+        this.EXECUTION_TIMEOUT = timeout;
+    }
 
-	private void printExecutionTime() {
-		Duration current = Duration.between(startRunningTime, Instant.now());
-		if (iterationStartTime != null) {
-			Duration itduration = Duration.between(iterationStartTime, Instant.now());
-			String timeStr = String.format("Iteration Time: %s m  %s s", itduration.toMinutes(), itduration.toSecondsPart()) + "\n" +
-					String.format("Elapsed Time: %s m  %s s", current.toMinutes(), current.toSecondsPart());
-			System.out.println(timeStr);
-		}
-	}
+    private void checkTermination() {
+        if (numberOfVisitedIndividuals >= MAXIMUM_NUM_OF_INDIVIDUALS) {
+            terminate();
+            return;
+        }
+        //check if timeout has been reached
+        if (EXECUTION_TIMEOUT > 0) {
+            Duration current = Duration.between(startRunningTime, Instant.now());
+            if (current.toSeconds() > EXECUTION_TIMEOUT) {
+                System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
+                terminate();
+            }
+        }
+    }
 
-	public int getIteration() {
-		return this.iteration;
-	}
+    private void printExecutionTime() {
+        Duration current = Duration.between(startRunningTime, Instant.now());
+        if (iterationStartTime != null) {
+            Duration itduration = Duration.between(iterationStartTime, Instant.now());
+            String timeStr = String.format("Iteration Time: %s m  %s s", itduration.toMinutes(), itduration.toSecondsPart()) + "\n" +
+                    String.format("Elapsed Time: %s m  %s s", current.toMinutes(), current.toSecondsPart());
+            System.out.println(timeStr);
+        }
+    }
 
-	public void terminate() {
-		this.terminate = true;
-	}
+    public int getIteration() {
+        return this.iteration;
+    }
 
-	public Population<C> getPopulation() {
-		return this.population;
-	}
+    public void terminate() {
+        this.terminate = true;
+    }
 
-	public C getBest() {
-		return this.population.getChromosomeByIndex(0);
-	}
+    public Population<C> getPopulation() {
+        return this.population;
+    }
 
-	public C getWorst() {
-		return this.population.getChromosomeByIndex(this.population.getSize() - 1);
-	}
+    public C getBest() {
+        return this.population.getChromosomeByIndex(0);
+    }
 
-	public void setParentChromosomesSurviveCount(int parentChromosomesCount) {
-		this.parentChromosomesSurviveCount = parentChromosomesCount;
-	}
-	
-	public int getMaximumNumberOfIndividuals() {
-		return this.MAXIMUM_NUM_OF_INDIVIDUALS;
-	}
+    public C getWorst() {
+        return this.population.getChromosomeByIndex(this.population.getSize() - 1);
+    }
 
-	public void setMaximumNumberOfIndividuals(int MAXIMUM_NUM_OF_INDIVIDUALS) {
-		this.MAXIMUM_NUM_OF_INDIVIDUALS = MAXIMUM_NUM_OF_INDIVIDUALS;
-	}
+    public int getMaximumNumberOfIndividuals() {
+        return this.MAXIMUM_NUM_OF_INDIVIDUALS;
+    }
 
-	public int getNumberOfVisitedIndividuals() {
-		return this.numberOfVisitedIndividuals;
-	}
+    public void setMaximumNumberOfIndividuals(int MAXIMUM_NUM_OF_INDIVIDUALS) {
+        this.MAXIMUM_NUM_OF_INDIVIDUALS = MAXIMUM_NUM_OF_INDIVIDUALS;
+    }
 
-	public int getParentChromosomesSurviveCount() {
-		return this.parentChromosomesSurviveCount;
-	}
-	
-	public void setMutationRate(int mutationRate) {
-		this.MUTATION_RATE = mutationRate;
-	}
-	
-	public int getMutationRate() {
-		return MUTATION_RATE;
-	}
+    public int getNumberOfVisitedIndividuals() {
+        return this.numberOfVisitedIndividuals;
+    }
 
-	public void setCrossoverRate(int crossoverRate) {
-		this.CROSSOVER_RATE = crossoverRate;
-	}
-	
-	public int getCrossoverRate() {
-		return CROSSOVER_RATE;
-	}
-	
-	public int getPopulationSize() {
-		return this.population.getSize();
-	}
-	
+    public int getParentChromosomesSurviveCount() {
+        return this.parentChromosomesSurviveCount;
+    }
 
-	public void addIterationListener(IterartionListener<C, T> listener) {
-		this.iterationListeners.add(listener);
-	}
+    public void setParentChromosomesSurviveCount(int parentChromosomesCount) {
+        this.parentChromosomesSurviveCount = parentChromosomesCount;
+    }
 
-	public void removeIterationListener(IterartionListener<C, T> listener) {
-		this.iterationListeners.remove(listener);
-	}
+    public int getMutationRate() {
+        return MUTATION_RATE;
+    }
 
-	public T fitness(C chromosome) {
-		return this.chromosomesComparator.fit(chromosome);
-	}
+    public void setMutationRate(int mutationRate) {
+        this.MUTATION_RATE = mutationRate;
+    }
 
-	public void clearCache() {
-		this.chromosomesComparator.clearCache();
-	}
+    public int getCrossoverRate() {
+        return CROSSOVER_RATE;
+    }
+
+    public void setCrossoverRate(int crossoverRate) {
+        this.CROSSOVER_RATE = crossoverRate;
+    }
+
+    public int getPopulationSize() {
+        return this.population.getSize();
+    }
+
+    public void addIterationListener(IterartionListener<C, T> listener) {
+        this.iterationListeners.add(listener);
+    }
+
+    public void removeIterationListener(IterartionListener<C, T> listener) {
+        this.iterationListeners.remove(listener);
+    }
+
+    public T fitness(C chromosome) {
+        return this.chromosomesComparator.fit(chromosome);
+    }
+
+    public void clearCache() {
+        this.chromosomesComparator.clearCache();
+    }
+
+    private class ChromosomesComparator implements Comparator<C> {
+
+        private final Map<C, T> cache = new WeakHashMap<C, T>();
+
+        @Override
+        public int compare(C chr1, C chr2) {
+            T fit1 = this.fit(chr1);
+            T fit2 = this.fit(chr2);
+            int ret = fit2.compareTo(fit1);//reverse order
+            return ret;
+        }
+
+        public T fit(C chr) {
+            T fit = this.cache.get(chr);
+            if (fit == null) {
+                fit = GeneticAlgorithm.this.fitnessFunc.calculate(chr);
+                this.cache.put(chr, fit);
+            }
+            return fit;
+        }
+
+        ;
+
+        public void clearCache() {
+            this.cache.clear();
+        }
+    }
 
 }

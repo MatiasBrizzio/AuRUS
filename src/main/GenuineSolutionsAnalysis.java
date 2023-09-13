@@ -3,19 +3,19 @@ package main;
 import geneticalgorithm.AutomataBasedModelCountingSpecificationFitness;
 import geneticalgorithm.SpecificationChromosome;
 import owl.ltl.Conjunction;
-import owl.ltl.Disjunction;
 import owl.ltl.Formula;
-import owl.ltl.GOperator;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
 import tlsf.TLSF_Utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,26 +25,28 @@ import java.util.stream.Stream;
 
 public class GenuineSolutionsAnalysis {
 
+    public static Set<Integer> genuineSolutionsFound = new HashSet<>();
+    public static Set<Integer> moreGeneralSolutions = new HashSet<>();
+    public static Set<Integer> lessGeneralSolutions = new HashSet<>();
+    public static boolean computeFitness = true;
+
     public static void main(String[] args) throws IOException, InterruptedException {
         List<Tlsf> genuineSolutions = new LinkedList<>();
         List<Tlsf> solutions = new LinkedList<>();
         List<Double> sol_fitness = new LinkedList<>();
         String directoryName = "";
         Tlsf original = null;
-        for (int i = 0; i< args.length; i++ ){
-            if(args[i].startsWith("-ref=")){
-                String ref_name = args[i].replace("-ref=","");
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("-ref=")) {
+                String ref_name = args[i].replace("-ref=", "");
                 Tlsf ref_sol = TLSF_Utils.toBasicTLSF(new File(ref_name));
                 genuineSolutions.add(ref_sol);
-            }
-            else if (args[i].startsWith("-o=")){
-                String orig_name = args[i].replace("-o=","");
-                original= TLSF_Utils.toBasicTLSF(new File(orig_name));
-            }
-            else if (args[i].startsWith("-noFit")){
+            } else if (args[i].startsWith("-o=")) {
+                String orig_name = args[i].replace("-o=", "");
+                original = TLSF_Utils.toBasicTLSF(new File(orig_name));
+            } else if (args[i].startsWith("-noFit")) {
                 computeFitness = false;
-            }
-            else {
+            } else {
                 directoryName = args[i];
                 Stream<Path> walk = Files.walk(Paths.get(directoryName));
                 List<String> specifications = walk.map(x -> x.toString())
@@ -56,11 +58,11 @@ public class GenuineSolutionsAnalysis {
                     //read the fitness from file
                     if (!computeFitness) {
                         FileReader f = new FileReader(filename);
-                        BufferedReader in = new BufferedReader (f);
-                        String  aux = "";
+                        BufferedReader in = new BufferedReader(f);
+                        String aux = "";
                         double value = 0.0d;
                         while ((aux = in.readLine()) != null) {
-                            if ((aux.startsWith("//fitness"))){
+                            if ((aux.startsWith("//fitness"))) {
                                 value = Double.valueOf(aux.substring(10));
                             }
                         }
@@ -90,8 +92,8 @@ public class GenuineSolutionsAnalysis {
             }
             System.out.println();
             System.out.println("Num. of Solutions:        " + solutions.size() + "\n");
-            System.out.println(String.format("Best fitness: %.2f\n", bestFitness));
-            System.out.println(String.format("AVG fitness: %.2f\n", (sumFitness / (double)solutions.size())));
+            System.out.printf("Best fitness: %.2f\n%n", bestFitness);
+            System.out.printf("AVG fitness: %.2f\n%n", (sumFitness / (double) solutions.size()));
 
             double genuineBestFitness = 0.0d;
             double genuineAvgFitness = 0.0d;
@@ -106,53 +108,45 @@ public class GenuineSolutionsAnalysis {
                 System.out.println("Computing genuine statistics...");
                 //check if some genuine solution has been found
 
-                for(Integer index : GenuineSolutionsAnalysis.genuineSolutionsFound) {
+                for (Integer index : GenuineSolutionsAnalysis.genuineSolutionsFound) {
                     genuinesSumFitness += sol_fitness.get(index);
                     if (sol_fitness.get(index) > genuineBestFitness)
                         genuineBestFitness = sol_fitness.get(index);
                 }
                 genuineAvgFitness = genuinesSumFitness / (double) GenuineSolutionsAnalysis.genuineSolutionsFound.size();
-                for(Integer index : GenuineSolutionsAnalysis.moreGeneralSolutions) {
+                for (Integer index : GenuineSolutionsAnalysis.moreGeneralSolutions) {
                     moregeneralSumFitness += sol_fitness.get(index);
                     if (sol_fitness.get(index) > moregeneralBestFitness)
                         moregeneralBestFitness = sol_fitness.get(index);
                 }
-                moregeneralAvgFitness = moregeneralSumFitness / (double)GenuineSolutionsAnalysis.moreGeneralSolutions.size();
-                for(Integer index : GenuineSolutionsAnalysis.lessGeneralSolutions) {
+                moregeneralAvgFitness = moregeneralSumFitness / (double) GenuineSolutionsAnalysis.moreGeneralSolutions.size();
+                for (Integer index : GenuineSolutionsAnalysis.lessGeneralSolutions) {
                     lessgeneralSumFitness += sol_fitness.get(index);
                     if (sol_fitness.get(index) > lessgeneralBestFitness)
                         lessgeneralBestFitness = sol_fitness.get(index);
                 }
-                lessgeneralAvgFitness = lessgeneralSumFitness / (double)GenuineSolutionsAnalysis.lessGeneralSolutions.size();
+                lessgeneralAvgFitness = lessgeneralSumFitness / (double) GenuineSolutionsAnalysis.lessGeneralSolutions.size();
 
                 System.out.println("Genuine Solutions:       " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
                 System.out.println("Genuine Solutions found:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
-                System.out.println(String.format("Best Genuine fitness: %.2f\n", genuineBestFitness));
-                System.out.println(String.format("AVG Genuine fitness: %.2f\n", genuineAvgFitness));
+                System.out.printf("Best Genuine fitness: %.2f\n%n", genuineBestFitness);
+                System.out.printf("AVG Genuine fitness: %.2f\n%n", genuineAvgFitness);
                 System.out.println("Weaker Solutions:       " + GenuineSolutionsAnalysis.moreGeneralSolutions.size() + "\n");
                 System.out.println("Weaker Solutions found:   " + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
-                System.out.println(String.format("Best Weaker fitness: %.2f\n", moregeneralBestFitness));
-                System.out.println(String.format("AVG Weaker fitness: %.2f\n", moregeneralAvgFitness));
+                System.out.printf("Best Weaker fitness: %.2f\n%n", moregeneralBestFitness);
+                System.out.printf("AVG Weaker fitness: %.2f\n%n", moregeneralAvgFitness);
                 System.out.println("Stronger Solutions:       " + GenuineSolutionsAnalysis.lessGeneralSolutions.size() + "\n");
                 System.out.println("Stronger Solutions found:   " + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
-                System.out.println(String.format("Best Stronger fitness: %.2f\n", lessgeneralBestFitness));
-                System.out.println(String.format("AVG Stronger fitness: %.2f\n", lessgeneralAvgFitness));
-                System.out.println(String.format("Genuine precision: %.2f \n",  ((double)GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double)genuineSolutions.size())));
+                System.out.printf("Best Stronger fitness: %.2f\n%n", lessgeneralBestFitness);
+                System.out.printf("AVG Stronger fitness: %.2f\n%n", lessgeneralAvgFitness);
+                System.out.printf("Genuine precision: %.2f \n%n", ((double) GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double) genuineSolutions.size()));
             }
         }
         System.exit(0);
     }
 
-    public static Set<Integer> genuineSolutionsFound = new HashSet<>();
-
-    public static Set<Integer> moreGeneralSolutions = new HashSet<>();
-
-    public static Set<Integer> lessGeneralSolutions = new HashSet<>();
-
-    public static boolean computeFitness = true;
-
     public static void calculateGenuineStatistics(List<Tlsf> genuineSolutions, List<Tlsf> solutions) throws IOException, InterruptedException {
-        SolverSyntaxOperatorReplacer visitor  = new SolverSyntaxOperatorReplacer();
+        SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
 
         if (genuineSolutions.isEmpty() || solutions.isEmpty())
             return;
@@ -162,8 +156,7 @@ public class GenuineSolutionsAnalysis {
             System.out.print(".");
             if (genuineSolutions.contains(solution)) {
                 genuineSolutionsFound.add(i);
-            }
-            else {
+            } else {
                 for (Tlsf genuine : genuineSolutions) {
                     boolean isMoreGeneral = false;
                     boolean isLessGeneral = false;
@@ -186,10 +179,10 @@ public class GenuineSolutionsAnalysis {
 
                     //check isLessGeneral?
                     //check as_genuine => as_solution = UNSAT(as_genuine & !as_solution)
-                    sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(as_genuine,as_solution.not()).accept(visitor)));
+                    sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(as_genuine, as_solution.not()).accept(visitor)));
                     if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
                         //check g_solution => g_genuine = UNSAT(g_solution & !g_genuine)
-                        sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(g_solution,g_genuine.not()).accept(visitor)));
+                        sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(g_solution, g_genuine.not()).accept(visitor)));
                         if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
                             isLessGeneral = true;
                         }
@@ -197,11 +190,9 @@ public class GenuineSolutionsAnalysis {
                     if (isMoreGeneral && isLessGeneral && !genuineSolutionsFound.contains(i)) {
                         genuineSolutionsFound.add(i);
                         break;
-                    }
-                    else if (isMoreGeneral && !moreGeneralSolutions.contains(i)) {
+                    } else if (isMoreGeneral && !moreGeneralSolutions.contains(i)) {
                         moreGeneralSolutions.add(i);
-                    }
-                    else if (isLessGeneral && !lessGeneralSolutions.contains(i)) {
+                    } else if (isLessGeneral && !lessGeneralSolutions.contains(i)) {
                         lessGeneralSolutions.add(i);
                     }
                 }

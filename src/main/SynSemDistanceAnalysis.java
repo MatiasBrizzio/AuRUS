@@ -1,29 +1,24 @@
 package main;
 
 import geneticalgorithm.AutomataBasedModelCountingSpecificationFitness;
-import geneticalgorithm.SpecificationChromosome;
-import owl.ltl.Conjunction;
 import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
-import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
-import solvers.LTLSolver;
 import tlsf.TLSF_Utils;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class SynSemDistanceAnalysis {
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         try {
             List<Tlsf> solutions = new LinkedList<>();
             List<Double> sol_fitness = new LinkedList<>();
@@ -50,13 +45,12 @@ public class SynSemDistanceAnalysis {
 //                } else if (args[i].startsWith("-sem")) {
 //                    computeSem = true;
                 else if (args[i].startsWith("-n=")) {
-                   N = Integer.parseInt(args[i].replace("-n=", ""));
-                }
-                else {
+                    N = Integer.parseInt(args[i].replace("-n=", ""));
+                } else {
                     directoryName = args[i];
                 }
             }
-            if (directoryName == "") {
+            if (Objects.equals(directoryName, "")) {
                 System.out.println("missing directory name.");
                 System.exit(0);
             }
@@ -79,11 +73,9 @@ public class SynSemDistanceAnalysis {
                 while ((aux = in.readLine()) != null) {
                     if ((aux.startsWith("//fitness"))) {
                         value = Double.valueOf(aux.substring(10));
-                    }
-                    else if ((aux.startsWith("//syntactic"))) {
+                    } else if ((aux.startsWith("//syntactic"))) {
                         syntactic_distance = Double.valueOf(aux.substring(12));
-                    }
-                    else if ((aux.startsWith("//semantic"))) {
+                    } else if ((aux.startsWith("//semantic"))) {
                         semantic_distance = Double.valueOf(aux.substring(11));
                     }
                 }
@@ -102,7 +94,7 @@ public class SynSemDistanceAnalysis {
             bw.write("id,fit,syn,sem\n");
 
             int[] sortedIndices = IntStream.range(0, sol_fitness.size())
-                    .boxed().sorted((i, j) -> - sol_fitness.get(i).compareTo(sol_fitness.get(j)) )
+                    .boxed().sorted((i, j) -> -sol_fitness.get(i).compareTo(sol_fitness.get(j)))
                     .mapToInt(ele -> ele).toArray();
 
             //compute syntactic/semantic distance
@@ -111,30 +103,33 @@ public class SynSemDistanceAnalysis {
 
             int MAX = solutions.size();
             if (N > 0 && MAX > 0)
-                MAX = Integer.min(N,MAX);
+                MAX = Integer.min(N, MAX);
             for (int i = 0; i < MAX; i++) {
                 int index = sortedIndices[i];
                 double value = sol_fitness.get(index);
                 double syntactic_distance = sol_syntactic.get(index);
                 double semantic_distance = sol_semantic.get(index);
                 Tlsf tlsf = solutions.get(index);
-                if (syntactic_distance == 0.0d)
+                if (syntactic_distance == 0.0d) {
+                    assert original != null;
                     syntactic_distance = fitness.compute_syntactic_distance(original, tlsf);
+                }
                 if (semantic_distance == 0.0d)
                     semantic_distance = fitness.compute_semantic_distance(original, tlsf);
 
                 bw.write(i + "," + value + "," + syntactic_distance + "," + semantic_distance + "\n");
             }
             if (N > 0) {
-                bw.write(solutions.size()-1+ ",0,0,0\n");
+                bw.write(solutions.size() - 1 + ",0,0,0\n");
             }
             bw.flush();
             bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.exit(0);
         }
-        catch (Exception e) {e.printStackTrace();}
-        finally{       System.exit(0); }
     }
-
 
 
     private static String toSolverSyntax(Formula f) {

@@ -1,10 +1,10 @@
 package main;
 
-import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,13 +26,13 @@ public class TestRunner {
         final JUnitCore junit = new JUnitCore();
 
         for (String test : tests) {
-           Request torun = Request.method(Class.forName(classname),test);
+            Request torun = Request.method(Class.forName(classname), test);
             Result result = junit.run(torun);
 
             for (Failure failure : result.getFailures()) {
                 System.out.println(failure.toString());
             }
-           // System.out.println(result.wasSuccessful());
+            // System.out.println(result.wasSuccessful());
         }
     }
 }

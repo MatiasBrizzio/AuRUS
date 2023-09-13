@@ -2,7 +2,13 @@ package owl.ltl.visitors;
 
 import owl.ltl.*;
 
-public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
+public class CounterOfXs implements Visitor<Formula> {
+    private int max_x_deep = 0;
+
+    public int get_max_x_deep(Formula formula) {
+        formula.accept(this);
+        return max_x_deep;
+    }
 
     @Override
     public Formula apply(Formula formula) {
@@ -13,9 +19,7 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
     public Formula visit(Biconditional biconditional) {
         Formula left = biconditional.left.accept(this);
         Formula right = biconditional.right.accept(this);
-//		return Biconditional.of(left, right);
-//		return Disjunction.of(Conjunction.of(left,right), Conjunction.of(left.not(),right.not()));
-        return Conjunction.of(Disjunction.of(left.not(), right), Disjunction.of(left, right.not()));
+        return Biconditional.of(left, right);
     }
 
     @Override
@@ -64,11 +68,9 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(MOperator mOperator) {
-        // p M q" -> "q U (p & q)
         Formula left = mOperator.left.accept(this);
         Formula right = mOperator.right.accept(this);
-
-        return UOperator.of(right, Conjunction.of(right, left));
+        return MOperator.of(left, right);
     }
 
     @Override
@@ -79,18 +81,15 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
 
     @Override
     public Formula visit(ROperator rOperator) {
-        // p R q" -> "q W (p & q)
         Formula left = rOperator.left.accept(this);
         Formula right = rOperator.right.accept(this);
-        Formula wformula = WOperator.of(right, Conjunction.of(right, left));
-        return wformula.accept(this);
+        return ROperator.of(left, right);
     }
 
     @Override
     public Formula visit(SOperator sOperator) {
         Formula left = sOperator.left.accept(this);
         Formula right = sOperator.right.accept(this);
-
         return SOperator.of(left, right);
     }
 
@@ -98,7 +97,6 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
     public Formula visit(TOperator tOperator) {
         Formula left = tOperator.left.accept(this);
         Formula right = tOperator.right.accept(this);
-
         return TOperator.of(left, right);
     }
 
@@ -113,18 +111,19 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
     public Formula visit(WOperator wOperator) {
         Formula left = wOperator.left.accept(this);
         Formula right = wOperator.right.accept(this);
-        return Disjunction.of(GOperator.of(left), UOperator.of(left, right));
+        return WOperator.of(left, right);
     }
 
     @Override
     public Formula visit(XOperator xOperator) {
+        if (xOperator.height() - 1 > max_x_deep)
+            max_x_deep = xOperator.height() - 1;
         Formula operand = xOperator.operand.accept(this);
         return XOperator.of(operand);
     }
 
     @Override
     public Formula visit(YOperator yOperator) {
-
         Formula operand = yOperator.operand.accept(this);
         return YOperator.of(operand);
     }
