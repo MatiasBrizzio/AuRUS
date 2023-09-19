@@ -117,7 +117,7 @@ public class Rltlconv_LTLModelCounter {
         inread.close();
         in.close();
 
-        if (out.toString() != "")
+        if (!out.toString().isEmpty())
             writeFile("rltlconv-out.txt", out.toString());
 
         // Leer el error del programa.
@@ -216,8 +216,8 @@ public class Rltlconv_LTLModelCounter {
             Tuple2<Tuple2<State, Sign>, List<DirectedState>> o = ltl_ba_it.next();
             State from = o._1()._1();
             //checks if ID exists
-            int ID = 0;
-            automata.State fromState = null;
+            int ID;
+            automata.State fromState;
             if (ids.containsKey(from.name())) {
                 ID = ids.get(from.name());
                 fromState = fsa.getStateWithID(ID);
@@ -226,7 +226,6 @@ public class Rltlconv_LTLModelCounter {
                 fromState = fsa.createState(new Point());
                 //update ids
                 ids.put(from.name(), fromState.getID());
-                ID = fromState.getID();
             }
 
             //get Label
@@ -243,7 +242,7 @@ public class Rltlconv_LTLModelCounter {
             while (listIt.hasNext()) {
                 State to = listIt.next().state();
                 //check if toState exists
-                automata.State toState = null;
+                automata.State toState;
 
                 if (ids.containsKey(to.name())) {
                     ID = ids.get(to.name());
@@ -253,7 +252,6 @@ public class Rltlconv_LTLModelCounter {
                     toState = fsa.createState(new Point());
                     //update ids
                     ids.put(to.name(), toState.getID());
-                    ID = toState.getID();
                 }
 
                 //add transition
@@ -534,7 +532,7 @@ public class Rltlconv_LTLModelCounter {
     }
 
     public String toABClanguage(String re) {
-        String abcStr = "";
+        String abcStr;
         abcStr = re.replace("λ", "\"\"");
         abcStr = abcStr.replace("+", "|");
         return abcStr;

@@ -1,7 +1,6 @@
 package main;
 
 import geneticalgorithm.AutomataBasedModelCountingSpecificationFitness;
-import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
@@ -30,12 +29,12 @@ public class SynSemDistanceAnalysis {
             int N = -1;
 //            boolean computeSyn = false;
 //            boolean computeSem = false;
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].startsWith("-o=")) {
-                    String orig_name = args[i].replace("-o=", "");
+            for (String arg : args) {
+                if (arg.startsWith("-o=")) {
+                    String orig_name = arg.replace("-o=", "");
                     original = TLSF_Utils.toBasicTLSF(new File(orig_name));
-                } else if (args[i].startsWith("-out=")) {
-                    out_name = args[i].replace("-out=", "");
+                } else if (arg.startsWith("-out=")) {
+                    out_name = arg.replace("-out=", "");
                 }
 //                } else if (args[i].startsWith("-all")) {
 //                    computeSyn = true;
@@ -44,10 +43,10 @@ public class SynSemDistanceAnalysis {
 //                    computeSyn = true;
 //                } else if (args[i].startsWith("-sem")) {
 //                    computeSem = true;
-                else if (args[i].startsWith("-n=")) {
-                    N = Integer.parseInt(args[i].replace("-n=", ""));
+                else if (arg.startsWith("-n=")) {
+                    N = Integer.parseInt(arg.replace("-n=", ""));
                 } else {
-                    directoryName = args[i];
+                    directoryName = arg;
                 }
             }
             if (Objects.equals(directoryName, "")) {
@@ -57,7 +56,7 @@ public class SynSemDistanceAnalysis {
 
 
             Stream<Path> walk = Files.walk(Paths.get(directoryName));
-            List<String> specifications = walk.map(x -> x.toString())
+            List<String> specifications = walk.map(Path::toString)
                     .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf") && !f.endsWith("Spec.tlsf")).collect(Collectors.toList());
             for (String filename : specifications) {
                 System.out.println(filename);
@@ -66,17 +65,17 @@ public class SynSemDistanceAnalysis {
                 //read the fitness from file
                 FileReader f = new FileReader(filename);
                 BufferedReader in = new BufferedReader(f);
-                String aux = "";
+                String aux;
                 double value = 0.0d;
                 double syntactic_distance = 0.0d;
                 double semantic_distance = 0.0d;
                 while ((aux = in.readLine()) != null) {
                     if ((aux.startsWith("//fitness"))) {
-                        value = Double.valueOf(aux.substring(10));
+                        value = Double.parseDouble(aux.substring(10));
                     } else if ((aux.startsWith("//syntactic"))) {
-                        syntactic_distance = Double.valueOf(aux.substring(12));
+                        syntactic_distance = Double.parseDouble(aux.substring(12));
                     } else if ((aux.startsWith("//semantic"))) {
-                        semantic_distance = Double.valueOf(aux.substring(11));
+                        semantic_distance = Double.parseDouble(aux.substring(11));
                     }
                 }
                 sol_fitness.add(value);
@@ -84,7 +83,7 @@ public class SynSemDistanceAnalysis {
                 sol_semantic.add(semantic_distance);
             }
 
-            if (out_name == "")
+            if (out_name.isEmpty())
                 out_name = directoryName + "/distances.csv";
 
             //saving the time execution and configuration details
@@ -129,14 +128,6 @@ public class SynSemDistanceAnalysis {
         } finally {
             System.exit(0);
         }
-    }
-
-
-    private static String toSolverSyntax(Formula f) {
-        String LTLFormula = f.toString();
-        LTLFormula = LTLFormula.replaceAll("\\!", "~");
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return new String(LTLFormula);
     }
 
 }

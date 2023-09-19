@@ -11,9 +11,7 @@ import owl.ltl.LabelledFormula;
 import solvers.SolverUtils;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.*;
 
 public class AutomataBasedModelCounting {
@@ -21,20 +19,13 @@ public class AutomataBasedModelCounting {
     public static int TIMEOUT = 300;
     private DMatrixRMaj T = null;
     private DMatrixRMaj I = null;
-    private Graph<String> nba = null;
-    private boolean exhaustive = true;
+    private Graph<String> nba;
+    private boolean exhaustive;
 
     public AutomataBasedModelCounting(LabelledFormula formula, boolean exhaustive) throws IOException, InterruptedException {
 
         this.exhaustive = exhaustive;
         Writer<String> w = Writer.getWriter(Writer.Format.FSP, System.out);
-
-        // Convert the ltl formula to an automaton with RltlConv
-//		Formula clean_syntax = formula.formula().accept(new RltlConvSyntaxReplacer());
-//		LabelledFormula clean_formula = LabelledFormula.of(clean_syntax, formula.variables());
-//		String ltlStr = genRltlString(clean_formula);
-////		System.out.println(ltlStr);
-//		nba = Buchi2Graph.LTL2Graph(ltlStr);
 
         // Convert the ltl formula to an automaton with OWL
         nba = Buchi2Graph.LTL2Graph(formula);
@@ -230,7 +221,7 @@ public class AutomataBasedModelCounting {
             for (Edge<String> currentEdge : currentNode.getOutgoingEdges()) {
                 Guard<String> currentGuard = currentEdge.getGuard();
                 if (!currentGuard.isTrue()) {
-                    if (statesByGuard.keySet().contains(currentGuard)) {
+                    if (statesByGuard.containsKey(currentGuard)) {
                         statesByGuard.get(currentGuard).add(currentEdge.getNext().getId());
                     } else {
                         HashSet<Integer> guardStates = new HashSet<Integer>();
@@ -254,7 +245,7 @@ public class AutomataBasedModelCounting {
         String alph = alphabet.toString();
 
         String form = "LTL=" + ltl;
-        if (alph != null && !alph.equals(""))
+        if (alph != null && !alph.isEmpty())
             form += ",ALPHABET=" + alph;
 
         return form;
@@ -303,46 +294,6 @@ public class AutomataBasedModelCounting {
         return count;
     }
 
-    private BigInteger eval(int k) {
-        //gA(z) = (−1)n det(I − zT : n + 1, 1) / z det(I − zT)
-        //where (M : i, j) denotes the matrix obtained by removing the ith row and jth
-        //column from M, I is the identity matrix, det M is the matrix determinant, and
-        //n is the number of states in the original DFA A
-        BigInteger count = BigInteger.ZERO;
-        // Remove row n+1 and column j. After this M = I − zT : n + 1, 1
-        int n = I.numCols - 1;
-        for (int z = 0; z <= k; z++) {
-            DMatrixRMaj Ti = T.copy();
-            DMatrixRMaj ID = I.copy();
-//			  for (int i = 0; i <=z; i++) {
-            CommonOps_DDRM.scale(z, Ti);
-
-            // Subtract T to I. After this subtraction, I' = I - zT
-            CommonOps_DDRM.subtractEquals(ID, Ti);
-
-            DMatrixRMaj M = removeRowAndCol(ID, n, 0);
-
-            // Calculate det0
-            BigDecimal det0 = BigDecimal.valueOf(CommonOps_DDRM.det(M));
-            System.out.println(det0);
-            // Calculate det1
-            BigDecimal det1 = BigDecimal.valueOf(CommonOps_DDRM.det(ID));
-            System.out.println(det1);
-
-            // gA(z) = (−1)n * (det0 / z det1)
-            BigDecimal Z = BigDecimal.valueOf(z);
-            //		  double gaZ = Math.pow(-1, n) * ( det0 / (z * det1));
-            BigDecimal zTimesdet1 = Z.multiply(det1);
-            BigDecimal det = BigDecimal.ZERO;
-            if (zTimesdet1.intValue() > 0)
-                det = det0.divide(zTimesdet1, 10, RoundingMode.HALF_UP);
-            BigDecimal gaZ = det.multiply(BigDecimal.valueOf(-1));
-            count = count.add(gaZ.toBigInteger());
-            System.out.println("COUNT: " + count);
-//			  }
-        }
-        return count;
-    }
 
     /**
      * Build the Transfer Matrix for the given DFA

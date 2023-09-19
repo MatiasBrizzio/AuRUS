@@ -5,7 +5,10 @@ import main.Settings;
 import owl.ltl.BooleanConstant;
 import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
-import owl.ltl.visitors.*;
+import owl.ltl.visitors.FormulaStrengthening;
+import owl.ltl.visitors.FormulaWeakening;
+import owl.ltl.visitors.GeneralFormulaMutator;
+import owl.ltl.visitors.SubformulaReplacer;
 import tlsf.Formula_Utils;
 import tlsf.TLSF_Utils;
 
@@ -36,7 +39,7 @@ public class SpecificationMutator {
             Formula to_mutate = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
 
 
-            Formula mutated_subformula = BooleanConstant.TRUE;
+            Formula mutated_subformula;
             int modification = Settings.RANDOM_GENERATOR.nextInt(3);
             if (modification == 0) {
                 // arbitrary mutation
@@ -69,7 +72,7 @@ public class SpecificationMutator {
             int n = subformulas.size();
             Formula to_mutate = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
 
-            Formula mutated_subformula = BooleanConstant.TRUE;
+            Formula mutated_subformula;
             int modification = Settings.RANDOM_GENERATOR.nextInt(3);
             if (modification == 0) {
                 // arbitrary mutation
@@ -110,17 +113,6 @@ public class SpecificationMutator {
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
         GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, MR, num_of_mut);
-        Formula m = f.nnf().accept(formVisitor);
-        return m;
-    }
-
-    public static Formula mutateFormula(Formula f, List<String> variables) {
-        int n = Formula_Utils.formulaSize(f);
-        int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
-        int num_of_mut = n;
-        if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
-            num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
-        FormulaMutator formVisitor = new FormulaMutator(variables, MR, num_of_mut);
         Formula m = f.nnf().accept(formVisitor);
         return m;
     }

@@ -70,99 +70,10 @@ public class SpecificationCrossover {
             } else
                 guaranteeConjuncts.addAll(spec0.guarantee());
 
-        }
-//		else if (level == 2) {
-//			// set assume
-//			assumptionConjuncts.addAll(assumesspec0);
-//			if (!assumesspec1.isEmpty()) {
-//				for (int i = 0; i < assumesspec0.size(); i++) {
-//					Formula new_formula =  assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
-//					if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-//						if (!assumptionConjuncts.contains(new_formula)) {
-//							assumptionConjuncts.remove(i);
-//							assumptionConjuncts.add(i, new_formula);
-//						}
-//					}
-//				}
-//			}
-//			if (Settings.RANDOM_GENERATOR.nextBoolean() && !assumptionConjuncts.isEmpty()) {
-//				int index = Settings.RANDOM_GENERATOR.nextInt(assumptionConjuncts.size());
-//				Formula new_formula =  assumptionConjuncts.get(index);
-//				assumptionConjuncts.remove(index);
-//				assumptionConjuncts.add(index, SpecificationMutator.applyGeneralMutation(new_formula, spec0.variables()));
-//			}
-//
-//			// set guarantee
-//			guaranteeConjuncts.addAll(spec0.guarantee());
-//			if (!spec1.guarantee().isEmpty()) {
-//				List<Formula> g1 = spec1.guarantee();
-//				for (int i = 0; i < spec0.guarantee().size(); i++) {
-//					Formula new_formula =  g1.get(Settings.RANDOM_GENERATOR.nextInt(g1.size()));
-//					if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-//						if (!guaranteeConjuncts.contains(new_formula)) {
-//							guaranteeConjuncts.remove(i);
-//							guaranteeConjuncts.add(i, new_formula);
-//						}
-//					}
-//				}
-//			}
-//			if (Settings.RANDOM_GENERATOR.nextBoolean() && !guaranteeConjuncts.isEmpty()) {
-//				int index = Settings.RANDOM_GENERATOR.nextInt(guaranteeConjuncts.size());
-//				Formula new_formula =  guaranteeConjuncts.get(index);
-//				guaranteeConjuncts.remove(index);
-//				guaranteeConjuncts.add(index, SpecificationMutator.applyGeneralMutation(new_formula, spec0.variables()));
-//			}
-//
-//		}
-//		else if (level == 2 && status0.compatible(status1)) {
-//			// set assume
-//			if (status0.areAssumptionsSAT() && status1.areAssumptionsSAT()) {
-//				if (Settings.RANDOM_GENERATOR.nextBoolean())
-//					assumptionConjuncts.addAll(assumesspec0);
-//				else
-//					assumptionConjuncts.addAll(assumesspec1);
-//			} else if (status0.areAssumptionsSAT()) {
-//				assumptionConjuncts.addAll(assumesspec0);
-//			} else if (status1.areAssumptionsSAT()) {
-//				assumptionConjuncts.addAll(assumesspec1);
-//			}
-//
-//			// set guarantees
-//			if (status0.areGuaranteesSAT() && status1.areGuaranteesSAT()) {
-//				if (Settings.RANDOM_GENERATOR.nextBoolean())
-//					guaranteeConjuncts.addAll(spec0.guarantee());
-//				else
-//					guaranteeConjuncts.addAll(spec1.guarantee());
-//			} else if (status0.areGuaranteesSAT()) {
-//				guaranteeConjuncts.addAll(spec0.guarantee());
-//			} else if (status1.areGuaranteesSAT()) {
-//				guaranteeConjuncts.addAll(spec1.guarantee());
-//			}
-//		} else if (level == 3 && status0.compatible(status1)) {
-//			// set assumes
-//			if (status0.areAssumptionsSAT() && status1.areAssumptionsSAT()) {
-//				assumptionConjuncts.addAll(selectRandomly(assumesspec0));
-//				assumptionConjuncts.addAll(selectRandomly(assumesspec1));
-//			} else if (status0.areAssumptionsSAT()) {
-//				assumptionConjuncts.addAll(selectRandomly(assumesspec0));
-//			} else if (status1.areAssumptionsSAT()) {
-//				assumptionConjuncts.addAll(selectRandomly(assumesspec1));
-//			}
-//
-//			// set guarantees
-//			if (status0.areGuaranteesSAT() && status1.areGuaranteesSAT()) {
-//				guaranteeConjuncts.addAll(selectRandomly(spec0.guarantee()));
-//				guaranteeConjuncts.addAll(selectRandomly(spec1.guarantee()));
-//			} else if (status0.areGuaranteesSAT()) {
-//				guaranteeConjuncts.addAll(selectRandomly(spec0.guarantee()));
-//			} else if (status1.areGuaranteesSAT()) {
-//				guaranteeConjuncts.addAll(selectRandomly(spec1.guarantee()));
-//			}
-//		}
-        else { //level == 4 and by default
+        } else { //level == 4 and by default
             // set assume
             //if assumptions can be modified
-            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100 && assumesspec0.size() > 0 && assumesspec1.size() > 0) {
+            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100 && !assumesspec0.isEmpty() && !assumesspec1.isEmpty()) {
                 assumptionConjuncts.addAll(assumesspec0);
                 int size = assumptionConjuncts.size();
                 Formula merge_ass0 = assumptionConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size));
@@ -189,7 +100,7 @@ public class SpecificationCrossover {
                             merge_ass1 = BooleanConstant.TRUE;
                     }
 
-                    Formula merged_assumption = null;
+                    Formula merged_assumption;
                     if (Settings.RANDOM_GENERATOR.nextBoolean())
                         merged_assumption = Formula_Utils.replaceSubformula(merge_ass0, merge_ass1);
                     else {
@@ -203,7 +114,7 @@ public class SpecificationCrossover {
 
             // set guarantee
             //if assumptions can be modified
-            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0 && spec0.guarantee().size() > 0 && spec1.guarantee().size() > 0) {
+            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0 && !spec0.guarantee().isEmpty() && !spec1.guarantee().isEmpty()) {
                 guaranteeConjuncts.addAll(spec0.guarantee());
                 int size_g = guaranteeConjuncts.size();
                 if (size_g >= 1) {
@@ -211,7 +122,7 @@ public class SpecificationCrossover {
                     Formula merge_g1 = spec1.guarantee().get(Settings.RANDOM_GENERATOR.nextInt(spec1.guarantee().size()));
                     // merge g0 and g1
                     if (merge_g0 != null && merge_g1 != null) {
-                        Formula merged_g = null;
+                        Formula merged_g;
                         if (Settings.RANDOM_GENERATOR.nextBoolean())
                             merged_g = Formula_Utils.replaceSubformula(merge_g0, merge_g1);
                         else {
@@ -267,43 +178,41 @@ public class SpecificationCrossover {
         } else { //level == 4 and by default
             // set assume
             //if assumptions can be modified
-            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100 && assumesspec0.size() > 0 && assumesspec1.size() > 0) {
+            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100 && !assumesspec0.isEmpty() && !assumesspec1.isEmpty()) {
                 assumptionConjuncts.addAll(assumesspec0);
                 int size = assumptionConjuncts.size();
-                if (size >= 1) {
-                    Formula merge_ass0 = assumptionConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size));
-                    Formula merge_ass1 = assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
-                    // merge ass0 and ass1
-                    if (merge_ass0 != null && merge_ass1 != null) {
-                        if (Settings.only_inputs_in_assumptions) {
-                            Set<Formula> subformulas = Formula_Utils.subformulas(merge_ass1);
-                            Set<Formula> to_remove = new LinkedHashSet<>();
-                            for (Formula f : subformulas) {
-                                PropositionVariablesExtractor prop_visitor = new PropositionVariablesExtractor();
-                                Set<Literal> props = f.accept(prop_visitor);
-                                for (Literal l : props) {
-                                    if (l.getAtom() >= spec0.numberOfInputs()) {
-                                        to_remove.add(f);
-                                        break;
-                                    }
+                Formula merge_ass0 = assumptionConjuncts.remove(Settings.RANDOM_GENERATOR.nextInt(size));
+                Formula merge_ass1 = assumesspec1.get(Settings.RANDOM_GENERATOR.nextInt(assumesspec1.size()));
+                // merge ass0 and ass1
+                if (merge_ass0 != null && merge_ass1 != null) {
+                    if (Settings.only_inputs_in_assumptions) {
+                        Set<Formula> subformulas = Formula_Utils.subformulas(merge_ass1);
+                        Set<Formula> to_remove = new LinkedHashSet<>();
+                        for (Formula f : subformulas) {
+                            PropositionVariablesExtractor prop_visitor = new PropositionVariablesExtractor();
+                            Set<Literal> props = f.accept(prop_visitor);
+                            for (Literal l : props) {
+                                if (l.getAtom() >= spec0.numberOfInputs()) {
+                                    to_remove.add(f);
+                                    break;
                                 }
                             }
-                            subformulas.removeAll(to_remove);
-                            if (!subformulas.isEmpty())
-                                merge_ass1 = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(subformulas.size())];
-                            else
-                                merge_ass1 = BooleanConstant.TRUE;
                         }
-
-                        Formula merged_assumption = null;
-                        if (Settings.RANDOM_GENERATOR.nextBoolean())
-                            merged_assumption = Formula_Utils.replaceSubformula(merge_ass0, merge_ass1);
-                        else {
-                            merged_assumption = Formula_Utils.combineSubformula(merge_ass0, merge_ass1);
-                        }
-                        if (merged_assumption != null && Formula_Utils.numOfTemporalOperators(merged_assumption) <= 2)
-                            assumptionConjuncts.add(merged_assumption);
+                        subformulas.removeAll(to_remove);
+                        if (!subformulas.isEmpty())
+                            merge_ass1 = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(subformulas.size())];
+                        else
+                            merge_ass1 = BooleanConstant.TRUE;
                     }
+
+                    Formula merged_assumption;
+                    if (Settings.RANDOM_GENERATOR.nextBoolean())
+                        merged_assumption = Formula_Utils.replaceSubformula(merge_ass0, merge_ass1);
+                    else {
+                        merged_assumption = Formula_Utils.combineSubformula(merge_ass0, merge_ass1);
+                    }
+                    if (merged_assumption != null && Formula_Utils.numOfTemporalOperators(merged_assumption) <= 2)
+                        assumptionConjuncts.add(merged_assumption);
                 }
             } else
                 assumptionConjuncts.addAll(assumesspec0);
@@ -330,7 +239,7 @@ public class SpecificationCrossover {
         } else { //level == 4 and by default
             // set guarantee
             //if assumptions can be modified
-            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0 && spec0.guarantee().size() > 0 && spec1.guarantee().size() > 0) {
+            if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0 && !spec0.guarantee().isEmpty() && !spec1.guarantee().isEmpty()) {
                 guaranteeConjuncts.addAll(spec0.guarantee());
                 int size_g = guaranteeConjuncts.size();
                 if (size_g >= 1) {
@@ -338,7 +247,7 @@ public class SpecificationCrossover {
                     Formula merge_g1 = spec1.guarantee().get(Settings.RANDOM_GENERATOR.nextInt(spec1.guarantee().size()));
                     // merge g0 and g1
                     if (merge_g0 != null && merge_g1 != null) {
-                        Formula merged_g = null;
+                        Formula merged_g;
                         if (Settings.RANDOM_GENERATOR.nextBoolean())
                             merged_g = Formula_Utils.replaceSubformula(merge_g0, merge_g1);
                         else {

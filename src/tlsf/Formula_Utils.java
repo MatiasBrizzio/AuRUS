@@ -93,12 +93,9 @@ public class Formula_Utils {
         LabelledFormula target = subformulas_f1.get(rand.nextInt(subformulas_f1.size()));
 //		System.out.println("Selected target formula "+target);
 
-        LabelledFormula f0_copy = LabelledFormula.of(f0.formula(), f0.variables());
-        //replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
         SubformulaReplacer visitor = new SubformulaReplacer(src.formula(), target.formula());
         Formula m = f0.formula().accept(visitor);
-        f0_copy = LabelledFormula.of(m, f0.variables());
-        return f0_copy;
+        return LabelledFormula.of(m, f0.variables());
     }
 
     public static Formula replaceSubformula(Formula f0, Formula f1) {
@@ -151,7 +148,7 @@ public class Formula_Utils {
                 right = UOperator.of(left, right);
             else
                 right = UOperator.of(right, left);
-        } else if (op == 3) {
+        } else {
             if (Settings.RANDOM_GENERATOR.nextBoolean())
                 right = WOperator.of(left, right);
             else

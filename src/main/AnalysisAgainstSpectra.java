@@ -7,6 +7,7 @@ import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
 import solvers.LTLSolver.SolverResult;
+import solvers.SolverUtils;
 import tlsf.TLSF_Utils;
 
 import java.io.File;
@@ -23,32 +24,31 @@ import java.util.stream.Stream;
 
 public class AnalysisAgainstSpectra {
 
+    private static final Set<Integer> genuineSolutionsFound = new HashSet<>();
+    private static final Set<Integer> moreGeneralSolutions = new HashSet<>();
+    private static final Set<Integer> lessGeneralSolutions = new HashSet<>();
     private static Tlsf original;
     private static boolean rmSpecsWithsameGuarantees;
     private static int originalTargetSizeWORemoveGuaratees = 0;
     private static int originalSourceSizeWORemoveGuaratees = 0;
-    private static Set<Integer> genuineSolutionsFound = new HashSet<>();
-    private static Set<Integer> moreGeneralSolutions = new HashSet<>();
-    private static Set<Integer> lessGeneralSolutions = new HashSet<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
-//    	Settings.USE_POLSAT = true;
         List<Tlsf> sourceSolutions = new LinkedList<>();
         List<Tlsf> targetSolutions = new LinkedList<>();
-        String directoryName = "";
-        for (int i = 0; i < args.length; i++) {
+        String directoryName;
+        for (String arg : args) {
 
-            if (args[i].startsWith("-ref=")) {
-                directoryName = args[i].replace("-ref=", "");
+            if (arg.startsWith("-ref=")) {
+                directoryName = arg.replace("-ref=", "");
                 @SuppressWarnings("resource")
                 Stream<Path> walk = Files.walk(Paths.get(directoryName));
-                List<String> specifications = walk.map(x -> x.toString())
+                List<String> specifications = walk.map(Path::toString)
                         .filter(f -> f.endsWith(".spectra")).collect(Collectors.toList());
 
                 if (specifications.isEmpty()) {
                     @SuppressWarnings("resource")
                     Stream<Path> walk2 = Files.walk(Paths.get(directoryName));
-                    specifications = walk2.map(x -> x.toString())
+                    specifications = walk2.map(Path::toString)
                             .filter(f -> f.endsWith(".tlsf")).collect(Collectors.toList());
                 }
 
@@ -57,23 +57,23 @@ public class AnalysisAgainstSpectra {
                     targetSolutions.add(tlsf);
                 }
                 System.out.println("target Solutions: " + targetSolutions.size());
-            } else if (args[i].startsWith("-original=")) {
-                original = TLSF_Utils.toBasicTLSF(new File(args[i].replace("-original=", "")));
-            } else if (args[i].startsWith("-remove-same-guarantees")) {
+            } else if (arg.startsWith("-original=")) {
+                original = TLSF_Utils.toBasicTLSF(new File(arg.replace("-original=", "")));
+            } else if (arg.startsWith("-remove-same-guarantees")) {
                 rmSpecsWithsameGuarantees = true;
-            } else if (args[i].startsWith("-satTO=")) {
-                int timeout = Integer.parseInt(args[i].replace("-satTO=", ""));
+            } else if (arg.startsWith("-satTO=")) {
+                int timeout = Integer.parseInt(arg.replace("-satTO=", ""));
                 if (timeout > 0) Settings.SAT_TIMEOUT = timeout;
-            } else if (args[i].startsWith("-source=")) {
-                directoryName = args[i].replace("-source=", "");
+            } else if (arg.startsWith("-source=")) {
+                directoryName = arg.replace("-source=", "");
                 @SuppressWarnings("resource")
                 Stream<Path> walk = Files.walk(Paths.get(directoryName));
-                List<String> specifications = walk.map(x -> x.toString())
+                List<String> specifications = walk.map(Path::toString)
                         .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
                 if (specifications.isEmpty()) {
                     @SuppressWarnings("resource")
                     Stream<Path> walk2 = Files.walk(Paths.get(directoryName));
-                    specifications = walk2.map(x -> x.toString())
+                    specifications = walk2.map(Path::toString)
                             .filter(f -> f.endsWith(".spectra")).collect(Collectors.toList());
                 }
                 for (String filename : specifications) {
@@ -147,14 +147,14 @@ public class AnalysisAgainstSpectra {
 
                     //check isLessGeneral?
                     //check as_solution => as_genuine = UNSAT(as_solution & !as_genuine)
-                    LTLSolver.SolverResult sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(as_solution, as_genuine.not()).accept(visitor)));
+                    LTLSolver.SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(as_solution, as_genuine.not()).accept(visitor)));
                     if (sat.inconclusive()) System.out.print(sat);
                     if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT)
                         isLessGeneral = true;
 
                     //check isMoreGeneral?
                     //check as_genuine => as_solution = UNSAT(as_genuine & !as_solution)
-                    sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(as_genuine, as_solution.not()).accept(visitor)));
+                    sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(as_genuine, as_solution.not()).accept(visitor)));
                     if (sat.inconclusive()) System.out.print(sat);
                     if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT)
                         isMoreGeneral = true;
@@ -183,10 +183,10 @@ public class AnalysisAgainstSpectra {
         SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
         // check equivalence
         // f1 => f2
-        SolverResult sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(f1, f2.not()).accept(visitor)));
+        SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(f1, f2.not()).accept(visitor)));
         if (sat == SolverResult.UNSAT) {
             // f2 => f1
-            sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(f2, f1.not()).accept(visitor)));
+            sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(f2, f1.not()).accept(visitor)));
             if (sat == SolverResult.UNSAT)
                 return false; // are equivalent so the guarantees have no changes.
             else return true;
@@ -194,18 +194,11 @@ public class AnalysisAgainstSpectra {
         return true;
     }
 
-    private static String toSolverSyntax(Formula f) {
-        String LTLFormula = f.toString();
-        LTLFormula = LTLFormula.replaceAll("\\!", "~");
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return new String(LTLFormula);
-    }
-
     public static List<Tlsf> removeSameGuarantees(List<Tlsf> sourceSols) throws IOException, InterruptedException {
         //Remove all specifications which have modified the guarantees
         List<Tlsf> woMod = new LinkedList<Tlsf>();
-        Formula r_sys = null;
-        Formula o_sys = null;
+        Formula r_sys;
+        Formula o_sys;
         for (Tlsf repair : sourceSols) {
             r_sys = Conjunction.of(repair.preset(), GOperator.of(Conjunction.of(repair.assert_())), Conjunction.of(repair.guarantee()));
             o_sys = Conjunction.of(original.preset(), GOperator.of(Conjunction.of(original.assert_())), Conjunction.of(original.guarantee()));

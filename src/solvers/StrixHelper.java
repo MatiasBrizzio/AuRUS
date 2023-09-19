@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class StrixHelper {
 
     static Map<String, String> replacements = new HashMap<String, String>() {
-//        @Serial
+        //        @Serial
         private static final long serialVersionUID = 1L;
 
         {
@@ -69,8 +69,9 @@ public class StrixHelper {
         if (Settings.USE_SPECTRA) {
             String directoryName = Settings.SPECTRA_PATH;
             File outfolder = new File(directoryName);
-            if (!outfolder.exists())
-                outfolder.mkdirs();
+            if (!outfolder.exists() && !outfolder.mkdirs()) {
+                System.err.println("Failed to create directory: " + directoryName);
+            }
 //			if (Settings.USE_SPECTRA)
             file = new File((tlsf.title().replace("\"", "") + ".spectra").replaceAll("\\s", ""));
 //			else

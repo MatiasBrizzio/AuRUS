@@ -245,13 +245,11 @@ public class FormulaWeakening implements Visitor<Formula> {
                 int option = Settings.RANDOM_GENERATOR.nextInt(2);
                 if (option == 0)
                     current = BooleanConstant.TRUE;
-                else if (option == 1) {
+                else {
                     //Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
                     //if (Settings.RANDOM_GENERATOR.nextBoolean())
                     //new_literal = new_literal.not();
                     current = Disjunction.of(current, new_literal(current));
-                } else if (numOfTO < 2) {
-                    current = FOperator.of(current); // weak(a | b) = F(a | b)
                 }
             }
         }

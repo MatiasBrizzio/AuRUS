@@ -15,10 +15,10 @@ import java.math.BigInteger;
 
 public class MatrixBigIntegerModelCounting {
     public static int TIMEOUT = 300;
-    private FieldMatrix<BigFraction> T = null;
-    private FieldMatrix<BigFraction> I = null;
-    private Graph<String> nba = null;
-    private boolean exhaustive = true;
+    private FieldMatrix<BigFraction> T;
+    private FieldMatrix<BigFraction> I;
+    private Graph<String> nba;
+    private boolean exhaustive;
 
     public MatrixBigIntegerModelCounting(LabelledFormula formula, boolean exhaustive) throws IOException, InterruptedException {
 

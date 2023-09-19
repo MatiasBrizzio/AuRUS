@@ -104,28 +104,10 @@ public class StrongSATSolver<S> {
     }
 
     public <S> boolean checkStrongSAT(Automaton<S, ?> automaton) {
-//        System.out.println(automaton.is(Automaton.Property.COMPLETE));
-//        MutableAutomaton<S,?> input_automaton = MutableAutomatonFactory.copy(automaton);
-//        System.out.println(input_automaton.is(Automaton.Property.COMPLETE));
-//        Automaton<?, ?> minimized_input_automata = MinimizationUtil.minimizeDefault(input_automaton, MinimizationUtil.MinimizationLevel.ALL);
-//        System.out.println(HoaPrinter.toString(minimized_input_automata));
-//        MutableAutomaton<Object, ?>  complete_input_automata = MutableAutomatonUtil.castMutable(input_automaton, Object.class, OmegaAcceptance.class);
-//        complete_input_automata.trim();
-//        Optional<Object> completed = MutableAutomatonUtil.complete(complete_input_automata);
-//        System.out.println(HoaPrinter.toString(complete_input_automata));
-
-
         Automaton<S, ?> complete_input_automata = Views.complete(automaton, null);
         Automaton<?, ?> complement_input_automata = Views.complement(complete_input_automata, null);
         System.out.println(HoaPrinter.toString(complement_input_automata));
-
-        boolean isStrongSAT = EmptinessCheck.isEmpty(complement_input_automata);
-//        input_automaton.trim();
-//        System.out.println(input_automaton.acceptance());
-//        boolean isEmpty = EmptinessCheck.isEmpty(input_automaton);
-//        boolean isComplete = input_automaton.is(Automaton.Property.COMPLETE);
-//        boolean isStrongSAT = !isEmpty && isComplete;
-        return isStrongSAT;
+        return EmptinessCheck.isEmpty(complement_input_automata);
     }
 
 

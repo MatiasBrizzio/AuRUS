@@ -28,6 +28,9 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
+    //	public BigInteger originalNegationNumOfModels;
+//    public BigInteger UNIVERSE;
+    private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
     //	public int BOUND = 10;
 //	public boolean EXHAUSTIVE = true;
 //	public double STATUS_FACTOR = 0.7d;
@@ -35,14 +38,11 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //	public double WON_MODELS_FACTOR = 0.1d;
 //	//	public static final double SOLUTION = 0.8d;
 //	public  double SYNTACTIC_FACTOR = 0.1d;
-    public Tlsf originalSpecification = null;
+    public Tlsf originalSpecification;
     public List<String> alphabet = null;
-    public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+    public SPEC_STATUS originalStatus;
     //    public boolean allowAssumptionGuaranteeRemoval = false;
     public BigInteger originalNumOfModels;
-    //	public BigInteger originalNegationNumOfModels;
-//    public BigInteger UNIVERSE;
-    private SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
 
 //	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
 //		if (status_factor >= 0.0d)
@@ -56,11 +56,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		}
 //	}
 
-//	public void setBound (int bound) {
+    //	public void setBound (int bound) {
 //		if (bound > 0)
 //			 this.BOUND = bound;
 //	}
-
     //	public void allowAssumptionGuaranteeRemoval(boolean value) {
 //		this.allowAssumptionGuaranteeRemoval = value;
 //	}
@@ -321,7 +320,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
     private double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
         System.out.print("+");
-        if (originalNumOfModels == null || originalNumOfModels == BigInteger.ZERO)
+        if (originalNumOfModels == null || originalNumOfModels.equals(BigInteger.ZERO))
             return 0.0d;
 //		if (commonNumOfModels == null || commonNumOfModels == BigDecimal.ZERO) {
 //			return 0.0d;

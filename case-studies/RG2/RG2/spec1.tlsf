@@ -1,0 +1,23 @@
+INFO {
+  TITLE:       "Unrealizability example"
+  DESCRIPTION: "Unrealizability example"
+  SEMANTICS:   Moore
+  TARGET:   Mealy
+}
+
+MAIN {
+  INPUTS {
+    req;cancel;
+  }
+  OUTPUTS {
+    grant;
+  }
+
+  GUARANTEES {
+     G ((cancel || !grant ||  X (( G (!req) || ((!req)  U  (grant))))));
+     G ((!grant ||  G (!grant)));
+  }
+}
+//fitness: 0.7224999999999999
+//syntactic: 0.225
+//semantic: 0.0

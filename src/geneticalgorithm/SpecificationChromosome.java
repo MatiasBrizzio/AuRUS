@@ -20,7 +20,7 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
     // we distinguish the particular case when the specification is realizable
     // just because the assumptions are unsatisfiable.
 
-    public Tlsf spec = null;
+    public Tlsf spec;
 
     ;
     public SPEC_STATUS status = SPEC_STATUS.UNKNOWN;
@@ -34,15 +34,12 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 
     public SpecificationChromosome(Tlsf spec) {
         this.spec = TlsfParser.parse(TLSF_Utils.toTLSF(spec));
-        //TODO: compute the state of spec
         this.status = SPEC_STATUS.UNKNOWN;
     }
 
     @Override
     public List<SpecificationChromosome> crossover(SpecificationChromosome anotherChromosome) {
         List<SpecificationChromosome> result = new LinkedList<SpecificationChromosome>();
-        // if the specifications will not lead us to a consistent specification, then do a random merge.
-//		List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status);
         int assumption_level = Settings.RANDOM_GENERATOR.nextInt(3);
         int guarantee_level = Settings.RANDOM_GENERATOR.nextInt(3);
         int random = Settings.RANDOM_GENERATOR.nextInt(100);
@@ -52,35 +49,13 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
             assumption_level = 0;
 
         List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, assumption_level, guarantee_level);
-//		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
-//		List<Tlsf> mergedSpecs = SpecificationCrossover.apply(this.spec, anotherChromosome.spec);
         for (Tlsf s : mergedSpecs) {
             result.add(new SpecificationChromosome(s));
         }
 
-
-        //result.add(new SpecificationChromosome());
-//		if (!this.status.compatible(anotherChromosome.status)) {
-//			int level = Settings.RANDOM_GENERATOR.nextInt(2);
-//			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
-//			for (Tlsf s : mergedSpecs) {
-//				result.add(new SpecificationChromosome(s));
-//			}
-//		}
-//		else {
-//			int level = Settings.RANDOM_GENERATOR.nextInt(2) + 2;
-//			List<Tlsf> mergedSpecs = SpecificationMerger.merge(this.spec, anotherChromosome.spec, this.status, anotherChromosome.status, level);
-//			for (Tlsf s : mergedSpecs) {
-//				result.add(new SpecificationChromosome(s));
-//			}
-//		}
         return result;
     }
 
-//	public SpecificationChromosome(SpecificationChromosome other) {
-//		this.spec = TlsfParser.parse(TLSF_Utils.toTLSF(other.spec));
-//		this.status = other.status;
-//	}
 
     @Override
     public SpecificationChromosome mutate() {
@@ -88,8 +63,7 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
         Tlsf mutated_spec = SpecificationMutator.mutate(spec, status);
         if (mutated_spec == null)
             return null;
-        SpecificationChromosome mutated_chromosome = new SpecificationChromosome(mutated_spec);
-        return mutated_chromosome;
+        return new SpecificationChromosome(mutated_spec);
     }
 
     @Override
@@ -122,22 +96,16 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
             SyntacticSimplifier simp = new SyntacticSimplifier();
             Formula thiz = spec.toFormula().formula().accept(simp);
             Formula that = other.spec.toFormula().formula().accept(simp);
-//			String thiz = spec.toFormula().toString();
-//			String that = other.spec.toFormula().toString();
             if (!thiz.equals(that))
                 return false;
         }
-        if (fitness > 0.0d && other.fitness > 0.0d && status != other.status)
-            return false;
-        return true;
+        return !(fitness > 0.0d) || !(other.fitness > 0.0d) || status == other.status;
     }
 
     @Override
     public SpecificationChromosome clone() {
         try {
-            SpecificationChromosome clone = (SpecificationChromosome) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
+            return (SpecificationChromosome) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

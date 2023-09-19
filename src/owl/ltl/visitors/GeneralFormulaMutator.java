@@ -144,7 +144,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                         current = FOperator.of(operand);
                     else if (numOfTO < 2)
                         current = GOperator.of(operand);
-                } else if (random == 2) {
+                } else {
                     //0:not 1:F 2:G
                     int op = Settings.RANDOM_GENERATOR.nextInt(7);
                     if (op == 0)
@@ -213,7 +213,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                         current = XOperator.of(operand);
                     else
                         current = GOperator.of(operand);
-                } else if (random == 2) {
+                } else {
                     //0:not 1:X 2:G
                     int op = Settings.RANDOM_GENERATOR.nextInt(7);
 //					System.out.println("!!!!---->"+op);
@@ -284,7 +284,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                         current = FOperator.of(operand);
                     else
                         current = XOperator.of(operand);
-                } else if (random == 2) {
+                } else {
                     //0:not 1:F 2:X
                     int op = Settings.RANDOM_GENERATOR.nextInt(7);
                     if (op == 0)

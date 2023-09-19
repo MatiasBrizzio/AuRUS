@@ -39,7 +39,7 @@ public class TLSF_Utils {
             + "  }  \n"
             + '}';
     static Map<String, String> replacements = new HashMap<String, String>() {
-//        @Serial
+        //        @Serial
         private static final long serialVersionUID = 1L;
 
         {
@@ -90,8 +90,9 @@ public class TLSF_Utils {
 			System.out.println(p.waitFor());*/
             String directoryName = Settings.STRIX_PATH;
             File outfolder = new File(directoryName);
-            if (!outfolder.exists())
-                outfolder.mkdirs();
+            if (!outfolder.exists() && !outfolder.mkdirs()) {
+                System.err.println("Failed to create directory: " + directoryName);
+            }
             file = new File(Settings.STRIX_PATH, "/out2.tlsf");
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(spec);

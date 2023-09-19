@@ -7,6 +7,7 @@ import owl.ltl.Formula;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
+import solvers.SolverUtils;
 import tlsf.TLSF_Utils;
 
 import java.io.BufferedReader;
@@ -34,22 +35,22 @@ public class GenuineSolutionsAnalysis {
         List<Tlsf> genuineSolutions = new LinkedList<>();
         List<Tlsf> solutions = new LinkedList<>();
         List<Double> sol_fitness = new LinkedList<>();
-        String directoryName = "";
+        String directoryName;
         Tlsf original = null;
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-ref=")) {
-                String ref_name = args[i].replace("-ref=", "");
+        for (String arg : args) {
+            if (arg.startsWith("-ref=")) {
+                String ref_name = arg.replace("-ref=", "");
                 Tlsf ref_sol = TLSF_Utils.toBasicTLSF(new File(ref_name));
                 genuineSolutions.add(ref_sol);
-            } else if (args[i].startsWith("-o=")) {
-                String orig_name = args[i].replace("-o=", "");
+            } else if (arg.startsWith("-o=")) {
+                String orig_name = arg.replace("-o=", "");
                 original = TLSF_Utils.toBasicTLSF(new File(orig_name));
-            } else if (args[i].startsWith("-noFit")) {
+            } else if (arg.startsWith("-noFit")) {
                 computeFitness = false;
             } else {
-                directoryName = args[i];
+                directoryName = arg;
                 Stream<Path> walk = Files.walk(Paths.get(directoryName));
-                List<String> specifications = walk.map(x -> x.toString())
+                List<String> specifications = walk.map(Path::toString)
                         .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
                 for (String filename : specifications) {
                     System.out.println(filename);
@@ -59,11 +60,11 @@ public class GenuineSolutionsAnalysis {
                     if (!computeFitness) {
                         FileReader f = new FileReader(filename);
                         BufferedReader in = new BufferedReader(f);
-                        String aux = "";
+                        String aux;
                         double value = 0.0d;
                         while ((aux = in.readLine()) != null) {
                             if ((aux.startsWith("//fitness"))) {
-                                value = Double.valueOf(aux.substring(10));
+                                value = Double.parseDouble(aux.substring(10));
                             }
                         }
                         sol_fitness.add(value);
@@ -96,11 +97,11 @@ public class GenuineSolutionsAnalysis {
             System.out.printf("AVG fitness: %.2f\n%n", (sumFitness / (double) solutions.size()));
 
             double genuineBestFitness = 0.0d;
-            double genuineAvgFitness = 0.0d;
+            double genuineAvgFitness;
             double moregeneralBestFitness = 0.0d;
-            double moregeneralAvgFitness = 0.0d;
+            double moregeneralAvgFitness;
             double lessgeneralBestFitness = 0.0d;
-            double lessgeneralAvgFitness = 0.0d;
+            double lessgeneralAvgFitness;
             double genuinesSumFitness = 0.0d;
             double moregeneralSumFitness = 0.0d;
             double lessgeneralSumFitness = 0.0d;
@@ -168,10 +169,10 @@ public class GenuineSolutionsAnalysis {
 
                     //check isMoreGeneral?
                     //check as_solution => as_genuine = UNSAT(as_solution & !as_genuine)
-                    LTLSolver.SolverResult sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(as_solution, as_genuine.not()).accept(visitor)));
+                    LTLSolver.SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(as_solution, as_genuine.not()).accept(visitor)));
                     if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
                         //check g_genuine => g_solution = UNSAT(g_genuine & !g_solution)
-                        sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(g_genuine, g_solution.not()).accept(visitor)));
+                        sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(g_genuine, g_solution.not()).accept(visitor)));
                         if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
                             isMoreGeneral = true;
                         }
@@ -179,10 +180,10 @@ public class GenuineSolutionsAnalysis {
 
                     //check isLessGeneral?
                     //check as_genuine => as_solution = UNSAT(as_genuine & !as_solution)
-                    sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(as_genuine, as_solution.not()).accept(visitor)));
+                    sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(as_genuine, as_solution.not()).accept(visitor)));
                     if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
                         //check g_solution => g_genuine = UNSAT(g_solution & !g_genuine)
-                        sat = LTLSolver.isSAT(toSolverSyntax(Conjunction.of(g_solution, g_genuine.not()).accept(visitor)));
+                        sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(g_solution, g_genuine.not()).accept(visitor)));
                         if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
                             isLessGeneral = true;
                         }
@@ -192,20 +193,13 @@ public class GenuineSolutionsAnalysis {
                         break;
                     } else if (isMoreGeneral && !moreGeneralSolutions.contains(i)) {
                         moreGeneralSolutions.add(i);
-                    } else if (isLessGeneral && !lessGeneralSolutions.contains(i)) {
+                    } else if (isLessGeneral) {
                         lessGeneralSolutions.add(i);
                     }
                 }
             }
         }
         System.out.println();
-    }
-
-    private static String toSolverSyntax(Formula f) {
-        String LTLFormula = f.toString();
-        LTLFormula = LTLFormula.replaceAll("\\!", "~");
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return new String(LTLFormula);
     }
 
 }

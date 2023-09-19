@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class Count {
-    Rltlconv_LTLModelCounter translatorLTLtoRE = null;
+    Rltlconv_LTLModelCounter translatorLTLtoRE;
 
     public Count() {
         translatorLTLtoRE = new Rltlconv_LTLModelCounter();
@@ -46,7 +46,7 @@ public class Count {
         String[] arr = Discretizer.or(abcRE);
         BigInteger result = BigInteger.ZERO;
         for (int i = 0; i < arr.length; i++) {
-            BigInteger count = BigInteger.ZERO;
+            BigInteger count;
             LinkedList<String> abcStrs = new LinkedList<>();
             String s = translatorLTLtoRE.toABClanguage(arr[i]);
             abcStrs.add(s);
@@ -64,14 +64,6 @@ public class Count {
 //        System.out.print(" "+ result);
         return result;
 
-    }
-
-    public double getTimeInSecond(double initialTime, double finalTime) {
-        //Compute execution time
-        double time = finalTime - initialTime;
-        //Translate to minutes and seconds
-        double sec = (time / 1000);
-        return sec;
     }
 
     public String genABCString(LabelledFormula formula) throws IOException, InterruptedException {
@@ -93,8 +85,7 @@ public class Count {
 
 //		translatorLTLtoRE = new Rltlconv_LTLModelCounter();
         System.out.println(form);
-        String s = translatorLTLtoRE.ltl2RE(form);
-        return s;
+        return translatorLTLtoRE.ltl2RE(form);
     }
 
 

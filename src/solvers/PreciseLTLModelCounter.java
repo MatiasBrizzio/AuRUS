@@ -92,7 +92,6 @@ public class PreciseLTLModelCounter {
         BigInteger numOfModels = null;
         if (timeout) {
             numOfTimeout++;
-            numOfModels = null;
             p.destroy();
         } else {
             InputStream in = p.getInputStream();
@@ -173,7 +172,7 @@ public class PreciseLTLModelCounter {
         List<Formula> clauses = new LinkedList<>();
         BufferedReader br = new BufferedReader(new FileReader(PROP_FILE));
         String prop_str = br.readLine();
-        while (prop_str != null && prop_str != "") {
+        while (prop_str != null && !prop_str.equals("")) {
             Formula clause = LtlParser.syntax(prop_str, vars);
             clauses.add(clause);
             prop_str = br.readLine();

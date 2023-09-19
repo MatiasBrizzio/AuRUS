@@ -97,7 +97,7 @@ public class WellSeparationAnalysis {
         System.out.println();
         System.out.println(noWellSeparated);
 
-        if (outFile == "")
+        if (outFile.isEmpty())
             System.exit(0);
         //saving the time execution and configuration details
         File file = new File(outFile);

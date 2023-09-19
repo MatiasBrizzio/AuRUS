@@ -143,7 +143,7 @@ public class Main {
         if (strong_SAT) Settings.check_STRONG_SAT = true;
         if (random_GA_selector) Settings.GA_RANDOM_SELECTOR = true;
 
-        if (outname != "") Settings.setStrixName(outname);
+        if (!outname.isEmpty()) Settings.setStrixName(outname);
 
         if (randomGen)
             ga.runRandom(tlsf);
@@ -158,11 +158,14 @@ public class Main {
         double sumFitness = 0.0d;
 
         String directoryName = filename.substring(0, filename.lastIndexOf('.'));
-        if (outname != "")
+        if (!outname.isEmpty()) {
             directoryName = outname;
+        }
+
         File outfolder = new File(directoryName);
-        if (!outfolder.exists())
-            outfolder.mkdir();
+        if (!outfolder.exists() && !outfolder.mkdirs()) {
+            System.err.println("Failed to create directory: " + directoryName);
+        }
         List<Tlsf> solutions = new LinkedList<>();
         for (int i = 0; i < ga.solutions.size(); i++) {
             SpecificationChromosome sol = ga.solutions.get(i);
@@ -185,7 +188,7 @@ public class Main {
         }
         System.out.println("Num. of Solutions:" + solutions.size() + "\n");
         System.out.printf("Best fitness: %.2f\n%n", bestFitness);
-        System.out.printf("AVG fitness: %.2f\n%n", (ga.solutions.size() > 0) ? (sumFitness / (double) ga.solutions.size()) : 0);
+        System.out.printf("AVG fitness: %.2f\n%n", (!ga.solutions.isEmpty()) ? (sumFitness / (double) ga.solutions.size()) : 0);
         double genuineBestFitness = 0.0d;
         double genuineAvgFitness = 0.0d;
         double moregeneralBestFitness = 0.0d;

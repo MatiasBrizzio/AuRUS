@@ -9,8 +9,8 @@ import java.util.LinkedList;
 
 public class ABC {
 
-    public DriverProxy abcDriver = null;
-    public boolean result = false;
+    public DriverProxy abcDriver;
+    public boolean result;
 
     public ABC() {
         result = false;
@@ -20,8 +20,6 @@ public class ABC {
     public BigInteger count(LinkedList<String> formulas, int bound, boolean exhaustive, boolean positive) {
 
 
-//    abcDriver.setOption(Option.ENABLE_IMPLICATIONS);
-//    abcDriver.setOption(Option.USE_SIGNED_INTEGERS);
         abcDriver.setOption(Option.REGEX_FLAG, Option.REGEX_FLAG_ANYSTRING);
 
         StringBuilder constraint = new StringBuilder("(set-logic QF_S)\n"
@@ -36,14 +34,10 @@ public class ABC {
         }
         constraint.append("(assert (= (len x) ").append(bound).append("))\n");
         constraint.append("(check-sat)\n");
-//    System.out.println();
-//    System.out.println(constraint);
-//    System.out.println(bound);
         result = abcDriver.isSatisfiable(constraint.toString());
         BigInteger count = BigInteger.ZERO;
 
         if (result) {
-//      System.out.println("Satisfiable");
             if (!exhaustive)
                 count = abcDriver.countVariable("x", bound);
             else {
@@ -90,15 +84,6 @@ public class ABC {
         }
         return count;
 
-    }
-
-    public void dispose() {
-        abcDriver.reset();
-        abcDriver.dispose(); // release resources
-    }
-
-    public void reset() {
-        abcDriver.reset();
     }
 
 }

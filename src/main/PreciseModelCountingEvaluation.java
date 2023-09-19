@@ -62,7 +62,7 @@ public class PreciseModelCountingEvaluation {
         if (benchmarkusage && filepath == null) {
             System.out.println("Use ./modelcounter.sh [-b=pathToFile] [-k=bound | -vars=a,b,c | -no-precise]");
             return;
-        } else if (benchmarkusage && filepath != null) {
+        } else if (benchmarkusage) {
 
             BufferedReader reader;
             reader = new BufferedReader(new FileReader(filepath));
@@ -99,6 +99,16 @@ public class PreciseModelCountingEvaluation {
                     refined_formulas.add(LtlParser.syntax(s, vars));
             }
         }
+        String filename = getFilename(outname);
+
+        if (automaton_counting || re_counting)
+            runPrefixesMC(automaton_counting, original_formula, refined_formulas, vars, bound, filename);
+        else
+            runPreciseMC(original_formula, refined_formulas, vars, bound, solver, filename);
+
+    }
+
+    private static String getFilename(String outname) {
         String directoryName = "result";
         String filename = "result/default.out";
         if (outname != null) {
@@ -107,19 +117,16 @@ public class PreciseModelCountingEvaluation {
 
             }
             File outfolder = new File(directoryName);
-            if (!outfolder.exists())
-                outfolder.mkdir();
+            if (!outfolder.exists() && !outfolder.mkdirs()) {
+                // Handle the case where directory creation failed, e.g., due to permission issues.
+                System.err.println("Failed to create directory: " + directoryName);
+            }
             if (outname.contains("/")) {
                 filename = directoryName + outname.substring(outname.lastIndexOf('/'));
             } else
                 filename = outname;
         }
-
-        if (automaton_counting || re_counting)
-            runPrefixesMC(automaton_counting, original_formula, refined_formulas, vars, bound, filename);
-        else
-            runPreciseMC(original_formula, refined_formulas, vars, bound, solver, filename);
-
+        return filename;
     }
 
     static void runPreciseMC(Formula original_formula, List<Formula> refined_formulas, List<String> vars, int bound, int solver, String outname) throws IOException, InterruptedException {
@@ -490,7 +497,7 @@ public class PreciseModelCountingEvaluation {
     }
 
     static LabelledFormula getFormula(Formula formula1, Formula formula2, List<String> variables) {
-        LabelledFormula form = null;
+        LabelledFormula form;
         if (formula2 == null)
             form = LabelledFormula.of(formula1, variables);
         else {
@@ -568,50 +575,6 @@ public class PreciseModelCountingEvaluation {
         BigInteger wonModels = counter2.count(bound);
         BigInteger result = lostModels.add(wonModels);
         return result;
-    }
-
-    static List<BigInteger> countAutomataBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
-        List<BigInteger> lostModels = new LinkedList<>();
-        for (int k = 1; k <= bound; k++) {
-            Formula conj = Conjunction.of(original, refined.not());
-            LabelledFormula form = LabelledFormula.of(conj, vars);
-            AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form, false);
-            BigInteger r = counter.count(k);
-            lostModels.add(r);
-        }
-
-        List<BigInteger> wonModels = new LinkedList<>();
-        for (int k = 1; k <= bound; k++) {
-            Formula conj = Conjunction.of(original.not(), refined);
-            LabelledFormula form = LabelledFormula.of(conj, vars);
-            AutomataBasedModelCounting counter = new AutomataBasedModelCounting(form, false);
-            BigInteger r = counter.count(k);
-            wonModels.add(r);
-        }
-        List<BigInteger> result = new LinkedList<>();
-        for (int i = 0; i < bound; i++) {
-            BigInteger pos = lostModels.get(i);
-            BigInteger neg = wonModels.get(i);
-            result.add(pos.add(neg));
-        }
-
-        return result;
-    }
-
-    static List<String> genAlphabet(int n) {
-        List<String> alphabet = new LinkedList();
-        for (int i = 0; i < n; i++) {
-            String v = "" + Character.toChars(97 + i)[0];
-            alphabet.add(v);
-        }
-        return alphabet;
-    }
-
-    static String toLambConvSyntax(Formula f, List<String> alphabet) {
-        String LTLFormula = LabelledFormula.of(f, alphabet).toString();
-        LTLFormula = LTLFormula.replaceAll("&", "&&");
-        LTLFormula = LTLFormula.replaceAll("\\|", "||");
-        return new String(LTLFormula);
     }
 
     private static void writeFile(String filename, List<BigInteger> result, String time) throws IOException {

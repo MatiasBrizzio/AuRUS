@@ -48,11 +48,11 @@ public class CountRltlConv {
         InputStream in = p.getInputStream();
         InputStreamReader inread = new InputStreamReader(in);
         BufferedReader bufferedreader = new BufferedReader(inread);
-        String aux = "";
+        String aux;
         String out = "";
         while ((aux = bufferedreader.readLine()) != null) {
             // System.out.println("AUX: " + aux);
-            out = aux.toString();
+            out = aux;
         }
 
         // Close the InputStream
@@ -90,7 +90,6 @@ public class CountRltlConv {
         if (os != null) os.close();
         p.destroy();
 
-        BigInteger result = new BigInteger(out);
-        return result;
+        return new BigInteger(out);
     }
 }

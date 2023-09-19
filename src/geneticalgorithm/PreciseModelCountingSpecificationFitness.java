@@ -1,6 +1,5 @@
 package geneticalgorithm;
 
-import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import owl.ltl.*;
@@ -17,9 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
@@ -29,11 +26,11 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
     public final double WON_MODELS_FACTOR = 0.1d;
     //	public static final double SOLUTION = 0.8d;
     public final double SYNTACTIC_FACTOR = 0.05d;
-    public Tlsf originalSpecification = null;
-    public SPEC_STATUS originalStatus = SPEC_STATUS.UNKNOWN;
+    private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
+    public Tlsf originalSpecification;
+    public SPEC_STATUS originalStatus;
     public BigInteger originalNumOfModels;
     public BigInteger originalNegationNumOfModels;
-    private SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
 
     public PreciseModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
         this.originalSpecification = originalSpecification;
@@ -66,23 +63,9 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
             e.printStackTrace();
         }
 
-        double status_fitness = 0d;
-        if (chromosome.status == SPEC_STATUS.UNKNOWN)
-            status_fitness = 0d;
-        else if (chromosome.status == SPEC_STATUS.GUARANTEES)
-            status_fitness = 0.15d;
-        else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
-            status_fitness = 0.25d;
-        else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
-            status_fitness = 0.5d;
-        else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-            status_fitness = 0.9d;
-        else
-            status_fitness = 1.0d;
+        double fitness = getFitness(chromosome);
 
-        double fitness = STATUS_FACTOR * status_fitness;
-
-        double syntactic_distance = 0.0d;
+        double syntactic_distance;
         syntactic_distance = compute_syntactic_distance_size(originalSpecification, chromosome.spec);
         System.out.printf("s%.2f ", syntactic_distance);
 
@@ -118,6 +101,24 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 
         chromosome.fitness = fitness;
         return fitness;
+    }
+
+    private double getFitness(SpecificationChromosome chromosome) {
+        double status_fitness;
+        if (chromosome.status == SPEC_STATUS.UNKNOWN)
+            status_fitness = 0d;
+        else if (chromosome.status == SPEC_STATUS.GUARANTEES)
+            status_fitness = 0.15d;
+        else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
+            status_fitness = 0.25d;
+        else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
+            status_fitness = 0.5d;
+        else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
+            status_fitness = 0.9d;
+        else
+            status_fitness = 1.0d;
+
+        return STATUS_FACTOR * status_fitness;
     }
 
     public void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {
@@ -177,14 +178,13 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
     private BigInteger countModels(LabelledFormula formula) throws IOException, InterruptedException {
         PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
         counter.BOUND = this.BOUND;
-        BigInteger numOfModels = counter.count(formula.formula(), formula.variables().size());
 
-        return numOfModels;
+        return counter.count(formula.formula(), formula.variables().size());
     }
 
     public double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
         System.out.print("-");
-        if (originalNumOfModels == BigInteger.ZERO)
+        if (Objects.equals(originalNumOfModels, BigInteger.ZERO))
             return 1.0d;
 
         int numOfVars = original.variables().size();
@@ -204,9 +204,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
         BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
 
         BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
-        double value = res.doubleValue();
-//		System.out.print(numOfLostModels + " " + numOfModels + " ");
-        return value;
+        return res.doubleValue();
     }
 
     public double compute_won_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
@@ -230,78 +228,22 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
         BigDecimal numOfNegationModels = new BigDecimal(originalNegationNumOfModels);
 
         BigDecimal res = numOfWonModels.divide(numOfNegationModels, 2, RoundingMode.HALF_UP);
-        double value = res.doubleValue();
-//		System.out.print(numOfWonModels + " " + numOfNegationModels + " ");
-        return value;
+        return res.doubleValue();
     }
 
     public double compute_syntactic_distance_size(Tlsf original, Tlsf refined) {
         double orig_size = Formula_Utils.formulaSize(original.toFormula().formula());
         double ref_size = Formula_Utils.formulaSize(refined.toFormula().formula());
         double diff = Math.abs(orig_size - ref_size);
-        double syntactic_distance = (double) (1.0d - (diff / orig_size));
-        return syntactic_distance;
-    }
-
-    public double compute_syntactic_distance2(Tlsf original, Tlsf refined) {
-        List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
-        List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
-
-
-        Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
-        Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
-
-        double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
-        double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
-        double syntactic_distance = 0.5d * lost + 0.5d * won;
-
-        int num_of_original_assume = Formula_Utils.splitConjunction(original.assume()).size();
-        int num_of_refined_assume = Formula_Utils.splitConjunction(refined.assume()).size();
-        int num_of_original_guarantees = original.guarantee().size();
-        int num_of_refined_guarantees = refined.guarantee().size();
-
-        int orig_size = num_of_original_assume + num_of_original_guarantees;
-        int ref_size = num_of_refined_assume + num_of_refined_guarantees;
-
-        if (orig_size > ref_size)
-            syntactic_distance = ((double) ref_size / (double) orig_size) * syntactic_distance;
-
-//		System.out.println("syntac:" + diff_guar + " " +diff_assum+ " " + num_of_refined_assume + " " + num_of_refined_guarantees);
-        //syntactic_distance += ((( ) + ((double)diff_guar*0.3d))/ (sub_assumer.size() + sub_guaranteesr.size())) );
-        return syntactic_distance;
-    }
-
-    public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
-        if (original.toFormula().equals(refined.toFormula()))
-            return 1.0d;
-        List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
-        sub_original.remove(original.toFormula());
-        List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
-        sub_refined.remove(refined.toFormula());
-
-        Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
-        Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
-//		String originalStr = original.toFormula().toString();
-//		String refinedStr = refined.toFormula().toString();
-//		String diffLost = StringUtils.difference(originalStr, refinedStr);
-//		System.out.println(lostSubs.size() +" " + sub_original.size());
-//		String diffWon = StringUtils.difference(refinedStr, originalStr);
-//		System.out.println(wonSubs.size()  +" " + sub_refined.size());
-        double lost = ((double) lostSubs.size()) / ((double) sub_original.size());
-        double won = ((double) wonSubs.size()) / ((double) sub_refined.size());
-        double syntactic_distance = ((double) 1.0d - (0.5d * lost + 0.5d * won));
-        return syntactic_distance;
+        return (double) (1.0d - (diff / orig_size));
     }
 
     private String toSolverSyntax(Formula f) {
         String LTLFormula = f.toString();
         LTLFormula = LTLFormula.replaceAll("\\!", "~");
         LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return new String(LTLFormula);
+        return LTLFormula;
     }
 
-    public void print_config() {
-        System.out.printf("status: %s, lost%s, won: %s, syn: %s%n", STATUS_FACTOR, LOST_MODELS_FACTOR, WON_MODELS_FACTOR, SYNTACTIC_FACTOR);
-    }
 }
             

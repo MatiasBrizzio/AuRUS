@@ -183,7 +183,7 @@ public class SpecificationGeneticAlgorithm {
                 population.addChromosome(new SpecificationChromosome(input_spec));
             }
             //add simple assumptions: //G(!(i_1 & i_2))
-            List inputs = new LinkedList();
+            List inputs = new LinkedList<>();
             for (int i = 0; i < spec.numberOfInputs(); i++) {
                 inputs.add(Literal.of(i));
             }
@@ -209,7 +209,7 @@ public class SpecificationGeneticAlgorithm {
                 Literal input = Literal.of(i);
                 if (Settings.RANDOM_GENERATOR.nextBoolean())
                     input = input.not();
-                Formula new_assumption = null;
+                Formula new_assumption;
                 if (Settings.RANDOM_GENERATOR.nextBoolean())
                     new_assumption = Formula_Utils.replaceSubformula(as, input);
                 else
@@ -249,7 +249,7 @@ public class SpecificationGeneticAlgorithm {
                 Literal output = Literal.of(i);
                 if (Settings.RANDOM_GENERATOR.nextBoolean())
                     output = output.not();
-                Formula new_guarantee = null;
+                Formula new_guarantee;
                 if (Settings.RANDOM_GENERATOR.nextBoolean())
                     new_guarantee = Formula_Utils.replaceSubformula(g, output);
                 else
@@ -279,8 +279,6 @@ public class SpecificationGeneticAlgorithm {
                 population.addChromosome(new SpecificationChromosome(input_spec));
             }
         }
-
-
         return population;
     }
 
