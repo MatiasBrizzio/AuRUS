@@ -9,7 +9,7 @@ import java.util.*;
 public class Formula_Utils {
 
     public static List<LabelledFormula> subformulas(LabelledFormula f) {//, List<String> variables) {
-        List<LabelledFormula> s = new LinkedList();
+        List<LabelledFormula> s = new LinkedList<>();
 
         for (Formula c : f.formula().children()) {
             LabelledFormula sf = LabelledFormula.of(c, f.variables());
@@ -78,26 +78,6 @@ public class Formula_Utils {
         return conjuncts;
     }
 
-    public static LabelledFormula replaceSubformula(LabelledFormula f0, LabelledFormula f1) {
-        if (!new HashSet<>(f0.variables()).containsAll(f1.variables()))
-            throw new IllegalArgumentException("Formula_Utils.replaceSubformula: formulas should have the same set of variables.");
-
-        Random rand = new Random();
-        // select randomly the fub formula of f0 to be replaced
-        List<LabelledFormula> subformulas_f0 = subformulas(f0);
-        LabelledFormula src = subformulas_f0.get(rand.nextInt(subformulas_f0.size()));
-//		System.out.println("Selected source formula "+ src);
-
-        // get randomly the sub formula of f1 to be used to replace in f0.
-        List<LabelledFormula> subformulas_f1 = subformulas(f1);
-        LabelledFormula target = subformulas_f1.get(rand.nextInt(subformulas_f1.size()));
-//		System.out.println("Selected target formula "+target);
-
-        SubformulaReplacer visitor = new SubformulaReplacer(src.formula(), target.formula());
-        Formula m = f0.formula().accept(visitor);
-        return LabelledFormula.of(m, f0.variables());
-    }
-
     public static Formula replaceSubformula(Formula f0, Formula f1) {
         Random rand = Settings.RANDOM_GENERATOR;
         // select randomly the fub formula of f0 to be replaced
@@ -116,8 +96,7 @@ public class Formula_Utils {
 
         //replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
         SubformulaReplacer visitor = new SubformulaReplacer(src, target);
-        Formula replaced_formula = f0.accept(visitor);
-        return replaced_formula;
+        return f0.accept(visitor);
     }
 
     public static Formula combineSubformula(Formula f0, Formula f1) {
@@ -156,8 +135,7 @@ public class Formula_Utils {
         }
 
         SubformulaReplacer visitor = new SubformulaReplacer(left, right);
-        Formula replaced_formula = f0.accept(visitor);
-        return replaced_formula;
+        return f0.accept(visitor);
     }
 
     public static int numOfTemporalOperators(Formula formula) {

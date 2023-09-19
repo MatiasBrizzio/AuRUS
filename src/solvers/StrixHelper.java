@@ -9,60 +9,20 @@ import owl.ltl.tlsf.Tlsf;
 import tlsf.TLSF_Utils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 public class StrixHelper {
 
-    static Map<String, String> replacements = new HashMap<String, String>() {
-        //        @Serial
-        private static final long serialVersionUID = 1L;
-
-        {
-            put("&", "&&");
-            put("|", "||");
-        }
-    };
-    //	private static int TIMEOUT = 180;
-    private static FileWriter writer;
-
-    /**
-     * Checks the realizability of the system specified by the TLSF spec passed as parameter
-     *
-     * @param tlsf a TLSF File containing all tlsf specifiaction
-     * @return {@link solvers.StrixHelper.RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static RealizabilitySolverResult checkRealizability(File tlsf) throws IOException, InterruptedException {
         TLSF_Utils.toBasicTLSF(tlsf);
         String tlsfBasic = tlsf.getPath().replace(".tlsf", "_basic.tlsf");
         return executeStrix(tlsfBasic);
     }
 
-    /**
-     * Checks the realizability of the system specified by the TLSF spec passed as parameter
-     *
-     * @param tlsf a string containing all tlsf specifiaction
-     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static RealizabilitySolverResult checkRealizability(String tlsf) throws IOException, InterruptedException {
         Tlsf tlsf2 = TLSF_Utils.toBasicTLSF(tlsf);
         return checkRealizability(tlsf2);
     }
 
-    /**
-     * Checks the realizability of the system specified by the TLSF spec passed as parameter
-     *
-     * @param tlsf tlsf file containing all specification.
-     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
 
         File file;
@@ -77,7 +37,8 @@ public class StrixHelper {
 //			else
 //				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
             try {
-                writer = new FileWriter(file.getPath());
+                //	private static int TIMEOUT = 180;
+                FileWriter writer = new FileWriter(file.getPath());
                 writer.write(TLSF_Utils.tlsf2spectra(tlsf));
 //				else
 //					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
@@ -105,7 +66,7 @@ public class StrixHelper {
 //			else {
             SyntacticSimplifier simp = new SyntacticSimplifier();
             Formula form = tlsf.toFormula().formula().accept(simp);
-            String formula = toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
+            String formula = SolverUtils.toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
             StringBuilder inputs = new StringBuilder();
             StringBuilder outputs = new StringBuilder();
             int i = 0;
@@ -134,14 +95,6 @@ public class StrixHelper {
         }
     }
 
-    /**
-     * Calls strix program with the file in path
-     *
-     * @param path path to TLSF file
-     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static RealizabilitySolverResult executeStrix(String path) throws IOException, InterruptedException {
         Process pr;
         System.out.println(path);
@@ -225,14 +178,8 @@ public class StrixHelper {
         return realizable;
     }
 
-    /**
-     * Checks the realizability of the system specified by the TLSF spec passed as parameter
-     *
-     * @param tlsf tlsf file containing all specification.
-     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
-     */
     public static RealizabilitySolverResult checkRealizability(Spectra spectra) throws IOException, InterruptedException {
-        String formula = toSolverSyntax(spectra.toFormula());
+        String formula = SolverUtils.toSolverSyntax(spectra.toFormula());
         StringBuilder inputs = new StringBuilder();
         StringBuilder outputs = new StringBuilder();
         int i = 0;
@@ -255,12 +202,6 @@ public class StrixHelper {
 
     }
 
-    /**
-     * Calls strix program with the file in path
-     *
-     * @param path path to TLSF file
-     * @return {@link RealizabilitySolverResult} value indicating if the TLSF spec is realizable, unrealizable
-     */
     public static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
         Process pr;
         if (outs.isEmpty()) outs = "\"\"";
@@ -331,25 +272,6 @@ public class StrixHelper {
 
         return realizable;
 
-    }
-
-    private static String toSolverSyntax(LabelledFormula f) {
-        String LTLFormula = f.toString();
-
-        for (String v : f.variables())
-            LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());
-
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        LTLFormula = LTLFormula.replaceAll("\\!", " ! ");
-
-        return new String(replaceLTLConstructions(LTLFormula));
-    }
-
-    private static String replaceLTLConstructions(String line) {
-        Set<String> keys = replacements.keySet();
-        for (String key : keys)
-            line = line.replace(key, replacements.get(key));
-        return line;
     }
 
     public static enum RealizabilitySolverResult {
