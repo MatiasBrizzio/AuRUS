@@ -34,9 +34,9 @@ public class SolverUtils {
     }
 
     public static String toSolverSyntax(LabelledFormula f) {
-        String ltlFormula = f.toString().toLowerCase();
-        ltlFormula = insertSpaceBeforeUppercase(ltlFormula);
+        String ltlFormula = f.toString();
         ltlFormula = replaceSymbols(ltlFormula);
+        ltlFormula = insertSpaceBeforeUppercase(ltlFormula);
         return ltlFormula;
     }
 

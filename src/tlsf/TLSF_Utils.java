@@ -61,33 +61,6 @@ public class TLSF_Utils {
     public static Tlsf toBasicTLSF(String spec) throws IOException, InterruptedException {
         File file;
         try {
-            //System.out.println(spec);
-			/*file = new File("out2.tlsf");
-			FileWriter fileWriter = new FileWriter(file);
-			fileWriter.write(spec);
-			fileWriter.flush();
-			fileWriter.close();
-			
-			if (hasSyfcoSintax(file)) {
-				if (isBasic(file)) {
-					return TlsfParser.parse(new FileReader(file));
-				}
-				else {
-					String cmd = getCommand();
-					cmd += " -o out2.tlsf -f basic -m pretty -s0 out2.tlsf"; 
-					Process p = Runtime.getRuntime().exec(cmd);
-					p.waitFor();
-				}
-			}
-			else {
-				String tlsfAdapted = adaptTLSFSpec(TlsfParser.parse(new FileReader(file)));
-				file = new File("out2.tlsf");
-				FileWriter fileWriter2 = new FileWriter(file);
-				fileWriter2.write(tlsfAdapted);
-				fileWriter2.flush();
-				fileWriter2.close();
-			}
-			System.out.println(p.waitFor());*/
             String directoryName = Settings.STRIX_PATH;
             File outfolder = new File(directoryName);
             if (!outfolder.exists() && !outfolder.mkdirs()) {
@@ -104,8 +77,6 @@ public class TLSF_Utils {
             e.printStackTrace();
             return null;
         }
-
-
     }
 
 
@@ -129,7 +100,7 @@ public class TLSF_Utils {
         BufferedReader bufferedreader = new BufferedReader(inread);
         String aux;
         aux = bufferedreader.readLine();
-        return aux.length() == 0;
+        return aux.isEmpty();
     }
 
 
