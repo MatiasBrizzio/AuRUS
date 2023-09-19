@@ -33,6 +33,9 @@ series = {GECCO '23}
 }
 ```
 
+## Maintainers 
+This code is implemented and maintained by Matias Brizzio and [Renzo Degiovanni](https://rdegiovanni.github.io)
+
 ## Installation Instructions
 
 ### REQUIREMENTS
