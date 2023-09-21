@@ -7,9 +7,7 @@ import modelcounter.Buchi2Graph;
 import owl.automaton.Automaton;
 import owl.automaton.MutableAutomaton;
 import owl.automaton.MutableAutomatonFactory;
-import owl.automaton.Views;
 import owl.automaton.acceptance.EmersonLeiAcceptance;
-import owl.automaton.algorithms.EmptinessCheck;
 import owl.automaton.edge.Edge;
 import owl.automaton.output.HoaPrinter;
 import owl.factories.FactorySupplier;
@@ -102,13 +100,4 @@ public class StrongSATSolver<S> {
         return input_automaton;
 
     }
-
-    public <S> boolean checkStrongSAT(Automaton<S, ?> automaton) {
-        Automaton<S, ?> complete_input_automata = Views.complete(automaton, null);
-        Automaton<?, ?> complement_input_automata = Views.complement(complete_input_automata, null);
-        System.out.println(HoaPrinter.toString(complement_input_automata));
-        return EmptinessCheck.isEmpty(complement_input_automata);
-    }
-
-
 }

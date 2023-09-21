@@ -208,7 +208,7 @@ public class FormulaWeakening implements Visitor<Formula> {
                 if (option == 0)
                     current = BooleanConstant.TRUE;
                 else if (option == 1) {// weak(a & b) = a
-                    if (current.children().size() > 0) {
+                    if (!current.children().isEmpty()) {
                         int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
                         List<Formula> new_set_children = new LinkedList<Formula>();
                         Iterator<Formula> it = current.children().iterator();
@@ -221,7 +221,7 @@ public class FormulaWeakening implements Visitor<Formula> {
                         current = Conjunction.of(new_set_children);
                     }
                 } else if (option == 2) {
-                    if (current.children().size() > 0)
+                    if (!current.children().isEmpty())
                         current = Disjunction.of(current.children()); // weak(a & b) = a | b
                 } else if (numOfTO < 2) {
                     current = FOperator.of(current); // weak(a & b) = F(a & b)
@@ -446,16 +446,9 @@ public class FormulaWeakening implements Visitor<Formula> {
     public Literal new_literal(Formula current) {
         Set<Literal> props = current.accept(new PropositionVariablesExtractor());
         int max = variables.size();
-//		if (numOfInputs > 0)
-//			max = numOfInputs;
         int new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
         Literal new_literal = createVariable(variables.get(new_variable));
 
-//		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-//			if (Settings.RANDOM_GENERATOR.nextBoolean())
-//				new_literal = new_literal.not();
-//			return new_literal;
-//		}
         int trying = 0;
         while ((props.contains(new_literal) || props.contains(new_literal.not())) && trying < 5) {
             trying++;

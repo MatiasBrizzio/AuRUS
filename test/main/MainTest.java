@@ -8,7 +8,7 @@ class MainTest {
 
     @Test
     void testMinePump() throws IOException, InterruptedException {
-        String[] args = {"examples/minepump.tlsf"};
+        String[] args = {"examples/minepump.tlsf", "-no-docker"};
         Main.main(args);
     }
 

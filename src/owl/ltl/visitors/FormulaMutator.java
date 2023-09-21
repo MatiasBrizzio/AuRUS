@@ -9,9 +9,9 @@ public class FormulaMutator implements Visitor<Formula> {
     private final List<Literal> literalCache;
     private final List<String> variables;
     private final boolean fixedVariables;
+    private final int mutation_rate;
+    private final boolean print_debug_info = false;
     public int numOfAllowedMutations;
-    private int mutation_rate;
-    private boolean print_debug_info = false;
 
     public FormulaMutator(List<String> literals, int mutation_rate, int max_num_of_mutations_to_apply) {
         ListIterator<String> literalIterator = literals.listIterator();
@@ -203,7 +203,7 @@ public class FormulaMutator implements Visitor<Formula> {
                 if (random == 0) {
                     current = current.not();
                 } else if (random == 1) {
-                    if (current.children().size() > 0) {
+                    if (!current.children().isEmpty()) {
                         int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
                         List<Formula> new_set_children = new LinkedList<Formula>();
                         Iterator<Formula> it = current.children().iterator();
@@ -220,7 +220,7 @@ public class FormulaMutator implements Visitor<Formula> {
                     if (Settings.RANDOM_GENERATOR.nextBoolean())
                         new_literal = new_literal.not();
                     current = Conjunction.of(current, new_literal);
-                } else if (current.children().size() > 0) { // random == 3
+                } else if (!current.children().isEmpty()) { // random == 3
                     //0:| 1:U 2:W 3:R 4:M
                     int op = Settings.RANDOM_GENERATOR.nextInt(5);
                     if (op == 0)
@@ -269,7 +269,7 @@ public class FormulaMutator implements Visitor<Formula> {
                 if (random == 0) {
                     current = current.not();
                 } else if (random == 1) {
-                    if (current.children().size() > 0) {
+                    if (!current.children().isEmpty()) {
                         int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
                         List<Formula> new_set_children = new LinkedList<Formula>();
                         Iterator<Formula> it = current.children().iterator();
@@ -286,7 +286,7 @@ public class FormulaMutator implements Visitor<Formula> {
                     if (Settings.RANDOM_GENERATOR.nextBoolean())
                         new_literal = new_literal.not();
                     current = Disjunction.of(current, new_literal);
-                } else if (current.children().size() > 0) { // random == 3
+                } else if (!current.children().isEmpty()) { // random == 3
                     //0:& 1:U 2:W 3:R 4:M
                     int op = Settings.RANDOM_GENERATOR.nextInt(5);
                     if (op == 0) {

@@ -3,7 +3,9 @@ package solvers;
 import owl.ltl.Formula;
 import owl.ltl.LabelledFormula;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class SolverUtils {
     private static final Map<String, String> replacements = Map.of(

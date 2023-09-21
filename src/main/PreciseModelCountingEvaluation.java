@@ -1,6 +1,5 @@
 package main;
 
-import modelcounter.AutomataBasedModelCounting;
 import modelcounter.CountRltlConv;
 import modelcounter.MatrixBigIntegerModelCounting;
 import owl.ltl.*;

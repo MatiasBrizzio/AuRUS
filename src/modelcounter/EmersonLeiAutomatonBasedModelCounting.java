@@ -139,20 +139,21 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
         return new Array2DRowFieldMatrix<BigFraction>(pData, false);
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     public FieldMatrix buildInitialStates() {
         int n = T.getRowDimension();
         //set initial states
         FieldMatrix u = createMatrix(1, n);
-        Set<S> initial_states = automaton.initialStates();
+        HashSet<S> initial_states = (HashSet<S>) automaton.initialStates();
         for (int j = 0; j < n; j++) {
-            if (initial_states.contains(states[j]))
+            if (initial_states.contains(states[j])) {
                 u.addToEntry(0, j, new BigFraction(1));
-//			else
-//				u.addToEntry(0, j,new BigFraction(0));
+            }
         }
         return u;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     public FieldMatrix buildFinalStates() {
         int n = T.getRowDimension();
         //set final states

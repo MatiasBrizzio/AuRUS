@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StrixHelperTest {
@@ -218,7 +219,8 @@ class StrixHelperTest {
 
     @Test
     void testCheckRealizability() throws IOException, InterruptedException {
-        assertTrue(StrixHelper.checkRealizability(TLSFFULL).equals(RealizabilitySolverResult.REALIZABLE));
+        Settings.USE_DOCKER = false;
+        assertEquals(StrixHelper.checkRealizability(TLSFFULL), RealizabilitySolverResult.REALIZABLE);
     }
 
     @Test

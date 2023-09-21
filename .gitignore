@@ -1,6 +1,7 @@
 # Ignora archivos del sistema Mac
 .DS_store
 test/.DS_Store
+case-studies/
 # Ignora la carpeta node_modules
 result
 examples

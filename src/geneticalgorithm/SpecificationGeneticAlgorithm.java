@@ -22,13 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 public class SpecificationGeneticAlgorithm {
-    //	public static int BOUND = 0;
-//	public static int GENERATIONS = 10;
-//	public static int NUM_OF_INDIVIDUALS = Integer.MAX_VALUE;
-//	public static int POPULATION_SIZE = 30;
-//	public static int CROSSOVER_RATE = 10; // Percentage of chromosomes that will be selected for crossover
-//	public static int MUTATION_RATE = 100; // Probability with which the mutation is applied to each chromosome
-//	public static int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
     public Instant initialExecutionTime = null;
     public Instant searchExecutionTime = null;
     public Instant finalExecutionTime = null;
@@ -40,7 +33,6 @@ public class SpecificationGeneticAlgorithm {
     public void run(Tlsf spec) throws IOException, InterruptedException {
         run(spec, -1.0d, -1.0d, -1.0d);
     }
-
 
     public void run(Tlsf spec, double status_factor, double syntactic_factor, double semantic_factor) throws IOException, InterruptedException {
         Settings.setFactors(status_factor, syntactic_factor, semantic_factor);
@@ -128,8 +120,6 @@ public class SpecificationGeneticAlgorithm {
 //			Double f = fitness.calculate(c);
             RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
             System.out.print(".");
-//			if (status == RealizabilitySolverResult.REALIZABLE) {
-//			if (c.fitness < Settings.GA_THRESHOLD) continue;
             if (status == RealizabilitySolverResult.REALIZABLE && !solutions.contains(c)) {
                 System.out.print("R");
                 solutions.add(c);
