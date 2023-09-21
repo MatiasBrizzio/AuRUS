@@ -8,6 +8,7 @@ import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.tlsf.Tlsf.Semantics;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
+import solvers.SolverUtils;
 
 import java.io.*;
 import java.util.*;
@@ -38,15 +39,6 @@ public class TLSF_Utils {
             + "    true;\n"
             + "  }  \n"
             + '}';
-    static Map<String, String> replacements = new HashMap<String, String>() {
-        //        @Serial
-        private static final long serialVersionUID = 1L;
-
-        {
-            put("&", "&&");
-            put("|", "||");
-        }
-    };
 
     private static String getCommand() {
         String cmd;
@@ -78,7 +70,6 @@ public class TLSF_Utils {
             return null;
         }
     }
-
 
     private static boolean hasSyfcoSintax(File spec) throws InterruptedException, IOException {
         String cmd = getCommand();
@@ -824,20 +815,20 @@ public class TLSF_Utils {
         new_tlsf_spec.append("\n" + "  }\n" + '\n');
         // set new initially
         if (spec.initially().compareTo(BooleanConstant.TRUE) != 0) {
-            new_tlsf_spec.append("  INITIALLY {\n" + "    ").append(toSolverSyntax((LabelledFormula.of(spec.initially(), spec.variables())))).append(";\n").append("  }\n").append('\n');
+            new_tlsf_spec.append("  INITIALLY {\n" + "    ").append(SolverUtils.toSolverSyntax((LabelledFormula.of(spec.initially(), spec.variables())))).append(";\n").append("  }\n").append('\n');
         }
 
         if (spec.preset().compareTo(BooleanConstant.TRUE) != 0) {
-            new_tlsf_spec.append("  PRESET {\n" + "    ").append(toSolverSyntax((LabelledFormula.of(spec.preset(), spec.variables())))).append(";\n").append("  }\n").append('\n');
+            new_tlsf_spec.append("  PRESET {\n" + "    ").append(SolverUtils.toSolverSyntax((LabelledFormula.of(spec.preset(), spec.variables())))).append(";\n").append("  }\n").append('\n');
         }
         if (spec.require().compareTo(BooleanConstant.TRUE) != 0) {
-            new_tlsf_spec.append("  REQUIRE {\n" + "    ").append(toSolverSyntax((LabelledFormula.of(spec.require(), spec.variables())))).append(";\n").append("  }\n").append('\n');
+            new_tlsf_spec.append("  REQUIRE {\n" + "    ").append(SolverUtils.toSolverSyntax((LabelledFormula.of(spec.require(), spec.variables())))).append(";\n").append("  }\n").append('\n');
         }
 
         if (!spec.assert_().isEmpty()) {
             new_tlsf_spec.append("  ASSERT {\n");
             for (Formula f : spec.assert_()) {
-                new_tlsf_spec.append("    ").append(toSolverSyntax((LabelledFormula.of(f, spec.variables())))).append(";\n");
+                new_tlsf_spec.append("    ").append(SolverUtils.toSolverSyntax((LabelledFormula.of(f, spec.variables())))).append(";\n");
             }
             new_tlsf_spec.append("  }\n" + '\n');
         }
@@ -845,7 +836,7 @@ public class TLSF_Utils {
         if (spec.assume().compareTo(BooleanConstant.TRUE) != 0) {
             new_tlsf_spec.append("  ASSUMPTIONS {\n");
             for (Formula as : Formula_Utils.splitConjunction(spec.assume())) {
-                new_tlsf_spec.append("    ").append(toSolverSyntax(LabelledFormula.of(as, spec.variables()))).append(";\n");
+                new_tlsf_spec.append("    ").append(SolverUtils.toSolverSyntax(LabelledFormula.of(as, spec.variables()))).append(";\n");
             }
             new_tlsf_spec.append("  }\n" + '\n');
         }
@@ -854,7 +845,7 @@ public class TLSF_Utils {
             new_tlsf_spec.append("  GUARANTEES {\n");
 
             for (Formula f : spec.guarantee()) {
-                new_tlsf_spec.append("    ").append(toSolverSyntax(((LabelledFormula.of(f, spec.variables()))))).append(";\n");
+                new_tlsf_spec.append("    ").append(SolverUtils.toSolverSyntax(((LabelledFormula.of(f, spec.variables()))))).append(";\n");
             }
             new_tlsf_spec.append("  }\n");
         }
@@ -864,24 +855,6 @@ public class TLSF_Utils {
             new_tlsf_spec = new StringBuilder(new_tlsf_spec.toString().replaceAll(v, v.toLowerCase()));
 
         return (new_tlsf_spec.toString());
-    }
-
-    private static String toSolverSyntax(LabelledFormula f) {
-        String LTLFormula = f.toString();
-
-        for (String v : f.variables())
-            LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());
-
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-
-        return new String(replaceLTLConstructions(LTLFormula));
-    }
-
-    private static String replaceLTLConstructions(String line) {
-        Set<String> keys = replacements.keySet();
-        for (String key : keys)
-            line = line.replace(key, replacements.get(key));
-        return line;
     }
 
     public static Tlsf fromSpectra(Spectra spec) {
