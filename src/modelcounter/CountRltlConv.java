@@ -14,8 +14,7 @@ public class CountRltlConv {
 
     public BigInteger countPrefixes(LabelledFormula formula, int bound) throws IOException, InterruptedException {
         String ltlStr = genRltlString(formula);
-        BigInteger result = runCount(ltlStr, bound);
-        return result;
+        return runCount(ltlStr, bound);
     }
 
     public String genRltlString(LabelledFormula formula) throws IOException, InterruptedException {
@@ -27,7 +26,7 @@ public class CountRltlConv {
         String alph = alphabet.toString();
 
         String form = "LTL=" + ltl;
-        if (alph != null && !alph.equals(""))
+        if (alph != null && !alph.isEmpty())
             form += ",ALPHABET=" + alph;
         return form;
     }

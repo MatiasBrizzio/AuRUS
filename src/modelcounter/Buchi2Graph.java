@@ -10,16 +10,6 @@ import java.io.IOException;
 
 public class Buchi2Graph {
 
-//	public static Graph<String> LTL2Graph(String formula) throws IOException, InterruptedException {
-//		Rltlconv_LTLModelCounter translator = new Rltlconv_LTLModelCounter() ;
-//		Nba nba = translator.ltl2nba(formula);
-//		translator.generateLabels(nba);
-//		automata.Automaton dfa = translator.nbaTodfa(nba);
-//
-////		System.out.println(dfa);
-//		return dfaToGraph(dfa);
-//	}
-
     public static Graph<String> LTL2Graph(LabelledFormula formula) throws IOException, InterruptedException {
         FormulaToAutomaton translator = new FormulaToAutomaton();
         translator.generateLabels(formula.variables());
@@ -38,9 +28,7 @@ public class Buchi2Graph {
         g.setInit(in);
         Transition[] transitions = dfa.getTransitions();
 
-        for (int i = 0; i < transitions.length; i++) {
-            Transition t = transitions[i];
-
+        for (Transition t : transitions) {
             State from = t.getFromState();
             Node<String> s1 = getNode(g, from.getName());
 
@@ -56,15 +44,12 @@ public class Buchi2Graph {
             s1.getOutgoingEdges().add(e);
             s2.getIncomingEdges().add(e);
         }
-
         //add final states
         State[] finalStates = dfa.getFinalStates();
-        for (int i = 0; i < finalStates.length; i++) {
-            State acc = finalStates[i];
+        for (State acc : finalStates) {
             Node<String> s = getNode(g, acc.getName());
             s.setBooleanAttribute("accepting", true);
         }
-//		System.out.println(g);
         return g;
     }
 

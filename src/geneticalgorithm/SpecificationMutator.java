@@ -113,8 +113,7 @@ public class SpecificationMutator {
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
         GeneralFormulaMutator formVisitor = new GeneralFormulaMutator(variables, MR, num_of_mut);
-        Formula m = f.nnf().accept(formVisitor);
-        return m;
+        return f.nnf().accept(formVisitor);
     }
 
     public static Formula weakenFormula(Formula f, List<String> variables) {
@@ -124,8 +123,7 @@ public class SpecificationMutator {
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
         FormulaWeakening formVisitor = new FormulaWeakening(variables, MR, num_of_mut);
-        Formula m = f.nnf().accept(formVisitor);
-        return m;
+        return f.nnf().accept(formVisitor);
     }
 
     public static Formula strengthenFormula(Formula f, List<String> variables) {
@@ -135,7 +133,6 @@ public class SpecificationMutator {
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
         FormulaStrengthening formVisitor = new FormulaStrengthening(variables, MR, num_of_mut);
-        Formula m = f.nnf().accept(formVisitor);
-        return m;
+        return f.nnf().accept(formVisitor);
     }
 }
