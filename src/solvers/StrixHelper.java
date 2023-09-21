@@ -25,7 +25,6 @@ public class StrixHelper {
     }
 
     public static RealizabilitySolverResult checkRealizability(Tlsf tlsf) throws IOException, InterruptedException {
-
         File file;
         if (Settings.USE_SPECTRA) {
             String directoryName = Settings.SPECTRA_PATH;
@@ -33,10 +32,7 @@ public class StrixHelper {
             if (!outfolder.exists() && !outfolder.mkdirs()) {
                 System.err.println("Failed to create directory: " + directoryName);
             }
-//			if (Settings.USE_SPECTRA)
             file = new File((tlsf.title().replace("\"", "") + ".spectra").replaceAll("\\s", ""));
-//			else
-//				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
             try {
                 //	private static int TIMEOUT = 180;
                 FileWriter writer = new FileWriter(file.getPath());

@@ -36,10 +36,19 @@ public class SolverUtils {
     }
 
     public static String toSolverSyntax(LabelledFormula f) {
-        String ltlFormula = f.toString();
-        ltlFormula = replaceSymbols(ltlFormula);
-        ltlFormula = insertSpaceBeforeUppercase(ltlFormula);
-        return ltlFormula;
+        String LTLFormula = f.toString();
+
+        for (String v : f.variables()) {
+            LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());
+        }
+
+        return processLTLFormula(LTLFormula,false);
+    }
+
+    private static String processLTLFormula(String formula, boolean aalta_syntax) {
+        String processedFormula = aalta_syntax? formula.replaceAll("\\!", "~") : formula.replaceAll("\\!", "!");
+        processedFormula = insertSpaceBeforeUppercase(processedFormula);
+        return replaceSymbols(processedFormula);
     }
 
     private static String insertSpaceBeforeUppercase(String input) {
