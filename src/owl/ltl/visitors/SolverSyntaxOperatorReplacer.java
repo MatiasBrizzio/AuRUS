@@ -13,8 +13,6 @@ public class SolverSyntaxOperatorReplacer implements Visitor<Formula> {
     public Formula visit(Biconditional biconditional) {
         Formula left = biconditional.left.accept(this);
         Formula right = biconditional.right.accept(this);
-//		return Biconditional.of(left, right);
-//		return Disjunction.of(Conjunction.of(left,right), Conjunction.of(left.not(),right.not()));
         return Conjunction.of(Disjunction.of(left.not(), right), Disjunction.of(left, right.not()));
     }
 

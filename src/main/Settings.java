@@ -3,11 +3,9 @@ package main;
 import java.util.Random;
 
 public class Settings {
-
     public static boolean USE_SPECTRA = false;
     public static boolean USE_DOCKER = true;
     public static Random RANDOM_GENERATOR = new Random(System.currentTimeMillis());
-
     //genetic algorithm setting
     public static int GA_GENERATIONS = 10;
     public static int GA_MAX_NUM_INDIVIDUALS = Integer.MAX_VALUE;
@@ -18,14 +16,12 @@ public class Settings {
     // 0 means that the probability will be 1/size_of(formula)
     public static int GA_GENE_NUM_OF_MUTATIONS = 0; // Number of allowed genes to be mutated
     // 0 means that it will be allowed to apply size_of(formula) mutations
-
     public static int GA_EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
     public static int GA_GUARANTEES_PREFERENCE_FACTOR = 50; // p is the probability to which the genetic operators will be applied to the guarantees.
     // (1-p) is the probability to which the genetic operators will be applied to the assumptions.
     public static boolean GA_RANDOM_SELECTOR = false;
     public static boolean only_inputs_in_assumptions = false;
     public static double GA_THRESHOLD = 0.0d;
-
     //fitness setting
     public static boolean check_REALIZABILITY = true;
     public static boolean check_STRONG_SAT = false;
@@ -34,7 +30,6 @@ public class Settings {
     public static double STATUS_FACTOR = 0.7d;
     public static double LOST_MODELS_FACTOR = 0.1d;
     public static double WON_MODELS_FACTOR = 0.1d;
-    //	public static final double SOLUTION = 0.8d;
     public static double SYNTACTIC_FACTOR = 0.1d;
     //parsing timeout
     public static int PARSING_TIMEOUT = 60;
@@ -106,36 +101,5 @@ public class Settings {
                 '}';
     }
 
-//	public static String print_settings() {
-//		return "Settings{" +
-//				"USE_DOCKER=" + USE_DOCKER +
-//				", RANDOM_GENERATOR=" + RANDOM_GENERATOR +
-//				", GA_GENERATIONS=" + GA_GENERATIONS +
-//				", GA_MAX_NUM_INDIVIDUALS=" + GA_MAX_NUM_INDIVIDUALS +
-//				", GA_POPULATION_SIZE=" + GA_POPULATION_SIZE +
-//				", GA_CROSSOVER_RATE=" + GA_CROSSOVER_RATE +
-//				", GA_MUTATION_RATE=" + GA_MUTATION_RATE +
-//				", GA_EXECUTION_TIMEOUT=" + GA_EXECUTION_TIMEOUT +
-//				", GA_GUARANTEES_PREFERENCE_FACTOR=" + GA_GUARANTEES_PREFERENCE_FACTOR +
-//				", GA_RANDOM_SELECTOR=" + GA_RANDOM_SELECTOR +
-//				", only_inputs_in_assumptions=" + only_inputs_in_assumptions +
-//				", GA_THRESHOLD=" + GA_THRESHOLD +
-//				", check_REALIZABILITY=" + check_REALIZABILITY +
-//				", check_STRONG_SAT=" + check_STRONG_SAT +
-//				", allowAssumptionAddition=" + allowAssumptionAddition +
-//				", allowGuaranteeRemoval=" + allowGuaranteeRemoval +
-//				", STATUS_FACTOR=" + STATUS_FACTOR +
-//				", LOST_MODELS_FACTOR=" + LOST_MODELS_FACTOR +
-//				", WON_MODELS_FACTOR=" + WON_MODELS_FACTOR +
-//				", SYNTACTIC_FACTOR=" + SYNTACTIC_FACTOR +
-//				", PARSING_TIMEOUT=" + PARSING_TIMEOUT +
-//				", MC_BOUND=" + MC_BOUND +
-//				", MC_EXHAUSTIVE=" + MC_EXHAUSTIVE +
-//				", MC_TIMEOUT=" + MC_TIMEOUT +
-//				", STRIX_TIMEOUT=" + STRIX_TIMEOUT +
-//				", STRONG_SAT_TIMEOUT=" + STRONG_SAT_TIMEOUT +
-//				", SAT_TIMEOUT=" + SAT_TIMEOUT +
-//				'}';
-//	}
 }
 

@@ -18,7 +18,7 @@ public class MatrixBigIntegerModelCounting {
     private FieldMatrix<BigFraction> T;
     private FieldMatrix<BigFraction> I;
     private Graph<String> nba;
-    private boolean exhaustive;
+    private final boolean exhaustive;
 
     public MatrixBigIntegerModelCounting(LabelledFormula formula, boolean exhaustive) throws IOException, InterruptedException {
 

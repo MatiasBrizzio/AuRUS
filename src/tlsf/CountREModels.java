@@ -39,14 +39,6 @@ public class CountREModels {
         }
     }
 
-    public double getTimeInSecond(double initialTime, double finalTime) {
-        //Compute execution time
-        double time = finalTime - initialTime;
-        //Translate to minutes and seconds
-        double sec = (time / 1000);
-        return sec;
-    }
-
     public String genABCString(LabelledFormula ltl) throws IOException, InterruptedException {
 //		translatorLTLtoRE = new FormulaToRE();
         int vars = ltl.variables().size();
@@ -54,11 +46,6 @@ public class CountREModels {
             translatorLTLtoRE.encoded_alphabet = 0;
         else if (vars >= 12)
             translatorLTLtoRE.encoded_alphabet = 1;
-//		System.out.println("Translating from LTL to NBA...");
-//		System.out.println(LTLModelCounter.encoded_alphabet);
-//		System.out.println("NBA: " + nba.states().size() +  "(" + nba.accepting().size() + ") " + nba.transitions().size()); 
-//		Nfa dfa = nba.toDeterministicNfa();
-//		System.out.println("Generating RE...");
         translatorLTLtoRE.generateLabels(ltl.variables());
         String s = translatorLTLtoRE.formulaToRegularExpression(ltl);
         if (s == null)

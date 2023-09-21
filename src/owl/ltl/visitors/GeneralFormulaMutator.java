@@ -34,34 +34,10 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
         this.numOfAllowedMutations = max_num_of_mutations_to_apply;
     }
 
-//	  public GeneralFormulaMutator(List<String> literals, int num_of_inputs, int mutation_rate, int max_num_of_mutations_to_apply) {
-//			ListIterator<String> literalIterator = literals.listIterator();
-//		    List<Literal> literalList = new ArrayList<>();
-//		    List<String> variableList = new ArrayList<>();
-//			numOfInputs = num_of_inputs;
-//		    while (literalIterator.hasNext()) {
-//		      int index = literalIterator.nextIndex();
-//		      String name = literalIterator.next();
-//		      literalList.add(Literal.of(index));
-//		      variableList.add(name);
-//		    }
-//
-//		    literalCache = List.copyOf(literalList);
-//		    variables = List.copyOf(variableList);
-//		    fixedVariables = true;
-//		    this.mutation_rate = mutation_rate;
-//		    this.numOfAllowedMutations = max_num_of_mutations_to_apply;
-//	}
-
-    public List<String> variables() {
-        return List.copyOf(variables);
-    }
-
     @Override
     public Formula apply(Formula formula) {
         return formula.accept(this);
     }
-
 
     @Override
     public Formula visit(BooleanConstant booleanConstant) {
