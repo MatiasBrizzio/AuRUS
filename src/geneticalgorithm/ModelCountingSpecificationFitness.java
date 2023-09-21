@@ -10,6 +10,7 @@ import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
 import solvers.LTLSolver.SolverResult;
+import solvers.SolverUtils;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.Formula_Utils;
@@ -157,14 +158,14 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
         // Env = initially && G(require) & assume
         Formula environment = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.assume());
         Formula environment2 = environment.accept(visitor);
-        SolverResult env_sat = LTLSolver.isSAT(toSolverSyntax(environment2));
+        SolverResult env_sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(environment2));
         SPEC_STATUS status = SPEC_STATUS.UNKNOWN;
 
         if (!env_sat.inconclusive()) {
             // Sys = preset && G(assert_) & guarantees
             Formula system = Conjunction.of(spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), Conjunction.of(spec.guarantee()));
             Formula system2 = system.accept(visitor);
-            SolverResult sys_sat = LTLSolver.isSAT(toSolverSyntax(system2));
+            SolverResult sys_sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(system2));
 
             if (!sys_sat.inconclusive()) {
                 if (env_sat == SolverResult.UNSAT && sys_sat == SolverResult.UNSAT) {
@@ -180,7 +181,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
                     Formula env_sys2 = env_sys.accept(visitor);
 //					System.out.println(env_sys2);
 
-                    SolverResult sat = LTLSolver.isSAT(toSolverSyntax(env_sys2));
+                    SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
                     if (!sat.inconclusive()) {
                         if (sat == SolverResult.UNSAT)
                             status = SPEC_STATUS.CONTRADICTORY;
@@ -286,12 +287,5 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
         return 0.5d * size + 0.25d * lost + 0.25d * won;
     }
 
-
-    private String toSolverSyntax(Formula f) {
-        String LTLFormula = f.toString();
-        LTLFormula = LTLFormula.replaceAll("\\!", "~");
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return LTLFormula;
-    }
 
 }

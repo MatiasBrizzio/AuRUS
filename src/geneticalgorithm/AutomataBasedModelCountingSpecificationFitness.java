@@ -12,6 +12,7 @@ import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
 import solvers.LTLSolver.SolverResult;
 import solvers.PotentiallyRealizabilityChecker;
+import solvers.SolverUtils;
 import solvers.StrixHelper;
 import solvers.StrixHelper.RealizabilitySolverResult;
 import tlsf.Formula_Utils;
@@ -44,27 +45,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
     //    public boolean allowAssumptionGuaranteeRemoval = false;
     public BigInteger originalNumOfModels;
 
-//	public void setFactors(double status_factor,  double syntactic_factor, double semantic_factor) {
-//		if (status_factor >= 0.0d)
-//			this.STATUS_FACTOR = status_factor;
-//		if (syntactic_factor >= 0.0d)
-//			this.SYNTACTIC_FACTOR = syntactic_factor;
-//		if (semantic_factor >= 0.0d) {
-//			double factor = semantic_factor/2.0d;
-//			this.LOST_MODELS_FACTOR = factor;
-//			this.WON_MODELS_FACTOR = factor;
-//		}
-//	}
-
-    //	public void setBound (int bound) {
-//		if (bound > 0)
-//			 this.BOUND = bound;
-//	}
-    //	public void allowAssumptionGuaranteeRemoval(boolean value) {
-//		this.allowAssumptionGuaranteeRemoval = value;
-//	}
-    private BigDecimal commonNumOfModels = null;
-
     public AutomataBasedModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
         this.originalSpecification = originalSpecification;
         SpecificationChromosome originalChromosome = new SpecificationChromosome(originalSpecification);
@@ -73,19 +53,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         System.out.println("Initial specification is: " + originalStatus);
         if (Settings.LOST_MODELS_FACTOR > 0.0d)
             originalNumOfModels = countModels(originalSpecification.toFormula());
-//        originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
-//        UNIVERSE = countModels(LtlParser.parse("true",originalSpecification.variables()));
-    }
-
-    private void generateAlphabet() {
-        if (originalSpecification.variables().size() <= 26) {
-            alphabet = new LinkedList();
-            for (int i = 0; i < originalSpecification.variables().size(); i++) {
-                String v = "" + Character.toChars(97 + i)[0];
-                alphabet.add(v);
-            }
-            System.out.println(alphabet);
-        }
     }
 
     @Override
@@ -115,19 +82,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
             e.printStackTrace();
         }
 
-        double status_fitness = 0.0d;
-        if (chromosome.status == SPEC_STATUS.UNKNOWN || chromosome.status == SPEC_STATUS.BOTTOM)
-            status_fitness = 0.0d;
-        else if (chromosome.status == SPEC_STATUS.GUARANTEES)
-            status_fitness = 0.05d;
-        else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
-            status_fitness = 0.1d;
-        else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
-            status_fitness = 0.2d;
-        else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-            status_fitness = 0.5d;
-        else if (chromosome.status == SPEC_STATUS.REALIZABLE)
-            status_fitness = 1.0d;
+        double status_fitness = getStatusFitness(chromosome);
 
         double syntactic_distance = 0.0d;
         if (Settings.SYNTACTIC_FACTOR > 0.0d)
@@ -177,6 +132,23 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         return fitness;
     }
 
+    private static double getStatusFitness(SpecificationChromosome chromosome) {
+        double status_fitness = 0.0d;
+        if (chromosome.status == SPEC_STATUS.UNKNOWN || chromosome.status == SPEC_STATUS.BOTTOM)
+            status_fitness = 0.0d;
+        else if (chromosome.status == SPEC_STATUS.GUARANTEES)
+            status_fitness = 0.05d;
+        else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
+            status_fitness = 0.1d;
+        else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
+            status_fitness = 0.2d;
+        else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
+            status_fitness = 0.5d;
+        else if (chromosome.status == SPEC_STATUS.REALIZABLE)
+            status_fitness = 1.0d;
+        return status_fitness;
+    }
+
     public void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {
         System.out.print(".");
         //check if status has been computed before
@@ -187,14 +159,14 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         // Env = initially && G(require) & assume
         Formula environment = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.assume());
         Formula environment2 = environment.accept(visitor);
-        SolverResult env_sat = LTLSolver.isSAT(toSolverSyntax(environment2));
+        SolverResult env_sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(environment2));
         SPEC_STATUS status = SPEC_STATUS.UNKNOWN;
 
         if (!env_sat.inconclusive()) {
             // Sys = preset && G(assert_) & guarantees
             Formula system = Conjunction.of(spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), Conjunction.of(spec.guarantee()));
             Formula system2 = system.accept(visitor);
-            SolverResult sys_sat = LTLSolver.isSAT(toSolverSyntax(system2));
+            SolverResult sys_sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(system2));
 
             if (!sys_sat.inconclusive()) {
                 if (env_sat == SolverResult.UNSAT && sys_sat == SolverResult.UNSAT) {
@@ -213,7 +185,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
                     Formula env_sys2 = env_sys.accept(visitor);
 //					System.out.println(env_sys2);
 
-                    SolverResult sat = LTLSolver.isSAT(toSolverSyntax(env_sys2));
+                    SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
                     if (!sat.inconclusive()) {
                         if (sat == SolverResult.UNSAT)
                             status = SPEC_STATUS.CONTRADICTORY;
@@ -225,7 +197,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
                                     // check for strong satisfiability
                                     PotentiallyRealizabilityChecker strong_sat_solver = new PotentiallyRealizabilityChecker(spec.toFormula());
                                     Boolean strong_sat_res = strong_sat_solver.checkPotentiallyRealizability();
-                                    if (strong_sat_res != null && strong_sat_res.booleanValue())
+                                    if (strong_sat_res != null && strong_sat_res)
                                         rel = RealizabilitySolverResult.REALIZABLE;
                                 } else {
                                     // check for realizability
@@ -255,8 +227,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 //		AutomataBasedModelCounting counter = new AutomataBasedModelCounting(simp_formula, Settings.MC_EXHAUSTIVE);
         EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(simp_formula);
 //		MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(simp_formula, false);
-        BigInteger numOfModels = counter.count(Settings.MC_BOUND);
-        return numOfModels;
+        return counter.count(Settings.MC_BOUND);
     }
 
     public double compute_semantic_distance(Tlsf original, Tlsf refined) {
@@ -276,8 +247,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
             e.printStackTrace();
         }
 
-        double semantic_distance = (0.5d * lost_models_fitness) + (0.5d * won_models_fitness);
-        return semantic_distance;
+        return (0.5d * lost_models_fitness) + (0.5d * won_models_fitness);
     }
 
     private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
@@ -367,38 +337,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         return value;
     }
 
-
-    public double compute_syntactic_distance_size(Tlsf original, Tlsf refined) {
-        Formula f0 = original.toFormula().formula();
-        Formula f1 = refined.toFormula().formula();
-        double orig_size = Formula_Utils.formulaSize(f0);
-        double ref_size = Formula_Utils.formulaSize(f1);
-        double orig_constraints_size = original.toAssertGuaranteeConjuncts().size();
-        double ref_constraints_size = refined.toAssertGuaranteeConjuncts().size();
-
-        double size_diff = Math.abs(orig_size - ref_size);
-        double constraints_diff = Math.abs(orig_constraints_size - ref_constraints_size);
-        double syntactic_distance = (double) (1.0d - 0.5d * (size_diff / orig_size) - 0.5d * (constraints_diff / orig_constraints_size));
-        return syntactic_distance;
-    }
-
-    public double compute_syntactic_distance_ast(Tlsf original, Tlsf refined) {
-        Formula f0 = original.toFormula().formula();
-        Formula f1 = refined.toFormula().formula();
-        double d = 3.0d;
-        if (f0.height() != f1.height())
-            d--;
-        int orig_size = Formula_Utils.formulaSize(f0);
-        int ref_size = Formula_Utils.formulaSize(f1);
-        if (orig_size != ref_size)
-            d--;
-        int diff_compare = Formulas.compare(Set.of(f0), Set.of(f1));
-        if (diff_compare != 0)
-            d--;
-        double syntactic_distance = (double) (d / 3.0d);
-        return syntactic_distance;
-    }
-
     public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
         List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
 //		sub_original.remove(original.toFormula());
@@ -418,29 +356,13 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         double won = ((double) commonSubs.size()) / ((double) sub_refined.size());
 //		double size = compute_syntactic_distance_size(original, refined);
 //		double syntactic_distance =  0.5d * size +  0.25d * lost + 0.25d * won;
-        double syntactic_distance = 0.5d * lost + 0.5d * won;
-        return syntactic_distance;
+        return 0.5d * lost + 0.5d * won;
     }
 
     public boolean somethingHasBeenRemoved(Tlsf original, Tlsf refined) {
         boolean assumptionAdded = !Settings.allowAssumptionAddition && Formula_Utils.splitConjunction(original.assume()).size() < Formula_Utils.splitConjunction(refined.assume()).size();
         boolean guaranteeRemoved = !Settings.allowGuaranteeRemoval && Formula_Utils.splitConjunctions(original.guarantee()).size() > Formula_Utils.splitConjunctions(refined.guarantee()).size();
         return assumptionAdded || guaranteeRemoved;
-    }
-
-
-    private String toSolverSyntax(Formula f) {
-        String LTLFormula = f.toString();
-        LTLFormula = LTLFormula.replaceAll("\\!", "~");
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return new String(LTLFormula);
-    }
-
-    private String toLambConvSyntax(Formula f) {
-        String LTLFormula = LabelledFormula.of(f, this.alphabet).toString();
-        LTLFormula = LTLFormula.replaceAll("&", "&&");
-        LTLFormula = LTLFormula.replaceAll("\\|", "||");
-        return new String(LTLFormula);
     }
 
     public void print_config() {
