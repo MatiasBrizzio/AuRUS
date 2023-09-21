@@ -7,6 +7,7 @@ import owl.ltl.GOperator;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
+import solvers.SolverUtils;
 import solvers.StrixHelper;
 import tlsf.TLSF_Utils;
 
@@ -26,27 +27,24 @@ import java.util.stream.Stream;
 public class WellSeparationAnalysis {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        List<Tlsf> genuineSolutions = new LinkedList<>();
-        List<Tlsf> solutions = new LinkedList<>();
-        List<Double> sol_fitness = new LinkedList<>();
         String directoryName = "";
         String outFile = "";
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-d=")) {
-                directoryName = args[i].replace("-d=", "");
+        for (String arg : args) {
+            if (arg.startsWith("-d=")) {
+                directoryName = arg.replace("-d=", "");
                 System.out.println("directory: " + directoryName);
-            } else if (args[i].startsWith("-out=")) {
-                outFile = args[i].replace("-out=", "");
+            } else if (arg.startsWith("-out=")) {
+                outFile = arg.replace("-out=", "");
                 System.out.println("out: " + outFile);
             }
         }
-        if (directoryName.equals("")) {
+        if (directoryName.isEmpty()) {
             System.out.println("directory name is missing.");
             System.exit(0);
         }
 
         Stream<Path> walk = Files.walk(Paths.get(directoryName));
-        List<String> specifications = walk.map(x -> x.toString())
+        List<String> specifications = walk.map(Path::toString)
                 .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
 
         List<String> noWellSeparated = new LinkedList<>();
@@ -57,14 +55,13 @@ public class WellSeparationAnalysis {
         int numOfUNSAT = 0;
 
         for (String filename : specifications) {
-            Instant initialExecutionTime = Instant.now();
             System.out.println(filename);
             try {
                 Tlsf spec = TLSF_Utils.toBasicTLSF(new File(filename));
                 Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), spec.assume(), Conjunction.of(spec.guarantee()));
                 SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
                 Formula env_sys2 = env_sys.accept(visitor);
-                LTLSolver.SolverResult res = LTLSolver.isSAT(toSolverSyntax(env_sys2));
+                LTLSolver.SolverResult res = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
                 System.out.println(res);
                 if (res == null)
                     numOfTimeout++;
@@ -111,10 +108,4 @@ public class WellSeparationAnalysis {
         bw.close();
     }
 
-    private static String toSolverSyntax(Formula f) {
-        String LTLFormula = f.toString();
-        LTLFormula = LTLFormula.replaceAll("\\!", "~");
-        LTLFormula = LTLFormula.replaceAll("([A-Z])", " $1 ");
-        return new String(LTLFormula);
-    }
 }

@@ -100,6 +100,5 @@ public class Settings {
                 ", SAT_TIMEOUT=" + SAT_TIMEOUT +
                 '}';
     }
-
 }
 
