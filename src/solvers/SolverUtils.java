@@ -42,11 +42,11 @@ public class SolverUtils {
             LTLFormula = LTLFormula.replaceAll(v, v.toLowerCase());
         }
 
-        return processLTLFormula(LTLFormula,false);
+        return processLTLFormula(LTLFormula, false);
     }
 
     private static String processLTLFormula(String formula, boolean aalta_syntax) {
-        String processedFormula = aalta_syntax? formula.replaceAll("\\!", "~") : formula.replaceAll("\\!", "!");
+        String processedFormula = aalta_syntax ? formula.replaceAll("\\!", "~") : formula.replaceAll("\\!", "!");
         processedFormula = insertSpaceBeforeUppercase(processedFormula);
         return replaceSymbols(processedFormula);
     }

@@ -11,7 +11,9 @@ import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.SolverUtils;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TLSF_Utils {
     public static String TLSF_EXAMPLE_SPEC = "INFO {\n"

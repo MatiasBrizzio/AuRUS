@@ -3,7 +3,6 @@ package solvers;
 import main.Settings;
 import org.junit.jupiter.api.Test;
 import owl.ltl.parser.SpectraParser;
-import owl.ltl.parser.TlsfParser;
 import owl.ltl.spectra.Spectra;
 import owl.ltl.tlsf.Tlsf;
 import solvers.StrixHelper.RealizabilitySolverResult;
@@ -12,14 +11,6 @@ import tlsf.TLSF_Utils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -239,6 +230,7 @@ class StrixHelperTest {
         Settings.STRIX_TIMEOUT = 10;
         assertTrue(StrixHelper.checkRealizability(TLSF3).equals(RealizabilitySolverResult.TIMEOUT));
     }
+
     @Test
     void testCheckRealizability7() throws IOException, InterruptedException {
         String filename = "case-studies/lily02/genuine/lilydemo02_fixed.tlsf";
