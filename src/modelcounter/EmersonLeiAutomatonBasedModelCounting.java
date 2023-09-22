@@ -144,7 +144,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
         int n = T.getRowDimension();
         //set initial states
         FieldMatrix u = createMatrix(1, n);
-        HashSet<S> initial_states = (HashSet<S>) automaton.initialStates();
+        Set<S> initial_states = automaton.initialStates();
         for (int j = 0; j < n; j++) {
             if (initial_states.contains(states[j])) {
                 u.addToEntry(0, j, new BigFraction(1));
