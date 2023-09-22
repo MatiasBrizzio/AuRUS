@@ -15,35 +15,20 @@ import java.math.BigInteger;
 
 public class MatrixBigIntegerModelCounting {
     public static int TIMEOUT = 300;
+    private final FieldMatrix<BigFraction> T;
+    private final Graph<String> nba;
     private final boolean exhaustive;
-    private FieldMatrix<BigFraction> T;
-    private FieldMatrix<BigFraction> I;
-    private Graph<String> nba;
 
     public MatrixBigIntegerModelCounting(LabelledFormula formula, boolean exhaustive) throws IOException, InterruptedException {
-
         this.exhaustive = exhaustive;
         Writer<String> w = Writer.getWriter(Writer.Format.FSP, System.out);
-
-        // Convert the ltl formula to an automaton with RltlConv
-//		Formula clean_syntax = formula.formula().accept(new RltlConvSyntaxReplacer());
-//		LabelledFormula clean_formula = LabelledFormula.of(clean_syntax, formula.variables());
-//		String ltlStr = genRltlString(clean_formula);
-////		System.out.println(ltlStr);
-//		nba = Buchi2Graph.LTL2Graph(ltlStr);
-
         // Convert the ltl formula to an automaton with OWL
         nba = Buchi2Graph.LTL2Graph(formula);
-
         if (exhaustive) {
             //We first apply a transformation and add an extra state, sn+1. The resulting
             //automaton is a DFA A0 with λ-transitions from each of the accepting states of A
             //to sn+1 where λ is a new padding symbol that is not in the alphabet of A.
-
             Node<String> sn1 = new Node<>(nba);
-//			Guard<String> lambda = new Guard<>();
-//			lambda.add(new Literal<String>("0", false));
-
             for (Node<String> node : nba.getNodes()) {
                 if (node.getBooleanAttribute("accepting")) {
                     node.setBooleanAttribute("accepting", false);
@@ -52,32 +37,16 @@ public class MatrixBigIntegerModelCounting {
                     sn1.getIncomingEdges().add(nToSn1);
                 }
             }
-
             sn1.setBooleanAttribute("accepting", true);
             Edge<String> sn1ToSn1 = new Edge<>(sn1, sn1);
             sn1.getOutgoingEdges().add(sn1ToSn1);
             sn1.getIncomingEdges().add(sn1ToSn1);
 
-//			w.write(nba);
         }
-
         //From A0 we construct the (n + 1) × (n + 1) transfer matrix T. A0 has n + 1
         //states s1, s2, . . . sn+1. The matrix entry Ti,j is the number of transitions from
         //state si to state sj
         T = buildTransferMatrix(nba);
-//		System.out.println("T: " + T.toString());
-        int n = nba.getNodeCount();
-        BigFraction[][] pData = new BigFraction[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i != j)
-                    pData[i][j] = new BigFraction(0);
-                else
-                    pData[i][j] = new BigFraction(1);
-            }
-        }
-        I = new Array2DRowFieldMatrix<BigFraction>(pData, false);
-
     }
 
 
@@ -89,7 +58,7 @@ public class MatrixBigIntegerModelCounting {
         int n = T.getRowDimension();
 
         //set initial states
-        FieldMatrix u = createMatrix(1, n);
+        FieldMatrix<BigFraction> u = createMatrix(1, n);
         for (int i = 0; i < n; i++) {
             if (i == nba.getInit().getId())
                 u.addToEntry(0, i, new BigFraction(1));
@@ -98,21 +67,18 @@ public class MatrixBigIntegerModelCounting {
         }
 
         //set final states
-        FieldMatrix v = createMatrix(n, 1);
+        FieldMatrix<BigFraction> v = createMatrix(n, 1);
         for (Node<String> node : nba.getNodes()) {
             if (node.getBooleanAttribute("accepting"))
                 v.addToEntry(node.getId(), 0, new BigFraction(1));
         }
 
         int bound = exhaustive ? k + 1 : k;
-        FieldMatrix T_res = T.power(bound);
-        FieldMatrix reachable = u.multiply(T_res);
-//		System.out.println("reachable: " + reachable.toString());
-        FieldMatrix result = reachable.multiply(v);
-//		System.out.println("result: " + result.toString());
-        BigFraction value = (BigFraction) result.getEntry(0, 0);
-        BigInteger count = value.getNumerator();
-        return count;
+        FieldMatrix<BigFraction> T_res = T.power(bound);
+        FieldMatrix<BigFraction> reachable = u.multiply(T_res);
+        FieldMatrix<BigFraction> result = reachable.multiply(v);
+        BigFraction value = result.getEntry(0, 0);
+        return value.getNumerator();
     }
 
     /**
@@ -121,7 +87,7 @@ public class MatrixBigIntegerModelCounting {
      * @param nba is the DFA
      * @return a n x n matrix M where M[i,j] is the number of transitions from state si to state sj
      */
-    public FieldMatrix buildTransferMatrix(Graph<String> nba) {
+    public FieldMatrix<BigFraction> buildTransferMatrix(Graph<String> nba) {
         int n = nba.getNodeCount();
         BigFraction[][] pData = new BigFraction[n][n];
         for (int i = 0; i < n; i++) {
@@ -137,18 +103,18 @@ public class MatrixBigIntegerModelCounting {
                 pData[i][j] = v;
             }
         }
-        return new Array2DRowFieldMatrix<BigFraction>(pData, false);
+        return new Array2DRowFieldMatrix<>(pData, false);
     }
 
 
-    public FieldMatrix createMatrix(int row, int column) {
+    public FieldMatrix<BigFraction> createMatrix(int row, int column) {
         BigFraction[][] pData = new BigFraction[row][column];
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
                 pData[i][j] = new BigFraction(0);
             }
         }
-        return new Array2DRowFieldMatrix<BigFraction>(pData, false);
+        return new Array2DRowFieldMatrix<>(pData, false);
     }
 
 

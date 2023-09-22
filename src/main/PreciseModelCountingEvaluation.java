@@ -171,19 +171,7 @@ public class PreciseModelCountingEvaluation {
                     k_values.add(null);
             }
 
-            SortedMap<BigInteger, List<Integer>> order = new TreeMap<>();
-            for (int i = 0; i < num_of_formulas; i++) {
-                if (timeout_formulas.contains(i))
-                    continue;
-                BigInteger key = k_values.get(i);
-                List<Integer> value;
-                if (order.containsKey(key))
-                    value = order.get(key);
-                else
-                    value = new LinkedList<>();
-                value.add(i);
-                order.put(key, value);
-            }
+            SortedMap<BigInteger, List<Integer>> order = getBigIntegerListSortedMap(num_of_formulas, timeout_formulas, k_values);
             ranking[k] = order;
             System.out.println((k + 1) + " " + order.values());
         }
@@ -265,6 +253,23 @@ public class PreciseModelCountingEvaluation {
             writeRanking(outname.replace(".out", "-ranking-by-formula.out"), formula_ranking_str.toString(), "");
             writeRanking(outname.replace(".out", "-ranking.out"), flatten_ranking_str.toString(), "");
         }
+    }
+
+    private static SortedMap<BigInteger, List<Integer>> getBigIntegerListSortedMap(int num_of_formulas, List<Integer> timeout_formulas, List<BigInteger> k_values) {
+        SortedMap<BigInteger, List<Integer>> order = new TreeMap<>();
+        for (int i = 0; i < num_of_formulas; i++) {
+            if (timeout_formulas.contains(i))
+                continue;
+            BigInteger key = k_values.get(i);
+            List<Integer> value;
+            if (order.containsKey(key))
+                value = order.get(key);
+            else
+                value = new LinkedList<>();
+            value.add(i);
+            order.put(key, value);
+        }
+        return order;
     }
 
     static void runPrefixesMC(boolean automaton, Formula original_formula, List<Formula> refined_formulas, List<String> vars, int bound, String outname) throws IOException, InterruptedException {
