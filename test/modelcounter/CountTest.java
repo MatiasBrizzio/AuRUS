@@ -25,11 +25,8 @@ class CountTest {
 
     static BigInteger countExhaustiveAutomataBasedPrefixes(Formula f, List<String> vars, int bound) throws IOException, InterruptedException {
         LabelledFormula form_lost = LabelledFormula.of(f, vars);
-//        MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost,false);
         MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost, true);
-        BigInteger result = counter.count(bound);
-
-        return result;
+        return counter.count(bound);
     }
 
     static List<BigInteger> countModelsExact(Formula formula, int vars, int bound) throws IOException, InterruptedException {
