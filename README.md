@@ -160,8 +160,5 @@ Flags:
 - `RTO=strix_timeout`
 - `GATO=GA_timeout`
 - `SatTO=sat_timeout`
-- `MCTO=model_count
-
-ing_timeout`
-
+- `MCTO=model_counting_timeout`
 - `ref=TLSF_reference_solution`: reference solutions to compare at the end of the analysis.
