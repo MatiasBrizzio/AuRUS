@@ -12,93 +12,78 @@ public class LTLSolver {
     public static int numOfCalls = 0;
 
     private static String getCommand() {
-        String cmd;
-        String currentOS = System.getProperty("os.name");
-        if (currentOS.startsWith("Mac"))
-//			if (useAalta)
-            cmd = "./lib/aalta";
-//			else
-//				cmd = "./lib/pltl graph";
-        else
-            cmd = "./lib/aalta_linux";
-        return cmd;
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.contains("mac") ? "./lib/aalta" : "./lib/aalta_linux";
     }
-//	public static int TIMEOUT = 30;
 
     public static SolverResult isSAT(String formula) throws IOException, InterruptedException {
         numOfCalls++;
-//		System.out.println(formula);
-        Process p = null;
+        ProcessBuilder processBuilder = null;
 
         if (formula != null) {
             String cmd = getCommand();
-            p = Runtime.getRuntime().exec(new String[]{cmd, formula});
-//	    	OutputStream out = p.getOutputStream();
-//	    	OutputStreamWriter bufout = new OutputStreamWriter(out);
-//	    	BufferedWriter bufferedwriter = new BufferedWriter(bufout, formula.getBytes().length);
-//    		bufferedwriter.write(formula);
-//	    	bufferedwriter.close();
-//	    	bufout.close();
-//	    	out.close();
+            processBuilder = new ProcessBuilder(cmd, formula);
         }
 
         boolean timeout = false;
-        assert p != null;
-        if (!p.waitFor(Settings.SAT_TIMEOUT, TimeUnit.SECONDS)) {
-            timeout = true; //kill the process.
-            p.destroy(); // consider using destroyForcibly instead
-        }
+        Process p = null;
 
-        SolverResult sat;
-        String aux;
-        if (timeout) {
-            numOfTimeout++;
-            sat = SolverResult.TIMEOUT;
-            p.destroy();
-        } else {
-            InputStream in = p.getInputStream();
-            InputStreamReader inread = new InputStreamReader(in);
-            BufferedReader bufferedreader = new BufferedReader(inread);
-            sat = SolverResult.UNSAT;
-            while ((aux = bufferedreader.readLine()) != null) {
-                if ((aux.equals("sat")) || (aux.contains("Formula 1: satisfiable"))) {
-                    sat = SolverResult.SAT;
-                    break;
+        try {
+            if (processBuilder != null) {
+                p = processBuilder.start();
+            }
+
+            assert p != null;
+            if (!p.waitFor(Settings.SAT_TIMEOUT, TimeUnit.SECONDS)) {
+                timeout = true;
+                p.destroy();
+            }
+
+            SolverResult sat;
+            String aux;
+
+            if (timeout) {
+                numOfTimeout++;
+                sat = SolverResult.TIMEOUT;
+            } else {
+                try (InputStream in = p.getInputStream();
+                     InputStreamReader inread = new InputStreamReader(in);
+                     BufferedReader bufferedreader = new BufferedReader(inread)) {
+
+                    sat = SolverResult.UNSAT;
+
+                    while ((aux = bufferedreader.readLine()) != null) {
+                        if (aux.equals("sat") || aux.contains("Formula 1: satisfiable")) {
+                            sat = SolverResult.SAT;
+                            break;
+                        }
+                    }
+                }
+
+                try (InputStream err = p.getErrorStream();
+                     InputStreamReader errread = new InputStreamReader(err);
+                     BufferedReader errbufferedreader = new BufferedReader(errread)) {
+
+                    while ((aux = errbufferedreader.readLine()) != null) {
+                        System.out.println("ERR: " + aux);
+                        sat = SolverResult.ERROR;
+                    }
+                }
+
+                if (p.waitFor() != 0) {
+                    System.out.println("exit value = " + p.exitValue());
+                    System.out.println(formula);
+                    numOfError++;
                 }
             }
-
-
-            // Leer el error del programa.
-            InputStream err = p.getErrorStream();
-            InputStreamReader errread = new InputStreamReader(err);
-            BufferedReader errbufferedreader = new BufferedReader(errread);
-            while ((aux = errbufferedreader.readLine()) != null) {
-                System.out.println("ERR: " + aux);
-                sat = SolverResult.ERROR;
+            return sat;
+        } finally {
+            if (p != null) {
+                p.destroy();
             }
-
-            // Check for failure
-            if (p.waitFor() != 0) {
-                System.out.println("exit value = " + p.exitValue());
-                System.out.println(formula);
-                numOfError++;
-            }
-
-            // Close the InputStream
-            bufferedreader.close();
-            inread.close();
-            in.close();
-
-            // Close the ErrorStream
-            errbufferedreader.close();
-            errread.close();
-            err.close();
         }
-
-        OutputStream os = p.getOutputStream();
-        if (os != null) os.close();
-        return sat;
     }
+
 
     public static enum SolverResult {
         SAT,
