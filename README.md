@@ -12,7 +12,7 @@ execute the experiments, and analyze the results.
 If you utilize either the complete tool or any of the techniques presented herein for research purposes, we kindly
 request that you cite the corresponding
 paper: [Automated Repair of Unrealisable LTL Specifications.](https://dl.acm.org/doi/10.1145/3583131.3590454) Thank
-you :)
+you :) ([arXiv](https://arxiv.org/pdf/2105.12595.pdf))
 
 ```
 @inproceedings{10.1145/3583131.3590454,
