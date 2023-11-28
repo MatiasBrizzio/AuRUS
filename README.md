@@ -1,13 +1,9 @@
-# AuRUS
+# AuRUS 🧬
 
-On this webpage, you will discover a set of guidelines that outline the process for replicating the experiments
-conducted in the research paper titled "Automated Repair of Unrealisable LTL Specifications Guided by Model Counting."
-The paper was presented at the Genetic and Evolutionary Computation Conference (GECCO) in 2023. By following these
-instructions, you can recreate the same experiments and obtain results that can be compared to those in the paper. The
-guidelines provided here will walk you through the necessary steps required to set up the experiment environment,
-execute the experiments, and analyze the results.
+Welcome to AuRUS! Here, you'll find guidelines to replicate experiments from our research paper, "Automated Repair of Unrealisable LTL Specifications Guided by Model Counting," presented at GECCO 2023. 
+By following these instructions, you can recreate the experiments, compare results, and contribute to advancing the field.
 
-#### Acknowledgments
+#### 📚 Acknowledgments
 
 If you utilize either the complete tool or any of the techniques presented herein for research purposes, we kindly
 request that you cite the corresponding
@@ -33,11 +29,11 @@ series = {GECCO '23}
 }
 ```
 
-## Maintainers 
+## 👩‍💻 Maintainers 
 
 This code is implemented and maintained by Matias Brizzio and [Renzo Degiovanni](https://rdegiovanni.github.io)
 
-## Installation Instructions
+## 🛠️ Installation Instructions
 
 ### REQUIREMENTS
 
@@ -68,7 +64,7 @@ Follow these instructions to install the Docker image with the Strix installatio
 3. Run: `docker-machine create default`.
 4. Run: `docker-machine env --shell cmd default`.
 
-## Running the Experiments
+## 🏃 Running the Experiments
 
 In the folder `case-studies`, you can find the scripts with the specifications of each one of the case studies used in
 the paper.
@@ -91,15 +87,15 @@ In our experimental evaluation, we ran the following command:
 
 In the example, we indicate to the tool that 1000 is the maximum number of individuals to be generated, 100 is the
 population size per iteration, and assumptions can be added. The tool will save the realisable repairs in the directory
-that you indicate using the `-out` flag, or by default in the same directory where the input specification is.
+you indicate using the `-out` flag, or by default in the same directory where the input specification is.
 
 We can indicate to the tool what are (genuine) solutions of reference, that will be used at the end of the analysis to
 study the quality of the learnt repairs, by
 adding `-ref=case-studies/arbiter/genuine/arbiter_fixed0.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed1.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed2.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed3.tlsf`.
 
-### REPRODUCE THE EXPERIMENTS
+## 📊 Reproduce the Experiments
 
-In order to reproduce the experimental evaluation of the
+To reproduce the experimental evaluation of the
 
 paper, we provide several scripts:
 
@@ -111,7 +107,7 @@ paper, we provide several scripts:
   script `run-all-sensitivity.sh` and `run-all-sensitivity-syntcomp.sh` first to enable/disable the different key
   properties that are part of the fitness function.
 
-## Reading the Results
+## 📈 Reading the Results
 
 You can download the results of our experimental evaluation from this link: [Results.zip](link).
 We ran the algorithm 10 times for each case study. All the results that we obtained are reported in the result section.
@@ -162,3 +158,8 @@ Flags:
 - `SatTO=sat_timeout`
 - `MCTO=model_counting_timeout`
 - `ref=TLSF_reference_solution`: reference solutions to compare at the end of the analysis.
+
+
+Feel free to explore various flags to configure the Genetic Algorithm according to your needs. 🧬
+
+Happy coding! 🚀
