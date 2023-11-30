@@ -25,33 +25,32 @@ public class PreciseModelCountingEvaluation {
         String filepath = null;
         boolean benchmarkusage = false;
         List<String> vars = new LinkedList<>();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-b=")) {
-                String val = args[i].replace("-b=", "");
-                filepath = val;
+        for (String arg : args) {
+            if (arg.startsWith("-b=")) {
+                filepath = arg.replace("-b=", "");
                 benchmarkusage = true;
-            } else if (args[i].startsWith("-k=")) {
-                String val = args[i].replace("-k=", "");
+            } else if (arg.startsWith("-k=")) {
+                String val = arg.replace("-k=", "");
                 bound = Integer.parseInt(val);
-            } else if (args[i].startsWith("-vars=")) {
-                vars.addAll(Arrays.asList(args[i].replace("-vars=", "").split(",")));
-            } else if (args[i].startsWith("-out=")) {
-                outname = args[i].replace("-out=", "");
-            } else if (args[i].startsWith("-cachet")) {
+            } else if (arg.startsWith("-vars=")) {
+                vars.addAll(Arrays.asList(arg.replace("-vars=", "").split(",")));
+            } else if (arg.startsWith("-out=")) {
+                outname = arg.replace("-out=", "");
+            } else if (arg.startsWith("-cachet")) {
                 solver = 1;
-            } else if (args[i].startsWith("-ganak")) {
+            } else if (arg.startsWith("-ganak")) {
                 solver = 2;
-            } else if (args[i].startsWith("-re")) {
+            } else if (arg.startsWith("-re")) {
                 re_counting = true;
-            } else if (args[i].startsWith("-auto")) {
+            } else if (arg.startsWith("-auto")) {
                 automaton_counting = true;
-            } else if (args[i].startsWith("-ref=")) {
-                refinemets.add(args[i].replace("-ref=", ""));
-            } else if (args[i].startsWith("-ltl=")) {
-                formula = args[i].replace("-ltl=", "");
+            } else if (arg.startsWith("-ref=")) {
+                refinemets.add(arg.replace("-ref=", ""));
+            } else if (arg.startsWith("-ltl=")) {
+                formula = arg.replace("-ltl=", "");
             } else {
                 //assume that the argument with no flag is the formula
-                formula = args[i];
+                formula = arg;
             }
         }
 
@@ -72,7 +71,7 @@ public class PreciseModelCountingEvaluation {
 
             original_formula = LtlParser.syntax(formula, vars);
 
-            refined_formulas = new ArrayList<Formula>();
+            refined_formulas = new ArrayList<>();
             String line = reader.readLine();
             while (line != null) {
                 if (!line.startsWith("--"))
@@ -363,7 +362,7 @@ public class PreciseModelCountingEvaluation {
         }
     }
 
-    static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
+    static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver){
 //        List<BigInteger> lostModels = new LinkedList<>();
 //        for(int k = 1; k <= bound; k++) {
 //            PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
@@ -393,14 +392,13 @@ public class PreciseModelCountingEvaluation {
 //                return null;
 //            wonModels.add(r);
 //        }
-        List<BigInteger> result = new LinkedList<>();
-//        for(int i = 0; i < bound; i++) {
+        //        for(int i = 0; i < bound; i++) {
 //            BigInteger neg = lostModels.get(i);
 //            BigInteger pos = wonModels.get(i);
 //            result.add(neg.add(pos));
 //        }
 //
-        return result;
+        return new LinkedList<>();
     }
 
     static List<BigInteger> countModelsExact(Formula original, Formula refined, int vars, int bound, int solver) throws IOException, InterruptedException {
@@ -562,8 +560,7 @@ public class PreciseModelCountingEvaluation {
         LabelledFormula form_won = LabelledFormula.of(conj_won, vars);
         CountRltlConv counter2 = new CountRltlConv();
         BigInteger wonModels = counter2.countPrefixes(form_won, bound);
-        BigInteger result = lostModels.add(wonModels);
-        return result;
+        return lostModels.add(wonModels);
     }
 
     static BigInteger countExhaustiveAutomataBasedPrefixes(Formula original, Formula refined, List<String> vars, int bound) throws IOException, InterruptedException {
@@ -577,8 +574,7 @@ public class PreciseModelCountingEvaluation {
         LabelledFormula form_won = LabelledFormula.of(conj_won, vars);
         MatrixBigIntegerModelCounting counter2 = new MatrixBigIntegerModelCounting(form_won, false);
         BigInteger wonModels = counter2.count(bound);
-        BigInteger result = lostModels.add(wonModels);
-        return result;
+        return lostModels.add(wonModels);
     }
 
     private static void writeFile(String filename, List<BigInteger> result, String time) throws IOException {
@@ -604,9 +600,9 @@ public class PreciseModelCountingEvaluation {
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
 
-        for (int i = 0; i < ranking.length; i++) {
-            for (BigInteger key : ranking[i].keySet())
-                bw.write(ranking[i].get(key).toString());
+        for (SortedMap<BigInteger, List<Integer>> bigIntegerListSortedMap : ranking) {
+            for (BigInteger key : bigIntegerListSortedMap.keySet())
+                bw.write(bigIntegerListSortedMap.get(key).toString());
             bw.write("\n");
 //            System.out.println((i+1) + " " + ranking[i].toString());
         }

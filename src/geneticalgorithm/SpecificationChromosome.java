@@ -22,7 +22,6 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 
     public Tlsf spec;
 
-    ;
     public SPEC_STATUS status = SPEC_STATUS.UNKNOWN;
     public double fitness = 0d;
     public double syntactic_distance = 0d;
@@ -39,7 +38,7 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
 
     @Override
     public List<SpecificationChromosome> crossover(SpecificationChromosome anotherChromosome) {
-        List<SpecificationChromosome> result = new LinkedList<SpecificationChromosome>();
+        List<SpecificationChromosome> result = new LinkedList<>();
         int assumption_level = Settings.RANDOM_GENERATOR.nextInt(3);
         int guarantee_level = Settings.RANDOM_GENERATOR.nextInt(3);
         int random = Settings.RANDOM_GENERATOR.nextInt(100);
@@ -121,14 +120,10 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
         REALIZABLE;        // REALIZABLE: the specification is satisfiable and realizable.
 
         public boolean compatible(SPEC_STATUS other) {
-            if (this == UNKNOWN || other == UNKNOWN
-                    || this == BOTTOM || other == BOTTOM
-                    || (this == ASSUMPTIONS && other == ASSUMPTIONS)
-                    || (this == GUARANTEES && other == GUARANTEES)
-            )
-                return false;
-
-            return true;
+            return this != UNKNOWN && other != UNKNOWN
+                    && this != BOTTOM && other != BOTTOM
+                    && (this != ASSUMPTIONS || other != ASSUMPTIONS)
+                    && (this != GUARANTEES || other != GUARANTEES);
         }
 
         public boolean areAssumptionsSAT() {
@@ -161,7 +156,6 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
                 case REALIZABLE:
                     return "REALIZABLE: the specification is satisfiable and realizable.";
             }
-            ;
             return null;
         }
     }

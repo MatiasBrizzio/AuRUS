@@ -23,20 +23,20 @@ public class ModelCountingRanking {
         int bound = 0;
         String filepath = null;
         List<String> vars = new LinkedList<>();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-k=")) {
-                String val = args[i].replace("-k=", "");
+        for (String arg : args) {
+            if (arg.startsWith("-k=")) {
+                String val = arg.replace("-k=", "");
                 bound = Integer.parseInt(val);
-            } else if (args[i].startsWith("-vars=")) {
-                vars.addAll(Arrays.asList(args[i].replace("-vars=", "").split(",")));
-            } else if (args[i].startsWith("-out=")) {
-                outname = args[i].replace("-out=", "");
-            } else if (args[i].startsWith("-auto")) {
+            } else if (arg.startsWith("-vars=")) {
+                vars.addAll(Arrays.asList(arg.replace("-vars=", "").split(",")));
+            } else if (arg.startsWith("-out=")) {
+                outname = arg.replace("-out=", "");
+            } else if (arg.startsWith("-auto")) {
                 automaton_counting = true;
-            } else if (args[i].startsWith("-re")) {
+            } else if (arg.startsWith("-re")) {
                 re_counting = true;
             } else {
-                filepath = args[i];
+                filepath = arg;
             }
 
         }
@@ -149,19 +149,7 @@ public class ModelCountingRanking {
                     k_values.add(null);
             }
 
-            SortedMap<BigInteger, List<Integer>> order = new TreeMap<>();
-            for (int i = 0; i < num_of_formulas; i++) {
-                if (timeout_formulas.contains(i))
-                    continue;
-                BigInteger key = k_values.get(i);
-                List<Integer> value;
-                if (order.containsKey(key))
-                    value = order.get(key);
-                else
-                    value = new LinkedList<>();
-                value.add(i);
-                order.put(key, value);
-            }
+            SortedMap<BigInteger, List<Integer>> order = getBigIntegerListSortedMap(num_of_formulas, timeout_formulas, k_values);
             ranking[k] = order;
             System.out.println((k + 1) + " " + order.values());
         }
@@ -203,17 +191,10 @@ public class ModelCountingRanking {
         StringBuilder global = new StringBuilder();
         StringBuilder flatten_ranking_str = new StringBuilder();
         int[] formula_ranking = new int[num_of_formulas];
-//        int i = 0;
         int pos = 0;
         for (BigInteger key : global_ranking.keySet()) {
             global.append(global_ranking.get(key)).append("\n");
-//            i += global_ranking.get(key).size();
-//            if (i < num_of_formulas-1)
-//                global +=", ";
-//            else
-//                global +="]";
             for (Integer f_pos : global_ranking.get(key)) {
-                //int f_pos = refined_formulas.indexOf(f);
                 formula_ranking[f_pos] = pos;
                 flatten_ranking_str.append(f_pos).append("\n");
             }
@@ -222,7 +203,7 @@ public class ModelCountingRanking {
 
         global.append("\nRanking Levels: ").append(pos).append("\n");
         if (!timeout_formulas.isEmpty()) {
-            global.append("\nTimeout Formulas: ").append(timeout_formulas.toString());
+            global.append("\nTimeout Formulas: ").append(timeout_formulas);
         }
 
         StringBuilder formula_ranking_str = new StringBuilder();
@@ -245,7 +226,24 @@ public class ModelCountingRanking {
         }
     }
 
-    static void runPrefixesMC(List<Formula> formulas, List<String> vars, int bound, String outname, boolean re_counting) throws IOException, InterruptedException {
+    private static SortedMap<BigInteger, List<Integer>> getBigIntegerListSortedMap(int num_of_formulas, List<Integer> timeout_formulas, List<BigInteger> k_values) {
+        SortedMap<BigInteger, List<Integer>> order = new TreeMap<>();
+        for (int i = 0; i < num_of_formulas; i++) {
+            if (timeout_formulas.contains(i))
+                continue;
+            BigInteger key = k_values.get(i);
+            List<Integer> value;
+            if (order.containsKey(key))
+                value = order.get(key);
+            else
+                value = new LinkedList<>();
+            value.add(i);
+            order.put(key, value);
+        }
+        return order;
+    }
+
+    static void runPrefixesMC(List<Formula> formulas, List<String> vars, int bound, String outname, boolean re_counting) throws IOException {
         long initialTOTALTime = System.currentTimeMillis();
         int num_of_formulas = formulas.size();
         BigInteger[] solutions = new BigInteger[num_of_formulas];
@@ -438,17 +436,15 @@ public class ModelCountingRanking {
     static BigInteger countExhaustivePrefixesRltl(Formula f, List<String> vars, int bound) throws IOException, InterruptedException {
         LabelledFormula form_lost = LabelledFormula.of(f, vars);
         CountRltlConv counter = new CountRltlConv();
-        BigInteger result = counter.countPrefixes(form_lost, bound);
-        return result;
+        return counter.countPrefixes(form_lost, bound);
     }
 
-    static BigInteger countExhaustiveAutomataBasedPrefixes(Formula f, List<String> vars, int bound) throws IOException, InterruptedException {
+    static BigInteger countExhaustiveAutomataBasedPrefixes(Formula f, List<String> vars, int bound){
         LabelledFormula form_lost = LabelledFormula.of(f, vars);
 //        MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost,false);
         EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(form_lost);
-        BigInteger result = counter.count(bound);
 
-        return result;
+        return counter.count(bound);
     }
 
 
@@ -475,11 +471,10 @@ public class ModelCountingRanking {
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
 
-        for (int i = 0; i < ranking.length; i++) {
-            for (BigInteger key : ranking[i].keySet())
-                bw.write(ranking[i].get(key).toString());
+        for (SortedMap<BigInteger, List<Integer>> bigIntegerListSortedMap : ranking) {
+            for (BigInteger key : bigIntegerListSortedMap.keySet())
+                bw.write(bigIntegerListSortedMap.get(key).toString());
             bw.write("\n");
-//            System.out.println((i+1) + " " + ranking[i].toString());
         }
         bw.close();
     }
@@ -492,9 +487,5 @@ public class ModelCountingRanking {
         bw.write(time + "\n");
         bw.flush();
         bw.close();
-    }
-
-    private static void correctUssage() {
-        System.out.println("Use ./modelcounter.sh [-ref=refined=formula | -k=bound | -vars=a,b,c | -no-precise] [-ltl=]LTL_original_formula");
     }
 }

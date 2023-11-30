@@ -1,7 +1,6 @@
 package geneticalgorithm;
 
 import com.lagodiuk.ga.GeneticAlgorithm;
-import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
@@ -38,7 +37,6 @@ public class SpecificationGeneticAlgorithm {
         Settings.setFactors(status_factor, syntactic_factor, semantic_factor);
         System.out.println(Settings.print_settings() + "\n");
         initialExecutionTime = Instant.now();
-        long initialTime = System.currentTimeMillis();
         Population<SpecificationChromosome> population = createInitialPopulation(spec);
         AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
         if (!Settings.check_STRONG_SAT && fitness.originalStatus == SPEC_STATUS.REALIZABLE) {
@@ -52,7 +50,7 @@ public class SpecificationGeneticAlgorithm {
             return;
         }
 
-        GeneticAlgorithm<SpecificationChromosome, Double> ga = new GeneticAlgorithm<SpecificationChromosome, Double>(population, fitness);
+        GeneticAlgorithm<SpecificationChromosome, Double> ga = new GeneticAlgorithm<>(population, fitness);
         addListener(ga);
         ga.setCrossoverRate(Settings.GA_CROSSOVER_RATE);
         ga.setMutationRate(Settings.GA_MUTATION_RATE);
@@ -143,9 +141,8 @@ public class SpecificationGeneticAlgorithm {
         if (initialExecutionTime != null && finalExecutionTime != null)
             duration = Duration.between(initialExecutionTime, finalExecutionTime);
 
-        String timeStr = String.format("GA Time:     %s", search.toSeconds()) + "\n" +
+        return String.format("GA Time:     %s", search.toSeconds()) + "\n" +
                 String.format("Time:      %s", duration.toSeconds());
-        return timeStr;
     }
 
     private Population<SpecificationChromosome> createInitialPopulation(Tlsf spec) {
@@ -167,7 +164,7 @@ public class SpecificationGeneticAlgorithm {
                 population.addChromosome(new SpecificationChromosome(input_spec));
             }
             //add simple assumptions: //G(!(i_1 & i_2))
-            List inputs = new LinkedList<>();
+            List<Literal> inputs = new LinkedList<>();
             for (int i = 0; i < spec.numberOfInputs(); i++) {
                 inputs.add(Literal.of(i));
             }
@@ -272,62 +269,58 @@ public class SpecificationGeneticAlgorithm {
         System.out.printf("%s\t%s\t%s\t%s\t%s%n", "iter", "fit", "chromosome", "#Pop", "#Sol");
 
         // Lets add listener, which prints best chromosome after each iteration
-        ga.addIterationListener(new IterartionListener<SpecificationChromosome, Double>() {
-
-//					//TODO: select a reasonable threshold
+        //					//TODO: select a reasonable threshold
 //					private final double threshold = 0.0d;
+        ga.addIterationListener(ga1 -> {
 
-            @Override
-            public void update(GeneticAlgorithm<SpecificationChromosome, Double> ga) {
+            SpecificationChromosome best = ga1.getBest();
+            double bestFit = ga1.fitness(best);
+            int iteration = ga1.getIteration();
+            if (bestFit > Settings.MAX_FITNESS()) {
+                System.out.printf("WRONG Fitness: %.2f%n", best.fitness);
+                System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
+                bestSolutions.add(best);
+                ga1.terminate();
+            }
 
-                SpecificationChromosome best = ga.getBest();
-                double bestFit = ga.fitness(best);
-                int iteration = ga.getIteration();
-                if (bestFit > Settings.MAX_FITNESS()) {
-                    System.out.printf("WRONG Fitness: %.2f%n", best.fitness);
-                    System.out.println(TLSF_Utils.adaptTLSFSpec(best.spec));
-                    bestSolutions.add(best);
-                    ga.terminate();
-                }
-
-                // put current best in the list
+            // put current best in the list
 //						if (!bestSolutions.contains(best.spec))
 //							bestSolutions.add(best.spec);
 
-                // If fitness is satisfying
+            // If fitness is satisfying
 //						if (best.status == SPEC_STATUS.REALIZABLE && bestFit >= threshold) {
 //							// we save the best solutions as one in the boundary
 //							if (!solutions.contains(best))
 //								solutions.add(best);
 //							// we can stop Genetic algorithm
-////							ga.terminate(); 
+////							ga.terminate();
 //						}
 
-                // save ALL the solutions
-                if (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) {
-                    for (SpecificationChromosome c : ga.getPopulation()) {
-                        if (c.fitness < Settings.GA_THRESHOLD) break;
-                        if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
-                            solutions.add(c);
-                        // we can stop Genetic algorithm
-                        // ga.terminate();
-                    }
-                } else if (Settings.check_REALIZABILITY) {
-                    for (SpecificationChromosome c : ga.getPopulation()) {
-                        if (c.fitness < Settings.GA_THRESHOLD) break;
-                        if (c.status == SPEC_STATUS.REALIZABLE && !bestSolutions.contains(best))
-                            bestSolutions.add(best);
-                    }
-                } else {
-                    for (SpecificationChromosome c : ga.getPopulation()) {
-                        if (c.fitness < Settings.GA_THRESHOLD) break;
-                        if (c.status.isSpecificationConsistent() && !bestSolutions.contains(best))
-                            bestSolutions.add(best);
-                    }
+            // save ALL the solutions
+            if (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) {
+                for (SpecificationChromosome c : ga1.getPopulation()) {
+                    if (c.fitness < Settings.GA_THRESHOLD) break;
+                    if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
+                        solutions.add(c);
+                    // we can stop Genetic algorithm
+                    // ga.terminate();
                 }
-                // Listener prints best achieved solution
-                System.out.println();
-                System.out.printf("%s\t%.2f\t%s\t%s\t%s%n", iteration, bestFit, best, ga.getNumberOfVisitedIndividuals(), (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) ? solutions.size() : bestSolutions.size());
+            } else if (Settings.check_REALIZABILITY) {
+                for (SpecificationChromosome c : ga1.getPopulation()) {
+                    if (c.fitness < Settings.GA_THRESHOLD) break;
+                    if (c.status == SPEC_STATUS.REALIZABLE && !bestSolutions.contains(best))
+                        bestSolutions.add(best);
+                }
+            } else {
+                for (SpecificationChromosome c : ga1.getPopulation()) {
+                    if (c.fitness < Settings.GA_THRESHOLD) break;
+                    if (c.status.isSpecificationConsistent() && !bestSolutions.contains(best))
+                        bestSolutions.add(best);
+                }
+            }
+            // Listener prints best achieved solution
+            System.out.println();
+            System.out.printf("%s\t%.2f\t%s\t%s\t%s%n", iteration, bestFit, best, ga1.getNumberOfVisitedIndividuals(), (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) ? solutions.size() : bestSolutions.size());
 
 //						//check if timeout has been reached
 //						if (EXECUTION_TIMEOUT > 0) {
@@ -342,7 +335,6 @@ public class SpecificationGeneticAlgorithm {
 //								ga.terminate();
 //							}
 //						}
-            }
         });
     }
 

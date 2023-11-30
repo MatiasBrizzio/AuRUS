@@ -110,14 +110,6 @@ public class AutomataBasedModelCounting {
 
     }
 
-    /**
-     * Build a new matrix out of the given matrix A removing the given row and column.
-     *
-     * @param A
-     * @param row
-     * @param col
-     * @return
-     */
     private static DMatrixRMaj removeRowAndCol(DMatrixRMaj A, int row, int col) {
 //		  System.out.println(A.toString());
         DMatrixRMaj M = new DMatrixRMaj(A.numRows - 1, A.numCols - 1);
@@ -138,9 +130,6 @@ public class AutomataBasedModelCounting {
         return M;
     }
 
-    /**
-     * Determinize the given NFA
-     */
     private static Graph<String> toDFA(Graph<String> nfa) {
         Graph<String> dfa = new Graph<String>();
         // λ-closure the intial state of nfa and set that set of states as the new state of the dfa
@@ -215,7 +204,7 @@ public class AutomataBasedModelCounting {
      * Given a set of states, get a map between the guards and the reached states
      */
     private static Map<Guard<String>, Set<Integer>> getStatesByGuard(Set<Integer> stateIds, Graph<String> nfa) {
-        Map<Guard<String>, Set<Integer>> statesByGuard = new HashMap<Guard<String>, Set<Integer>>();
+        Map<Guard<String>, Set<Integer>> statesByGuard = new HashMap<>();
         for (Integer nodeId : stateIds) {
             Node<String> currentNode = nfa.getNode(nodeId);
             for (Edge<String> currentEdge : currentNode.getOutgoingEdges()) {
@@ -224,11 +213,11 @@ public class AutomataBasedModelCounting {
                     if (statesByGuard.containsKey(currentGuard)) {
                         statesByGuard.get(currentGuard).add(currentEdge.getNext().getId());
                     } else {
-                        HashSet<Integer> guardStates = new HashSet<Integer>();
+                        HashSet<Integer> guardStates = new HashSet<>();
                         guardStates.add(currentEdge.getNext().getId());
                         statesByGuard.put(currentGuard, guardStates);
                     }
-                    statesByGuard.get(currentGuard).addAll(closure(currentEdge.getNext(), new HashSet<Integer>()));
+                    statesByGuard.get(currentGuard).addAll(closure(currentEdge.getNext(), new HashSet<>()));
                 }
 
             }
@@ -236,9 +225,7 @@ public class AutomataBasedModelCounting {
         return statesByGuard;
     }
 
-    public String genRltlString(LabelledFormula formula) throws IOException, InterruptedException {
-//		String ltl = SolverUtils.toLambConvSyntax(formula.formula().toString());
-//		String alph = SolverUtils.createLambConvAlphabet(formula);
+    public String genRltlString(LabelledFormula formula) {
         List<String> alphabet = SolverUtils.genAlphabet(formula.variables().size());
         LabelledFormula label_formula = LabelledFormula.of(formula.formula(), alphabet);
         String ltl = SolverUtils.toLambConvSyntax(label_formula.toString());
@@ -290,8 +277,7 @@ public class AutomataBasedModelCounting {
         CommonOps_DDRM.mult(reachable, v, result);
 //		System.out.println("result: " + result.toString());
         long value = (long) result.get(0, 0);
-        BigInteger count = BigInteger.valueOf(value);
-        return count;
+        return BigInteger.valueOf(value);
     }
 
 

@@ -3,6 +3,7 @@ package geneticalgorithm;
 import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
+import main.Settings;
 import modelcounter.CountRltlConv;
 import owl.ltl.*;
 import owl.ltl.rewriter.NormalForms;
@@ -25,16 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
-
-    public final int BOUND = 5;
-    public final double STATUS_FACTOR = 0.7d;
-    public final double LOST_MODELS_FACTOR = 0.1d;
-    public final double WON_MODELS_FACTOR = 0.1d;
-    //	public static final double SOLUTION = 0.8d;
-    public final double SYNTACTIC_FACTOR = 0.1d;
-    //	public BigInteger originalNegationNumOfModels;
     private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
-    public boolean EXHAUSTIVE = false;
     public Tlsf originalSpecification;
     public List<String> alphabet = null;
     public SPEC_STATUS originalStatus;
@@ -64,17 +56,6 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
         else if (chromosome.status == SPEC_STATUS.REALIZABLE)
             status_fitness = 1.0d;
         return status_fitness;
-    }
-
-    private void generateAlphabet() {
-        if (originalSpecification.variables().size() <= 26) {
-            alphabet = new LinkedList<>();
-            for (int i = 0; i < originalSpecification.variables().size(); i++) {
-                String v = "" + Character.toChars(97 + i)[0];
-                alphabet.add(v);
-            }
-            System.out.println(alphabet);
-        }
     }
 
     @Override
@@ -132,7 +113,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
                 e.printStackTrace();
             }
         }
-        double fitness = (STATUS_FACTOR * status_fitness) + (LOST_MODELS_FACTOR * lost_models_fitness) + (WON_MODELS_FACTOR * won_models_fitness) + (SYNTACTIC_FACTOR * syntactic_distance);
+        double fitness = (Settings.STATUS_FACTOR * status_fitness) + (Settings.LOST_MODELS_FACTOR * lost_models_fitness) + (Settings.WON_MODELS_FACTOR * won_models_fitness) + (Settings.SYNTACTIC_FACTOR * syntactic_distance);
 //		}
         System.out.printf("f%.2f ", fitness);
         chromosome.fitness = fitness;
@@ -210,7 +191,7 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
             form = LabelledFormula.of(cnf, formula1.variables());
         }
         CountRltlConv counter = new CountRltlConv();
-        return counter.countPrefixes(form, this.BOUND);
+        return counter.countPrefixes(form, Settings.MC_BOUND);
     }
 
     private double compute_lost_models_porcentage(Tlsf original, Tlsf refined) throws IOException, InterruptedException {
@@ -244,24 +225,9 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
 
         double size_diff = Math.abs(orig_size - ref_size);
         double constraints_diff = Math.abs(orig_constraints_size - ref_constraints_size);
-        return (double) (1.0d - 0.5d * (size_diff / orig_size) - 0.5d * (constraints_diff / orig_constraints_size));
+        return 1.0d - 0.5d * (size_diff / orig_size) - 0.5d * (constraints_diff / orig_constraints_size);
     }
 
-    public double compute_syntactic_distance_ast(Tlsf original, Tlsf refined) {
-        Formula f0 = original.toFormula().formula();
-        Formula f1 = refined.toFormula().formula();
-        double d = 3.0d;
-        if (f0.height() != f1.height())
-            d--;
-        int orig_size = Formula_Utils.formulaSize(f0);
-        int ref_size = Formula_Utils.formulaSize(f1);
-        if (orig_size != ref_size)
-            d--;
-        int diff_compare = Formulas.compare(Set.of(f0), Set.of(f1));
-        if (diff_compare != 0)
-            d--;
-        return (double) (d / 3.0d);
-    }
 
     public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
         List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());

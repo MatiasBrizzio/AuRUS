@@ -2,6 +2,7 @@ package geneticalgorithm;
 
 import com.lagodiuk.ga.Fitness;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
+import main.Settings;
 import owl.ltl.*;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
@@ -21,12 +22,6 @@ import java.util.Objects;
 
 public class PreciseModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-    public final int BOUND = 5;
-    public final double STATUS_FACTOR = 0.75d;
-    public final double LOST_MODELS_FACTOR = 0.1d;
-    public final double WON_MODELS_FACTOR = 0.1d;
-    //	public static final double SOLUTION = 0.8d;
-    public final double SYNTACTIC_FACTOR = 0.05d;
     private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
     public Tlsf originalSpecification;
     public SPEC_STATUS originalStatus;
@@ -97,7 +92,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
             }
         }
 
-        fitness += LOST_MODELS_FACTOR * lost_models_fitness + WON_MODELS_FACTOR * won_models_fitness + SYNTACTIC_FACTOR * syntactic_distance;
+        fitness += Settings.LOST_MODELS_FACTOR * lost_models_fitness + Settings.WON_MODELS_FACTOR * won_models_fitness + Settings.SYNTACTIC_FACTOR * syntactic_distance;
 //		}
 
         chromosome.fitness = fitness;
@@ -119,7 +114,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
         else
             status_fitness = 1.0d;
 
-        return STATUS_FACTOR * status_fitness;
+        return Settings.STATUS_FACTOR * status_fitness;
     }
 
     public void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {
@@ -178,8 +173,6 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
 
     private BigInteger countModels(LabelledFormula formula) throws IOException, InterruptedException {
         PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
-        counter.BOUND = this.BOUND;
-
         return counter.count(formula.formula(), formula.variables().size());
     }
 
@@ -188,7 +181,6 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
         if (Objects.equals(originalNumOfModels, BigInteger.ZERO))
             return 1.0d;
 
-        int numOfVars = original.variables().size();
         Formula refined_formula = refined.toFormula().formula();
         if (refined_formula == BooleanConstant.TRUE)
             return 1.0d;
@@ -212,7 +204,6 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
         System.out.print("+");
         if (Objects.equals(originalNegationNumOfModels, BigInteger.ZERO))
             return 1.0d;
-        int numOfVars = original.variables().size();
         Formula refined_negated_formula = refined.toFormula().formula().not();
         if (refined_negated_formula == BooleanConstant.TRUE)
             return 1.0d;
@@ -236,7 +227,7 @@ public class PreciseModelCountingSpecificationFitness implements Fitness<Specifi
         double orig_size = Formula_Utils.formulaSize(original.toFormula().formula());
         double ref_size = Formula_Utils.formulaSize(refined.toFormula().formula());
         double diff = Math.abs(orig_size - ref_size);
-        return (double) (1.0d - (diff / orig_size));
+        return 1.0d - (diff / orig_size);
     }
 
 }

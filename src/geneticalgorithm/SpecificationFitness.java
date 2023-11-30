@@ -17,7 +17,6 @@ import java.io.IOException;
 
 public class SpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-    public static double SOLUTION = 5d;
     private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
 
     public SpecificationFitness() {

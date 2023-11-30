@@ -88,14 +88,6 @@ public class SpecificationMutator {
             SubformulaReplacer visitor = new SubformulaReplacer(to_mutate, mutated_subformula);
             Formula new_guarantee = guarantee_to_mutate.accept(visitor);
 
-//			List<String> vars = spec.variables();
-//			if (Settings.RANDOM_GENERATOR.nextBoolean())
-//				vars = vars.subList(spec.numberOfInputs(), spec.variables().size());
-//			Formula new_guarantee = null;
-//			if (Settings.RANDOM_GENERATOR.nextBoolean())
-//				new_guarantee = applyGeneralMutation(guarantee_to_mutate, vars);
-//			else
-//				new_guarantee = weakenFormula(guarantee_to_mutate, vars);
 
             if (new_guarantee != BooleanConstant.FALSE) {
                 guarantees.remove(index_to_mutate);
@@ -108,7 +100,7 @@ public class SpecificationMutator {
 
     public static Formula applyGeneralMutation(Formula f, List<String> variables) {
         int n = Formula_Utils.formulaSize(f);
-        int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+        int MR = Math.max(1, ((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n);
         int num_of_mut = n;
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
@@ -118,7 +110,7 @@ public class SpecificationMutator {
 
     public static Formula weakenFormula(Formula f, List<String> variables) {
         int n = Formula_Utils.formulaSize(f);
-        int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+        int MR = Math.max(1, ((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n);
         int num_of_mut = n;
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);
@@ -128,7 +120,7 @@ public class SpecificationMutator {
 
     public static Formula strengthenFormula(Formula f, List<String> variables) {
         int n = Formula_Utils.formulaSize(f);
-        int MR = Math.max(1, (int) (((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n));
+        int MR = Math.max(1, ((100 - Settings.GA_GENE_MUTATION_RATE) / 100) * n);
         int num_of_mut = n;
         if (Settings.GA_GENE_NUM_OF_MUTATIONS > 0)
             num_of_mut = Math.min(n, Settings.GA_GENE_NUM_OF_MUTATIONS);

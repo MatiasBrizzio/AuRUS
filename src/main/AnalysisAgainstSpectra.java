@@ -100,9 +100,9 @@ public class AnalysisAgainstSpectra {
         System.out.println("Percentage of Genuine Solutions:       " + (double) equivalentSolutions / (double) sourceSolutions.size() + "\n");
         System.out.println("Percentage of Weaker Solutions:       " + (double) moreGeneralSolutions / (double) sourceSolutions.size() + "\n");
         System.out.println("Percentage of Stronger Solutions:       " + (double) lessGeneralSolutions / (double) sourceSolutions.size() + "\n");
-        System.out.println("Genuine Solutions:       " + AnalysisAgainstSpectra.genuineSolutionsFound.toString() + "\n");
-        System.out.println("Weaker Solutions:       " + AnalysisAgainstSpectra.moreGeneralSolutions.toString() + "\n");
-        System.out.println("Stronger Solutions:       " + AnalysisAgainstSpectra.lessGeneralSolutions.toString() + "\n");
+        System.out.println("Genuine Solutions:       " + AnalysisAgainstSpectra.genuineSolutionsFound + "\n");
+        System.out.println("Weaker Solutions:       " + AnalysisAgainstSpectra.moreGeneralSolutions + "\n");
+        System.out.println("Stronger Solutions:       " + AnalysisAgainstSpectra.lessGeneralSolutions + "\n");
         System.out.println("Genuine Solutions:       " + equivalentSolutions + "\n");
         System.out.println("Weaker Solutions:       " + moreGeneralSolutions + "\n");
         System.out.println("Stronger Solutions:       " + lessGeneralSolutions + "\n");
@@ -187,16 +187,14 @@ public class AnalysisAgainstSpectra {
         if (sat == SolverResult.UNSAT) {
             // f2 => f1
             sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(f2, f1.not()).accept(visitor)));
-            if (sat == SolverResult.UNSAT)
-                return false; // are equivalent so the guarantees have no changes.
-            else return true;
+            return sat != SolverResult.UNSAT; // are equivalent so the guarantees have no changes.
         }
         return true;
     }
 
     public static List<Tlsf> removeSameGuarantees(List<Tlsf> sourceSols) throws IOException, InterruptedException {
         //Remove all specifications which have modified the guarantees
-        List<Tlsf> woMod = new LinkedList<Tlsf>();
+        List<Tlsf> woMod = new LinkedList<>();
         Formula r_sys;
         Formula o_sys;
         for (Tlsf repair : sourceSols) {
@@ -204,7 +202,6 @@ public class AnalysisAgainstSpectra {
             o_sys = Conjunction.of(original.preset(), GOperator.of(Conjunction.of(original.assert_())), Conjunction.of(original.guarantee()));
             if (guaranteesHaveBeenModified(r_sys, o_sys)) {
                 System.out.print("M");
-                continue;
             } else woMod.add(repair);
         }
         return woMod;

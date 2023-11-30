@@ -43,78 +43,78 @@ public class Main {
         double threshold = 0.0d;
         String filename = "";
         String outname = "";
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-Gen=")) {
-                generations = Integer.parseInt(args[i].replace("-Gen=", ""));
-            } else if (args[i].startsWith("-Pop=")) {
-                popSize = Integer.parseInt(args[i].replace("-Pop=", ""));
-            } else if (args[i].startsWith("-Max=")) {
-                maxNumOfInd = Integer.parseInt(args[i].replace("-Max=", ""));
-            } else if (args[i].startsWith("-COR=")) {
-                crossoverRate = Integer.parseInt(args[i].replace("-COR=", ""));
-            } else if (args[i].startsWith("-GPR=")) {
-                guaranteePreferenceRate = Integer.parseInt(args[i].replace("-GPR=", ""));
-            } else if (args[i].startsWith("-MR=")) {
-                mutationRate = Integer.parseInt(args[i].replace("-MR=", ""));
-            } else if (args[i].startsWith("-geneMR=")) {
-                gene_mutationRate = Integer.parseInt(args[i].replace("-geneMR=", ""));
-            } else if (args[i].startsWith("-geneNUM=")) {
-                gene_num_of_mutations = Integer.parseInt(args[i].replace("-geneNUM=", ""));
-            } else if (args[i].startsWith("-k=")) {
-                bound = Integer.parseInt(args[i].replace("-k=", ""));
-            } else if (args[i].startsWith("-precise")) {
+        for (String arg : args) {
+            if (arg.startsWith("-Gen=")) {
+                generations = Integer.parseInt(arg.replace("-Gen=", ""));
+            } else if (arg.startsWith("-Pop=")) {
+                popSize = Integer.parseInt(arg.replace("-Pop=", ""));
+            } else if (arg.startsWith("-Max=")) {
+                maxNumOfInd = Integer.parseInt(arg.replace("-Max=", ""));
+            } else if (arg.startsWith("-COR=")) {
+                crossoverRate = Integer.parseInt(arg.replace("-COR=", ""));
+            } else if (arg.startsWith("-GPR=")) {
+                guaranteePreferenceRate = Integer.parseInt(arg.replace("-GPR=", ""));
+            } else if (arg.startsWith("-MR=")) {
+                mutationRate = Integer.parseInt(arg.replace("-MR=", ""));
+            } else if (arg.startsWith("-geneMR=")) {
+                gene_mutationRate = Integer.parseInt(arg.replace("-geneMR=", ""));
+            } else if (arg.startsWith("-geneNUM=")) {
+                gene_num_of_mutations = Integer.parseInt(arg.replace("-geneNUM=", ""));
+            } else if (arg.startsWith("-k=")) {
+                bound = Integer.parseInt(arg.replace("-k=", ""));
+            } else if (arg.startsWith("-precise")) {
                 precise = true;
-            } else if (args[i].startsWith("-no-docker")) {
+            } else if (arg.startsWith("-no-docker")) {
                 Settings.USE_DOCKER = false;
-            } else if (args[i].startsWith("-use-spectra")) {
+            } else if (arg.startsWith("-use-spectra")) {
                 Settings.USE_SPECTRA = true;
-            } else if (args[i].startsWith("-random")) {
+            } else if (arg.startsWith("-random")) {
                 randomGen = true;
-            } else if (args[i].startsWith("-GA_random_selector")) {
+            } else if (arg.startsWith("-GA_random_selector")) {
                 random_GA_selector = true;
-            } else if (args[i].startsWith("-onlySAT")) {
+            } else if (arg.startsWith("-onlySAT")) {
                 no_check_realizability = true;
-            } else if (args[i].startsWith("-strongSAT")) {
+            } else if (arg.startsWith("-strongSAT")) {
                 strong_SAT = true;
-            } else if (args[i].startsWith("-removeG")) {
+            } else if (arg.startsWith("-removeG")) {
                 allowGuaranteesRemoval = true;
-            } else if (args[i].startsWith("-addA")) {
+            } else if (arg.startsWith("-addA")) {
                 allowAssumptionsAddition = true;
-            } else if (args[i].startsWith("-onlyInputsA")) {
+            } else if (arg.startsWith("-onlyInputsA")) {
                 onlyInputsInAssumptions = true;
-            } else if (args[i].startsWith("-GATO=")) {
-                ga_timeout = Integer.parseInt(args[i].replace("-GATO=", ""));
-            } else if (args[i].startsWith("-RTO=")) {
-                real_timeout = Integer.parseInt(args[i].replace("-RTO=", ""));
-            } else if (args[i].startsWith("-SatTO=")) {
-                sat_timeout = Integer.parseInt(args[i].replace("-SatTO=", ""));
-            } else if (args[i].startsWith("-MCTO=")) {
-                mc_timeout = Integer.parseInt(args[i].replace("-MCTO=", ""));
-            } else if (args[i].startsWith("-sol=")) {
-                threshold = Double.valueOf(args[i].replace("-sol=", ""));
-            } else if (args[i].startsWith("-factors")) {
-                String[] factors = args[i].replace("-factors=", "").split(",");
+            } else if (arg.startsWith("-GATO=")) {
+                ga_timeout = Integer.parseInt(arg.replace("-GATO=", ""));
+            } else if (arg.startsWith("-RTO=")) {
+                real_timeout = Integer.parseInt(arg.replace("-RTO=", ""));
+            } else if (arg.startsWith("-SatTO=")) {
+                sat_timeout = Integer.parseInt(arg.replace("-SatTO=", ""));
+            } else if (arg.startsWith("-MCTO=")) {
+                mc_timeout = Integer.parseInt(arg.replace("-MCTO=", ""));
+            } else if (arg.startsWith("-sol=")) {
+                threshold = Double.parseDouble(arg.replace("-sol=", ""));
+            } else if (arg.startsWith("-factors")) {
+                String[] factors = arg.replace("-factors=", "").split(",");
                 if (factors.length != 3) {
                     correctUssage();
                     return;
                 }
-                status_factor = Double.valueOf(factors[0]);
-                syntactic_factor = Double.valueOf(factors[1]);
-                semantic_factor = Double.valueOf(factors[2]);
-            } else if (args[i].startsWith("-ref=")) {
-                String ref_name = args[i].replace("-ref=", "");
+                status_factor = Double.parseDouble(factors[0]);
+                syntactic_factor = Double.parseDouble(factors[1]);
+                semantic_factor = Double.parseDouble(factors[2]);
+            } else if (arg.startsWith("-ref=")) {
+                String ref_name = arg.replace("-ref=", "");
                 Tlsf ref_sol = TLSF_Utils.toBasicTLSF(new File(ref_name));
                 referenceSolutions.add(ref_sol);
-            } else if (args[i].startsWith("-out=")) {
-                outname = args[i].replace("-out=", "");
-            } else if (args[i].startsWith("-") || (!args[i].endsWith(".tlsf") && !args[i].endsWith(".spectra"))) {
+            } else if (arg.startsWith("-out=")) {
+                outname = arg.replace("-out=", "");
+            } else if (arg.startsWith("-") || (!arg.endsWith(".tlsf") && !arg.endsWith(".spectra"))) {
                 correctUssage();
                 return;
             } else {
-                filename = args[i];
+                filename = arg;
             }
         }
-        if (filename == null || filename.equals("")) {
+        if (filename.isEmpty()) {
             correctUssage();
             return;
         }
@@ -247,7 +247,7 @@ public class Main {
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write("Num. of Solutions:   " + solutions.size() + "\n");
         bw.write(String.format("Best fitness: %.2f\n", bestFitness));
-        bw.write(String.format("AVG fitness: %.2f\n", (ga.solutions.size() > 0) ? (sumFitness / (double) ga.solutions.size()) : 0));
+        bw.write(String.format("AVG fitness: %.2f\n", (!ga.solutions.isEmpty()) ? (sumFitness / (double) ga.solutions.size()) : 0));
         if (!referenceSolutions.isEmpty()) {
             bw.write("Genuine Solutions:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
             bw.write("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");

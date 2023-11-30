@@ -34,8 +34,8 @@ public class SpecificationCrossover {
     // level == 4 merges the formulas assumptions and guarantees preserving consistency.
     public static List<Tlsf> apply(Tlsf spec0, Tlsf spec1, SPEC_STATUS status0, SPEC_STATUS status1, int level) {
         List<Tlsf> merged_specifications = new LinkedList<>();
-        List<Formula> assumptionConjuncts = new LinkedList<Formula>();
-        List<Formula> guaranteeConjuncts = new LinkedList<Formula>();
+        List<Formula> assumptionConjuncts = new LinkedList<>();
+        List<Formula> guaranteeConjuncts = new LinkedList<>();
         List<Formula> assumesspec0 = Formula_Utils.splitConjunction(spec0.assume());
         List<Formula> assumesspec1 = Formula_Utils.splitConjunction(spec1.assume());
         if (level == 0) {
@@ -145,7 +145,7 @@ public class SpecificationCrossover {
     }
 
     private static List<Formula> selectRandomly(List<Formula> formulas) {
-        List<Formula> selectedFormulas = new LinkedList<Formula>();
+        List<Formula> selectedFormulas = new LinkedList<>();
         for (Formula f : formulas) {
             if (Settings.RANDOM_GENERATOR.nextBoolean() && f != BooleanConstant.TRUE && !selectedFormulas.contains(f))
                 selectedFormulas.add(f);
@@ -155,8 +155,8 @@ public class SpecificationCrossover {
 
     public static List<Tlsf> apply(Tlsf spec0, Tlsf spec1, int assumption_level, int guarantee_level) {
         List<Tlsf> merged_specifications = new LinkedList<>();
-        List<Formula> assumptionConjuncts = new LinkedList<Formula>();
-        List<Formula> guaranteeConjuncts = new LinkedList<Formula>();
+        List<Formula> assumptionConjuncts = new LinkedList<>();
+        List<Formula> guaranteeConjuncts = new LinkedList<>();
         List<Formula> assumesspec0 = Formula_Utils.splitConjunction(spec0.assume());
         List<Formula> assumesspec1 = Formula_Utils.splitConjunction(spec1.assume());
         if (assumption_level == 0) {

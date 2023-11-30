@@ -12,11 +12,11 @@ public class TestRunner {
     public static void main(String[] args) throws ClassNotFoundException {
         String classname = null;
         List<String> tests = new LinkedList<>();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-class=")) {
-                classname = args[i].replace("-class=", "");
-            } else if (args[i].startsWith("-test=")) {
-                tests.add(args[i].replace("-test=", ""));
+        for (String arg : args) {
+            if (arg.startsWith("-class=")) {
+                classname = arg.replace("-class=", "");
+            } else if (arg.startsWith("-test=")) {
+                tests.add(arg.replace("-test=", ""));
             }
         }
         if (classname == null)

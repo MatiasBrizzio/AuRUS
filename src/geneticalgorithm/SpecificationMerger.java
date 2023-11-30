@@ -21,7 +21,7 @@ public class SpecificationMerger {
 
     public static List<Tlsf> merge(Tlsf spec0, Tlsf spec1, SPEC_STATUS status0, SPEC_STATUS status1) {
         List<Tlsf> merged_specifications = new LinkedList<>();
-        List<Formula> assumptionConjuncts = new LinkedList<Formula>();
+        List<Formula> assumptionConjuncts = new LinkedList<>();
         //take assumptions from spec0?
         if (Settings.RANDOM_GENERATOR.nextBoolean()) {
             for (Formula c : Formula_Utils.splitConjunction(spec0.assume()))
@@ -35,7 +35,7 @@ public class SpecificationMerger {
                     assumptionConjuncts.add(c);
         }
 
-        List<Formula> guaranteeConjuncts = new LinkedList<Formula>();
+        List<Formula> guaranteeConjuncts = new LinkedList<>();
         //take guarantees from spec0?
         if (Settings.RANDOM_GENERATOR.nextBoolean()) {
             for (Formula c : spec0.guarantee())
@@ -72,145 +72,6 @@ public class SpecificationMerger {
         return merged_specifications;
     }
 
-    /***
-     *
-
-     //		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-     // crossover assume
-     //create empty specification
-     Tlsf new_spec = TLSF_Utils.fromSpec(spec0);
-     int option = Settings.RANDOM_GENERATOR.nextInt(3);
-     //arbitrary merge of assumptions
-     if (option == 0) {
-     LabelledFormula assumespec0 =  LabelledFormula.of(spec0.assume(), spec0.variables());
-     List<LabelledFormula> assumesspec0 = Formula_Utils.splitConjunction(assumespec0);
-
-     LabelledFormula assumspec1 =  LabelledFormula.of(spec1.assume(), spec1.variables());
-     List<LabelledFormula> assumesspec1 = Formula_Utils.splitConjunction(assumspec1);
-
-     List<Formula> f = getRandomFormulas(assumesspec0);
-     for (Formula s : getRandomFormulas(assumesspec1))
-     if (!f.contains(s))
-     f.add(s);
-     new_spec = TLSF_Utils.change_assume(new_spec,f);
-     }
-     else if (option == 1){
-     //if (status0 != SPEC_STATUS.UNREALIZABLE && status1 != SPEC_STATUS.UNREALIZABLE) {
-
-     // weaken assumptions
-     List<Formula> conjuncts0 = new LinkedList<Formula>();
-     for (Set<Formula> clause : NormalForms.toCnf(spec0.assume())){
-     Formula f = Disjunction.of(clause);
-     if (!conjuncts0.contains(f))
-     conjuncts0.add(f);
-     }
-
-     List<Formula> conjuncts1 = new LinkedList<Formula>();
-     for (Set<Formula> clause : NormalForms.toCnf(spec1.assume())){
-     Formula f = Disjunction.of(clause);
-     if (!conjuncts1.contains(f))
-     conjuncts1.add(f);
-     }
-
-     List<Formula> listOfConjuncts = new LinkedList<Formula>();
-     for (Formula c : conjuncts0)
-     if (conjuncts1.contains(c))
-     listOfConjuncts.add(c);
-     conjuncts0.removeAll(listOfConjuncts);
-     conjuncts1.removeAll(listOfConjuncts);
-     Formula assume0 = BooleanConstant.TRUE;
-     if (!conjuncts0.isEmpty())
-     assume0 = Conjunction.of(conjuncts0);
-     Formula assume1 = BooleanConstant.TRUE;
-     if (!conjuncts1.isEmpty())
-     assume1 = Conjunction.of(conjuncts1);
-     if(assume0 != BooleanConstant.TRUE && assume1 != BooleanConstant.TRUE)
-     listOfConjuncts.add(Disjunction.of(assume0,assume1));
-     if (listOfConjuncts.isEmpty())
-     listOfConjuncts.add(BooleanConstant.TRUE);
-     new_spec = TLSF_Utils.change_assume(new_spec, listOfConjuncts);
-     }
-     else{ // (option ==2)
-     // strengthen assumptions
-     List<Formula> conjuncts = new LinkedList<Formula>();
-     for (Set<Formula> clause :NormalForms.toCnf(spec0.assume())){
-     Formula f = Disjunction.of(clause);
-     if (!conjuncts.contains(f))
-     conjuncts.add(f);
-     }
-     for (Set<Formula> clause :NormalForms.toCnf(spec1.assume())) {
-     Formula f = Disjunction.of(clause);
-     if (!conjuncts.contains(f))
-     conjuncts.add(f);
-     }
-
-     new_spec = TLSF_Utils.change_assume(new_spec, conjuncts);
-     }
-     merged_specifications.add(new_spec);
-
-     //		}
-     //		else {
-     // crossover guarantees
-     new_spec = TLSF_Utils.fromSpec(spec0);
-     option = Settings.RANDOM_GENERATOR.nextInt(3);
-     //arbitrary merge of assumptions
-     if (option == 0) {
-     new_spec = TLSF_Utils.change_guarantees(new_spec, mergeGuarantess(spec0.guarantee(),spec1.guarantee()));
-     }
-     else if (option == 1){
-     //			if (status0 != SPEC_STATUS.REALIZABLE && status1 != SPEC_STATUS.REALIZABLE) {
-     // weaken guarantees
-     List<Formula> conjuncts0 = new LinkedList<Formula>();
-     for (Formula f : spec0.guarantee()){
-     if (!conjuncts0.contains(f))
-     conjuncts0.add(f);
-     }
-
-     List<Formula> conjuncts1 = new LinkedList<Formula>();
-     for (Formula f : spec1.guarantee()){
-     if (!conjuncts1.contains(f))
-     conjuncts1.add(f);
-     }
-
-     List<Formula> listOfConjuncts = new LinkedList<Formula>();
-     for (Formula c : conjuncts0)
-     if (conjuncts1.contains(c))
-     listOfConjuncts.add(c);
-     conjuncts0.removeAll(listOfConjuncts);
-     conjuncts1.removeAll(listOfConjuncts);
-     Formula guarantee0 = BooleanConstant.TRUE;
-     if (!conjuncts0.isEmpty())
-     guarantee0 = Conjunction.of(conjuncts0);
-     Formula guarantee1 = BooleanConstant.TRUE;
-     if (!conjuncts1.isEmpty())
-     guarantee1 = Conjunction.of(conjuncts1);
-     if(guarantee0 != BooleanConstant.TRUE && guarantee1 != BooleanConstant.TRUE)
-     listOfConjuncts.add(Disjunction.of(guarantee0,guarantee1));
-     if (listOfConjuncts.isEmpty())
-     listOfConjuncts.add(BooleanConstant.TRUE);
-     new_spec = TLSF_Utils.change_guarantees(new_spec, listOfConjuncts);
-     }
-     else{
-     // strengthen guarantees to look for finer grained solutions
-     List<Formula> conjuncts = new LinkedList<Formula>();
-     for (Formula s : spec0.guarantee())
-     if (!conjuncts.contains(s))
-     conjuncts.add(s);
-     for (Formula s : spec1.guarantee())
-     if (!conjuncts.contains(s))
-     conjuncts.add(s);
-     new_spec = TLSF_Utils.change_guarantees(new_spec, conjuncts);
-     }
-     merged_specifications.add(new_spec);
-     //		}
-
-
-     return merged_specifications;
-
-     } *
-     *
-     *
-     */
 
     // level == 0 implements random swap (no guarantee consistency);
     // level == 1 implements random merge of the assumptions and guarantees (no guarantee consistency);
@@ -323,8 +184,8 @@ public class SpecificationMerger {
     }
 
     private static List<Formula> mergeGuarantess(List<Formula> guarantee, List<Formula> guarantee2) {
-        List<Formula> newg = new ArrayList<Formula>();
-        List<Formula> newg2 = new ArrayList<Formula>();
+        List<Formula> newg = new ArrayList<>();
+        List<Formula> newg2 = new ArrayList<>();
         Formula selectedFormula;
         if (!guarantee.isEmpty()) {
             int amountOfFormulas1 = Settings.RANDOM_GENERATOR.nextInt((guarantee.size())) + 1;
@@ -350,7 +211,7 @@ public class SpecificationMerger {
     private static List<Formula> getRandomFormulas(List<LabelledFormula> assumesspec0) {
         int amountOfFormulas = !assumesspec0.isEmpty() ? Settings.RANDOM_GENERATOR.nextInt(assumesspec0.size()) + 1 : 0;
 
-        List<LabelledFormula> newAssumes = new ArrayList<LabelledFormula>();
+        List<LabelledFormula> newAssumes = new ArrayList<>();
         LabelledFormula selectedFormula;
 
         for (int i = 0; i < amountOfFormulas; i++) {
@@ -358,7 +219,7 @@ public class SpecificationMerger {
             if (newAssumes.contains(selectedFormula)) continue;
             else newAssumes.add(selectedFormula);
         }
-        List<Formula> newAssm = new ArrayList<Formula>();
+        List<Formula> newAssm = new ArrayList<>();
         for (LabelledFormula lf : newAssumes) {
             newAssm.add(lf.formula());
         }
