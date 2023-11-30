@@ -56,19 +56,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
         // Convert the ltl formula to an automaton with OWL
         DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
         automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
-//		System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
-//		var environment = DefaultEnvironment.standard();
-//		var translator = new LTL2DPAFunction(environment, EnumSet.of(
-////				OPTIMISE_INITIAL_STATE,
-//				COMPLEMENT_CONSTRUCTION,
-//				GREEDY,
-//				COMPRESS_COLOURS));
-////				LTL2DPAFunction.RECOMMENDED_SYMMETRIC_CONFIG);
-//
-//		automaton = (Automaton<S, ParityAcceptance>) translator.apply(formula);
-
         states = automaton.states().toArray();
-
         return "OK";
     }
 

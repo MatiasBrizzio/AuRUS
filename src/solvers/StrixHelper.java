@@ -46,21 +46,6 @@ public class StrixHelper {
             }
             return executeStrix(file.getPath());
         } else {
-            // No docker, no strix
-//			if (Settings.USE_DOCKER) {
-//				file = new File((tlsf.title().replace("\"", "")+".tlsf").replaceAll("\\s",""));
-//				try {
-//					writer = new FileWriter(file.getPath());
-//					writer.write(TLSF_Utils.adaptTLSFSpec(tlsf));
-//					writer.flush();
-//					writer.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				return executeStrix(file.getPath());
-//			}
-//			// No docker, Strix
-//			else {
             SyntacticSimplifier simp = new SyntacticSimplifier();
             Formula form = tlsf.toFormula().formula().accept(simp);
             String formula = SolverUtils.toSolverSyntax(LabelledFormula.of(form, tlsf.variables()));
@@ -86,7 +71,6 @@ public class StrixHelper {
             if (inputs.length() != 0)
                 inputs = new StringBuilder(inputs.substring(0, inputs.length() - 1));
             else inputs = new StringBuilder();
-//				System.out.println(formula);
             return executeStrix(formula, inputs.toString(), outputs.toString());
 //			}
         }

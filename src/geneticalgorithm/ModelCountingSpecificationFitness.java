@@ -47,9 +47,6 @@ public class ModelCountingSpecificationFitness implements Fitness<SpecificationC
         compute_status(originalChromosome);
         this.originalStatus = originalChromosome.status;
         originalNumOfModels = countModels(originalSpecification.toFormula(), null);
-//		System.out.println(originalSpecification.toFormula());
-//		System.out.println(originalNumOfModels);
-//		originalNegationNumOfModels = countModels(originalSpecification.toFormula().not());
     }
 
     private static double getStatusFitness(SpecificationChromosome chromosome) {

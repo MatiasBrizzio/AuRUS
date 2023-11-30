@@ -40,13 +40,7 @@ public class SpecificationGeneticAlgorithm {
         initialExecutionTime = Instant.now();
         long initialTime = System.currentTimeMillis();
         Population<SpecificationChromosome> population = createInitialPopulation(spec);
-//		Fitness<SpecificationChromosome, Double> fitness = new SpecificationFitness();
-//		Fitness<SpecificationChromosome, Double> fitness = new PreciseModelCountingSpecificationFitness(spec);
-//		ModelCountingSpecificationFitness fitness = new ModelCountingSpecificationFitness(spec);
         AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
-//		fitness.allowAssumptionGuaranteeRemoval(allowAssumptionGuaranteeRemoval);
-//		fitness.setBound(Settings.MC_BOUND);
-        //if (population.getChromosomeByIndex(0).status == SPEC_STATUS.REALIZABLE) {
         if (!Settings.check_STRONG_SAT && fitness.originalStatus == SPEC_STATUS.REALIZABLE) {
             System.out.println();
             System.out.println("The specification is already realizable.");

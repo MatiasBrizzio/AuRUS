@@ -30,27 +30,14 @@ public class StrongSATSolver<S> {
 
 
     public <S> boolean isStrongSatisfiable(LabelledFormula formula) {
-//        System.out.println("Simplifying...");
-//        LabelledFormula formula = SimplifierFactory.apply(input, SimplifierFactory.Mode.SYNTACTIC_FIXPOINT);
-
         System.out.println("Parsing...");
-//        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.BUCHI));
-//        LTL2DPAFunction translator = new LTL2DPAFunction(DefaultEnvironment.standard(), LTL2DPAFunction.RECOMMENDED_ASYMMETRIC_CONFIG);
-//        Automaton<S, ParityAcceptance> automaton = (Automaton<S, ParityAcceptance>)translator.apply(formula);
-        //LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(), false, EnumSet.of(Constructions.EMERSON_LEI));//allOf(Constructions.class));
         DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
         Automaton<S, EmersonLeiAcceptance> automaton = (Automaton<S, EmersonLeiAcceptance>) translator.apply(formula);
-//        SymmetricLDBAConstruction translator = SymmetricLDBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
-//        AnnotatedLDBA automaton = translator.apply(formula);
         System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
-
-//        System.out.println(HoaPrinter.toString(automaton));
         System.out.println("Building Input...");
         Automaton<S, ?> input_automaton = buildInputAutomata(automaton, new ArrayList<>(formula.player1Variables()), formula.variables());
         System.out.println(HoaPrinter.toString(input_automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         System.out.println("Checking...");
-//        boolean isStronSAT = checkStrongSAT(input_automaton);
-//        return isStronSAT;
         FormulaToAutomaton translatorLTLtoRE = new FormulaToAutomaton();
         translatorLTLtoRE.generateLabels(formula.variables());
         System.out.println("Determinizing...");

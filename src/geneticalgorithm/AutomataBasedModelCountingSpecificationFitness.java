@@ -29,20 +29,10 @@ import java.util.Set;
 
 public class AutomataBasedModelCountingSpecificationFitness implements Fitness<SpecificationChromosome, Double> {
 
-    //	public BigInteger originalNegationNumOfModels;
-//    public BigInteger UNIVERSE;
     private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
-    //	public int BOUND = 10;
-//	public boolean EXHAUSTIVE = true;
-//	public double STATUS_FACTOR = 0.7d;
-//	public double LOST_MODELS_FACTOR = 0.1d;
-//	public double WON_MODELS_FACTOR = 0.1d;
-//	//	public static final double SOLUTION = 0.8d;
-//	public  double SYNTACTIC_FACTOR = 0.1d;
     public Tlsf originalSpecification;
     public List<String> alphabet = null;
     public SPEC_STATUS originalStatus;
-    //    public boolean allowAssumptionGuaranteeRemoval = false;
     public BigInteger originalNumOfModels;
 
     public AutomataBasedModelCountingSpecificationFitness(Tlsf originalSpecification) throws IOException, InterruptedException {
@@ -339,23 +329,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
 
     public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
         List<LabelledFormula> sub_original = Formula_Utils.subformulas(original.toFormula());
-//		sub_original.remove(original.toFormula());
         List<LabelledFormula> sub_refined = Formula_Utils.subformulas(refined.toFormula());
-//		sub_refined.remove(refined.toFormula());
-
-//		Set<LabelledFormula> lostSubs = Sets.difference(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
-//		Set<LabelledFormula> wonSubs = Sets.difference(Sets.newHashSet(sub_refined), Sets.newHashSet(sub_original));
         Set<LabelledFormula> commonSubs = Sets.intersection(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
-//		String originalStr = original.toFormula().toString();
-//		String refinedStr = refined.toFormula().toString();
-//		String diffLost = StringUtils.difference(originalStr, refinedStr);
-//		System.out.println(lostSubs.size() +" " + sub_original.size());
-//		String diffWon = StringUtils.difference(refinedStr, originalStr);
-//		System.out.println(wonSubs.size()  +" " + sub_refined.size());
         double lost = ((double) commonSubs.size()) / ((double) sub_original.size());
         double won = ((double) commonSubs.size()) / ((double) sub_refined.size());
-//		double size = compute_syntactic_distance_size(original, refined);
-//		double syntactic_distance =  0.5d * size +  0.25d * lost + 0.25d * won;
         return 0.5d * lost + 0.5d * won;
     }
 

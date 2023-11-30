@@ -14,7 +14,6 @@ import java.math.BigInteger;
 
 
 public class MatrixBigIntegerModelCounting {
-    public static int TIMEOUT = 300;
     private final FieldMatrix<BigFraction> T;
     private final Graph<String> nba;
     private final boolean exhaustive;
