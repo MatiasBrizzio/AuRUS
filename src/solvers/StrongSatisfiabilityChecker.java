@@ -21,15 +21,15 @@ import java.util.function.IntConsumer;
 
 public class StrongSatisfiabilityChecker<S> {
 
+    //    private List<String> variables = null;
+//    private Map<S,Integer> states = null;
+    //public static int TIMEOUT = 120;
+    private final LabelledFormula formula;
     boolean isAcceptance = false;
     boolean noAcceptance = false;
     //    private DMatrixRMaj T = null;
 //    private DMatrixRMaj I = null;
     private Automaton<S, EmersonLeiAcceptance> automaton = null;
-    //    private List<String> variables = null;
-//    private Map<S,Integer> states = null;
-    //public static int TIMEOUT = 120;
-    private final LabelledFormula formula;
     private List<String> input_vars = null;
 
     public StrongSatisfiabilityChecker(LabelledFormula formula) {

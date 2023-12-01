@@ -11,6 +11,7 @@ import tlsf.TLSF_Utils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -229,6 +230,7 @@ class StrixHelperTest {
         Settings.STRIX_TIMEOUT = 10;
         assertTrue(StrixHelper.checkRealizability(TLSF3).equals(RealizabilitySolverResult.TIMEOUT));
     }
+
     @Test
     void testCheckRealizability7() throws IOException, InterruptedException {
         String filename = "case-studies/lily02/genuine/lilydemo02_fixed.tlsf";

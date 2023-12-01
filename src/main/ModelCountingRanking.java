@@ -439,7 +439,7 @@ public class ModelCountingRanking {
         return counter.countPrefixes(form_lost, bound);
     }
 
-    static BigInteger countExhaustiveAutomataBasedPrefixes(Formula f, List<String> vars, int bound){
+    static BigInteger countExhaustiveAutomataBasedPrefixes(Formula f, List<String> vars, int bound) {
         LabelledFormula form_lost = LabelledFormula.of(f, vars);
 //        MatrixBigIntegerModelCounting counter = new MatrixBigIntegerModelCounting(form_lost,false);
         EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting(form_lost);

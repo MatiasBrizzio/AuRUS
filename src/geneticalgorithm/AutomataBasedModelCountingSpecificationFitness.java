@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -43,6 +42,23 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         System.out.println("Initial specification is: " + originalStatus);
         if (Settings.LOST_MODELS_FACTOR > 0.0d)
             originalNumOfModels = countModels(originalSpecification.toFormula());
+    }
+
+    private static double getStatusFitness(SpecificationChromosome chromosome) {
+        double status_fitness = 0.0d;
+        if (chromosome.status == SPEC_STATUS.UNKNOWN || chromosome.status == SPEC_STATUS.BOTTOM)
+            status_fitness = 0.0d;
+        else if (chromosome.status == SPEC_STATUS.GUARANTEES)
+            status_fitness = 0.05d;
+        else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
+            status_fitness = 0.1d;
+        else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
+            status_fitness = 0.2d;
+        else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
+            status_fitness = 0.5d;
+        else if (chromosome.status == SPEC_STATUS.REALIZABLE)
+            status_fitness = 1.0d;
+        return status_fitness;
     }
 
     @Override
@@ -120,23 +136,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         }
 
         return fitness;
-    }
-
-    private static double getStatusFitness(SpecificationChromosome chromosome) {
-        double status_fitness = 0.0d;
-        if (chromosome.status == SPEC_STATUS.UNKNOWN || chromosome.status == SPEC_STATUS.BOTTOM)
-            status_fitness = 0.0d;
-        else if (chromosome.status == SPEC_STATUS.GUARANTEES)
-            status_fitness = 0.05d;
-        else if (chromosome.status == SPEC_STATUS.ASSUMPTIONS)
-            status_fitness = 0.1d;
-        else if (chromosome.status == SPEC_STATUS.CONTRADICTORY)
-            status_fitness = 0.2d;
-        else if (chromosome.status == SPEC_STATUS.UNREALIZABLE)
-            status_fitness = 0.5d;
-        else if (chromosome.status == SPEC_STATUS.REALIZABLE)
-            status_fitness = 1.0d;
-        return status_fitness;
     }
 
     public void compute_status(SpecificationChromosome chromosome) throws IOException, InterruptedException {

@@ -6,8 +6,6 @@ import gov.nasa.ltl.graph.*;
 import owl.ltl.LabelledFormula;
 import tlsf.FormulaToAutomaton;
 
-import java.io.IOException;
-
 public class Buchi2Graph {
 
     public static Graph<String> LTL2Graph(LabelledFormula formula) {

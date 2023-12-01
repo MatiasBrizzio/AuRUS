@@ -362,7 +362,7 @@ public class PreciseModelCountingEvaluation {
         }
     }
 
-    static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver){
+    static List<BigInteger> countModels(Formula original, Formula refined, int vars, int bound, int solver) {
 //        List<BigInteger> lostModels = new LinkedList<>();
 //        for(int k = 1; k <= bound; k++) {
 //            PreciseLTLModelCounter counter = new PreciseLTLModelCounter();
