@@ -81,28 +81,8 @@ public class FormulaToAutomaton<S> {
     }
 
     public <S> automata.Automaton formulaToDfa(LabelledFormula formula) {
-//        SymmetricNBAConstruction translator = (SymmetricNBAConstruction) SymmetricNBAConstruction.of(DefaultEnvironment.standard(), BuchiAcceptance.class);
-//        System.out.println(formula);
-//        var automaton = translator.apply(formula);
-//        LTL2NAFunction translator = new LTL2NAFunction(DefaultEnvironment.standard(), EnumSet.of(LTL2NAFunction.Constructions.GENERALIZED_BUCHI));//class));
-//        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
-//        LTL2DAFunction translator = new LTL2DAFunction(DefaultEnvironment.standard(),false, EnumSet.allOf(LTL2DAFunction.Constructions.class));
-//        Automaton<?, ? extends OmegaAcceptance> automaton = translator.apply(formula);
-//        if (automaton.size() == 0)
-//            return null;
-//        System.out.println(automaton.acceptance().acceptingSet());
-//        System.out.println(automaton.acceptance().booleanExpression());
-//        System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
-//        System.out.println(HoaPrinter.toString(automaton));
-//        return nbaToDfa(automaton);
-//        System.out.println("Parsing...");
-//        DelagBuilder translator = new DelagBuilder(DefaultEnvironment.standard());
-//        Automaton<State<Object>, EmersonLeiAcceptance> automaton = translator.apply(formula);
-//        return telaToDfa(automaton);
-
         var environment = DefaultEnvironment.standard();
         var translator = new LTL2DPAFunction(environment, LTL2DPAFunction.RECOMMENDED_SYMMETRIC_CONFIG);
-
         var automaton = (Automaton<S, ParityAcceptance>) translator.apply(formula);
         return PAtoDfa(automaton);
     }
@@ -176,12 +156,6 @@ public class FormulaToAutomaton<S> {
 
 
                         if (edge.acceptanceSetIterator().hasNext()) {
-//                            IntArrayList acceptanceSets = new IntArrayList();
-//                            edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-//                            int toID = getStateId(to);
-//                            if (automaton.acceptance().acceptingSet().get(toID)) {
-                            //get state
-                            //automata.State as = ids.get(to);
                             //add transition
                             FSATransition final_t = new FSATransition(fromState, fs, label);
                             fsa.addTransition(final_t);
@@ -189,31 +163,17 @@ public class FormulaToAutomaton<S> {
                         }
                     });
 
-//              IntArrayList acceptanceSets = new IntArrayList();
-//              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                    //add final states
-//                if (edge.acceptanceSetIterator().hasNext()) {
-//                    //get state
-//                    automata.State as = ids.get(to);
-//                    //add transition
-//                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
-//                    fsa.addTransition(t);
-//                    fsa.addFinalState(as);
                 }
             });
         }
-//        System.out.print("n");
-//        System.out.println(fsa.toString());
         NFAToDFA determinizer = new NFAToDFA();
         automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton) fsa.clone());
-//        System.out.println(dfa.toString());
 
         Minimizer min = new Minimizer();
         min.initializeMinimizer();
         automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
         DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
         automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
-//        System.out.println(dfa_minimized.toString());
         return dfa_minimized;
     }
 
@@ -289,32 +249,18 @@ public class FormulaToAutomaton<S> {
                         }
                     });
 
-//              IntArrayList acceptanceSets = new IntArrayList();
-//              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                    //add final states
-//                if (edge.acceptanceSetIterator().hasNext()) {
-//                    //get state
-//                    automata.State as = ids.get(to);
-//                    //add transition
-//                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
-//                    fsa.addTransition(t);
-//                    fsa.addFinalState(as);
                 }
             });
         }
-//        System.out.print("n");
-//        System.out.println(fsa.toString());
         System.out.println("Determinizing ...");
         NFAToDFA determinizer = new NFAToDFA();
         automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton) fsa.clone());
-//        System.out.println(dfa.toString());
 
         Minimizer min = new Minimizer();
         min.initializeMinimizer();
         automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
         DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
         automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
-//        System.out.println(dfa_minimized.toString());
         return dfa_minimized;
     }
 
@@ -390,32 +336,9 @@ public class FormulaToAutomaton<S> {
                         }
                     });
 
-//              IntArrayList acceptanceSets = new IntArrayList();
-//              edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                    //add final states
-//                if (edge.acceptanceSetIterator().hasNext()) {
-//                    //get state
-//                    automata.State as = ids.get(to);
-//                    //add transition
-//                    FSATransition t = new FSATransition(as, fs, FSAToRegularExpressionConverter.LAMBDA);
-//                    fsa.addTransition(t);
-//                    fsa.addFinalState(as);
                 }
             });
         }
-//        System.out.print("n");
-//        System.out.println(fsa.toString());
-//        System.out.println("Determinizing ...");
-//        NFAToDFA determinizer = new NFAToDFA();
-//        automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton)fsa.clone());
-//        System.out.println(dfa.toString());
-
-//        Minimizer min = new Minimizer();
-//        min.initializeMinimizer();
-//        automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
-//        DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
-//        automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
-//        System.out.println(dfa_minimized.toString());
         return fsa;
     }
 

@@ -13,7 +13,7 @@ public class CountREModels {
     FormulaToRE translatorLTLtoRE;
 
     public CountREModels() {
-        translatorLTLtoRE = new FormulaToRE();
+        translatorLTLtoRE = new FormulaToRE<>();
     }
 
     public BigInteger count(List<LabelledFormula> formulas, int bound, boolean exhaustive, boolean positive) throws IOException, InterruptedException {
