@@ -141,11 +141,6 @@ public class FormulaWeakening implements Visitor<Formula> {
                     // weak (F G (a)) = F (a)
                     current = FOperator.of(operand.children().iterator().next());
                 } else {
-                    // weak F a = a1 W a
-                    //Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
-                    //if (Settings.RANDOM_GENERATOR.nextBoolean())
-                    //new_literal = new_literal.not();
-                    //System.out.println("Weak");
                     current = WOperator.of(new_literal(current), operand);
                 }
             }
@@ -246,9 +241,6 @@ public class FormulaWeakening implements Visitor<Formula> {
                 if (option == 0)
                     current = BooleanConstant.TRUE;
                 else {
-                    //Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
-                    //if (Settings.RANDOM_GENERATOR.nextBoolean())
-                    //new_literal = new_literal.not();
                     current = Disjunction.of(current, new_literal(current));
                 }
             }
@@ -276,9 +268,6 @@ public class FormulaWeakening implements Visitor<Formula> {
                 else if (option == 1)
                     current = WOperator.of(left, right); // weak(a U b) = a W b
                 else if (option == 2) {    // weak (a U b) = (a || c) U b
-                    //Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
-                    //if (Settings.RANDOM_GENERATOR.nextBoolean())
-                    //new_literal = new_literal.not();
                     current = UOperator.of(Disjunction.of(new_literal(current), left), right);
                     System.out.println("////" + current);
                 } else
@@ -311,11 +300,7 @@ public class FormulaWeakening implements Visitor<Formula> {
                 else if (option == 2)
                     current = Disjunction.of(GOperator.of(left), FOperator.of(right)); // weak(a W b) = G(a) || F(b)
                 else {  // weak (a W b) = ((a || c) W b)
-                    //Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
-                    //if (Settings.RANDOM_GENERATOR.nextBoolean())
-                    //new_literal = new_literal.not();
                     current = WOperator.of(Disjunction.of(left, new_literal(current)), right);
-//    	    		current =  current.accept(this);
                     System.out.println("------" + current);
                 }
             }

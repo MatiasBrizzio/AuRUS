@@ -330,7 +330,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                     else if (numOfTO < 2)
                         current = GOperator.of(current);
                 } else if (random == 1) {
-                    if (current.children().size() > 0) {
+                    if (!current.children().isEmpty()) {
                         int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
                         List<Formula> new_set_children = new LinkedList<Formula>();
                         Iterator<Formula> it = current.children().iterator();
@@ -347,7 +347,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
 //					Literal new_literal =new_literal(current);
 //	    			current = Conjunction.of(current, new_literal);
 //	    		}
-                else if (random == 2 && current.children().size() > 0) { // random == 3
+                else if (random == 2 && !current.children().isEmpty()) { // random == 3
                     //0:| 1:U 2:W 3:R 4:M
                     int op = Settings.RANDOM_GENERATOR.nextInt(5);
                     if (op == 0)
@@ -411,7 +411,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                     else if (numOfTO < 2)
                         current = GOperator.of(current);
                 } else if (random == 1) {
-                    if (current.children().size() > 0) {
+                    if (!current.children().isEmpty()) {
                         int to_be_removed = Settings.RANDOM_GENERATOR.nextInt(current.children().size());
                         List<Formula> new_set_children = new LinkedList<Formula>();
                         Iterator<Formula> it = current.children().iterator();
@@ -424,11 +424,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                         current = Disjunction.of(new_set_children);
                     }
                 }
-//	    		else if(random == 2) {
-//					Literal new_literal = new_literal(current);
-//	    			current = Disjunction.of(current, new_literal);
-//	    		}
-                else if (random == 2 && current.children().size() > 0) { // random == 3
+                else if (random == 2 && !current.children().isEmpty()) { // random == 3
                     //0:& 1:U 2:W 3:R 4:M
                     int op = Settings.RANDOM_GENERATOR.nextInt(5);
                     if (op == 0) {
@@ -769,16 +765,9 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
     public Literal new_literal(Formula current) {
         Set<Literal> props = current.accept(new PropositionVariablesExtractor());
         int max = variables.size();
-//		if (numOfInputs > 0)
-//			max = numOfInputs;
         int new_variable = Settings.RANDOM_GENERATOR.nextInt(max);
         Literal new_literal = createVariable(variables.get(new_variable));
 
-//		if (Settings.RANDOM_GENERATOR.nextBoolean()) {
-//			if (Settings.RANDOM_GENERATOR.nextBoolean())
-//				new_literal = new_literal.not();
-//			return new_literal;
-//		}
         int trying = 0;
         while ((props.contains(new_literal) || props.contains(new_literal.not())) && trying < 5) {
             trying++;
