@@ -80,6 +80,7 @@ public class FormulaToRE<S> {
         System.out.println(HoaPrinter.toString(automaton, EnumSet.of(SIMPLE_TRANSITION_LABELS)));
         return automataToRegularExpression(automaton);
     }
+
     public <S> String automataToRegularExpression(Automaton<S, ? extends OmegaAcceptance> automaton) {
 
         automata.Automaton fsa = new FiniteStateAutomaton();

@@ -423,8 +423,7 @@ public class GeneralFormulaMutator implements Visitor<Formula> {
                         }
                         current = Disjunction.of(new_set_children);
                     }
-                }
-                else if (random == 2 && !current.children().isEmpty()) { // random == 3
+                } else if (random == 2 && !current.children().isEmpty()) { // random == 3
                     //0:& 1:U 2:W 3:R 4:M
                     int op = Settings.RANDOM_GENERATOR.nextInt(5);
                     if (op == 0) {
