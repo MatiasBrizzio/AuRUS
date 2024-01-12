@@ -155,7 +155,7 @@ public class FormulaToRE<S> {
                 }
             });
         }
-        System.out.println(fsa.toString());
+        System.out.println(fsa);
         NFAToDFA determinizer = new NFAToDFA();
         automata.Automaton dfa = determinizer.convertToDFA((automata.Automaton) fsa.clone());
         Minimizer min = new Minimizer();

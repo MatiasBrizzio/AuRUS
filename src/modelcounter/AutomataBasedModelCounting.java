@@ -15,14 +15,12 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class AutomataBasedModelCounting {
-
     public static int TIMEOUT = 300;
     private DMatrixRMaj T = null;
     private DMatrixRMaj I = null;
     private Graph<String> nba;
     private boolean exhaustive;
-
-    public AutomataBasedModelCounting(LabelledFormula formula, boolean exhaustive) throws IOException, InterruptedException {
+    public AutomataBasedModelCounting(LabelledFormula formula, boolean exhaustive) {
 
         this.exhaustive = exhaustive;
         Writer<String> w = Writer.getWriter(Writer.Format.FSP, System.out);
@@ -110,80 +108,6 @@ public class AutomataBasedModelCounting {
 
     }
 
-    private static DMatrixRMaj removeRowAndCol(DMatrixRMaj A, int row, int col) {
-//		  System.out.println(A.toString());
-        DMatrixRMaj M = new DMatrixRMaj(A.numRows - 1, A.numCols - 1);
-        int k = -1;
-        for (int i = 0; i < A.numRows; i++) {
-            if (i != row) {
-                k++;
-                int r = -1;
-                for (int j = 0; j < A.numCols; j++) {
-                    if (j != col) {
-                        r++;
-                        M.set(k, r, A.get(i, j));
-                    }
-                }
-            }
-        }
-//		 System.out.println(M.toString());
-        return M;
-    }
-
-    private static Graph<String> toDFA(Graph<String> nfa) {
-        Graph<String> dfa = new Graph<String>();
-        // λ-closure the intial state of nfa and set that set of states as the new state of the dfa
-        Set<Integer> nodesIds = closure(nfa.getInit(), new HashSet<Integer>());
-        Node<String> dfaInitial = new Node<String>(dfa);
-        dfa.setInit(dfaInitial);
-        Map<Set<Integer>, Node<String>> dfaNodes = new HashMap<Set<Integer>, Node<String>>();
-        dfaNodes.put(nodesIds, dfaInitial);
-
-        // Find the states that can be traversed from the present for each input symbol
-        List<Set<Integer>> workSet = new LinkedList<Set<Integer>>();
-        Set<Set<Integer>> visited = new HashSet<Set<Integer>>();
-        workSet.add(nodesIds);
-        visited.add(nodesIds);
-        while (!workSet.isEmpty()) {
-            Set<Integer> currentStates = workSet.remove(0);
-            Node<String> currentDFANode = dfaNodes.get(currentStates);
-            Map<Guard<String>, Set<Integer>> statesByGuard = getStatesByGuard(currentStates, nfa);
-            for (Guard<String> guard : statesByGuard.keySet()) {
-                Set<Integer> guardStates = statesByGuard.get(guard);
-                // Create a new edge in the DFA with the current guard and to the state that represents guardStates
-                Node<String> n;
-                if (dfaNodes.containsKey(guardStates)) {
-                    n = dfaNodes.get(guardStates);
-                } else {
-                    n = new Node<String>(dfa);
-                    dfaNodes.put(guardStates, n);
-                }
-                Edge<String> newEdge = new Edge<String>(currentDFANode, n, guard);
-                currentDFANode.getOutgoingEdges().add(newEdge);
-                if (visited.add(guardStates)) {
-                    workSet.add(guardStates);
-                }
-            }
-
-        }
-
-        // Mark the states of DFA which contains final state of NFA as final states of DFA
-        for (Set<Integer> statesInNfa : dfaNodes.keySet()) {
-            Node<String> dfaNode = dfaNodes.get(statesInNfa);
-            boolean hasKeyInNfa = false;
-            for (Integer nodeId : statesInNfa) {
-                if (nfa.getNode(nodeId).getBooleanAttribute("accepting")) {
-                    hasKeyInNfa = true;
-                    break;
-                }
-            }
-            if (hasKeyInNfa)
-                dfaNode.setBooleanAttribute("accepting", true);
-        }
-
-        return dfa;
-    }
-
     /**
      * λ-closure of the given node with respect to the nfa
      */
@@ -198,44 +122,6 @@ public class AutomataBasedModelCounting {
             }
         }
         return closureSet;
-    }
-
-    /**
-     * Given a set of states, get a map between the guards and the reached states
-     */
-    private static Map<Guard<String>, Set<Integer>> getStatesByGuard(Set<Integer> stateIds, Graph<String> nfa) {
-        Map<Guard<String>, Set<Integer>> statesByGuard = new HashMap<>();
-        for (Integer nodeId : stateIds) {
-            Node<String> currentNode = nfa.getNode(nodeId);
-            for (Edge<String> currentEdge : currentNode.getOutgoingEdges()) {
-                Guard<String> currentGuard = currentEdge.getGuard();
-                if (!currentGuard.isTrue()) {
-                    if (statesByGuard.containsKey(currentGuard)) {
-                        statesByGuard.get(currentGuard).add(currentEdge.getNext().getId());
-                    } else {
-                        HashSet<Integer> guardStates = new HashSet<>();
-                        guardStates.add(currentEdge.getNext().getId());
-                        statesByGuard.put(currentGuard, guardStates);
-                    }
-                    statesByGuard.get(currentGuard).addAll(closure(currentEdge.getNext(), new HashSet<>()));
-                }
-
-            }
-        }
-        return statesByGuard;
-    }
-
-    public String genRltlString(LabelledFormula formula) {
-        List<String> alphabet = SolverUtils.genAlphabet(formula.variables().size());
-        LabelledFormula label_formula = LabelledFormula.of(formula.formula(), alphabet);
-        String ltl = SolverUtils.toLambConvSyntax(label_formula.toString());
-        String alph = alphabet.toString();
-
-        String form = "LTL=" + ltl;
-        if (alph != null && !alph.isEmpty())
-            form += ",ALPHABET=" + alph;
-
-        return form;
     }
 
     public BigInteger count(int k) {

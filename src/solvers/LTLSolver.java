@@ -88,12 +88,11 @@ public class LTLSolver {
     }
 
 
-    public static enum SolverResult {
+    public enum SolverResult {
         SAT,
         UNSAT,
         TIMEOUT,
         ERROR;
-
         public boolean inconclusive() {
             return this == TIMEOUT || this == ERROR;
         }

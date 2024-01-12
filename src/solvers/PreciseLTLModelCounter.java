@@ -18,18 +18,6 @@ public class PreciseLTLModelCounter {
     public int TIMEOUT = 180;
     public MODEL_COUNTER modelcounter = MODEL_COUNTER.RELSAT;
 
-    ;
-
-    public String getCommandLTL2PL() {
-        String cmd;
-        String currentOS = System.getProperty("os.name");
-        if (currentOS.startsWith("Mac"))
-            cmd = "./lib/ltl-model-counter/ltl2pl_macos.sh " + INFILE + " " + BASENAME + " " + BOUND + " " + modelcounter.toString();
-        else
-            cmd = "./lib/ltl-model-counter/ltl2pl.sh" + INFILE + " " + BASENAME + " " + BOUND + " " + modelcounter.toString();
-        return cmd;
-    }
-
     public String getCommand() {
         String cmd;
         String currentOS = System.getProperty("os.name");
