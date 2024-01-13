@@ -65,7 +65,6 @@ public class SpecificationGeneticAlgorithm {
         if (!Settings.check_REALIZABILITY || Settings.check_STRONG_SAT) {
             System.out.println("Checking for Realizability ...");
             for (SpecificationChromosome c : bestSolutions) {
-//				System.out.println(TLSF_Utils.adaptTLSFSpec(c.spec));
                 System.out.print(".");
                 RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
                 if (status == RealizabilitySolverResult.REALIZABLE && !solutions.contains(c)) {
@@ -321,20 +320,6 @@ public class SpecificationGeneticAlgorithm {
             // Listener prints best achieved solution
             System.out.println();
             System.out.printf("%s\t%.2f\t%s\t%s\t%s%n", iteration, bestFit, best, ga1.getNumberOfVisitedIndividuals(), (Settings.check_REALIZABILITY && !Settings.check_STRONG_SAT) ? solutions.size() : bestSolutions.size());
-
-//						//check if timeout has been reached
-//						if (EXECUTION_TIMEOUT > 0) {
-//							Duration current = Duration.between(initialExecutionTime, Instant.now());
-////							long currentIterationTime = System.currentTimeMillis();
-////							long totalTime = currentIterationTime - initialExecutionTime;
-////							int min = (int) (totalTime) / 60000;
-////							int sec = (int) (totalTime - min * 60000) / 1000;
-//
-//							if (current.toSeconds() > EXECUTION_TIMEOUT) {
-//								System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
-//								ga.terminate();
-//							}
-//						}
         });
     }
 

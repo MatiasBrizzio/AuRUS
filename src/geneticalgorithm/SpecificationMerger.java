@@ -11,14 +11,12 @@ import tlsf.TLSF_Utils;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SpecificationMerger {
-
-
     public static List<Tlsf> merge(Tlsf spec0, Tlsf spec1) {
         return merge(spec0, spec1, SPEC_STATUS.UNKNOWN, SPEC_STATUS.UNKNOWN, 0);
     }
-
     public static List<Tlsf> merge(Tlsf spec0, Tlsf spec1, SPEC_STATUS status0, SPEC_STATUS status1) {
         List<Tlsf> merged_specifications = new LinkedList<>();
         List<Formula> assumptionConjuncts = new LinkedList<>();
@@ -219,11 +217,7 @@ public class SpecificationMerger {
             if (newAssumes.contains(selectedFormula)) continue;
             else newAssumes.add(selectedFormula);
         }
-        List<Formula> newAssm = new ArrayList<>();
-        for (LabelledFormula lf : newAssumes) {
-            newAssm.add(lf.formula());
-        }
-        return newAssm;
+        return newAssumes.stream().map(LabelledFormula::formula).collect(Collectors.toList());
     }
 
 }
