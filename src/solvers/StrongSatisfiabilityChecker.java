@@ -20,15 +20,9 @@ import java.util.concurrent.*;
 import java.util.function.IntConsumer;
 
 public class StrongSatisfiabilityChecker<S> {
-
-    //    private List<String> variables = null;
-//    private Map<S,Integer> states = null;
-    //public static int TIMEOUT = 120;
     private final LabelledFormula formula;
     boolean isAcceptance = false;
     boolean noAcceptance = false;
-    //    private DMatrixRMaj T = null;
-//    private DMatrixRMaj I = null;
     private Automaton<S, EmersonLeiAcceptance> automaton = null;
     private List<String> input_vars = null;
 
@@ -39,7 +33,7 @@ public class StrongSatisfiabilityChecker<S> {
         Future<String> future = executorService.submit(this::parse);
         try {
             // Wait for at most TIMEOUT seconds until the result is returned
-            String result = future.get(Settings.PARSING_TIMEOUT, TimeUnit.SECONDS);
+            future.get(Settings.PARSING_TIMEOUT, TimeUnit.SECONDS);
             input_vars = new ArrayList<>(formula.player1Variables());
         } catch (TimeoutException e) {
             System.out.println("StrongSatisfiabilityChecker: TIMEOUT parsing.");
