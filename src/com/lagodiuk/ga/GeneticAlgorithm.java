@@ -20,6 +20,7 @@ import main.Settings;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> {
 
@@ -53,12 +54,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         this.fitnessFunc = fitnessFunc;
         this.chromosomesComparator = new ChromosomesComparator();
         this.population.sortPopulationByFitness(this.chromosomesComparator);
-
-//		//keep all visited chromosomes
-//		allVisitedChromosomes = new HashSet();
-//		for (int i = 0; (i < population.getSize()); i++) {
-//			allVisitedChromosomes.add(this.population.getChromosomeByIndex(i));
-//		}
     }
 
     public void evolve() {
@@ -66,13 +61,13 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
         Population<C> newPopulation = new Population<C>();
 
-        for (int i = 0; (i < parentPopulationSize) && (i < this.parentChromosomesSurviveCount); i++) {
-            newPopulation.addChromosome(this.population.getChromosomeByIndex(i));
-        }
+        IntStream.iterate(0,
+                i -> (i < parentPopulationSize) && (i < this.parentChromosomesSurviveCount), i -> i + 1).
+                mapToObj(i -> this.population.getChromosomeByIndex(i)).forEach(newPopulation::addChromosome);
 
         // apply mutation
         Random r = Settings.RANDOM_GENERATOR;
-        for (int i = 0; (i < parentPopulationSize) && !terminate; i++) {
+        IntStream.iterate(0, i -> (i < parentPopulationSize) && !terminate, i -> i + 1).forEach(i -> {
             int mut = r.nextInt(100);
             if (mut < MUTATION_RATE) {
                 C chromosome = this.population.getChromosomeByIndex(i);
@@ -85,7 +80,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
                 }
             }
             checkTermination();
-        }
+        });
 
         // apply crossover
         int numOfCrossovers = Math.max(10, parentPopulationSize * (CROSSOVER_RATE / 100));
@@ -98,30 +93,16 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
             otherChromosome = newPopulation.getRandomChromosome();
 
             List<C> crossovered = chromosome.crossover(otherChromosome);
-            for (C c : crossovered) {
-                if (!c.equals(chromosome)) { //!newPopulation.contains(c)) {
-                    newPopulation.addChromosome(c);
-                    //update number of visited chromosomes
-                    this.numberOfVisitedIndividuals++;
-//					allVisitedChromosomes.add(c);
-                }
-            }
+            crossovered.stream().filter(c -> !c.equals(chromosome)).forEach(c -> {
+                newPopulation.addChromosome(c);
+                this.numberOfVisitedIndividuals++;
+            });
 
             checkTermination();
         }
 
         newPopulation.sortPopulationByFitness(this.chromosomesComparator);
-//		if (newPopulation.getSize() > this.parentChromosomesSurviveCount)
-//			newPopulation.trim(this.parentChromosomesSurviveCount);
         this.population = newPopulation;
-    }
-
-    private List<C> getListFromPop(Population<C> newPopulation) {
-        Iterator<C> it = newPopulation.iterator();
-        List<C> res = new LinkedList<C>();
-        while (it.hasNext())
-            res.add(it.next());
-        return res;
     }
 
     public void select() {
@@ -134,7 +115,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
             population.trim(this.parentChromosomesSurviveCount);
         }
     }
-
     public void evolve(int count) {
         this.terminate = false;
         startRunningTime = Instant.now();
@@ -199,14 +179,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         return this.population.getChromosomeByIndex(0);
     }
 
-    public C getWorst() {
-        return this.population.getChromosomeByIndex(this.population.getSize() - 1);
-    }
-
-    public int getMaximumNumberOfIndividuals() {
-        return this.MAXIMUM_NUM_OF_INDIVIDUALS;
-    }
-
     public void setMaximumNumberOfIndividuals(int MAXIMUM_NUM_OF_INDIVIDUALS) {
         this.MAXIMUM_NUM_OF_INDIVIDUALS = MAXIMUM_NUM_OF_INDIVIDUALS;
     }
@@ -215,16 +187,8 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         return this.numberOfVisitedIndividuals;
     }
 
-    public int getParentChromosomesSurviveCount() {
-        return this.parentChromosomesSurviveCount;
-    }
-
     public void setParentChromosomesSurviveCount(int parentChromosomesCount) {
         this.parentChromosomesSurviveCount = parentChromosomesCount;
-    }
-
-    public int getMutationRate() {
-        return MUTATION_RATE;
     }
 
     public void setMutationRate(int mutationRate) {
@@ -239,10 +203,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         this.CROSSOVER_RATE = crossoverRate;
     }
 
-    public int getPopulationSize() {
-        return this.population.getSize();
-    }
-
     public void addIterationListener(IterartionListener<C, T> listener) {
         this.iterationListeners.add(listener);
     }
@@ -255,10 +215,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         return this.chromosomesComparator.fit(chromosome);
     }
 
-    public void clearCache() {
-        this.chromosomesComparator.clearCache();
-    }
-
     private class ChromosomesComparator implements Comparator<C> {
 
         private final Map<C, T> cache = new WeakHashMap<C, T>();
@@ -267,8 +223,7 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         public int compare(C chr1, C chr2) {
             T fit1 = this.fit(chr1);
             T fit2 = this.fit(chr2);
-            int ret = fit2.compareTo(fit1);//reverse order
-            return ret;
+            return fit2.compareTo(fit1);
         }
 
         public T fit(C chr) {
@@ -278,12 +233,6 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
                 this.cache.put(chr, fit);
             }
             return fit;
-        }
-
-        ;
-
-        public void clearCache() {
-            this.cache.clear();
         }
     }
 
