@@ -1,0 +1,60 @@
+INFO {
+  TITLE:       "TLSF - Test Specification"
+  DESCRIPTION: "Test Test Test"
+  SEMANTICS:   Mealy
+  TARGET:      Moore
+}
+
+MAIN {
+  INPUTS {
+    hazardous_item;
+    person;
+  }
+  OUTPUTS {
+    pick_up;
+    drop;
+    radio;
+    carrying_item;
+    bit2;
+    bit1;
+    bit0;
+  }
+  ASSUME {
+    (! (hazardous_item));
+    (G ((((bit0) || (bit1)) || (bit2)) || (X (! (person)))));
+    (! (person));
+  }
+  GUARANTEE {
+    (! (bit0));
+    (! (bit1));
+    (! (bit2));
+    (! (pick_up));
+    (! (drop));
+    (! (radio));
+    (! (carrying_item));
+    (G (((X (hazardous_item)) && (X (! (carrying_item)))) <-> (X (pick_up))));
+    (G ((X (! (pick_up))) || ((((X (bit0)) <-> (bit0)) && ((X (bit1)) <-> (bit1))) && ((X (bit2)) <-> (bit2)))));
+    (G (((drop) || (! (pick_up))) || (X (carrying_item))));
+    (G ((! (drop)) || (X (! (carrying_item)))));
+    (G (((! (carrying_item)) || (drop)) || (X (carrying_item))));
+    (G (((carrying_item) || (pick_up)) || (X (! (carrying_item)))));
+    (G (((((X (! (bit0))) && (X (! (bit1)))) && (X (! (bit2)))) && (X (carrying_item))) <-> (X (drop))));
+    (G ((((carrying_item) || (X (bit0))) || (X (bit1))) || (X (bit2))));
+    (G ((X (person)) <-> (X (radio))));
+    (G (((! (radio)) && (X (! (radio)))) || ((((X (bit0)) <-> (bit0)) && ((X (bit1)) <-> (bit1))) && ((X (bit2)) <-> (bit2)))));
+    (G (((F (carrying_item)) || (F (radio))) || (F (((! (bit0)) && (bit1)) && (bit2)))));
+    (G (((F (carrying_item)) || (F (radio))) || (F (((bit0) && (! (bit1))) && (bit2)))));
+    (G (((F (carrying_item)) || (F (radio))) || (F (((! (bit0)) && (bit1)) && (! (bit2))))));
+    (G (((F (carrying_item)) || (F (radio))) || (F (((bit0) && (! (bit1))) && (! (bit2))))));
+    (G (((F (carrying_item)) || (F (radio))) || (F (((! (bit0)) && (! (bit1))) && (bit2)))));
+    (G (((F (! (carrying_item))) || (F (radio))) || (F (((! (bit0)) && (! (bit1))) && (! (bit2))))));
+    (G ((((((((bit0) && (! (bit1))) && (bit2)) || (((bit0) && (! (bit1))) && (! (bit2)))) || (((! (bit0)) && (bit1)) && (bit2))) || (((! (bit0)) && (bit1)) && (! (bit2)))) || (((! (bit0)) && (! (bit1))) && (bit2))) || (((! (bit0)) && (! (bit1))) && (! (bit2)))));
+    (G ((((((bit0) || (bit1)) || (bit2)) || (((X (bit0)) && (X (! (bit1)))) && (X (! (bit2))))) || (((X (! (bit0))) && (X (bit1))) && (X (bit2)))) || (((X (! (bit0))) && (X (! (bit1)))) && (X (! (bit2))))));
+    (G ((((((bit0) || (bit1)) || (! (bit2))) || (((X (bit0)) && (X (! (bit1)))) && (X (! (bit2))))) || (((X (! (bit0))) && (X (bit1))) && (X (bit2)))) || (((X (! (bit0))) && (X (! (bit1)))) && (X (bit2)))));
+    (G ((((((bit0) || (! (bit1))) || (bit2)) || (((X (bit0)) && (X (! (bit1)))) && (X (bit2)))) || (((X (bit0)) && (X (! (bit1)))) && (X (! (bit2))))) || (((X (! (bit0))) && (X (bit1))) && (X (! (bit2))))));
+    (G (((((((bit0) || (! (bit1))) || (! (bit2))) || (((X (bit0)) && (X (! (bit1)))) && (X (bit2)))) || (((X (! (bit0))) && (X (bit1))) && (X (bit2)))) || (((X (! (bit0))) && (X (! (bit1)))) && (X (bit2)))) || (((X (! (bit0))) && (X (! (bit1)))) && (X (! (bit2))))));
+    (G (((((((! (bit0)) || (bit1)) || (bit2)) || (((X (bit0)) && (X (! (bit1)))) && (X (! (bit2))))) || (((X (! (bit0))) && (X (bit1))) && (X (! (bit2))))) || (((X (! (bit0))) && (X (! (bit1)))) && (X (bit2)))) || (((X (! (bit0))) && (X (! (bit1)))) && (X (! (bit2))))));
+    (G ((((((! (bit0)) || (bit1)) || (! (bit2))) || (((X (bit0)) && (X (! (bit1)))) && (X (bit2)))) || (((X (! (bit0))) && (X (bit1))) && (X (bit2)))) || (((X (! (bit0))) && (X (bit1))) && (X (! (bit2))))));
+    (G ((((((((bit0) && (! (bit1))) && (bit2)) || (((bit0) && (! (bit1))) && (! (bit2)))) || (((! (bit0)) && (bit1)) && (bit2))) || (((! (bit0)) && (bit1)) && (! (bit2)))) || (((! (bit0)) && (! (bit1))) && (bit2))) || (((! (bit0)) && (! (bit1))) && (! (bit2)))));
+  }
+}

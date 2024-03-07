@@ -5,7 +5,7 @@ import java.util.Random;
 public class Settings {
     public static boolean USE_SPECTRA = false;
     public static boolean USE_DOCKER = false;
-    public static Random RANDOM_GENERATOR = new Random(System.currentTimeMillis());
+    public static Random RANDOM_GENERATOR = new Random(Double.doubleToLongBits(Math.random()));
     //genetic algorithm setting
     public static int GA_GENERATIONS = 10;
     public static int GA_MAX_NUM_INDIVIDUALS = Integer.MAX_VALUE;
