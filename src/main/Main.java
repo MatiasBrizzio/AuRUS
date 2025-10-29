@@ -191,6 +191,10 @@ public class Main {
         System.out.println("Num. of Solutions:" + solutions.size() + "\n");
         System.out.printf("Best fitness: %.2f\n%n", bestFitness);
         System.out.printf("AVG fitness: %.2f\n%n", (!ga.solutions.isEmpty()) ? (sumFitness / (double) ga.solutions.size()) : 0);
+        GenuineSolutionsAnalysis.calculateOriginalStatistics(tlsf, solutions);
+        System.out.println("Num. of Solutions equal to original:" + GenuineSolutionsAnalysis.equalToOriginalSolutions.size() + "\n");
+        System.out.println("Num. of Solutions weaker than original:" + GenuineSolutionsAnalysis.moreGeneralThanOriginalSolutions.size() + "\n");
+        System.out.println("Num. of Solutions stronger than original:" + GenuineSolutionsAnalysis.lessGeneralThanOriginalSolutions.size() + "\n");
         double genuineBestFitness = 0.0d;
         double genuineAvgFitness = 0.0d;
         double moregeneralBestFitness = 0.0d;
@@ -250,6 +254,9 @@ public class Main {
         bw.write("Num. of Solutions:   " + solutions.size() + "\n");
         bw.write(String.format("Best fitness: %.2f\n", bestFitness));
         bw.write(String.format("AVG fitness: %.2f\n", (!ga.solutions.isEmpty()) ? (sumFitness / (double) ga.solutions.size()) : 0));
+        bw.write("Num. of Solutions equal to original:" + GenuineSolutionsAnalysis.equalToOriginalSolutions.size() + "\n");
+        bw.write("Num. of Solutions weaker than original:" + GenuineSolutionsAnalysis.moreGeneralThanOriginalSolutions.size() + "\n");
+        bw.write("Num. of Solutions stronger than original:" + GenuineSolutionsAnalysis.lessGeneralThanOriginalSolutions.size() + "\n");
         if (!referenceSolutions.isEmpty()) {
             bw.write("Genuine Solutions:   " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
             bw.write("Genuine Solutions found:" + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");

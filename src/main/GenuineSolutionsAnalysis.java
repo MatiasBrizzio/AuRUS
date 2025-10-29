@@ -26,9 +26,18 @@ import java.util.stream.Stream;
 
 public class GenuineSolutionsAnalysis {
 
+    // Logically equivalent to a genuine solution
     public static Set<Integer> genuineSolutionsFound = new HashSet<>();
+    // Logically weaker than a genuine solution
     public static Set<Integer> moreGeneralSolutions = new HashSet<>();
+    // Logically stronger than a genuine solution
     public static Set<Integer> lessGeneralSolutions = new HashSet<>();
+    // Logically equivalent to the original solution
+    public static Set<Integer> equalToOriginalSolutions = new HashSet<>();
+    // Logically weaker than the original solution
+    public static Set<Integer> moreGeneralThanOriginalSolutions = new HashSet<>();
+    // Logically stronger than the original solution
+    public static Set<Integer> lessGeneralThanOriginalSolutions = new HashSet<>();
     public static boolean computeFitness = true;
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -202,4 +211,49 @@ public class GenuineSolutionsAnalysis {
         System.out.println();
     }
 
+    public static void calculateOriginalStatistics(Tlsf original, List<Tlsf> solutions) throws IOException, InterruptedException {
+        SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
+        if (original == null || solutions.isEmpty())
+            return;
+        //comparison with original specification
+        for (int i = 0; i < solutions.size(); i++) {
+            boolean isMoreGeneral = false;
+            boolean isLessGeneral = false;
+            Tlsf solution = solutions.get(i);
+            System.out.print(".");
+            Formula as_original = original.assume();
+            Formula g_original = Conjunction.of(original.guarantee());
+            Formula as_solution = solution.assume();
+            Formula g_solution = Conjunction.of(solution.guarantee());
+
+            //check isWeaker?
+            //check as_solution => as_original = UNSAT(as_solution & !as_original)
+            LTLSolver.SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(as_solution, as_original.not()).accept(visitor)));
+            if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
+                //check g_original => g_solution = UNSAT(g_original & !g_solution)
+                sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(g_original, g_solution.not()).accept(visitor)));
+                if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
+                    isMoreGeneral = true;
+                }
+            }
+            //check isStronger?
+            //check as_original => as_solution = UNSAT(as_original & !as_solution)
+            sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(as_original, as_solution.not()).accept(visitor)));
+            if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
+                //check g_solution => g_original = UNSAT(g_solution & !g_original)
+                sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(Conjunction.of(g_solution, g_original.not()).accept(visitor)));
+                if (!sat.inconclusive() && sat == LTLSolver.SolverResult.UNSAT) {
+                    isLessGeneral = true;
+                }
+            }
+            if (isMoreGeneral && isLessGeneral) {
+                equalToOriginalSolutions.add(i);
+            } else if (isMoreGeneral) {
+                moreGeneralThanOriginalSolutions.add(i);
+            } else if (isLessGeneral) {
+                lessGeneralThanOriginalSolutions.add(i);
+            }
+        }
+        System.out.println();
+    }
 }
