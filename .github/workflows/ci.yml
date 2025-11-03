@@ -1,0 +1,42 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install Ant
+        run: sudo apt-get update && sudo apt-get install -y ant
+
+      - name: Make Strix executable and add to PATH
+        run: |
+          if [ -f ./lib/new_strix/strix ]; then
+            chmod +x ./lib/new_strix/strix
+            echo "STRIX_PATH=$(pwd)/lib/new_strix/strix" >> $GITHUB_ENV
+            echo "PATH=$(pwd)/lib/new_strix:$PATH" >> $GITHUB_ENV
+          else
+            echo "Warning: ./lib/new_strix/strix not found" >&2
+          fi
+
+      - name: Show versions (debug)
+        run: |
+          java -version
+          ant -version
+          if [ -x ./lib/new_strix/strix ]; then
+            ./lib/new_strix/strix --version || true
+          else
+            echo "Strix not available"
+          fi
+
+      - name: Compile
+        run: ant compile
