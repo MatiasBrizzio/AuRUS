@@ -13,6 +13,8 @@ FLAGS=(-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA)
 # The number of runs per configuration
 N_RUNS_PER_CONFIG=150
 
+ant compile
+
 total_time=0
 for run in $(seq 1 $N_RUNS_PER_CONFIG); do
     for i in {0..20..5}; do
