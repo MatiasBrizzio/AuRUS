@@ -186,7 +186,7 @@ public class StrixHelper {
             pr = Runtime.getRuntime().exec(new String[]{"./run-docker-strix.sh", formula, ins, outs});
         else {
 //			System.out.println(outs + " "+ ins);
-            pr = Runtime.getRuntime().exec(new String[]{"lib/new_strix/strix", "-f " + formula, "--ins=" + ins, "--outs=" + outs});
+            pr = Runtime.getRuntime().exec(new String[]{"lib/new_strix/strix", "--realizability", "-f " + formula, "--ins=" + ins, "--outs=" + outs});
         }
         boolean timeout = false;
         if (!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {

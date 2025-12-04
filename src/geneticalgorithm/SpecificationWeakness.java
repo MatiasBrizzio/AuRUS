@@ -8,11 +8,17 @@ import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
 import utils.SolverUtils;
+import java.util.function.Predicate;
 
 public class SpecificationWeakness {
-    private static final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
+    private Tlsf original;
+    private final SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
 
-    public static boolean is_weakening_of_original(Tlsf original, SpecificationChromosome chromosome) throws IOException, InterruptedException {
+    public SpecificationWeakness(Tlsf original) {
+        this.original = original;
+    }
+
+    public boolean is_weakening_of_original(SpecificationChromosome chromosome) throws IOException, InterruptedException {
         Tlsf candidate = chromosome.spec;
         Formula as_candidate = candidate.assume();
         Formula g_candidate = Conjunction.of(candidate.guarantee());
@@ -33,5 +39,16 @@ public class SpecificationWeakness {
             return false;
         }
         return true;
+    }
+
+    public Predicate<SpecificationChromosome> get_predicate() {
+        return chromosome -> {
+            try {
+                return this.is_weakening_of_original(chromosome);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
     }
 }

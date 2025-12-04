@@ -50,7 +50,9 @@ public class SpecificationGeneticAlgorithm {
             return;
         }
 
-        GeneticAlgorithm<SpecificationChromosome, Double> ga = new GeneticAlgorithm<>(population, fitness);
+        SpecificationWeakness weakness_checker = new SpecificationWeakness(spec);
+        GeneticAlgorithm<SpecificationChromosome, Double> ga = new GeneticAlgorithm<>(
+            population, fitness, weakness_checker.get_predicate());
         addListener(ga);
         ga.setCrossoverRate(Settings.GA_CROSSOVER_RATE);
         ga.setMutationRate(Settings.GA_MUTATION_RATE);

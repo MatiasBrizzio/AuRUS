@@ -52,16 +52,17 @@ public class WellSeparationAnalysis {
         int numOfSAT = 0;
         int numOfNoWellSeparated = 0;
         int numOfUNSAT = 0;
+        int nFiles = 0;
 
         for (String filename : specifications) {
-            System.out.println(filename);
+            // System.out.println(filename);
             try {
                 Tlsf spec = TlsfUtils.toBasicTLSF(new File(filename));
                 Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), spec.assume(), Conjunction.of(spec.guarantee()));
                 SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
                 Formula env_sys2 = env_sys.accept(visitor);
                 LTLSolver.SolverResult res = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
-                System.out.println(res);
+                // System.out.println(res);
                 if (res == null)
                     numOfTimeout++;
                 else if (res == LTLSolver.SolverResult.SAT) {
@@ -73,7 +74,7 @@ public class WellSeparationAnalysis {
                     else if (rel == StrixHelper.RealizabilitySolverResult.REALIZABLE) {
                         numOfNoWellSeparated++;
                         noWellSeparated.add(filename);
-                        System.out.println(rel);
+                        // System.out.println(rel);
                     }
                 } else if (res == LTLSolver.SolverResult.UNSAT) {
                     numOfUNSAT++;
@@ -82,8 +83,11 @@ public class WellSeparationAnalysis {
                 ex.printStackTrace();
                 errors++;
             }
+            nFiles++;
+            System.out.print("Processed " + nFiles + "/" + specifications.size() + "\r");
 
         }
+        System.out.println();
         System.out.println("SATISFIABLE: " + numOfSAT);
         System.out.println("NO WELL SEPARATED: " + numOfNoWellSeparated);
         System.out.println("WELL SEPARATED: " + (numOfSAT - numOfNoWellSeparated));
@@ -91,7 +95,7 @@ public class WellSeparationAnalysis {
         System.out.println("TIMEOUTS: " + numOfTimeout);
         System.out.println("ERRORS: " + errors);
         System.out.println();
-        System.out.println(noWellSeparated);
+        // System.out.println(noWellSeparated);
 
         if (outFile.isEmpty())
             System.exit(0);

@@ -11,7 +11,7 @@ CASE_STUDY_SPEC="case-studies/arbiter/arbiter.tlsf"
 REFERENCE=(-ref=case-studies/arbiter/genuine/arbiter_fixed0.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed1.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed2.tlsf -ref=case-studies/arbiter/genuine/arbiter_fixed3.tlsf)
 FLAGS=(-Max=1000 -Gen=1000 -Pop=100 -k=20 -GATO=7200 -addA)
 # The number of runs per configuration
-N_RUNS_PER_CONFIG=150
+N_RUNS_PER_CONFIG=100
 
 ant compile
 

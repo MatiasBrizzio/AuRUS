@@ -20,6 +20,7 @@ import main.Settings;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> {
@@ -47,13 +48,15 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
     private int EXECUTION_TIMEOUT = 0;//in seconds. No timeout by default.
     private Instant startRunningTime = null;
     private Instant iterationStartTime = null;
+    private Predicate<C> filterPredicate = null;
 
 
-    public GeneticAlgorithm(Population<C> population, Fitness<C, T> fitnessFunc) {
+    public GeneticAlgorithm(Population<C> population, Fitness<C, T> fitnessFunc, Predicate<C> filterPredicate) {
         this.population = population;
         this.fitnessFunc = fitnessFunc;
         this.chromosomesComparator = new ChromosomesComparator();
         this.population.sortPopulationByFitness(this.chromosomesComparator);
+        this.filterPredicate = filterPredicate;
     }
 
     public void evolve() {
@@ -100,7 +103,9 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
             checkTermination();
         }
-
+        if (this.filterPredicate != null) {
+            newPopulation.filter(this.filterPredicate);
+        }
         newPopulation.sortPopulationByFitness(this.chromosomesComparator);
         this.population = newPopulation;
     }

@@ -18,6 +18,7 @@ package com.lagodiuk.ga;
 import main.Settings;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class Population<C extends Chromosome<C>> implements Iterable<C> {
 
@@ -71,5 +72,9 @@ public class Population<C extends Chromosome<C>> implements Iterable<C> {
 
     public boolean contains(C chromosome) {
         return chromosomes.contains(chromosome);
+    }
+
+    public void filter(Predicate<C> predicate) {
+        this.chromosomes.removeIf(predicate.negate());
     }
 }
