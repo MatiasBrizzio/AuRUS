@@ -45,6 +45,7 @@ public class WellSeparationAnalysis {
         Stream<Path> walk = Files.walk(Paths.get(directoryName));
         List<String> specifications = walk.map(Path::toString)
                 .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
+        walk.close();
 
         List<String> noWellSeparated = new LinkedList<>();
         int errors = 0;
@@ -58,7 +59,15 @@ public class WellSeparationAnalysis {
             // System.out.println(filename);
             try {
                 Tlsf spec = TlsfUtils.toBasicTLSF(new File(filename));
-                Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), spec.assume(), Conjunction.of(spec.guarantee()));
+                Formula env_sys = Conjunction.of(
+                    spec.initially(),
+                    GOperator.of(spec.require()),
+                    spec.preset(),
+                    GOperator.of(
+                        Conjunction.of(spec.assert_())),
+                        spec.assume(),
+                        Conjunction.of(spec.guarantee())
+                );
                 SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
                 Formula env_sys2 = env_sys.accept(visitor);
                 LTLSolver.SolverResult res = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
@@ -89,7 +98,7 @@ public class WellSeparationAnalysis {
         }
         System.out.println();
         System.out.println("SATISFIABLE: " + numOfSAT);
-        System.out.println("NO WELL SEPARATED: " + numOfNoWellSeparated);
+        System.out.println("NOT WELL SEPARATED: " + numOfNoWellSeparated);
         System.out.println("WELL SEPARATED: " + (numOfSAT - numOfNoWellSeparated));
         System.out.println("UNSATISFIABLE: " + numOfUNSAT);
         System.out.println("TIMEOUTS: " + numOfTimeout);
