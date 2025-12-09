@@ -27,22 +27,19 @@ public class WellSeparationAnalysis {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String directoryName = "";
-        String outFile = "";
         for (String arg : args) {
             if (arg.startsWith("-d=")) {
                 directoryName = arg.replace("-d=", "");
-                System.out.println("directory: " + directoryName);
-            } else if (arg.startsWith("-out=")) {
-                outFile = arg.replace("-out=", "");
-                System.out.println("out: " + outFile);
             }
         }
         if (directoryName.isEmpty()) {
             System.out.println("directory name is missing.");
             System.exit(0);
         }
+        String outFile = "wellseparation.csv";
 
-        Stream<Path> walk = Files.walk(Paths.get(directoryName));
+        Path dirPath = Paths.get(directoryName);
+        Stream<Path> walk = Files.walk(dirPath);
         List<String> specifications = walk.map(Path::toString)
                 .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
         walk.close();
@@ -94,7 +91,7 @@ public class WellSeparationAnalysis {
             }
             nFiles++;
             System.out.print("Processed " + nFiles + "/" + specifications.size() + "\r");
-
+            // if (nFiles > 50) break;
         }
         System.out.println();
         System.out.println("SATISFIABLE: " + numOfSAT);
@@ -114,10 +111,10 @@ public class WellSeparationAnalysis {
         BufferedWriter bw = new BufferedWriter(fw);
         boolean empty = !file.exists() || file.length() == 0;
         if (empty)
-            bw.write("sat,nowellsep,wellsep,unsat,to,err\n");
-        bw.write(numOfSAT + "," + numOfNoWellSeparated + "," + (numOfSAT - numOfNoWellSeparated) + "," + numOfUNSAT + "," + numOfTimeout + "," + errors + "\n");
+            bw.write("experiment,parameters,satisfiable,notwellseparated,wellseparated,unsatisfiable,timeout,errors\n");
+        String dirStr = dirPath.toString().replace("/home/y19056ba/projects/aurus-data/data/", "");
+        bw.write(dirStr.split("/")[0] + "," + dirStr.split("/")[1] + "," + numOfSAT + "," + numOfNoWellSeparated + "," + (numOfSAT - numOfNoWellSeparated) + "," + numOfUNSAT + "," + numOfTimeout + "," + errors + "\n");
         bw.flush();
         bw.close();
     }
-
 }
