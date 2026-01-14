@@ -24,16 +24,6 @@ public class SortSolutions {
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
-    private static List<Integer> getMaximalSpecs(HashMap<Integer, HashSet<Integer>> adjList) {
-        Set<Integer> allNodes = new HashSet<>(adjList.keySet());
-        Set<Integer> nonMaximalNodes = new HashSet<>();
-        for (HashSet<Integer> neighbors : adjList.values()) {
-            nonMaximalNodes.addAll(neighbors);
-        }
-        allNodes.removeAll(nonMaximalNodes);
-        return new ArrayList<>(allNodes);
-    }
-
     private static List<Tlsf> parseTlsfFiles(List<String> specifications_filenames) throws IOException, InterruptedException {
         List<Tlsf> specifications = new LinkedList<>();
         for (String filename : specifications_filenames) {
@@ -86,11 +76,14 @@ public class SortSolutions {
     public static void main(String[] args) throws IOException, InterruptedException {
         String directoryName = "";
         String outputName = "";
+        int limit = -1;
         for (String arg : args) {
             if (arg.startsWith("-d=")) {
                 directoryName = arg.replace("-d=", "");
             } else if (arg.startsWith("-out=")) {
                 outputName = arg.replace("-out=", "");
+            } else if (arg.startsWith("-limit=")) {
+                limit = Integer.parseInt(arg.replace("-limit=", ""));
             }
         }
         if (directoryName.isEmpty()) {
@@ -104,6 +97,11 @@ public class SortSolutions {
                 .filter(f -> f.endsWith(".tlsf") && !f.endsWith("_basic.tlsf")).collect(Collectors.toList());
         walk.close();
 
+        if (limit > 0 && limit < specifications_filenames.size()) {
+            specifications_filenames = specifications_filenames.subList(0, limit);
+            System.out.println("Limited to first " + limit + " specifications");
+        }
+
         System.out.println("Found " + specifications_filenames.size() + " specifications, converting to TLSF...");
         List<Tlsf> specifications = parseTlsfFiles(specifications_filenames);
 
@@ -113,6 +111,6 @@ public class SortSolutions {
 
         HashMap<Integer, HashSet<Integer>> adjList = topoSort.getAdjacencyList();
 
-        // renderDot(specifications_filenames, directoryName, outputName, sortedIndices, adjList);
+        renderDot(specifications_filenames, directoryName, outputName, sortedIndices, adjList);
     }
 }

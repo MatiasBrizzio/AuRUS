@@ -46,20 +46,62 @@ public class TopologicalSort {
         return res.equals(LTLSolver.SolverResult.UNSAT);
     }
 
+    private boolean hasPath(int from, int to) {
+        if (from == to) return true;
+        HashSet<Integer> neighbors = adj.get(from);
+        if (neighbors == null || neighbors.isEmpty()) return false;
+        if (neighbors.contains(to)) return true;
+        // BFS to check for path
+        Queue<Integer> queue = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        queue.add(from);
+        visited.add(from);
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            HashSet<Integer> currentNeighbors = adj.get(current);
+            if (currentNeighbors != null) {
+                for (int neighbor : currentNeighbors) {
+                    if (neighbor == to) return true;
+                    if (!visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private void addSpecs(List<Tlsf> specs) throws IOException, InterruptedException {
         List<Formula> formulae = new ArrayList<>();
         for (Tlsf spec : specs) {
             formulae.add(spec.toFormula().formula());
         }
+        int totalComparisons = specs.size() * (specs.size() - 1);
+        int skippedComparisons = 0;
+        int performedComparisons = 0;
         for (int i = 0; i < specs.size(); i++) {
             for (int j = 0; j < specs.size(); j++) {
-                if (i != j && implies(formulae.get(i), formulae.get(j))) {
-                    addEdge(i, j);
+                if (i != j) {
+                    // Skip if we already know i → j through transitivity
+                    if (hasPath(i, j)) {
+                        skippedComparisons++;
+                        System.out.print("Comparing " + (i+1) + " and " + (j+1) + " [skipped: " + skippedComparisons + "] \r");
+                        continue;
+                    }
+                    if (implies(formulae.get(i), formulae.get(j))) {
+                        addEdge(i, j);
+                    }
+                    performedComparisons++;
+                    System.out.print("Comparing " + (i+1) + " and " + (j+1) + " [skipped: " + skippedComparisons + "] \r");
                 }
-                System.out.print("Comparing " + (i+1) + " and " + (j+1) + "\r");
             }
-            System.out.println("Completed implication checks for spec " + (i+1) + "/" + specs.size());
+            System.out.println("Completed implication checks for spec " + (i+1) + "/" + specs.size() +
+                             " (performed: " + performedComparisons + ", skipped: " + skippedComparisons + ")");
         }
+        System.out.println("Total comparisons: performed=" + performedComparisons +
+                         ", skipped=" + skippedComparisons +
+                         ", reduction=" + (100.0 * skippedComparisons / totalComparisons) + "%");
     }
 
     private Map<Integer, Integer> removeEquivalentSpecs() {
@@ -99,13 +141,11 @@ public class TopologicalSort {
         }
         adj = newAdj;
         vertices = newIndex;
-        
         // Create reverse mapping (new to old)
         newToOldIndex = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : oldToNewIndex.entrySet()) {
             newToOldIndex.put(entry.getValue(), entry.getKey());
         }
-        
         return oldToNewIndex;
     }
 
