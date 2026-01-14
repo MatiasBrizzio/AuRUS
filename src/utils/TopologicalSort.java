@@ -41,8 +41,8 @@ public class TopologicalSort {
 
     private static boolean implies(Formula f1, Formula f2) throws IOException, InterruptedException {
         SolverSyntaxOperatorReplacer visitor = new SolverSyntaxOperatorReplacer();
-        Formula implication = GOperator.of(Conjunction.of(f1, f2.not())).accept(visitor);
-        LTLSolver.SolverResult res = LTLSolver.isSAT(SolverUtils.toSolverSyntax(implication));
+        Formula negImplication = GOperator.of(Conjunction.of(f1, f2.not())).accept(visitor);
+        LTLSolver.SolverResult res = LTLSolver.isSAT(SolverUtils.toSolverSyntax(negImplication));
         return res.equals(LTLSolver.SolverResult.UNSAT);
     }
 
