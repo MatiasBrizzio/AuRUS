@@ -235,7 +235,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         System.out.printf("s%.2f ", syntactic_distance);
 
 
-//		if (syntactic_distance < 1.0d) {
         //if the specifications are not syntactically equivalent
         // Second, compute the portion of loosing models with respect to the original specification
         double lost_models_fitness = 0.0d; // if the current specification is inconsistent, then it looses all the models (it maintains 0% of models of the original specification)
@@ -262,7 +261,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         }
 
         double fitness = (Settings.STATUS_FACTOR * status_fitness) + (Settings.LOST_MODELS_FACTOR * lost_models_fitness) + (Settings.WON_MODELS_FACTOR * won_models_fitness) + (Settings.SYNTACTIC_FACTOR * syntactic_distance);
-//		}
         System.out.printf("f%.2f ", fitness);
         chromosome.fitness = fitness;
         chromosome.syntactic_distance = syntactic_distance;
@@ -329,14 +327,11 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
                 } else if (sys_sat == SolverResult.UNSAT) {
                     status = SPEC_STATUS.ASSUMPTIONS;
                 } else { //env_sat == SolverResult.SAT && sys_sat == SolverResult.SAT
-//					Formula env_sys = spec.toFormula().formula();
                     //check if initial states and safety properties are consistent
                     Formula env_sys = Conjunction.of(spec.initially(), GOperator.of(spec.require()), spec.preset(), GOperator.of(Conjunction.of(spec.assert_())), spec.assume(), Conjunction.of(spec.guarantee()));
 
 
-//					System.out.println(env_sys);
                     Formula env_sys2 = env_sys.accept(visitor);
-//					System.out.println(env_sys2);
 
                     SolverResult sat = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
                     if (!sat.inconclusive()) {
@@ -472,14 +467,10 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         if (form_count == null)
             return 0.0d;
         BigDecimal numOfLostModels = new BigDecimal(form_count);
-        //patch to avoid computing again this value;
-//		commonNumOfModels = numOfLostModels;
         BigDecimal numOfModels = new BigDecimal(originalNumOfModels);
-//        BigDecimal numOfModels = new BigDecimal(UNIVERSE);
 
         BigDecimal res = numOfLostModels.divide(numOfModels, 2, RoundingMode.HALF_UP);
         double value = 1.0d - res.doubleValue();
-//		System.out.print(numOfLostModels + " " + numOfModels + " ");
         if (res.doubleValue() > 1.0d) {
             System.out.println("\nWARNING: increase the bound. ");
             return 1.0d;
@@ -523,7 +514,6 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         Formula wonModels = Conjunction.of(original_formula.not(), refined.toFormula().formula());
 
         LabelledFormula formula = LabelledFormula.of(wonModels, original.variables());
-        //patch to avoid computing again this value;
         BigInteger form_count = countModels(formula);
         if (form_count == null)
             return 0.0d;

@@ -115,6 +115,8 @@ public class Main {
                 bound = parseIntArg("-k", arg.replace("-k=", ""));
             } else if (arg.startsWith("-precise")) {
                 precise = true;
+            } else if (arg.equals("-docker")) {
+                Settings.USE_DOCKER = true;
             } else if (arg.startsWith("-no-docker")) {
                 Settings.USE_DOCKER = false;
             } else if (arg.startsWith("-use-spectra")) {
@@ -216,9 +218,6 @@ public class Main {
             ga.runRandom(tlsf);
         else
             ga.run(tlsf, status_factor, syntactic_factor, semantic_factor);
-
-//		if (ga.solutions.isEmpty())
-//			System.exit(0);
 
         //compute statistics
         double bestFitness = 0.0d;
@@ -424,7 +423,8 @@ public class Main {
         System.out.println("  -RTO=s               Strix (realizability) timeout per query");
         System.out.println("  -SatTO=s             LTL SAT-solving timeout per query");
         System.out.println("  -MCTO=s              model-counting timeout per query");
-        System.out.println("  -no-docker           use a local Strix installation instead of Docker");
+        System.out.println("  -docker              run Strix through the Docker image (recommended on macOS)");
+        System.out.println("  -no-docker           use the local Strix installation (default)");
         System.out.println("  -use-spectra         treat the input as a Spectra specification");
         System.out.println("  -ref=file.tlsf       genuine reference solution (repeatable)");
         System.out.println("  -out=dir             output directory for the generated repairs");

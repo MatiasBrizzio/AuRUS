@@ -145,7 +145,6 @@ public class SpecificationChromosome implements Chromosome<SpecificationChromoso
      */
     @Override
     public SpecificationChromosome mutate() {
-        //clone the current specification
         Tlsf mutated_spec = SpecificationMutator.mutate(spec);
         if (mutated_spec == null)
             return null;

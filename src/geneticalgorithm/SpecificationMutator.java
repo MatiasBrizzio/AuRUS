@@ -128,7 +128,6 @@ public class SpecificationMutator {
             SubformulaReplacer visitor = new SubformulaReplacer(to_mutate, mutated_subformula);
             Formula new_assumption = assumption_to_mutate.accept(visitor);
 
-//			Formula new_assumption = applyGeneralMutation(assumption_to_mutate, vars);
             if (new_assumption != BooleanConstant.FALSE) {
                 assumptions.remove(index_to_mutate);
                 assumptions.add(index_to_mutate, new_assumption);

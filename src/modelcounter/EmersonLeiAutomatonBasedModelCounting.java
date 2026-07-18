@@ -189,7 +189,6 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
      */
     private BigInteger countModels() {
         T = buildTransferMatrix();
-//		printMatrix(T);
         int n = T.getRowDimension();
 
         //set initial states
@@ -200,11 +199,8 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
 
         // count models
         FieldMatrix T_res = T.power(BOUND);
-//		printMatrix(T_res);
         FieldMatrix reachable = u.multiply(T_res);
-//		System.out.println("reachable: " + reachable.toString());
         FieldMatrix result = reachable.multiply(v);
-//		System.out.println("result: " + result.toString());
         BigFraction value = (BigFraction) result.getEntry(0, 0);
         BigInteger count = value.getNumerator();
         return count;

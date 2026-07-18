@@ -196,7 +196,6 @@ public class SpecificationGeneticAlgorithm {
         //create random population
         Population<SpecificationChromosome> population = new Population<>();
         SpecificationChromosome init = new SpecificationChromosome(spec);
-        //population.addChromosome(init);
         System.out.println("Random mutation of the Specifications...");
         for (int i = 0; i < Settings.GA_POPULATION_SIZE; i++) {
             SpecificationChromosome c = init.mutate();
@@ -205,10 +204,8 @@ public class SpecificationGeneticAlgorithm {
 
         searchExecutionTime = Instant.now();
 
-//		AutomataBasedModelCountingSpecificationFitness fitness = new AutomataBasedModelCountingSpecificationFitness(spec);
         System.out.println("Checking for realizability...");
         for (SpecificationChromosome c : population) {
-//			Double f = fitness.calculate(c);
             RealizabilitySolverResult status = StrixHelper.checkRealizability(c.spec);
             System.out.print(".");
             if (status == RealizabilitySolverResult.REALIZABLE && !solutions.contains(c)) {
@@ -370,7 +367,7 @@ public class SpecificationGeneticAlgorithm {
 
         if (Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0) {
             for (Formula g : spec.guarantee()) {
-                int i = Settings.RANDOM_GENERATOR.nextInt(spec.variables().size());//spec.numberOfInputs() + Settings.RANDOM_GENERATOR.nextInt(spec.variables().size()-spec.numberOfInputs());
+                int i = Settings.RANDOM_GENERATOR.nextInt(spec.variables().size());
                 Literal output = Literal.of(i);
                 if (Settings.RANDOM_GENERATOR.nextBoolean())
                     output = output.not();
@@ -444,8 +441,6 @@ public class SpecificationGeneticAlgorithm {
                     if (c.fitness < Settings.GA_THRESHOLD) break;
                     if (c.status == SPEC_STATUS.REALIZABLE && !solutions.contains(c))
                         solutions.add(c);
-                    // we can stop Genetic algorithm
-                    // ga.terminate();
                 }
             } else if (Settings.check_REALIZABILITY) {
                 for (SpecificationChromosome c : ga1.getPopulation()) {
