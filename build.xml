@@ -96,4 +96,30 @@
     </target>
 
 
+
+    <target name="javadoc" description="Generate API documentation into docs/api">
+        <mkdir dir="docs/api"/>
+        <javadoc destdir="docs/api"
+                 encoding="UTF-8" charset="UTF-8" docencoding="UTF-8"
+                 windowtitle="AuRUS API Documentation"
+                 doctitle="AuRUS 🧬 &amp;mdash; Automated Repair of Unrealisable LTL Specifications"
+                 bottom="&amp;copy; Mat&amp;iacute;as Brizzio. If you use AuRUS in research, please cite: Brizzio et al., &amp;quot;Automated Repair of Unrealisable LTL Specifications Guided by Model Counting&amp;quot;, GECCO 2023."
+                 maxmemory="2g"
+                 failonerror="false"
+                 useexternalfile="yes">
+            <arg value="-Xdoclint:none"/>
+            <arg value="-quiet"/>
+            <classpath refid="compile.classpath"/>
+            <packageset dir="${src.dir}">
+                <include name="main/**"/>
+                <include name="geneticalgorithm/**"/>
+                <include name="modelcounter/**"/>
+                <include name="owl/**"/>
+                <include name="solvers/**"/>
+                <include name="utils/**"/>
+            </packageset>
+            <link href="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
+        </javadoc>
+    </target>
+
 </project>
