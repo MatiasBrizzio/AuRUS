@@ -12,8 +12,55 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Command-line entry point of AuRUS.
+ *
+ * <p>Orchestrates a complete repair run: parses the command-line flags,
+ * transfers them into {@link Settings}, loads the input specification (TLSF,
+ * or Spectra with {@code -use-spectra}), launches the genetic search
+ * ({@link SpecificationGeneticAlgorithm#run(Tlsf, double, double, double)},
+ * or the random baseline with {@code -random}), and finally writes the
+ * results:</p>
+ * <ul>
+ *   <li>one {@code specN.tlsf} file per realisable repair found, annotated
+ *       with its fitness and its syntactic/semantic similarity to the
+ *       original specification;</li>
+ *   <li>an {@code out.txt} summary with solution counts, fitness statistics,
+ *       timing and the full configuration — the file consumed by
+ *       {@code read-results.sh} (its line format is load-bearing for the
+ *       experiment scripts and must not be changed);</li>
+ *   <li>optionally, when genuine reference repairs are supplied with
+ *       {@code -ref=...}, a comparison of the found solutions against them
+ *       (equivalent / weaker / stronger, via
+ *       {@link GenuineSolutionsAnalysis}).</li>
+ * </ul>
+ *
+ * <p>Run {@code ./unreal-repair.sh -help} for the full flag reference; the
+ * same information, with defaults, is documented in the project README.</p>
+ *
+ * <p>Reference implementation of: <i>Brizzio, Cordy, Papadakis,
+ * S&aacute;nchez, Aguirre, Degiovanni. "Automated Repair of Unrealisable LTL
+ * Specifications Guided by Model Counting", GECCO 2023
+ * (<a href="https://doi.org/10.1145/3583131.3590454">doi:10.1145/3583131.3590454</a>).</i></p>
+ *
+ * @author Mat&iacute;as Brizzio
+ * @see Settings
+ * @see SpecificationGeneticAlgorithm
+ */
 public class Main {
 
+    /**
+     * Parses the arguments, configures {@link Settings}, runs the search and
+     * writes the repairs and the summary report.
+     *
+     * <p>Exits with status {@code 0} on success (including {@code -help}),
+     * and with status {@code 1} on malformed arguments or unreadable input
+     * files, after printing a targeted error message.</p>
+     *
+     * @param args the command-line arguments (see {@link #printUsage()})
+     * @throws IOException          if writing the output files fails
+     * @throws InterruptedException if an external solver call is interrupted
+     */
     public static void main(String[] args) throws IOException, InterruptedException {
         List<Tlsf> referenceSolutions = new LinkedList<>();
         int popSize = 0;
@@ -44,24 +91,28 @@ public class Main {
         String filename = "";
         String outname = "";
         for (String arg : args) {
-            if (arg.startsWith("-Gen=")) {
-                generations = Integer.parseInt(arg.replace("-Gen=", ""));
+            if (arg.equals("-h") || arg.equals("-help") || arg.equals("--help")) {
+                printBanner();
+                printUsage();
+                System.exit(0);
+            } else if (arg.startsWith("-Gen=")) {
+                generations = parseIntArg("-Gen", arg.replace("-Gen=", ""));
             } else if (arg.startsWith("-Pop=")) {
-                popSize = Integer.parseInt(arg.replace("-Pop=", ""));
+                popSize = parseIntArg("-Pop", arg.replace("-Pop=", ""));
             } else if (arg.startsWith("-Max=")) {
-                maxNumOfInd = Integer.parseInt(arg.replace("-Max=", ""));
+                maxNumOfInd = parseIntArg("-Max", arg.replace("-Max=", ""));
             } else if (arg.startsWith("-COR=")) {
-                crossoverRate = Integer.parseInt(arg.replace("-COR=", ""));
+                crossoverRate = parseIntArg("-COR", arg.replace("-COR=", ""));
             } else if (arg.startsWith("-GPR=")) {
-                guaranteePreferenceRate = Integer.parseInt(arg.replace("-GPR=", ""));
+                guaranteePreferenceRate = parseIntArg("-GPR", arg.replace("-GPR=", ""));
             } else if (arg.startsWith("-MR=")) {
-                mutationRate = Integer.parseInt(arg.replace("-MR=", ""));
+                mutationRate = parseIntArg("-MR", arg.replace("-MR=", ""));
             } else if (arg.startsWith("-geneMR=")) {
-                gene_mutationRate = Integer.parseInt(arg.replace("-geneMR=", ""));
+                gene_mutationRate = parseIntArg("-geneMR", arg.replace("-geneMR=", ""));
             } else if (arg.startsWith("-geneNUM=")) {
-                gene_num_of_mutations = Integer.parseInt(arg.replace("-geneNUM=", ""));
+                gene_num_of_mutations = parseIntArg("-geneNUM", arg.replace("-geneNUM=", ""));
             } else if (arg.startsWith("-k=")) {
-                bound = Integer.parseInt(arg.replace("-k=", ""));
+                bound = parseIntArg("-k", arg.replace("-k=", ""));
             } else if (arg.startsWith("-precise")) {
                 precise = true;
             } else if (arg.startsWith("-no-docker")) {
@@ -83,43 +134,59 @@ public class Main {
             } else if (arg.startsWith("-onlyInputsA")) {
                 onlyInputsInAssumptions = true;
             } else if (arg.startsWith("-GATO=")) {
-                ga_timeout = Integer.parseInt(arg.replace("-GATO=", ""));
+                ga_timeout = parseIntArg("-GATO", arg.replace("-GATO=", ""));
             } else if (arg.startsWith("-RTO=")) {
-                real_timeout = Integer.parseInt(arg.replace("-RTO=", ""));
+                real_timeout = parseIntArg("-RTO", arg.replace("-RTO=", ""));
             } else if (arg.startsWith("-SatTO=")) {
-                sat_timeout = Integer.parseInt(arg.replace("-SatTO=", ""));
+                sat_timeout = parseIntArg("-SatTO", arg.replace("-SatTO=", ""));
             } else if (arg.startsWith("-MCTO=")) {
-                mc_timeout = Integer.parseInt(arg.replace("-MCTO=", ""));
+                mc_timeout = parseIntArg("-MCTO", arg.replace("-MCTO=", ""));
             } else if (arg.startsWith("-sol=")) {
-                threshold = Double.parseDouble(arg.replace("-sol=", ""));
+                threshold = parseDoubleArg("-sol", arg.replace("-sol=", ""));
             } else if (arg.startsWith("-factors")) {
                 String[] factors = arg.replace("-factors=", "").split(",");
                 if (factors.length != 3) {
-                    correctUssage();
-                    return;
+                    System.err.println("ERROR: -factors expects exactly three comma-separated values, e.g. -factors=0.7,0.1,0.2 (got: " + arg + ")");
+                    System.exit(1);
                 }
-                status_factor = Double.parseDouble(factors[0]);
-                syntactic_factor = Double.parseDouble(factors[1]);
-                semantic_factor = Double.parseDouble(factors[2]);
+                status_factor = parseDoubleArg("-factors", factors[0]);
+                syntactic_factor = parseDoubleArg("-factors", factors[1]);
+                semantic_factor = parseDoubleArg("-factors", factors[2]);
             } else if (arg.startsWith("-ref=")) {
                 String ref_name = arg.replace("-ref=", "");
-                Tlsf ref_sol = TlsfUtils.toBasicTLSF(new File(ref_name));
+                File ref_file = new File(ref_name);
+                if (!ref_file.exists()) {
+                    System.err.println("ERROR: reference solution not found: " + ref_name);
+                    System.exit(1);
+                }
+                Tlsf ref_sol = TlsfUtils.toBasicTLSF(ref_file);
                 referenceSolutions.add(ref_sol);
             } else if (arg.startsWith("-out=")) {
                 outname = arg.replace("-out=", "");
             } else if (arg.startsWith("-") || (!arg.endsWith(".tlsf") && !arg.endsWith(".spectra"))) {
-                correctUssage();
-                return;
+                System.err.println("ERROR: unknown or malformed argument: " + arg);
+                System.err.println("Run with -help to see the available options.");
+                System.exit(1);
             } else {
                 filename = arg;
             }
         }
         if (filename.isEmpty()) {
-            correctUssage();
-            return;
+            System.err.println("ERROR: no input specification provided (expected a .tlsf or .spectra file).");
+            printUsage();
+            System.exit(1);
         }
-        //FileReader f = new FileReader(filename);
-        Tlsf tlsf = TlsfUtils.toBasicTLSF(new File(filename));
+        File input_file = new File(filename);
+        if (!input_file.exists()) {
+            System.err.println("ERROR: input specification not found: " + filename);
+            System.exit(1);
+        }
+
+        printBanner();
+        System.out.println("Input specification: " + filename);
+        System.out.println();
+
+        Tlsf tlsf = TlsfUtils.toBasicTLSF(input_file);
         SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
         if (popSize > 0) Settings.GA_POPULATION_SIZE = popSize;
         if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
@@ -186,9 +253,15 @@ public class Main {
 
             solutions.add(sol.spec);
         }
-        System.out.println("Num. of Solutions:" + solutions.size() + "\n");
-        System.out.printf("Best fitness: %.2f\n%n", bestFitness);
-        System.out.printf("AVG fitness: %.2f\n%n", (!ga.solutions.isEmpty()) ? (sumFitness / (double) ga.solutions.size()) : 0);
+
+        System.out.println();
+        System.out.println("==================== AuRUS summary ====================");
+        System.out.println("Num. of Solutions: " + solutions.size());
+        System.out.printf("Best fitness:      %.2f%n", bestFitness);
+        System.out.printf("AVG fitness:       %.2f%n", (!ga.solutions.isEmpty()) ? (sumFitness / (double) ga.solutions.size()) : 0);
+        if (!solutions.isEmpty())
+            System.out.println("Repairs written to: " + outfolder.getAbsolutePath()
+                    + " (spec0.tlsf .. spec" + (solutions.size() - 1) + ".tlsf)");
         double genuineBestFitness = 0.0d;
         double genuineAvgFitness = 0.0d;
         double moregeneralBestFitness = 0.0d;
@@ -199,7 +272,8 @@ public class Main {
         double moregeneralSumFitness = 0.0d;
         double lessgeneralSumFitness = 0.0d;
         if (!referenceSolutions.isEmpty()) {
-            System.out.println("Computing genuine statistics...");
+            System.out.println();
+            System.out.println("Comparing against " + referenceSolutions.size() + " genuine reference solution(s)...");
             //check if some genuine solution has been found
             GenuineSolutionsAnalysis.calculateGenuineStatistics(referenceSolutions, solutions);
 
@@ -225,21 +299,19 @@ public class Main {
             }
             lessgeneralAvgFitness = lessgeneralSumFitness / (double) GenuineSolutionsAnalysis.lessGeneralSolutions.size();
 
-            System.out.println("Genuine Solutions: " + GenuineSolutionsAnalysis.genuineSolutionsFound.size() + "\n");
-            System.out.println("Genuine Solutions found: " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString() + "\n");
-            System.out.printf("Best Genuine fitness: %.2f\n%n", genuineBestFitness);
-            System.out.printf("AVG Genuine fitness: %.2f\n%n", genuineAvgFitness);
-            System.out.println("Weaker Solutions:" + GenuineSolutionsAnalysis.moreGeneralSolutions.size() + "\n");
-            System.out.println("Weaker Solutions found:" + GenuineSolutionsAnalysis.moreGeneralSolutions.toString() + "\n");
-            System.out.printf("Best Weaker fitness: %.2f\n%n", moregeneralBestFitness);
-            System.out.printf("AVG Weaker fitness: %.2f\n%n", moregeneralAvgFitness);
-            System.out.println("Stronger Solutions:" + GenuineSolutionsAnalysis.lessGeneralSolutions.size() + "\n");
-            System.out.println("Stronger Solutions found:" + GenuineSolutionsAnalysis.lessGeneralSolutions.toString() + "\n");
-            System.out.printf("Best Stronger fitness: %.2f\n%n", lessgeneralBestFitness);
-            System.out.printf("AVG Stronger fitness: %.2f\n%n", lessgeneralAvgFitness);
-            System.out.printf("Genuine precision: %.2f \n%n", ((double) GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double) referenceSolutions.size()));
+            System.out.println("Genuine  (equivalent): " + GenuineSolutionsAnalysis.genuineSolutionsFound.size()
+                    + " " + GenuineSolutionsAnalysis.genuineSolutionsFound.toString());
+            System.out.printf("         best %.2f | avg %.2f%n", genuineBestFitness, genuineAvgFitness);
+            System.out.println("Weaker   (more general): " + GenuineSolutionsAnalysis.moreGeneralSolutions.size()
+                    + " " + GenuineSolutionsAnalysis.moreGeneralSolutions.toString());
+            System.out.printf("         best %.2f | avg %.2f%n", moregeneralBestFitness, moregeneralAvgFitness);
+            System.out.println("Stronger (less general): " + GenuineSolutionsAnalysis.lessGeneralSolutions.size()
+                    + " " + GenuineSolutionsAnalysis.lessGeneralSolutions.toString());
+            System.out.printf("         best %.2f | avg %.2f%n", lessgeneralBestFitness, lessgeneralAvgFitness);
+            System.out.printf("Genuine precision: %.2f%n", ((double) GenuineSolutionsAnalysis.genuineSolutionsFound.size() / (double) referenceSolutions.size()));
 
         }
+        System.out.println("=======================================================");
 
         //saving the time execution and configuration details
         File file = new File(directoryName + "/out.txt");
@@ -273,17 +345,91 @@ public class Main {
         System.exit(0);
     }
 
-    private static void correctUssage() {
-        System.out.println("Use ./unreal-repair.sh \n" +
-                "\t[ -onlySAT | -strongSAT | -no-docker | -random | -GA_random_selector | \n" +
-                "\t -Max=max_num_of_individuals | -Gen=num_of_generations | -sol=THRESHOLD | \n" +
-                "\t -Pop=population_size | -COR=crossover_rate | -MR=mutation_rate | \n" +
-                "\t -geneMR=gene_mutation_rate | -geneNUM=num_of_genes_to_mutate | \n" +
-                "\t -removeGuarantees | -addAssumptions | -onlyInputsA | -GPR=guarantee_preference_rate | \n" +
-                "\t -k=bound | -precise | -factors=STATUS_factor,MC_factor,SYN_factor | \n" +
-                "\t -RTO=strix_timeout -GATO=GA_timeout | -SatTO=sat_timeout | -MCTO=model_counting_timeout | \n" +
-                "\t -ref=TLSF_reference_solution]\n" +
-                "\tinput-file.tlsf");
+    /**
+     * Parses an integer flag value, exiting with a targeted error message —
+     * instead of an unhandled {@link NumberFormatException} stack trace —
+     * when the value is not a valid integer.
+     *
+     * @param flag  the flag name, used in the error message (e.g. {@code -Gen})
+     * @param value the raw value to parse
+     * @return the parsed integer
+     */
+    private static int parseIntArg(String flag, String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            System.err.println("ERROR: invalid value for " + flag + ": '" + value + "' (expected an integer).");
+            System.exit(1);
+            return 0; // unreachable
+        }
+    }
+
+    /**
+     * Parses a floating-point flag value, exiting with a targeted error
+     * message when the value is not a valid number.
+     *
+     * @param flag  the flag name, used in the error message (e.g. {@code -sol})
+     * @param value the raw value to parse
+     * @return the parsed double
+     */
+    private static double parseDoubleArg(String flag, String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            System.err.println("ERROR: invalid value for " + flag + ": '" + value + "' (expected a number).");
+            System.exit(1);
+            return 0.0d; // unreachable
+        }
+    }
+
+    /** Prints the tool banner with the reference to the paper. */
+    private static void printBanner() {
+        System.out.println("=======================================================");
+        System.out.println(" AuRUS - Automated Repair of Unrealisable LTL Specs");
+        System.out.println(" Brizzio et al., GECCO 2023 - doi:10.1145/3583131.3590454");
+        System.out.println("=======================================================");
+    }
+
+    /** Prints the usage message, with the flags grouped by concern. */
+    private static void printUsage() {
+        System.out.println("Usage: ./unreal-repair.sh [flags] input-file.{tlsf|spectra}");
+        System.out.println();
+        System.out.println("Search budget & population:");
+        System.out.println("  -Gen=N               number of generations");
+        System.out.println("  -Pop=N               population size per generation");
+        System.out.println("  -Max=N               maximum number of individuals to generate");
+        System.out.println("  -GATO=s              overall GA timeout (seconds)");
+        System.out.println("  -sol=T               discard solutions with fitness below T");
+        System.out.println();
+        System.out.println("Genetic operators:");
+        System.out.println("  -COR=r               crossover rate (% of the population)");
+        System.out.println("  -MR=r                specification mutation probability (%)");
+        System.out.println("  -geneMR=r            sub-formula (gene) mutation probability (%)");
+        System.out.println("  -geneNUM=n           max sub-formulas mutated per formula");
+        System.out.println("  -GPR=r               preference for mutating guarantees over assumptions (%)");
+        System.out.println("  -addAssumptions      allow the GA to add new assumptions (-addA)");
+        System.out.println("  -removeGuarantees    allow the GA to remove guarantees (-removeG)");
+        System.out.println("  -onlyInputsA         restrict new assumptions to input variables");
+        System.out.println("  -GA_random_selector  use a random selector instead of the best selector");
+        System.out.println();
+        System.out.println("Fitness function:");
+        System.out.println("  -factors=S,SYN,SEM   weights of status, syntactic and semantic distance");
+        System.out.println("  -k=N                 bound for the model-counting approach");
+        System.out.println("  -onlySAT             check realizability only on final candidates");
+        System.out.println("  -strongSAT           also check strong satisfiability in the fitness");
+        System.out.println("  -precise             use the exact bounded model counter (slower)");
+        System.out.println("  -random              baseline: random mutants, realizability checked at the end");
+        System.out.println();
+        System.out.println("External solvers & timeouts:");
+        System.out.println("  -RTO=s               Strix (realizability) timeout per query");
+        System.out.println("  -SatTO=s             LTL SAT-solving timeout per query");
+        System.out.println("  -MCTO=s              model-counting timeout per query");
+        System.out.println("  -no-docker           use a local Strix installation instead of Docker");
+        System.out.println("  -use-spectra         treat the input as a Spectra specification");
+        System.out.println("  -ref=file.tlsf       genuine reference solution (repeatable)");
+        System.out.println("  -out=dir             output directory for the generated repairs");
+        System.out.println();
+        System.out.println("  -help                show this message");
     }
 
 }
