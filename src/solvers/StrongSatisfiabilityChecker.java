@@ -107,8 +107,6 @@ public class StrongSatisfiabilityChecker<S> {
                                     edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
                                 if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
                                     isAcceptance = true;
-                                    //                                if (!statesToAnalyse.contains(edge.successor()))
-                                    //                                    statesToAnalyse.add(edge.successor());
                                 }
                             }
                         });

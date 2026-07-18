@@ -240,8 +240,7 @@ public class Formula2Automaton<S> {
         min.initializeMinimizer();
         automata.Automaton to_minimize = min.getMinimizeableAutomaton((automata.Automaton) dfa.clone());
         DefaultTreeModel tree = min.getDistinguishableGroupsTree(to_minimize);
-        automata.Automaton dfa_minimized = min.getMinimumDfa(to_minimize, tree);
-        return dfa_minimized;
+        return min.getMinimumDfa(to_minimize, tree);
     }
 
     public automata.Automaton PAtoDfa(Automaton<S, ParityAcceptance> automaton) {

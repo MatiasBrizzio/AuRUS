@@ -2,12 +2,14 @@ package geneticalgorithm;
 
 import com.lagodiuk.ga.Fitness;
 import main.Settings;
+import modelcounter.EmersonLeiAutomatonBasedModelCounting;
 import org.junit.jupiter.api.Test;
 import owl.ltl.parser.TlsfParser;
 import owl.ltl.tlsf.Tlsf;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 
 class AutomabaBasedModelCountingSpecificationFitnessTest {
 
@@ -57,6 +59,7 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
         f = new FileReader("examples/minepump-4.tlsf");
         Tlsf spec2 = TlsfParser.parse(f);
 //		Settings.USE_DOCKER = false;
+
         AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
         Settings.allowAssumptionAddition = true;
         SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
@@ -88,21 +91,22 @@ class AutomabaBasedModelCountingSpecificationFitnessTest {
         AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
 
         SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
-        System.out.printf("%.2f ", fitnessFunc.calculate(chromosome));
+//        System.out.printf("%.2f ", fitnessFunc.calculate(chromosome));
+        System.out.println("Semantic distance " +  fitnessFunc.compute_semantic_distance(spec1, spec2));
     }
 
     @Test
     void testArbiterRepairGoal1() throws IOException, InterruptedException {
         FileReader f = new FileReader("examples/arbiter.tlsf");
         Tlsf spec1 = TlsfParser.parse(f);
-        FileReader f2 = new FileReader("examples/arbiter-3.tlsf");
-        Tlsf spec2 = TlsfParser.parse(f2);
+//        FileReader f2 = new FileReader("examples/arbiter-3.tlsf");
+//        Tlsf spec2 = TlsfParser.parse(f2);
 //		Settings.allowAssumptionGuaranteeRemoval = true;
 //		Settings.USE_DOCKER = false;
         AutomataBasedModelCountingSpecificationFitness fitnessFunc = new AutomataBasedModelCountingSpecificationFitness(spec1);
 
-        SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
-        System.out.printf("%.2f ", fitnessFunc.calculate(chromosome));
+//        SpecificationChromosome chromosome = new SpecificationChromosome(spec2);
+//        System.out.printf("%.2f ", fitnessFunc.calculate(chromosome));
     }
 
     @Test

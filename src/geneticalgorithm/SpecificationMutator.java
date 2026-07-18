@@ -32,7 +32,7 @@ public class SpecificationMutator {
             if (Settings.only_inputs_in_assumptions)
                 vars = vars.subList(0, spec.numberOfInputs());
 
-            //select subformula to mutate
+            //select sub formula to mutate
             Set<Formula> subformulas = FormulaUtils.subformulas(assumption_to_mutate);
             int n = subformulas.size();
             Formula to_mutate = (Formula) subformulas.toArray()[Settings.RANDOM_GENERATOR.nextInt(n)];
