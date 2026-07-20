@@ -33,11 +33,7 @@ import java.util.concurrent.TimeUnit;
  * syntax ({@code SolverUtils.toSolverSyntax}), extracts the input/output
  * signal lists, and calls the 3-argument
  * {@link #executeStrix(String, String, String)}, which invokes
- * {@code lib/new_strix/strix} directly. <b>Caveat:</b> the input/output
- * extraction assumes the TLSF variable ordering convention — inputs occupy a
- * contiguous run starting at index 0, immediately followed by outputs — and
- * stops at the first bit that breaks the run; this is the ordering AuRUS's
- * own TLSF writer produces, but is not re-validated here.</p>
+ * {@code lib/new_strix/strix} directly.
  *
  * @author Mat&iacute;as Brizzio
  * @see Settings
