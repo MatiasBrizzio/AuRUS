@@ -27,8 +27,8 @@ public class Settings {
     /** Treat the input as a Spectra specification instead of TLSF (flag {@code -use-spectra}, default {@code false}). */
     public static boolean USE_SPECTRA = false;
 
-    /** Run Strix through the Docker image rather than the local install (flags {@code -docker}/{@code -no-docker}, default {@code false} — native). Read by {@link solvers.StrixHelper}. */
-    public static boolean USE_DOCKER = false; // default: native Strix via lib/strix_tlsf.sh; enable the Docker image with -docker
+    /** Run Strix through the Docker image rather than the local install (flags {@code -docker}/{@code -no-docker}, default {@code false} — native). By default (no Docker, no Spectra), AuRUS calls {@code lib/new_strix/strix} directly; see {@link solvers.StrixHelper} for the exact dispatch. */
+    public static boolean USE_DOCKER = false; // default: native Strix via lib/new_strix/strix (see StrixHelper); enable the Docker image with -docker
 
     /** Shared random source for every stochastic decision in the search (selection coin flips, mutation targets, ...); seeded from {@link Math#random()} at class load, so runs are not reproducible by default. */
     public static Random RANDOM_GENERATOR = new Random(Double.doubleToLongBits(Math.random()));
