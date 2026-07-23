@@ -121,6 +121,15 @@ public class Main {
                 Settings.USE_DOCKER = false;
             } else if (arg.startsWith("-use-spectra")) {
                 Settings.USE_SPECTRA = true;
+            } else if (arg.startsWith("-synth-bin=")) {
+                Settings.SYNTH_BIN = arg.replace("-synth-bin=", "");
+            } else if (arg.startsWith("-synth=")) {
+                String synth = arg.replace("-synth=", "");
+                if (!synth.equalsIgnoreCase("strix") && !synth.equalsIgnoreCase("ltlsynt")) {
+                    System.err.println("ERROR: unknown value for -synth: '" + synth + "' (expected 'strix' or 'ltlsynt').");
+                    System.exit(1);
+                }
+                Settings.SYNTH_TOOL = synth;
             } else if (arg.startsWith("-random")) {
                 randomGen = true;
             } else if (arg.startsWith("-GA_random_selector")) {
@@ -426,6 +435,8 @@ public class Main {
         System.out.println("  -docker              run Strix through the Docker image (recommended on macOS)");
         System.out.println("  -no-docker           use the local Strix installation (default)");
         System.out.println("  -use-spectra         treat the input as a Spectra specification");
+        System.out.println("  -synth=NAME          synthesiser to use: strix (default) or ltlsynt (Docker-free)");
+        System.out.println("  -synth-bin=PATH      override the synthesiser binary path/name");
         System.out.println("  -ref=file.tlsf       genuine reference solution (repeatable)");
         System.out.println("  -out=dir             output directory for the generated repairs");
         System.out.println();

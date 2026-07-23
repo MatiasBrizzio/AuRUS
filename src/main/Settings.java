@@ -30,6 +30,27 @@ public class Settings {
     /** Run Strix through the Docker image rather than the local install (flags {@code -docker}/{@code -no-docker}, default {@code false} — native). By default (no Docker, no Spectra), AuRUS calls {@code lib/new_strix/strix} directly; see {@link solvers.StrixHelper} for the exact dispatch. */
     public static boolean USE_DOCKER = false; // default: native Strix via lib/new_strix/strix (see StrixHelper); enable the Docker image with -docker
 
+    /**
+     * Which realisability/synthesis tool to invoke (flag {@code -synth},
+     * default {@code "strix"}). Currently supported: {@code "strix"} (the
+     * original path — native binary, or the Docker image when
+     * {@link #USE_DOCKER} is set) and {@code "ltlsynt"} (part of the
+     * <a href="https://spot.lre.epita.fr/ltlsynt.html">Spot</a> library,
+     * installable without Docker via e.g. {@code brew install spot} (macOS) or
+     * {@code conda install -c conda-forge spot} (Linux/macOS, no root needed) —
+     * see <a href="https://spot.lre.epita.fr/install.html">spot.lre.epita.fr/install.html</a>
+     * for the Debian/Ubuntu package repository. Read by {@link solvers.StrixHelper}.
+     */
+    public static String SYNTH_TOOL = "Strix";
+
+    /**
+     * Path/name of the synthesiser binary to invoke for {@link #SYNTH_TOOL}
+     * (flag {@code -synth-bin}). Empty means "use the tool's default":
+     * {@code lib/new_strix/strix} for {@code strix}, or {@code ltlsynt}
+     * resolved from {@code PATH} for {@code ltlsynt}.
+     */
+    public static String SYNTH_BIN = "";
+
     /** Shared random source for every stochastic decision in the search (selection coin flips, mutation targets, ...); seeded from {@link Math#random()} at class load, so runs are not reproducible by default. */
     public static Random RANDOM_GENERATOR = new Random(Double.doubleToLongBits(Math.random()));
 

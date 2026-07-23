@@ -35,6 +35,16 @@ import java.util.concurrent.TimeUnit;
  * {@link #executeStrix(String, String, String)}, which invokes
  * {@code lib/new_strix/strix} directly.
  *
+ * <p><b>Pluggable synthesiser (Docker-free alternative).</b> Setting
+ * {@code Settings.SYNTH_TOOL = "ltlsynt"} (flag {@code -synth=ltlsynt}) makes
+ * {@link #executeStrix(String, String, String)} — used by both the TLSF and
+ * Spectra realisability checks — dispatch to {@code ltlsynt} instead of
+ * Strix, a tool installable directly (e.g. {@code brew install spot} on macOS,
+ * or {@code conda install -c conda-forge spot} on Linux/macOS — see
+ * <a href="https://spot.lre.epita.fr/install.html">spot.lre.epita.fr/install.html</a>
+ * for a Debian/Ubuntu package repository), with no Docker and no
+ * architecture-specific vendored binary.</p>
+ *
  * @author Mat&iacute;as Brizzio
  * @see Settings
  * @see geneticalgorithm.AutomataBasedModelCountingSpecificationFitness#compute_status
@@ -62,8 +72,10 @@ public class StrixHelper {
      * to a {@code .spectra} file under {@code Settings.SPECTRA_PATH}, then
      * checked via {@link #executeStrix(String)}. Otherwise the formula is
      * simplified and rendered to Strix's LTL syntax directly in Java, and
-     * checked via {@link #executeStrix(String, String, String)} — see the
-     * class documentation for exactly which binary this invokes.</p>
+     * checked via {@link #executeStrix(String, String, String)}, which
+     * internally dispatches on {@code Settings.SYNTH_TOOL} (Strix, or the
+     * Docker-free {@code ltlsynt} alternative) — see that method's
+     * documentation.</p>
      *
      * @param tlsf the specification to check
      * @return the realisability verdict
@@ -267,16 +279,61 @@ public class StrixHelper {
      * @throws IOException          if launching Strix fails
      * @throws InterruptedException if the Strix process is interrupted
      */
+    /**
+     * Runs the configured realisability/synthesis tool
+     * ({@code Settings.SYNTH_TOOL}, flag {@code -synth}) on an LTL formula
+     * plus explicit input/output signal lists, and returns its verdict.
+     *
+     * <p>Only the command line differs per tool; everything else — timeout
+     * handling, stdout/stderr scanning, resource cleanup — is shared:</p>
+     * <ul>
+     *   <li><b>{@code strix}</b> (default): the native {@code lib/new_strix/strix}
+     *       binary, or {@code ./run-docker-strix.sh} when
+     *       {@code Settings.USE_DOCKER} is set. Empty signal lists are passed
+     *       as the literal {@code ""} Strix's argument parser expects.</li>
+     *   <li><b>{@code ltlsynt}</b> (flag {@code -synth=ltlsynt}): a Docker-free
+     *       alternative from the <a href="https://spot.lre.epita.fr/ltlsynt.html">Spot</a>
+     *       library, installable via {@code brew install spot} (macOS) or
+     *       {@code conda install -c conda-forge spot} — see
+     *       <a href="https://spot.lre.epita.fr/install.html">spot.lre.epita.fr/install.html</a>
+     *       for Debian/Ubuntu packages. Resolved from {@code PATH} unless
+     *       {@code Settings.SYNTH_BIN} overrides it. Invoked with
+     *       {@code --realizability}, which suppresses controller synthesis.</li>
+     * </ul>
+     *
+     * <p>Both tools print a bare {@code REALIZABLE}/{@code UNREALIZABLE} line
+     * as their realisability verdict, so a single stdout scan covers both. A
+     * verdict found on stdout takes precedence over incidental stderr output
+     * — stderr only downgrades the result to
+     * {@link RealizabilitySolverResult#ERROR} when no verdict was found on
+     * stdout, so a tool that writes harmless notices to stderr on a
+     * successful run is not misread as having failed.</p>
+     *
+     * @param formula the specification's formula, in Strix/Spot LTL syntax
+     * @param ins     comma-separated list of input signal names (empty string if none)
+     * @param outs    comma-separated list of output signal names (empty string if none)
+     * @return the realisability verdict
+     * @throws IOException          if launching the tool fails (e.g. not installed)
+     * @throws InterruptedException if the process is interrupted while waiting
+     */
     public static RealizabilitySolverResult executeStrix(String formula, String ins, String outs) throws IOException, InterruptedException {
         Process pr;
-        if (outs.isEmpty()) outs = "\"\"";
-        if (ins.isEmpty()) ins = "\"\"";
-        if (Settings.USE_DOCKER)
-            pr = Runtime.getRuntime().exec(new String[]{"./run-docker-strix.sh", formula, ins, outs});
-        else {
-//			System.out.println(outs + " "+ ins);
-            pr = Runtime.getRuntime().exec(new String[]{"lib/new_strix/strix", "-f " + formula, "--ins=" + ins, "--outs=" + outs});
+        boolean useLtlsynt = "ltlsynt".equalsIgnoreCase(Settings.SYNTH_TOOL);
+        if (useLtlsynt) {
+            String bin = Settings.SYNTH_BIN.isEmpty() ? "ltlsynt" : Settings.SYNTH_BIN;
+            pr = Runtime.getRuntime().exec(new String[]{
+                    bin, "--formula=" + formula, "--ins=" + ins, "--outs=" + outs, "--realizability"
+            });
+        } else {
+            if (outs.isEmpty()) outs = "\"\"";
+            if (ins.isEmpty()) ins = "\"\"";
+            if (Settings.USE_DOCKER)
+                pr = Runtime.getRuntime().exec(new String[]{"./run-docker-strix.sh", formula, ins, outs});
+            else {
+                pr = Runtime.getRuntime().exec(new String[]{"lib/new_strix/strix", "-f " + formula, "--ins=" + ins, "--outs=" + outs});
+            }
         }
+
         boolean timeout = false;
         if (!pr.waitFor(Settings.STRIX_TIMEOUT, TimeUnit.SECONDS)) {
             timeout = true; //kill the process.
@@ -284,6 +341,7 @@ public class StrixHelper {
         }
 
         RealizabilitySolverResult realizable = RealizabilitySolverResult.UNREALIZABLE;
+        boolean verdictFound = false;
         String aux;
         if (timeout) {
             realizable = RealizabilitySolverResult.TIMEOUT;
@@ -298,26 +356,35 @@ public class StrixHelper {
                 //System.out.println(aux);
                 if (aux.equals("REALIZABLE")) {
                     realizable = RealizabilitySolverResult.REALIZABLE;
+                    verdictFound = true;
+                    break;
+                }
+                if (aux.equals("UNREALIZABLE")) {
+                    realizable = RealizabilitySolverResult.UNREALIZABLE;
+                    verdictFound = true;
                     break;
                 }
                 if (aux.contains("Error")) {
                     System.out.println("ERR: " + aux);
                     realizable = RealizabilitySolverResult.ERROR;
+                    verdictFound = true;
                     break;
                 }
             }
 
-            //read program's error
+            // read program's error — but a definitive stdout verdict is never
+            // overridden by incidental stderr output (see class Javadoc)
             InputStream err = pr.getErrorStream();
             InputStreamReader errread = new InputStreamReader(err);
             BufferedReader errbufferedreader = new BufferedReader(errread);
             while ((aux = errbufferedreader.readLine()) != null) {
                 System.out.println("ERR: " + aux);
-                realizable = RealizabilitySolverResult.ERROR;
+                if (!verdictFound)
+                    realizable = RealizabilitySolverResult.ERROR;
             }
 
             // Check for failure
-            if (pr.waitFor() != 0) {
+            if (pr.waitFor() != 0 && !verdictFound) {
                 System.out.println("exit value = " + pr.exitValue());
             }
 
