@@ -20,6 +20,13 @@ public class SolverUtils {
         return ltlFormula;
     }
 
+
+    public static String toSolverSyntax(String f) {
+        f = replaceSymbols(f);
+        f = insertSpaceBeforeUppercase(f);
+        return f;
+    }
+
     public static String toLambConvSyntax(String ltlFormula) {
         ltlFormula = insertSpaceBeforeUppercase(ltlFormula);
         ltlFormula = replaceSymbols(ltlFormula);
@@ -63,4 +70,6 @@ public class SolverUtils {
         }
         return input;
     }
+
+
 }
