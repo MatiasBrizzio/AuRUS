@@ -90,6 +90,8 @@ public class Main {
         double threshold = 0.0d;
         String filename = "";
         String outname = "";
+        long seedValue = 0L;
+        boolean seedGiven = false;
         for (String arg : args) {
             if (arg.equals("-h") || arg.equals("-help") || arg.equals("--help")) {
                 printBanner();
@@ -123,6 +125,9 @@ public class Main {
                 Settings.USE_SPECTRA = true;
             } else if (arg.startsWith("-synth-bin=")) {
                 Settings.SYNTH_BIN = arg.replace("-synth-bin=", "");
+            } else if (arg.startsWith("-seed=")) {
+                seedValue = parseLongArg("-seed", arg.replace("-seed=", ""));
+                seedGiven = true;
             } else if (arg.startsWith("-synth=")) {
                 String synth = arg.replace("-synth=", "");
                 if (!synth.equalsIgnoreCase("strix") && !synth.equalsIgnoreCase("ltlsynt")) {
@@ -220,6 +225,10 @@ public class Main {
         if (no_check_realizability) Settings.check_REALIZABILITY = false;
         if (strong_SAT) Settings.check_STRONG_SAT = true;
         if (random_GA_selector) Settings.GA_RANDOM_SELECTOR = true;
+        if (seedGiven) {
+            Settings.SEED = seedValue;
+            Settings.RANDOM_GENERATOR.setSeed(seedValue);
+        }
 
         if (!outname.isEmpty()) Settings.setStrixName(outname);
 
@@ -390,6 +399,24 @@ public class Main {
         }
     }
 
+    /**
+     * Parses a long-integer flag value (used by {@code -seed}), exiting with
+     * a targeted error message when the value is not a valid integer.
+     *
+     * @param flag  the flag name, used in the error message (e.g. {@code -seed})
+     * @param value the raw value to parse
+     * @return the parsed long
+     */
+    private static long parseLongArg(String flag, String value) {
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            System.err.println("ERROR: invalid value for " + flag + ": '" + value + "' (expected an integer).");
+            System.exit(1);
+            return 0L; // unreachable
+        }
+    }
+
     /** Prints the tool banner with the reference to the paper. */
     private static void printBanner() {
         System.out.println("=======================================================");
@@ -437,6 +464,9 @@ public class Main {
         System.out.println("  -use-spectra         treat the input as a Spectra specification");
         System.out.println("  -synth=NAME          synthesiser to use: strix (default) or ltlsynt (Docker-free)");
         System.out.println("  -synth-bin=PATH      override the synthesiser binary path/name");
+        System.out.println("  -seed=N              fix the RNG seed (any whole number, e.g. -seed=12345 or");
+        System.out.println("                       -seed=-987) for reproducible runs; default: derived from");
+        System.out.println("                       the system clock, but always logged in out.txt as SEED=...");
         System.out.println("  -ref=file.tlsf       genuine reference solution (repeatable)");
         System.out.println("  -out=dir             output directory for the generated repairs");
         System.out.println();

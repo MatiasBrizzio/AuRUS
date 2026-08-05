@@ -20,7 +20,14 @@ public class FormulaUtils {
     }
 
     public static Set<Formula> subformulas(Formula f) {//, List<String> variables) {
-        Set<Formula> s = new HashSet<>();
+        // A plain LinkedHashSet is not enough here: for Conjunction/Disjunction
+        // nodes, f.children() itself iterates OWL's PropositionalFormula.children,
+        // a java.util.Set with no order guarantee across JVM runs. A TreeSet with
+        // a canonical (content-based) comparator gives deterministic iteration
+        // order regardless of the order elements arrive in, so that later
+        // .toArray()[Settings.RANDOM_GENERATOR.nextInt(n)] picks are reproducible
+        // given the same -seed.
+        Set<Formula> s = new TreeSet<>(Comparator.comparing(Object::toString));
 
         for (Formula c : f.children()) {
             s.addAll(subformulas(c));
@@ -49,6 +56,13 @@ public class FormulaUtils {
 
         } else
             conjuncts.add(f);
+        // OWL's PropositionalFormula.children is a java.util.Set, whose
+        // iteration order is not guaranteed stable across JVM runs. Impose a
+        // canonical order here so that any later indexing by a seeded random
+        // draw (SpecificationMutator, SpecificationCrossover, ...) is
+        // reproducible given the same -seed, instead of silently inheriting
+        // OWL's unordered Set.
+        conjuncts.sort(Comparator.comparing(Object::toString));
         return conjuncts;
     }
 
@@ -61,6 +75,9 @@ public class FormulaUtils {
                     conjuncts.addAll(splitConjunction(c));
         } else if (f != BooleanConstant.TRUE)
             conjuncts.add(f);
+        // See the LabelledFormula overload above: canonicalise the order,
+        // since OWL's Conjunction.children (a Set) is not order-stable.
+        conjuncts.sort(Comparator.comparing(Object::toString));
         return conjuncts;
     }
 
@@ -75,6 +92,9 @@ public class FormulaUtils {
             } else if (f != BooleanConstant.TRUE)
                 conjuncts.add(f);
         }
+        // See splitConjunction above: canonicalise the order, since OWL's
+        // Conjunction.children (a Set) is not order-stable.
+        conjuncts.sort(Comparator.comparing(Object::toString));
         return conjuncts;
     }
 
