@@ -276,7 +276,10 @@ public class SpecificationGeneticAlgorithm {
      *   <li>variants where a random sub-formula of an assumption or a guarantee
      *       is rewritten by the general formula mutator (restricted to input
      *       variables for assumptions when
-     *       {@code Settings.only_inputs_in_assumptions} is set).</li>
+     *       {@code Settings.only_inputs_in_assumptions} is set);</li>
+     *   <li>when {@code Settings.allowGuaranteeRemoval} is set, one variant per
+     *       guarantee with that guarantee dropped (only if more than one
+     *       guarantee remains), mirroring the assumption-addition seeding.</li>
      * </ul>
      *
      * <p>The guarantee-preference factor steers which side is seeded: values
@@ -399,6 +402,44 @@ public class SpecificationGeneticAlgorithm {
                 guarantees.add(mutated_guarantee);
                 Tlsf input_spec = TlsfUtils.change_guarantees(spec, guarantees);
                 population.addChromosome(new SpecificationChromosome(input_spec));
+            }
+        }
+
+        // Guarantee-removal seeding: the dual of the assumption-addition block above.
+        // addAssumptions works on the SPLIT list (splitConjunction(spec.assume())) and
+        // ADDS a conjunct; here we work on the split guarantee list and, per conjunct,
+        // seed one variant with that conjunct REMOVED. Same skeleton, inverse operation.
+        // remove(g) is remove(Object) over a copy, so it does not trip the
+        // "List.remove() in loop" inspection (that targets remove(int)). Guarded by
+        // size > 1 so the set never empties (an empty conjunction is TRUE, which the
+        // fitness prunes). The stochastic 5% removal lives in SpecificationMutator.
+        if (Settings.allowGuaranteeRemoval && Settings.GA_GUARANTEES_PREFERENCE_FACTOR > 0) {
+            List<Formula> conjuncts = FormulaUtils.splitConjunctions(spec.guarantee());
+            if (conjuncts.size() > 1) {
+                for (Formula g : conjuncts) {
+                    List<Formula> guarantees = new LinkedList<>(conjuncts);
+                    guarantees.remove(g);
+                    Tlsf input_spec = TlsfUtils.change_guarantees(spec, guarantees);
+                    population.addChromosome(new SpecificationChromosome(input_spec));
+                }
+            }
+        }
+
+        // Assumption-removal seeding: dual of the guarantee-removal block above.
+        // Works on the split assumption list (splitConjunction(spec.assume())); per
+        // conjunct, seed one variant with that assumption removed. Same remove(Object)
+        // over a copy idiom, guarded by size > 1 so at least one assumption remains.
+        // The stochastic 5% removal lives in SpecificationMutator; with the flag off,
+        // the fitness guard prunes any candidate that drops an assumption.
+        if (Settings.allowAssumptionRemoval && Settings.GA_GUARANTEES_PREFERENCE_FACTOR < 100) {
+            List<Formula> conjuncts = FormulaUtils.splitConjunction(spec.assume());
+            if (conjuncts.size() > 1) {
+                for (Formula a : conjuncts) {
+                    List<Formula> assumes = new LinkedList<>(conjuncts);
+                    assumes.remove(a);
+                    Tlsf input_spec = TlsfUtils.change_assume(spec, assumes);
+                    population.addChromosome(new SpecificationChromosome(input_spec));
+                }
             }
         }
         return population;

@@ -146,6 +146,19 @@ public class Settings {
     /** Allow the genetic operators to drop guarantees entirely (flags {@code -removeG}/{@code -removeGuarantees}, default {@code false}). */
     public static boolean allowGuaranteeRemoval = false;
 
+    /** Allow the genetic operators to drop assumptions entirely (flags {@code -removeA}/{@code -removeAssumptions}, default {@code false}). */
+    public static boolean allowAssumptionRemoval = false;
+
+    /** Probability (in %) that the mutation operator drops an assumption conjunct
+     *  entirely instead of rewriting one of its sub-formulas, when
+     *  {@code allowAssumptionRemoval} is enabled (flag {@code -removeAProb}, default {@code 5}). */
+    public static int GA_REMOVE_ASSUMPTION_PROB = 0;
+
+    /** Probability (in %) that the mutation operator drops a guarantee conjunct
+     *  entirely instead of rewriting one of its sub-formulas, when
+     *  {@code allowGuaranteeRemoval} is enabled (flag {@code -removeGProb}, default {@code 0}). */
+    public static int GA_REMOVE_GUARANTEE_PROB = 0;
+
     /** Weight &alpha; of the realisability-status component in the fitness sum (flag {@code -factors}, first value; default {@code 0.7}). Set together with the other three factors via {@link #setFactors}. */
     public static double STATUS_FACTOR = 0.7d;
 
@@ -288,6 +301,7 @@ public class Settings {
                 ", STRIX_PATH='" + STRIX_PATH + '\'' +
                 ", STRONG_SAT_TIMEOUT=" + STRONG_SAT_TIMEOUT +
                 ", SAT_TIMEOUT=" + SAT_TIMEOUT +
+                ", allowAssumptionRemoval=" + allowAssumptionRemoval +
                 '}';
     }
 }

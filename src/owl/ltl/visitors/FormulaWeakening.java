@@ -34,7 +34,7 @@ import java.util.*;
  *       {@code 1/weakening_rate} (a fresh {@code Random.nextInt(weakening_rate) == 0}
  *       roll at each node); see {@code SpecificationMutator.weakenFormula},
  *       which derives this from {@code Settings.GA_GENE_MUTATION_RATE}.</li>
- *   <li><b>{@code numOfAllowedWeakenings}</b> — a mutable budget, decremented
+ *   <li><b>{@code numOfAllowedWeakening}</b> — a mutable budget, decremented
  *       every time a node is actually weakened; once it reaches {@code 0}, no
  *       further node is touched, bounding how many changes one mutation call
  *       can make to a single formula.</li>
@@ -97,7 +97,7 @@ public class FormulaWeakening implements Visitor<Formula> {
     private final int weakening_rate;
 
     /** Remaining budget of sub-formulas this visitor is still allowed to weaken; decremented on each applied mutation. */
-    private int numOfAllowedWeakenings;
+    private int numOfAllowedWeakening;
 
     /**
      * Creates a weakening visitor over the given variable alphabet.
@@ -122,7 +122,7 @@ public class FormulaWeakening implements Visitor<Formula> {
         variables = List.copyOf(variableList);
         fixedVariables = true;
         this.weakening_rate = weakening_rate;
-        this.numOfAllowedWeakenings = num_of_weakening_to_apply;
+        this.numOfAllowedWeakening = num_of_weakening_to_apply;
 
     }
 
@@ -150,10 +150,10 @@ public class FormulaWeakening implements Visitor<Formula> {
     @Override
     public Formula visit(BooleanConstant booleanConstant) {
         Formula current = booleanConstant;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 current = BooleanConstant.TRUE;
             }
         }
@@ -170,10 +170,10 @@ public class FormulaWeakening implements Visitor<Formula> {
     @Override
     public Formula visit(Literal literal) {
         Formula current = literal;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 // 0: TRUE 1: add disjunct 2:F
                 int option = Settings.RANDOM_GENERATOR.nextInt(3);
                 if (option == 0)
@@ -207,10 +207,10 @@ public class FormulaWeakening implements Visitor<Formula> {
     public Formula visit(XOperator xOperator) {
         Formula operand = xOperator.operand.accept(this);
         Formula current = XOperator.of(operand);
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 // 0:TRUE 1:F 2: remove X
                 int option = Settings.RANDOM_GENERATOR.nextInt(3);
                 current = BooleanConstant.TRUE; //(option == 0) and default
@@ -250,10 +250,10 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return fOperator;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
 
                 // 0:TRUE 1:distribute to conjunction 2:persistence to infinitely often 3:remove X 4:remove G
                 int option = Settings.RANDOM_GENERATOR.nextInt(6);
@@ -302,10 +302,10 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return gOperator;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 // 0:TRUE 1:remove G 2:F 3:X 4:GF 5:FG 6:XG 7: U
                 int option = Settings.RANDOM_GENERATOR.nextInt(7);
                 if (option == 0)
@@ -349,11 +349,11 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return conjunction;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
                 // 0: TRUE 1: remove conjunct 2:disjunction 3:F
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 int option = Settings.RANDOM_GENERATOR.nextInt(4);
                 if (option == 0)
                     current = BooleanConstant.TRUE;
@@ -394,11 +394,11 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return disjunction;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
                 // 0: TRUE 1: add disjunct 2:F
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 int option = Settings.RANDOM_GENERATOR.nextInt(2);
                 if (option == 0)
                     current = BooleanConstant.TRUE;
@@ -428,10 +428,10 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return uOperator;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 // 0:TRUE 1:W 2:F
                 int option = Settings.RANDOM_GENERATOR.nextInt(4);
                 if (option == 0)
@@ -466,10 +466,10 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return wOperator;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 // a W b = G(a) || a U b.
                 // we decided to weak each disjunct.
                 // 0:TRUE 1:F 2:F
@@ -505,10 +505,10 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return mOperator;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
 
                 // a M b = b U (a & b)
                 // 0:TRUE 1:W 2:F
@@ -541,10 +541,10 @@ public class FormulaWeakening implements Visitor<Formula> {
         int numOfTO = FormulaUtils.numOfTemporalOperators(current);
         if (numOfTO > 2)
             return rOperator;
-        if (numOfAllowedWeakenings > 0) {
+        if (numOfAllowedWeakening > 0) {
             boolean mutate = (Settings.RANDOM_GENERATOR.nextInt(weakening_rate) == 0);
             if (mutate) {
-                numOfAllowedWeakenings--;
+                numOfAllowedWeakening--;
                 // a R b = b W (a & b)
                 // 0:TRUE 1:F 2:F
                 int option = Settings.RANDOM_GENERATOR.nextInt(3);

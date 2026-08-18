@@ -59,6 +59,27 @@ import java.util.Set;
  * {@code false} assumption makes the specification vacuously realisable and a
  * {@code false} guarantee makes it hopeless — neither conveys intent.</p>
  *
+ * <p><b>Guarantee removal.</b> When {@code Settings.allowGuaranteeRemoval} is
+ * set (flags {@code -removeG} / {@code -removeGuarantees}) and the guarantee
+ * side is selected, with probability {@code Settings.GA_REMOVE_GUARANTEE_PROB}%
+ * the operator drops the chosen guarantee conjunct entirely instead of
+ * rewriting a sub-formula, provided more than one guarantee remains. This is
+ * the active counterpart to the structural guard in
+ * {@code AutomataBasedModelCountingSpecificationFitness}, which only stops
+ * <i>penalising</i> shorter guarantee sets once the flag is on but never
+ * <i>produces</i> them.</p>
+ *
+ * <p><b>Assumption removal.</b> Symmetrically, when
+ * {@code Settings.allowAssumptionRemoval} is set (flags {@code -removeA} /
+ * {@code -removeAssumptions}) and the assumption side is selected, with
+ * probability {@code Settings.GA_REMOVE_ASSUMPTION_PROB}% the operator drops
+ * the chosen assumption conjunct entirely, provided more than one assumption
+ * remains. Note this weakens the environment and is <i>not</i> a repair
+ * direction on its own; the flag exists mainly to <i>control</i> removal that
+ * crossover (and mutations collapsing an assumption to {@code true}) could
+ * otherwise introduce unchecked — with the flag off, the fitness guard now
+ * prunes any candidate with fewer assumptions than the original.</p>
+ *
  * <p>Part of the reference implementation of: <i>Brizzio, Cordy, Papadakis,
  * S&aacute;nchez, Aguirre, Degiovanni. "Automated Repair of Unrealisable LTL
  * Specifications Guided by Model Counting", GECCO 2023
@@ -101,6 +122,22 @@ public class SpecificationMutator {
             if (assumptions.isEmpty())
                 assumptions.add(BooleanConstant.TRUE);
             int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(assumptions.size());
+
+            // Assumption-removal move: dual of the guarantee-removal move below. When
+            // enabled (-removeA / -removeAssumptions), with probability
+            // Settings.GA_REMOVE_ASSUMPTION_PROB% drop the chosen assumption conjunct
+            // entirely instead of rewriting one of its sub-formulas. Guarded by
+            // assumptions.size() > 1 so at least one assumption always remains. The
+            // fitness guard somethingHasBeenRemoved() stops penalising the shorter
+            // assumption set once the flag is on.
+            if (Settings.allowAssumptionRemoval
+                    && assumptions.size() > 1
+                    && Settings.RANDOM_GENERATOR.nextInt(100) < Settings.GA_REMOVE_ASSUMPTION_PROB) {
+                assumptions.remove(index_to_mutate);
+                new_spec = TlsfUtils.change_assume(new_spec, assumptions);
+                return new_spec;
+            }
+
             Formula assumption_to_mutate = assumptions.get(index_to_mutate);
 
             List<String> vars = spec.variables();
@@ -138,6 +175,21 @@ public class SpecificationMutator {
             if (guarantees.isEmpty())
                 guarantees.add(BooleanConstant.TRUE);
             int index_to_mutate = Settings.RANDOM_GENERATOR.nextInt(guarantees.size());
+
+            // Guarantee-removal move: when enabled (-removeG / -removeGuarantees), with
+            // probability Settings.GA_REMOVE_GUARANTEE_PROB% drop the chosen guarantee
+            // conjunct entirely instead of rewriting one of its sub-formulas. Guarded by
+            // guarantees.size() > 1 so the conjunction never collapses to TRUE (which the
+            // fitness function prunes anyway). The fitness guard somethingHasBeenRemoved()
+            // already stops penalising the shorter guarantee set once the flag is on.
+            if (Settings.allowGuaranteeRemoval
+                    && guarantees.size() > 1
+                    && Settings.RANDOM_GENERATOR.nextInt(100) < Settings.GA_REMOVE_GUARANTEE_PROB) {
+                guarantees.remove(index_to_mutate);
+                new_spec = TlsfUtils.change_guarantees(new_spec, guarantees);
+                return new_spec;
+            }
+
             Formula guarantee_to_mutate = guarantees.get(index_to_mutate);
 
             //select subformula to mutate

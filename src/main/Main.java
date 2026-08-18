@@ -78,7 +78,13 @@ public class Main {
         double semantic_factor = -1.0d;
         boolean allowGuaranteesRemoval = false;
         boolean allowAssumptionsAddition = false;
+        boolean allowAssumptionsRemoval = false;
         boolean onlyInputsInAssumptions = false;
+        // Removal-probability overrides: -1 means "no override, use the 5% default
+        // when the corresponding removal flag is enabled". Resolved after the parse
+        // loop so the result does not depend on the order of the arguments.
+        int removeGProb = -1;
+        int removeAProb = -1;
         boolean no_check_realizability = false;
         boolean strong_SAT = false;
         int bound = 0;
@@ -143,8 +149,17 @@ public class Main {
                 no_check_realizability = true;
             } else if (arg.startsWith("-strongSAT")) {
                 strong_SAT = true;
+            } else if (arg.startsWith("-removeGProb=")) {
+                // Must be checked BEFORE "-removeG", otherwise startsWith("-removeG")
+                // would swallow it. Only records the value; enabling is done by -removeG.
+                removeGProb = parseIntArg("-removeGProb", arg.replace("-removeGProb=", ""));
             } else if (arg.startsWith("-removeG")) {
                 allowGuaranteesRemoval = true;
+            } else if (arg.startsWith("-removeAProb=")) {
+                // Must be checked BEFORE "-removeA" for the same reason.
+                removeAProb = parseIntArg("-removeAProb", arg.replace("-removeAProb=", ""));
+            } else if (arg.startsWith("-removeA")) {
+                allowAssumptionsRemoval = true;
             } else if (arg.startsWith("-addA")) {
                 allowAssumptionsAddition = true;
             } else if (arg.startsWith("-onlyInputsA")) {
@@ -220,7 +235,16 @@ public class Main {
         if (bound > 0) Settings.MC_BOUND = bound;
         if (precise) Settings.MC_EXHAUSTIVE = false;
         if (allowAssumptionsAddition) Settings.allowAssumptionAddition = true;
-        if (allowGuaranteesRemoval) Settings.allowGuaranteeRemoval = true;
+        if (allowAssumptionsRemoval) {
+            Settings.allowAssumptionRemoval = true;
+            // Use the explicit -removeAProb override if given, otherwise default to 5%.
+            Settings.GA_REMOVE_ASSUMPTION_PROB = (removeAProb >= 0) ? removeAProb : 5;
+        }
+        if (allowGuaranteesRemoval) {
+            Settings.allowGuaranteeRemoval = true;
+            // Use the explicit -removeGProb override if given, otherwise default to 5%.
+            Settings.GA_REMOVE_GUARANTEE_PROB = (removeGProb >= 0) ? removeGProb : 5;
+        }
         if (onlyInputsInAssumptions) Settings.only_inputs_in_assumptions = true;
         if (no_check_realizability) Settings.check_REALIZABILITY = false;
         if (strong_SAT) Settings.check_STRONG_SAT = true;
@@ -443,7 +467,10 @@ public class Main {
         System.out.println("  -geneNUM=n           max sub-formulas mutated per formula");
         System.out.println("  -GPR=r               preference for mutating guarantees over assumptions (%)");
         System.out.println("  -addAssumptions      allow the GA to add new assumptions (-addA)");
-        System.out.println("  -removeGuarantees    allow the GA to remove guarantees (-removeG)");
+        System.out.println("  -removeAssumptions   allow the GA to remove assumptions (-removeA), 5% prob by default");
+        System.out.println("  -removeAProb=r       probability (%) for removing assumptions; requires -removeA");
+        System.out.println("  -removeGuarantees    allow the GA to remove guarantees (-removeG), 5% prob by default");
+        System.out.println("  -removeGProb=r       probability (%) for removing guarantees; requires -removeG");
         System.out.println("  -onlyInputsA         restrict new assumptions to input variables");
         System.out.println("  -GA_random_selector  use a random selector instead of the best selector");
         System.out.println();

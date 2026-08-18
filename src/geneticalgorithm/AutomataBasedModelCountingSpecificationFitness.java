@@ -215,7 +215,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         if (guarantees == BooleanConstant.TRUE)
             return 0.0d;
 
-        if (!Settings.allowGuaranteeRemoval || !Settings.allowAssumptionAddition) {
+        if (!Settings.allowGuaranteeRemoval || !Settings.allowAssumptionAddition || !Settings.allowAssumptionRemoval) {
             boolean somethingRemoved = somethingHasBeenRemoved(originalSpecification, chromosome.spec);
             if (somethingRemoved)
                 return 0.0d;
@@ -564,8 +564,9 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
      */
     public boolean somethingHasBeenRemoved(Tlsf original, Tlsf refined) {
         boolean assumptionAdded = !Settings.allowAssumptionAddition && FormulaUtils.splitConjunction(original.assume()).size() < FormulaUtils.splitConjunction(refined.assume()).size();
+        boolean assumptionRemoved = !Settings.allowAssumptionRemoval && FormulaUtils.splitConjunction(original.assume()).size() > FormulaUtils.splitConjunction(refined.assume()).size();
         boolean guaranteeRemoved = !Settings.allowGuaranteeRemoval && FormulaUtils.splitConjunctions(original.guarantee()).size() > FormulaUtils.splitConjunctions(refined.guarantee()).size();
-        return assumptionAdded || guaranteeRemoved;
+        return assumptionAdded || assumptionRemoved || guaranteeRemoved;
     }
 
     /**
