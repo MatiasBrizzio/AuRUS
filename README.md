@@ -74,8 +74,6 @@ The matrix counts *bases*, not lassos, so it can under- or over-count — but th
 
 > This model-counting-based semantic distance, including the weighted-transition-matrix construction and the conjunction-based lost/won-models comparison, was introduced by our paper. If you reuse or reimplement this technique, please [cite it](#-citing-aurus).
 
-📘 **Want the full picture?** For a much more detailed treatment of everything above — how genetic algorithms work, the design and rationale of each operator, the formal definition of *k*-word models, and why *approximate* model counting is the right trade-off inside a search loop — see **Chapter 4 of my PhD thesis**: *link coming soon (thesis under publication)*. <!-- TODO: replace with thesis URL once published -->
-
 🦉 **Just want the model counter?** The transfer-matrix approach lives on as a standalone tool, **[EstiMate](https://github.com/MatiasBrizzio/EstiMate)** — a fast, accurate model counter that estimates the number of models of LTL formulas using transfer matrices. Use it directly if you need bounded LTL model counting outside the repair setting.
 
 ---
