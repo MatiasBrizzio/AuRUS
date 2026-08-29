@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="u2NVEyYJ50rIMRt0nA70K_B0huYQdx.png" alt="Logo de la Herramienta" width="400">
+</p>
+
 <h3 align="center">Automated Repair of Unrealisable LTL Specifications</h3>
 
 <p align="center">
