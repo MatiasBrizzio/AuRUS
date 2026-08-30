@@ -80,6 +80,8 @@ public class Main {
         boolean allowAssumptionsAddition = false;
         boolean allowAssumptionsRemoval = false;
         boolean onlyInputsInAssumptions = false;
+        boolean allowNonTemporalCrossover = false;
+        boolean allowHeuristicMutations = true;
         // Removal-probability overrides: -1 means "no override, use the 5% default
         // when the corresponding removal flag is enabled". Resolved after the parse
         // loop so the result does not depend on the order of the arguments.
@@ -123,8 +125,12 @@ public class Main {
                 bound = parseIntArg("-k", arg.replace("-k=", ""));
             } else if (arg.startsWith("-precise")) {
                 precise = true;
+            } else if (arg.equals("-strict-monotone")) {
+                allowHeuristicMutations = false;
             } else if (arg.equals("-docker")) {
                 Settings.USE_DOCKER = true;
+            } else if (arg.startsWith("-nonTempCrossover") || arg.equals("-ntc")) {
+                allowNonTemporalCrossover = true;
             } else if (arg.startsWith("-no-docker")) {
                 Settings.USE_DOCKER = false;
             } else if (arg.startsWith("-use-spectra")) {
@@ -219,6 +225,7 @@ public class Main {
 
         Tlsf tlsf = TlsfUtils.toBasicTLSF(input_file);
         SpecificationGeneticAlgorithm ga = new SpecificationGeneticAlgorithm();
+        Settings.allowHeuristicMutations = allowHeuristicMutations;
         if (popSize > 0) Settings.GA_POPULATION_SIZE = popSize;
         if (maxNumOfInd > 0) Settings.GA_MAX_NUM_INDIVIDUALS = maxNumOfInd;
         if (crossoverRate > 0) Settings.GA_CROSSOVER_RATE = crossoverRate;
@@ -229,6 +236,7 @@ public class Main {
         if (guaranteePreferenceRate >= 0) Settings.GA_GUARANTEES_PREFERENCE_FACTOR = guaranteePreferenceRate;
         if (generations > 0) Settings.GA_GENERATIONS = generations;
         if (ga_timeout > 0) Settings.GA_EXECUTION_TIMEOUT = ga_timeout;
+        if (allowNonTemporalCrossover) Settings.allowNonTemporalCrossover = true;
         if (real_timeout > 0) Settings.STRIX_TIMEOUT = real_timeout;
         if (sat_timeout > 0) Settings.SAT_TIMEOUT = sat_timeout;
         if (mc_timeout > 0) Settings.MC_TIMEOUT = mc_timeout;
@@ -473,6 +481,8 @@ public class Main {
         System.out.println("  -removeGProb=r       probability (%) for removing guarantees; requires -removeG");
         System.out.println("  -onlyInputsA         restrict new assumptions to input variables");
         System.out.println("  -GA_random_selector  use a random selector instead of the best selector");
+        System.out.println("  -nonTempCrossover    also recombine propositional conjuncts (-ntc); off = temporal-only");
+        System.out.println("  -strict-monotone     allow the GA to use heuristics in waeak and streg");
         System.out.println();
         System.out.println("Fitness function:");
         System.out.println("  -factors=S,SYN,SEM   weights of status, syntactic and semantic distance");

@@ -1,6 +1,8 @@
 package main;
 
+import java.util.EnumSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Central, static configuration of AuRUS: every knob the genetic search, the
@@ -134,10 +136,10 @@ public class Settings {
 
     // ---- fitness setting ----
 
-    /** Whether realisability (via Strix, or strong satisfiability when {@link #check_STRONG_SAT} is set) is checked inside the fitness function itself, rather than only on final candidates (flag {@code -onlySAT} sets this to {@code false}; default {@code true}). See {@link geneticalgorithm.AutomataBasedModelCountingSpecificationFitness#compute_status}. */
+    /** Whether realizability (via Strix, or strong satisfiability when {@link #check_STRONG_SAT} is set) is checked inside the fitness function itself, rather than only on final candidates (flag {@code -onlySAT} sets this to {@code false}; default {@code true}). See {@link geneticalgorithm.AutomataBasedModelCountingSpecificationFitness#compute_status}. */
     public static boolean check_REALIZABILITY = true;
 
-    /** Use the strong-satisfiability (potential realisability) check instead of a full Strix realisability query inside the fitness (flag {@code -strongSAT}, default {@code false}) — cheaper, less precise. */
+    /** Use the strong-satisfiability (potential realizability) check instead of a full Strix realisability query inside the fitness (flag {@code -strongSAT}, default {@code false}) — cheaper, less precise. */
     public static boolean check_STRONG_SAT = false;
 
     /** Allow the genetic operators to introduce brand-new assumptions rather than only modifying existing ones (flags {@code -addA}/{@code -addAssumptions}, default {@code false}). */
@@ -148,6 +150,18 @@ public class Settings {
 
     /** Allow the genetic operators to drop assumptions entirely (flags {@code -removeA}/{@code -removeAssumptions}, default {@code false}). */
     public static boolean allowAssumptionRemoval = false;
+
+    /** When false, the two heuristic (non-entailment) mutation branches are
+     *  skipped, so every directed mutation is monotone by construction.
+     *  Enabled by default: the branches reach parts of the search space no
+     *  purely monotone rule does. Disable with -strict-monotone. */
+    public static boolean allowHeuristicMutations = true;
+
+    /** Allow crossover to graft/combine purely propositional conjuncts (no temporal
+     *  operator), using propositional connectives (&, |, ->, <->) when both operands
+     *  are propositional. Off by default: crossover then grafts only over temporal
+     *  sub-formulas (flag {@code -nonTemporalCrossover}/{@code -ntc}). */
+    public static boolean allowNonTemporalCrossover = false;
 
     /** Probability (in %) that the mutation operator drops an assumption conjunct
      *  entirely instead of rewriting one of its sub-formulas, when
@@ -302,6 +316,8 @@ public class Settings {
                 ", STRONG_SAT_TIMEOUT=" + STRONG_SAT_TIMEOUT +
                 ", SAT_TIMEOUT=" + SAT_TIMEOUT +
                 ", allowAssumptionRemoval=" + allowAssumptionRemoval +
+                ", allowNonTemporalCrossover=" + allowNonTemporalCrossover +
+                ", allowHeuristicMutations=" + allowHeuristicMutations +
                 '}';
     }
 }

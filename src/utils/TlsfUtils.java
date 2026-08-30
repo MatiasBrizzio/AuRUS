@@ -859,7 +859,7 @@ public class TlsfUtils {
             for (Formula f : spec.thetaE()) {
                 if (hasGFPattern(f))
                     additionalAssumptions.add(f);
-                else if (FormulaUtils.numOfTemporalOperators(f) > 0)
+                else if (FormulaUtils.temporalNestingDepth(f) > 0)
                     additionalAssumptions.add(f);
                 else
                     lst.add(f);
@@ -871,7 +871,7 @@ public class TlsfUtils {
             for (Formula f : spec.thetaS()) {
                 if (hasGFPattern(f))
                     additionalGuarantee.add(f);
-                else if (FormulaUtils.numOfTemporalOperators(f) > 0)
+                else if (FormulaUtils.temporalNestingDepth(f) > 0)
                     additionalGuarantee.add(f);
                 else
                     lst.add(f);
@@ -898,7 +898,7 @@ public class TlsfUtils {
         if (!additionalAssumptions.isEmpty()) {
             new_tlsf_spec.append("  ASSUMPTIONS {\n");
             for (Formula a : additionalAssumptions) {
-                if (FormulaUtils.numOfTemporalOperators(a) > 0)
+                if (FormulaUtils.temporalNestingDepth(a) > 0)
                     new_tlsf_spec.append("    ").append(LabelledFormula.of(a, spec.variables())).append(";\n");
                 else
                     new_tlsf_spec.append("    ").append(LabelledFormula.of(GOperator.of(FOperator.of(a)), spec.variables())).append(";\n");
@@ -910,7 +910,7 @@ public class TlsfUtils {
             new_tlsf_spec.append("  GUARANTEES {\n");
 
             for (Formula f : additionalGuarantee) {
-                if (FormulaUtils.numOfTemporalOperators(f) > 0)
+                if (FormulaUtils.temporalNestingDepth(f) > 0)
                     new_tlsf_spec.append("    ").append(LabelledFormula.of(f, spec.variables())).append(";\n");
                 else
                     new_tlsf_spec.append("    ").append(LabelledFormula.of(GOperator.of(FOperator.of(f)), spec.variables())).append(";\n");

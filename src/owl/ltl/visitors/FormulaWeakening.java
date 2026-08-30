@@ -20,10 +20,13 @@ import java.util.*;
  * <p>This class implements the weakening rules of Table 4.1 in the paper and
  * thesis this project is the reference implementation of (one {@code visit}
  * method per LTL operator, one rewrite rule per numbered {@code option}); see
- * the individual {@code visit} methods below for the correspondence. The two
- * additional operators {@code M} (strong release) and {@code R} (release)
- * are handled via their standard dualities with {@code U}/{@code W}
- * (noted inline) rather than appearing as separate rows in the thesis table.</p>
+ * the individual {@code visit} methods below for the correspondence.
+ * {@code R} (release) has a row of its own in the thesis table, with its
+ * rules stated through the duality {@code a R b === b W (a & b)}.
+ * {@code M} (strong release) does not: the operator is not part of the
+ * syntax introduced in the thesis, so wherever a rule would produce it, the
+ * table records the equivalent form {@code b U (a & b)} instead. Both
+ * dualities are noted inline in the corresponding {@code visit} methods.</p>
  *
  * <p><b>How mutation is applied.</b> This is a recursive {@link Visitor}: it
  * walks the formula bottom-up, and at <i>every</i> node — not just the root —
@@ -247,7 +250,7 @@ public class FormulaWeakening implements Visitor<Formula> {
     public Formula visit(FOperator fOperator) {
         Formula operand = fOperator.operand.accept(this);
         Formula current = FOperator.of(operand);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return fOperator;
         if (numOfAllowedWeakening > 0) {
@@ -274,7 +277,7 @@ public class FormulaWeakening implements Visitor<Formula> {
                 } else if (option == 4 && operand instanceof GOperator) {
                     // weak (F G (a)) = F (a)
                     current = FOperator.of(operand.children().iterator().next());
-                } else {
+                } else if (Settings.allowHeuristicMutations) {
                     current = WOperator.of(new_literal(current), operand);
                 }
             }
@@ -299,7 +302,7 @@ public class FormulaWeakening implements Visitor<Formula> {
     public Formula visit(GOperator gOperator) {
         Formula operand = gOperator.operand.accept(this);
         Formula current = GOperator.of(operand);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return gOperator;
         if (numOfAllowedWeakening > 0) {
@@ -346,7 +349,7 @@ public class FormulaWeakening implements Visitor<Formula> {
     @Override
     public Formula visit(Conjunction conjunction) {
         Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return conjunction;
         if (numOfAllowedWeakening > 0) {
@@ -391,7 +394,7 @@ public class FormulaWeakening implements Visitor<Formula> {
     @Override
     public Formula visit(Disjunction disjunction) {
         Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return disjunction;
         if (numOfAllowedWeakening > 0) {
@@ -425,7 +428,7 @@ public class FormulaWeakening implements Visitor<Formula> {
         Formula left = uOperator.left.accept(this);
         Formula right = uOperator.right.accept(this);
         Formula current = UOperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return uOperator;
         if (numOfAllowedWeakening > 0) {
@@ -463,7 +466,7 @@ public class FormulaWeakening implements Visitor<Formula> {
         Formula left = wOperator.left.accept(this);
         Formula right = wOperator.right.accept(this);
         Formula current = WOperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return wOperator;
         if (numOfAllowedWeakening > 0) {
@@ -502,7 +505,7 @@ public class FormulaWeakening implements Visitor<Formula> {
         Formula left = mOperator.left.accept(this);
         Formula right = mOperator.right.accept(this);
         Formula current = MOperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return mOperator;
         if (numOfAllowedWeakening > 0) {
@@ -538,7 +541,7 @@ public class FormulaWeakening implements Visitor<Formula> {
         Formula left = rOperator.left.accept(this);
         Formula right = rOperator.right.accept(this);
         Formula current = ROperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return rOperator;
         if (numOfAllowedWeakening > 0) {

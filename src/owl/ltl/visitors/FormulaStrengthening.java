@@ -196,7 +196,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
     public Formula visit(XOperator xOperator) {
         Formula operand = xOperator.operand.accept(this);
         Formula current = XOperator.of(operand);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return xOperator;
         if (numOfAllowedStrengthenings > 0) {
@@ -241,7 +241,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
     public Formula visit(FOperator fOperator) {
         Formula operand = fOperator.operand.accept(this);
         Formula current = FOperator.of(operand);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return fOperator;
         if (numOfAllowedStrengthenings > 0) {
@@ -276,7 +276,10 @@ public class FormulaStrengthening implements Visitor<Formula> {
                     //Formula new_literal = createVariable(variables.get(Settings.RANDOM_GENERATOR.nextInt(variables.size())));
                     //if (Settings.RANDOM_GENERATOR.nextBoolean())
                     //new_literal = new_literal.not();
-                    current = UOperator.of(operand, new_literal(current));
+                    if (Settings.allowHeuristicMutations)
+                        current = UOperator.of(operand, new_literal(current));
+                    else
+                        current = BooleanConstant.FALSE;
                 }
                 if (print_debug_info) System.out.println(" after: " + current);
             }
@@ -305,7 +308,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
     public Formula visit(GOperator gOperator) {
         Formula operand = gOperator.operand.accept(this);
         Formula current = GOperator.of(operand);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return gOperator;
         if (numOfAllowedStrengthenings > 0) {
@@ -351,7 +354,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
     @Override
     public Formula visit(Conjunction conjunction) {
         Formula current = Conjunction.of(conjunction.children.stream().map(x -> x.accept(this)));
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return conjunction;
         if (numOfAllowedStrengthenings > 0) {
@@ -390,7 +393,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
     @Override
     public Formula visit(Disjunction disjunction) {
         Formula current = Disjunction.of(disjunction.children.stream().map(x -> x.accept(this)));
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return disjunction;
         if (numOfAllowedStrengthenings > 0) {
@@ -443,7 +446,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
         Formula left = uOperator.left.accept(this);
         Formula right = uOperator.right.accept(this);
         Formula current = UOperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return uOperator;
         if (numOfAllowedStrengthenings > 0) {
@@ -481,7 +484,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
         Formula left = wOperator.left.accept(this);
         Formula right = wOperator.right.accept(this);
         Formula current = WOperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return wOperator;
         if (numOfAllowedStrengthenings > 0) {
@@ -521,7 +524,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
         Formula left = mOperator.left.accept(this);
         Formula right = mOperator.right.accept(this);
         Formula current = MOperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return mOperator;
         if (numOfAllowedStrengthenings > 0) {
@@ -559,7 +562,7 @@ public class FormulaStrengthening implements Visitor<Formula> {
         Formula left = rOperator.left.accept(this);
         Formula right = rOperator.right.accept(this);
         Formula current = ROperator.of(left, right);
-        int numOfTO = FormulaUtils.numOfTemporalOperators(current);
+        int numOfTO = FormulaUtils.temporalNestingDepth(current);
         if (numOfTO > 2)
             return rOperator;
         if (numOfAllowedStrengthenings > 0) {

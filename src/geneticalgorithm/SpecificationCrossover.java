@@ -147,7 +147,7 @@ public class SpecificationCrossover {
                     else {
                         merged_assumption = FormulaUtils.combineSubformula(merge_ass0, merge_ass1);
                     }
-                    if (merged_assumption != null && FormulaUtils.numOfTemporalOperators(merged_assumption) <= 2)
+                    if (merged_assumption != null && FormulaUtils.temporalNestingDepth(merged_assumption) <= 2)
                         assumptionConjuncts.add(merged_assumption);
                 }
             } else
@@ -189,7 +189,7 @@ public class SpecificationCrossover {
                         else {
                             merged_g = FormulaUtils.combineSubformula(merge_g0, merge_g1);
                         }
-                        if (merged_g != null && FormulaUtils.numOfTemporalOperators(merged_g) <= 2)
+                        if (merged_g != null && FormulaUtils.temporalNestingDepth(merged_g) <= 2)
                             guaranteeConjuncts.add(merged_g);
                     }
                 }

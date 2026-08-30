@@ -98,73 +98,135 @@ public class FormulaUtils {
         return conjuncts;
     }
 
+    /**
+     * Returns the candidate graft sites of {@code f} for crossover: its
+     * temporal sub-formulas, plus {@code f} itself when {@code f} has no
+     * temporal sub-formula (a purely propositional conjunct) and
+     * {@code Settings.allowNonTemporalCrossover} is set.
+     *
+     * <p>The set is empty for a propositional {@code f} while the flag is off;
+     * {@link #replaceSubformula(Formula, Formula)} and
+     * {@link #combineSubformula(Formula, Formula)} treat an empty set as "no
+     * graft site" and return {@code null}, so with the flag off crossover
+     * grafts over temporal structure only.</p>
+     */
+    private static Set<Formula> graftSubformulas(Formula f) {
+        Set<Formula> sites = new LinkedHashSet<>(f.subformulas(Formula.TemporalOperator.class));
+        if (sites.isEmpty() && Settings.allowNonTemporalCrossover)
+            sites.add(f);
+        return sites;
+    }
+
     public static Formula replaceSubformula(Formula f0, Formula f1) {
         Random rand = Settings.RANDOM_GENERATOR;
-        // select randomly the fub formula of f0 to be replaced
-        Set<Formula.TemporalOperator> subformulas_f0 = f0.subformulas(Formula.TemporalOperator.class);
+        // graft site in f0: a temporal sub-formula, or f0 itself when
+        // propositional and Settings.allowNonTemporalCrossover is set
+        Set<Formula> subformulas_f0 = graftSubformulas(f0);
         if (subformulas_f0.isEmpty())
             return null;
         Formula src = (Formula) subformulas_f0.toArray()[rand.nextInt(subformulas_f0.size())];
-//		System.out.println("Selected source formula "+ src);
 
-        // get randomly the sub formula of f1 to be used to replace in f0.
-        Set<Formula.TemporalOperator> subformulas_f1 = f1.subformulas(Formula.TemporalOperator.class);
+        // donor drawn from f1 under the same rule
+        Set<Formula> subformulas_f1 = graftSubformulas(f1);
         if (subformulas_f1.isEmpty())
             return null;
         Formula target = (Formula) subformulas_f1.toArray()[rand.nextInt(subformulas_f1.size())];
-//		System.out.println("Selected target formula "+target);
 
-        //replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
+        // replace the chosen site of f0 with the donor
         SubformulaReplacer visitor = new SubformulaReplacer(src, target);
         return f0.accept(visitor);
     }
 
     public static Formula combineSubformula(Formula f0, Formula f1) {
         Random rand = Settings.RANDOM_GENERATOR;
-        // select randomly the fub formula of f0 to be replaced
-        Set<Formula.TemporalOperator> subformulas_f0 = f0.subformulas(Formula.TemporalOperator.class);
+        // graft site in f0: a temporal sub-formula, or f0 itself when
+        // propositional and Settings.allowNonTemporalCrossover is set
+        Set<Formula> subformulas_f0 = graftSubformulas(f0);
         if (subformulas_f0.isEmpty())
             return null;
         Formula left = (Formula) subformulas_f0.toArray()[rand.nextInt(subformulas_f0.size())];
-//		System.out.println("Selected source formula "+ src);
 
-        // get randomly the sub formula of f1 to be used to replace in f0.
-        Set<Formula.TemporalOperator> subformulas_f1 = f1.subformulas(Formula.TemporalOperator.class);
+        // donor drawn from f1 under the same rule
+        Set<Formula> subformulas_f1 = graftSubformulas(f1);
         if (subformulas_f1.isEmpty())
             return null;
         Formula right = (Formula) subformulas_f1.toArray()[rand.nextInt(subformulas_f1.size())];
-//		System.out.println("Selected target formula "+target);
 
-        //replaceSubformula(f0_copy.formula(), src.formula(), target.formula());
-        //0:& 1:| 2:U 3:W 4:M
+        // Join left and right under a random connective, then graft the result
+        // over the chosen site. When both operands are propositional and
+        // Settings.allowNonTemporalCrossover is set, use the propositional
+        // connectives &, |, ->, <-> (implication has no OWL node, so
+        // left -> right is (!left | right)); otherwise use &, |, U, W.
         int op = Settings.RANDOM_GENERATOR.nextInt(4);
-        if (op == 0)
-            right = Conjunction.of(left, right);
-        else if (op == 1)
-            right = Disjunction.of(left, right);
-        else if (op == 2) {
-            if (Settings.RANDOM_GENERATOR.nextBoolean())
-                right = UOperator.of(left, right);
-            else
-                right = UOperator.of(right, left);
+        boolean propositional = Settings.allowNonTemporalCrossover
+                && temporalNestingDepth(left) == 0 && temporalNestingDepth(right) == 0;
+        if (propositional) {
+            if (op == 0)
+                right = Conjunction.of(left, right);
+            else if (op == 1)
+                right = Disjunction.of(left, right);
+            else if (op == 2) {
+                if (Settings.RANDOM_GENERATOR.nextBoolean())
+                    right = Disjunction.of(left.not(), right);   // left -> right
+                else
+                    right = Disjunction.of(right.not(), left);   // right -> left
+            } else
+                right = Biconditional.of(left, right);           // left <-> right
         } else {
-            if (Settings.RANDOM_GENERATOR.nextBoolean())
-                right = WOperator.of(left, right);
-            else
-                right = WOperator.of(right, left);
+            //0:& 1:| 2:U 3:W
+            if (op == 0)
+                right = Conjunction.of(left, right);
+            else if (op == 1)
+                right = Disjunction.of(left, right);
+            else if (op == 2) {
+                if (Settings.RANDOM_GENERATOR.nextBoolean())
+                    right = UOperator.of(left, right);
+                else
+                    right = UOperator.of(right, left);
+            } else {
+                if (Settings.RANDOM_GENERATOR.nextBoolean())
+                    right = WOperator.of(left, right);
+                else
+                    right = WOperator.of(right, left);
+            }
         }
 
         SubformulaReplacer visitor = new SubformulaReplacer(left, right);
         return f0.accept(visitor);
     }
 
-    public static int numOfTemporalOperators(Formula formula) {
+
+    /**
+     * Maximum nesting depth of temporal operators in @p formula.
+     * <p>
+     * This is a depth, not a count: sibling operators do not add up, so
+     * {@code G(F a | F b)} is 2, the same as {@code G F a}.
+     * <p>
+     *  - {@code X} does not add a level, since it shifts by one step rather than
+     *    introducing a loop, but the walk descends past it: {@code X F a} is 1
+     *    and {@code X(G(F(G a)))} is 2.
+     *  - Owl normalizes at construction, so some nesting never reaches this
+     *    function at all: {@code G F G a} is built as {@code F G a} and reads 2.
+     * <p>
+     * Consequently, a formula can be arbitrarily large and still read 2: this is
+     * a bound on nesting, not on size.
+     */
+    public static int temporalNestingDepth(Formula formula) {
         if (formula == null || formula instanceof Literal)
             return 0;
-        if (formula instanceof Formula.TemporalOperator && !(formula instanceof XOperator)) {
+        if (formula instanceof XOperator) {
             int max = 0;
             for (Formula c : formula.children()) {
-                int aux = numOfTemporalOperators(c);
+                int aux = temporalNestingDepth(c);
+                if (max < aux)
+                    max = aux;
+            }
+            return max;                     // X no agrega nivel, pero no esconde
+        }
+        if (formula instanceof Formula.TemporalOperator) {
+            int max = 0;
+            for (Formula c : formula.children()) {
+                int aux = temporalNestingDepth(c);
                 if (max < aux)
                     max = aux;
             }
@@ -173,7 +235,7 @@ public class FormulaUtils {
         if (formula instanceof Formula.LogicalOperator) {
             int max = 0;
             for (Formula c : formula.children()) {
-                int aux = numOfTemporalOperators(c);
+                int aux = temporalNestingDepth(c);
                 if (max < aux)
                     max = aux;
             }
