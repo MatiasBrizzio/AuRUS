@@ -13,8 +13,8 @@ class LTLSolverTest {
     @Test
     public void test_sat() throws IOException, InterruptedException {
         List<String> vars = List.of("p", "q", "r", "s");
-        Formula phi = LtlParser.parse("p && q", vars).formula();
-        Formula psi = LtlParser.parse("p", vars).formula();
+        Formula phi = LtlParser.parse("G (p)", vars).formula();
+        Formula psi = LtlParser.parse("G !p", vars).formula();
         Formula impl = Disjunction.of(psi.not(), phi);
         Formula impl2 = Disjunction.of(phi.not(), psi);
         System.out.println(LTLSolver.isSAT(impl.toString()));

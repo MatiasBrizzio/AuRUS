@@ -171,7 +171,9 @@ public class FormulaUtils {
                 else
                     right = Disjunction.of(right.not(), left);   // right -> left
             } else
-                right = Biconditional.of(left, right);           // left <-> right
+//                right = Biconditional.of(left, right);           // left <-> right
+                // Biconditional
+                right = Disjunction.of(Conjunction.of(left,right), Conjunction.of(right.not(),left.not()));
         } else {
             //0:& 1:| 2:U 3:W
             if (op == 0)
