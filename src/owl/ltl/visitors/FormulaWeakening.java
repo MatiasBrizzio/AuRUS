@@ -310,7 +310,7 @@ public class FormulaWeakening implements Visitor<Formula> {
             if (mutate) {
                 numOfAllowedWeakening--;
                 // 0:TRUE 1:remove G 2:F 3:X 4:GF 5:FG 6:XG 7: U
-                int option = Settings.RANDOM_GENERATOR.nextInt(7);
+                int option = Settings.RANDOM_GENERATOR.nextInt(8);
                 if (option == 0)
                     current = BooleanConstant.TRUE;
                 else if (option == 1) {
@@ -331,6 +331,13 @@ public class FormulaWeakening implements Visitor<Formula> {
                 } else if (option == 6) {
                     // weak (G(a)) = XG(a)
                     current = XOperator.of(GOperator.of(operand));
+                }
+                else if (option == 7) {
+                    // weak (G(a)) = G(a W q). Sound for every q: if a holds always,
+                    // it holds until anything. Draws a fresh literal like the two
+                    // heuristic branches, but unlike them, it is a genuine entailment,
+                    // so it is not gated by allowHeuristicMutations.
+                    current = GOperator.of(WOperator.of(operand, new_literal(current)));
                 }
             }
         }
