@@ -2,10 +2,12 @@ package geneticalgorithm;
 
 import com.google.common.collect.Sets;
 import com.lagodiuk.ga.Fitness;
+import com.lagodiuk.ga.GeneticAlgorithm;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
 import modelcounter.EmersonLeiAutomatonBasedModelCounting;
 import owl.ltl.*;
+import owl.ltl.parser.LtlParser;
 import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
@@ -22,9 +24,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The multi-objective fitness function of AuRUS — the compass that guides the
@@ -206,6 +206,14 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         if (chromosome.status != SPEC_STATUS.UNKNOWN)
             return chromosome.fitness;
 
+        // Once the run's deadline has passed the search is over and this score
+        // will never be used: the population is still being walked only because
+        // the termination check sits between offspring, not inside scoring.
+        // Returning early is what makes the run exit promptly instead of paying
+        // a solver round-trip per remaining candidate.
+        if (GeneticAlgorithm.deadlinePassed())
+            return 0.0d;
+
         // remove trivial specifications
         if (originalSpecification.equals(chromosome.spec))
             return 0.0d;
@@ -305,6 +313,13 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         //check if status has been computed before
         if (chromosome.status != SPEC_STATUS.UNKNOWN)
             return;
+
+        // Nothing downstream of the deadline is used, and every branch below
+        // is a solver call; leaving the status UNKNOWN is the same outcome an
+        // inconclusive solver would produce.
+        if (GeneticAlgorithm.deadlinePassed())
+            return;
+
 
         Tlsf spec = chromosome.spec;
         // Env = initially && G(require) & assume
@@ -542,12 +557,30 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
      * @return the syntactic similarity in {@code [0, 1]}
      */
     public double compute_syntactic_distance(Tlsf original, Tlsf refined) {
-        List<LabelledFormula> sub_original = FormulaUtils.subformulas(original.toFormula());
-        List<LabelledFormula> sub_refined = FormulaUtils.subformulas(refined.toFormula());
-        Set<LabelledFormula> commonSubs = Sets.intersection(Sets.newHashSet(sub_original), Sets.newHashSet(sub_refined));
-        double lost = ((double) commonSubs.size()) / ((double) sub_original.size());
-        double won = ((double) commonSubs.size()) / ((double) sub_refined.size());
-        return 0.5d * lost + 0.5d * won;
+        return compute_syntactic_distance(original.toFormula(), refined.toFormula());
+    }
+
+    public double compute_syntactic_distance(LabelledFormula original, LabelledFormula refined) {
+        // 1. Lista de variables común (unión, orden fijo)
+        List<String> vars = new ArrayList<>(original.variables());
+        for (String v : refined.variables()) {
+            if (!vars.contains(v)) vars.add(v);
+        }
+
+        // 2. Re-etiquetar ambas fórmulas con esa misma lista
+        LabelledFormula o = LtlParser.parse(original.toString(), vars);
+        LabelledFormula r = LtlParser.parse(refined.toString(), vars);
+
+        // 3. Comparar Formula (no LabelledFormula), como conjuntos
+        Set<Formula> subO = new HashSet<>();
+        for (LabelledFormula lf : FormulaUtils.subformulas(o)) subO.add(lf.formula());
+        Set<Formula> subR = new HashSet<>();
+        for (LabelledFormula lf : FormulaUtils.subformulas(r)) subR.add(lf.formula());
+
+        Set<Formula> common = Sets.intersection(subO, subR);
+        double lost = (double) common.size() / subO.size();
+        double won  = (double) common.size() / subR.size();
+        return 0.5 * lost + 0.5 * won;
     }
 
     /**
