@@ -56,6 +56,29 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         this.population.sortPopulationByFitness(this.chromosomesComparator);
     }
 
+    /** Wall-clock deadline of the current run, or null when none is set.
+     *  Held statically so the solver helpers can bound a single call by the
+     *  time the run has left, rather than by their own per-call timeout alone. */
+    private static volatile Instant
+            runDeadline = null;
+
+    /** Milis left before the run's deadline, or Long.MAX_VALUE if there is none.
+     *  Never negative: a run past its deadline reports 0 and callers should not
+     *  start new work. */
+    public static long millisUntilDeadline() {
+        Instant d = runDeadline;
+        if (d == null) return Long.MAX_VALUE;
+        // Usamos toMillis() para obtener precisión de 3 decimales
+        long left = Duration.between(Instant.now(), d).toMillis();
+        return Math.max(0, left);
+    }
+
+    public static boolean deadlinePassed() {
+        return runDeadline != null && !Instant.now().isBefore(runDeadline);
+    }
+
+
+
     public void evolve() {
         int parentPopulationSize = this.population.getSize();
 
@@ -118,25 +141,48 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
 
     public void evolve(int count) {
         this.terminate = false;
-        startRunningTime = Instant.now();
-        for (int i = 0; i < count; i++) {
-            checkTermination();
-            iterationStartTime = Instant.now();
-            if (this.terminate) {
-                break;
+        if (startRunningTime == null) {
+            startRunningTime = Instant.now();
+            runDeadline = EXECUTION_TIMEOUT > 0
+                    ? startRunningTime.plusSeconds(EXECUTION_TIMEOUT)
+                    : null;
+        }
+        try {
+            for (int i = 0; i < count; i++) {
+                checkTermination();
+                iterationStartTime = Instant.now();
+                if (this.terminate) break;
+                this.evolve();
+                this.iteration = i;
+                for (IterartionListener<C, T> l : this.iterationListeners) l.update(this);
+                this.select();
+                printExecutionTime();
             }
-            this.evolve();
-            this.iteration = i;
+        } catch (DeadlineReached e) {
+            // La población queda como la dejó el ordenamiento interrumpido.
+            this.terminate = true;
+            System.out.println("\nGA TIMEOUT REACHED. Proceeding to show solutions found so far...");
+            // Forzamos la actualización del listener para imprimir el estado actual
             for (IterartionListener<C, T> l : this.iterationListeners) {
                 l.update(this);
             }
-            this.select();
             printExecutionTime();
         }
     }
-
     public void setTIMEOUT(int timeout) {
         this.EXECUTION_TIMEOUT = timeout;
+        // Inicializar los contadores inmediatamente
+        if (this.EXECUTION_TIMEOUT > 0 && startRunningTime == null) {
+            startRunningTime = Instant.now();
+            runDeadline = startRunningTime.plusSeconds(this.EXECUTION_TIMEOUT);
+        }
+    }
+
+    /** Thrown to unwind out of a fitness evaluation once the run's deadline
+     *  has passed. Caught in evolve(int), which then returns the population
+     *  as it stands. */
+    static final class DeadlineReached extends RuntimeException {
+        DeadlineReached() { super(null, null, false, false); }  // sin stack trace
     }
 
     private void checkTermination() {
@@ -144,12 +190,12 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
             terminate();
             return;
         }
-        //check if timeout has been reached
-        if (EXECUTION_TIMEOUT > 0) {
+        if (EXECUTION_TIMEOUT > 0 && startRunningTime != null) {
             Duration current = Duration.between(startRunningTime, Instant.now());
             if (current.toSeconds() > EXECUTION_TIMEOUT) {
                 System.out.println("GENETIC ALGORITHM TIMEOUT REACHED. Terminating the execution...");
                 terminate();
+                throw new DeadlineReached();
             }
         }
     }
@@ -230,6 +276,10 @@ public class GeneticAlgorithm<C extends Chromosome<C>, T extends Comparable<T>> 
         public T fit(C chr) {
             T fit = this.cache.get(chr);
             if (fit == null) {
+                // Checked here as well as between offspring: a hard specification can
+                // spend the whole deadline inside one population sort, during which no
+                // breeding loop runs and checkTermination() is never reached.
+                GeneticAlgorithm.this.checkTermination();
                 fit = GeneticAlgorithm.this.fitnessFunc.calculate(chr);
                 this.cache.put(chr, fit);
             }
