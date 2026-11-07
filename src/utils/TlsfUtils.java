@@ -97,7 +97,6 @@ public class TlsfUtils {
 
 
     public static Tlsf toBasicTLSF(File spec) throws IOException, InterruptedException {
-//		System.out.println(hasSyfcoSintax(spec) + "and "+isBasic(spec) + "File: " + spec.getPath() );
         if (spec.getAbsolutePath().endsWith("spectra")) {
             Spectra spectra = SpectraParser.parse(new FileReader(spec));
             Tlsf tlsf = TlsfUtils.fromSpectra(spectra);
@@ -108,10 +107,11 @@ public class TlsfUtils {
             spec = new File(tlsf_name);
         }
 
-        if (hasSyfcoSintax(spec)) {
-            if (isBasic(spec))
-                return TlsfParser.parse(new FileReader(spec));
-        } else {
+        // Every file goes through syfco, basic ones included. Owl's parser gives `->` a
+        // different precedence than syfco, so a basic file handed to Owl as written can be
+        // read as another formula (G (!a || a && !b -> X a) became G (!a || (a && !b -> X a))).
+        // syfco -m fully prints every operand parenthesised, which Owl reads unambiguously.
+        if (!hasSyfcoSintax(spec)) {
             String tlsfAdapted = adaptTLSFSpec(TlsfParser.parse(new FileReader(spec)));
             FileWriter fileWriter2 = new FileWriter(spec);
             fileWriter2.write(tlsfAdapted);
@@ -121,7 +121,7 @@ public class TlsfUtils {
 
         String cmd = getCommand();
         String tlsfBasic = spec.getAbsolutePath().replace(".tlsf", "_basic.tlsf");
-        cmd += " -o " + tlsfBasic + " -f basic -m pretty -s0 " + spec.getAbsolutePath();
+        cmd += " -o " + tlsfBasic + " -f basic -m fully -s0 " + spec.getAbsolutePath();
         Process p = Runtime.getRuntime().exec(cmd);
 
         p.waitFor();
