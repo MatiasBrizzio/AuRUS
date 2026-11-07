@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-class FormulaMutarorTest {
+class FormulaMutatorTest {
 
 //  @Test
 //  void testMutate0() throws IOException {
@@ -30,7 +30,7 @@ class FormulaMutarorTest {
     @Test
     void testMutate1() throws IOException {
         List<String> vars = List.of("grant0", "grant1");
-        LabelledFormula f = LtlParser.parse("(Z grant0)", vars);
+        LabelledFormula f = LtlParser.parse("(F grant0)", vars);
         System.out.println("After replace subformula! " + f.formula());
         FormulaMutator visitor = new FormulaMutator(vars, FormulaUtils.formulaSize(f.formula()), 1);
         Formula m = f.formula().accept(visitor);
