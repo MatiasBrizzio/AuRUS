@@ -400,9 +400,42 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
         Formula simplified = formula.formula().accept(simp);
         if (simplified == BooleanConstant.FALSE)
             return BigInteger.ZERO;
+        if (isProvablyUnsatisfiable(simplified))
+            return BigInteger.ZERO;
         LabelledFormula simp_formula = LabelledFormula.of(simplified, formula.variables());
         EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting<>(simp_formula);
         return counter.count(Settings.MC_BOUND);
+    }
+
+    /**
+     * Asks the LTL solver whether a formula has no models at all, so that an
+     * unsatisfiable formula the syntactic simplifier could not reduce to
+     * {@code false} counts {@code 0} instead of receiving spurious models from
+     * the automaton approximation.
+     *
+     * <p>Only a conclusive {@code UNSAT} answer returns {@code true}: a timeout
+     * or a solver failure says nothing about the formula. {@link LTLSolver}
+     * reports {@code UNSAT} whenever the solver prints no {@code sat} line,
+     * including when it dies with a non-zero exit and an empty stderr, so
+     * {@code numOfError} is checked too.</p>
+     *
+     * @param formula the simplified formula
+     * @return {@code true} iff the solver conclusively proved it unsatisfiable
+     */
+    private boolean isProvablyUnsatisfiable(Formula formula) {
+        int errorsBefore = LTLSolver.numOfError;
+        try {
+            // The visitor rewrites W and M, which aalta rejects with a syntax
+            // error, into operators it accepts. toSolverSyntax then separates
+            // the operators, without which aalta reads "Xp1" as a variable.
+            SolverResult result = LTLSolver.isSAT(SolverUtils.toSolverSyntax(formula.accept(visitor)));
+            return result == SolverResult.UNSAT && LTLSolver.numOfError == errorsBefore;
+        } catch (IOException e) {
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 
     /**
@@ -451,7 +484,7 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
      * preserved fraction via the complement has a further advantage under
      * approximate counting: when the candidate genuinely weakens the original
      * ({@code S &rArr; S'}), the conjunction {@code S &and; &not;S'} is
-     * unsatisfiable, the simplifier collapses it to {@code false}, and the
+     * unsatisfiable, the simplifier or the LTL solver detects it, and the
      * method returns exactly {@code 1} — no approximation noise at the
      * boundary that matters most.</p>
      *

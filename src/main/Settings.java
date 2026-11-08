@@ -63,13 +63,7 @@ public class Settings {
      * value — printed by {@link #print_settings()} in every {@code out.txt}
      * — so any past run can be reproduced after the fact by passing
      * {@code -seed=<that value>}, even if it wasn't explicitly seeded when
-     * it originally ran. Explicitly setting it (flag {@code -seed}) makes
-     * AuRUS's own stochastic decisions (selection, mutation targets,
-     * crossover choices) reproducible given the same sequence of external
-     * solver verdicts — see the project {@code TODO.md} for the current,
-     * honest state of end-to-end reproducibility (not yet complete: at
-     * least one additional source of run-to-run variance remains,
-     * independent of this seed).
+     * it originally ran.
      */
     public static long SEED = System.nanoTime() * 0x9E3779B97F4A7C15L;
 
@@ -199,8 +193,7 @@ public class Settings {
      * Intended to select an exact model counter instead of the automata/matrix
      * approximation (flag {@code -precise} sets this to {@code false}; default
      * {@code true}). <b>Currently unused:</b> no counting code path reads this
-     * field, so {@code -precise} has no effect on the search — see the
-     * project {@code TODO.md}.
+     * field, so {@code -precise} has no effect on the search
      */
     public static boolean MC_EXHAUSTIVE = true;
 

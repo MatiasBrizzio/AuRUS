@@ -123,7 +123,7 @@ positive form:
    direction is a self-contained computation.
 3. **Exactness at the boundary, by construction.** When the candidate is a
    genuine weakening (`S ⇒ S'`), the formula `S ∧ ¬S'` is unsatisfiable: the
-   syntactic simplifier collapses it to `false` and the count is `0` without
+   syntactic simplifier or the LTL solver detects it and the count is `0` without
    ever building an automaton, so `lost = 1.0` **exactly**, free of
    approximation noise. Symmetrically, genuine strengthenings yield
    `won = 1.0` exactly. The positive form enjoys no such unconditional
