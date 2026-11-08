@@ -219,6 +219,12 @@ public class Settings {
     /** Timeout, in seconds, for a single LTL satisfiability query (flag {@code -SatTO}, default {@code 30}). */
     public static int SAT_TIMEOUT = 30;
 
+    /** LTL satisfiability solver: {@code "aalta"} (default) or {@code "black"} (flag {@code -sat}). aalta shares a work file in its current directory, so concurrent runs in one directory interfere. Read by {@link solvers.LTLSolver}. */
+    public static String SAT_SOLVER = "aalta";
+
+    /** Path/name of the satisfiability solver binary (flag {@code -sat-bin}). Empty means the default: the vendored {@code lib/aalta} binary, or {@code black} resolved from {@code PATH}. */
+    public static String SAT_BIN = "";
+
     /**
      * Theoretical maximum value the fitness function can return: the sum of
      * all four component weights. Used as a sanity ceiling — a computed
@@ -308,6 +314,8 @@ public class Settings {
                 ", STRIX_PATH='" + STRIX_PATH + '\'' +
                 ", STRONG_SAT_TIMEOUT=" + STRONG_SAT_TIMEOUT +
                 ", SAT_TIMEOUT=" + SAT_TIMEOUT +
+                ", SAT_SOLVER=" + SAT_SOLVER +
+                ", SAT_BIN='" + SAT_BIN + '\'' +
                 ", allowAssumptionRemoval=" + allowAssumptionRemoval +
                 ", allowNonTemporalCrossover=" + allowNonTemporalCrossover +
                 ", allowHeuristicMutations=" + allowHeuristicMutations +

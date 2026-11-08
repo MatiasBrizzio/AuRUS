@@ -137,6 +137,15 @@ public class Main {
                 Settings.USE_SPECTRA = true;
             } else if (arg.startsWith("-synth-bin=")) {
                 Settings.SYNTH_BIN = arg.replace("-synth-bin=", "");
+            } else if (arg.startsWith("-sat-bin=")) {
+                Settings.SAT_BIN = arg.replace("-sat-bin=", "");
+            } else if (arg.startsWith("-sat=")) {
+                String sat = arg.replace("-sat=", "");
+                if (!sat.equalsIgnoreCase("aalta") && !sat.equalsIgnoreCase("black")) {
+                    System.err.println("ERROR: unknown value for -sat: '" + sat + "' (expected 'aalta' or 'black').");
+                    System.exit(1);
+                }
+                Settings.SAT_SOLVER = sat;
             } else if (arg.startsWith("-seed=")) {
                 seedValue = parseLongArg("-seed", arg.replace("-seed=", ""));
                 seedGiven = true;
@@ -501,6 +510,8 @@ public class Main {
         System.out.println("  -use-spectra         treat the input as a Spectra specification");
         System.out.println("  -synth=NAME          synthesiser to use: strix (default) or ltlsynt (Docker-free)");
         System.out.println("  -synth-bin=PATH      override the synthesiser binary path/name");
+        System.out.println("  -sat=NAME            LTL satisfiability solver: aalta (default) or black");
+        System.out.println("  -sat-bin=PATH        override the satisfiability solver binary path/name");
         System.out.println("  -seed=N              fix the RNG seed (any whole number, e.g. -seed=12345 or");
         System.out.println("                       -seed=-987) for reproducible runs; default: derived from");
         System.out.println("                       the system clock, but always logged in out.txt as SEED=...");

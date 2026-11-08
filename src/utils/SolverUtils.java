@@ -27,6 +27,15 @@ public class SolverUtils {
         return f;
     }
 
+    /**
+     * Adapts a formula already in {@link #toSolverSyntax} form to BLACK, whose
+     * boolean constants are capitalised: a lowercase {@code false} would be
+     * read as a proposition named "false" and turn into a satisfiable atom.
+     */
+    public static String toBlackSyntax(String solverFormula) {
+        return solverFormula.replaceAll("\\btrue\\b", "True").replaceAll("\\bfalse\\b", "False");
+    }
+
     public static String toLambConvSyntax(String ltlFormula) {
         ltlFormula = insertSpaceBeforeUppercase(ltlFormula);
         ltlFormula = replaceSymbols(ltlFormula);
