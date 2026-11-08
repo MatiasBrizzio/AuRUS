@@ -119,6 +119,7 @@ A `CITATION.cff` file is included, so GitHub's *"Cite this repository"* button w
 - **Java 11** or later (set `JAVA_HOME`).
 - [Apache Ant](https://ant.apache.org/) (a `build.xml` is provided; required libraries ship in `lib/`).
 - The [**Strix**](https://strix.model.in.tum.de/) reactive synthesis tool — installed natively, **or** via our Docker image (recommended for macOS, or for Linux users who prefer not to build Strix's dependencies).
+- *Optional:* [**BLACK**](https://www.black-sat.org) 26.05.0, only for `-sat=black`: `brew install black-sat/black/black-sat` (macOS) or the `.deb`/`.rpm` from its [releases page](https://github.com/black-sat/black/releases) (Linux).
 
 ### Build
 
@@ -228,6 +229,8 @@ Usage: `./unreal-repair.sh [flags] input-file.{tlsf|spectra}`
 | `-use-spectra` | off | Treat the input as a Spectra specification |
 | `-synth=NAME` | `strix` | Realisability tool to use: `strix` (native binary or Docker, see above) or `ltlsynt` — a **Docker-free** alternative from the [Spot](https://spot.lre.epita.fr/) library, installable via `brew install spot` (macOS) or `conda install -c conda-forge spot` (Linux/macOS); see [spot.lre.epita.fr/install.html](https://spot.lre.epita.fr/install.html) for Debian/Ubuntu packages |
 | `-synth-bin=PATH` | tool default | Override the synthesiser binary path/name |
+| `-sat=NAME` | `aalta` | LTL satisfiability solver: `aalta` (bundled in `lib/`) or `black` ([BLACK](https://www.black-sat.org), which must be installed separately). aalta shares a work file in its current directory, so use `black` when several runs execute at once in the same directory |
+| `-sat-bin=PATH` | tool default | Override the satisfiability solver binary path/name |
 | `-ref=file.tlsf` | — | Reference (genuine) solution for the end-of-run quality analysis (repeatable) |
 | `-out=dir` | input dir | Output directory for the generated repairs |
 
