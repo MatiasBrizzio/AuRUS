@@ -10,7 +10,7 @@
   <a href="https://github.com/MatiasBrizzio/AuRUS/releases"><img src="https://img.shields.io/github/v/release/MatiasBrizzio/AuRUS" alt="Release"/></a>
   <a href="https://dl.acm.org/doi/10.1145/3583131.3590454"><img src="https://img.shields.io/badge/GECCO%202023-10.1145%2F3583131.3590454-orange" alt="Paper"/></a>
   <a href="https://arxiv.org/abs/2105.12595"><img src="https://img.shields.io/badge/arXiv-2105.12595-b31b1b.svg" alt="arXiv"/></a>
-  <a href="#requirements"><img src="https://img.shields.io/badge/Java-11%2B-red?logo=openjdk" alt="Java"/></a>
+  <a href="#requirements"><img src="https://img.shields.io/badge/Java-14%2B-red?logo=openjdk" alt="Java"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"/></a>
 </p>
 
@@ -116,7 +116,7 @@ A `CITATION.cff` file is included, so GitHub's *"Cite this repository"* button w
 
 ### Requirements
 
-- **Java 11** or later (set `JAVA_HOME`).
+- **Java 14** or later (set `JAVA_HOME`).
 - [Apache Ant](https://ant.apache.org/) (a `build.xml` is provided; required libraries ship in `lib/`).
 - The [**Strix**](https://strix.model.in.tum.de/) reactive synthesis tool — installed natively, **or** via our Docker image (recommended for macOS, or for Linux users who prefer not to build Strix's dependencies).
 - *Optional:* [**BLACK**](https://www.black-sat.org) 26.05.0, only for `-sat=black`: `brew install black-sat/black/black-sat` (macOS) or the `.deb`/`.rpm` from its [releases page](https://github.com/black-sat/black/releases) (Linux).
@@ -175,6 +175,25 @@ Reference (genuine) solutions can be supplied so AuRUS assesses the quality of t
     -ref=case-studies/arbiter/genuine/arbiter_fixed1.tlsf \
     case-studies/arbiter/arbiter.tlsf
 ```
+
+### Counting models without repairing
+
+`count-models.sh` runs only the model counter, through the same code path the fitness function uses. From Java, call `modelcounter.ModelCounter.count(formula, bound)`.
+
+```bash
+./count-models.sh -k=10 -vars=a,b -sat=black 'G (a -> X b)'
+# {"status":"ok","count":"78732","ms":210}
+./count-models.sh -k=10 spec.tlsf
+./count-models.sh -c -k=10 -vars=a,b 'G (a -> X b)'
+# 78732
+./count-models.sh --help
+```
+
+`status` is `ok`, `unsat_simplified`, `unsat_solver`, `timeout` or `error`. The exit code is non-zero on a failure, and a failure never carries a count. Options: `-k=N`, `-vars=a,b`, `-sat=NAME`, `-sat-bin=PATH`, `--timeout=S` (translation and counting) `--dump` (adds the automaton, up to 10 variables) and `-c`/`-count` (prints only the number; on a failure, standard output stays empty).
+
+**What it counts.** The number of words of length `k` whose run ends in a successor of an accepting edge. This is an approximation that depends on the automaton: two equivalent formulas can get different counts. Formulas proven unsatisfiable count 0.
+
+**Declared variables are part of the question.** They set the alphabet, so each proposition declared but not used multiplies the count by `2^k`. Without `-vars`, the variables in the formula are used; a TLSF file declares its own.
 
 ---
 

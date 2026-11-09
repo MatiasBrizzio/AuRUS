@@ -16,7 +16,12 @@ import owl.run.DefaultEnvironment;
 import owl.translations.delag.DelagBuilder;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.function.IntConsumer;
@@ -98,6 +103,18 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
     /** The automaton's states in a fixed order — the index space of the matrix and vectors. */
     private Object[] states = null;
 
+    /** Why the last translation or count produced no result. */
+    private Failure failure = Failure.NONE;
+
+    /** Reason a translation or count produced no result. */
+    public enum Failure {
+        NONE, TRANSLATION_TIMEOUT, COUNT_TIMEOUT, ERROR
+    }
+
+    /** @return why {@link #count(int)} last returned {@code null} */
+    public Failure getFailure() {
+        return failure;
+    }
 
     /**
      * Creates a counter for the given formula and immediately translates it
@@ -121,8 +138,10 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
             future.get(Settings.PARSING_TIMEOUT, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             System.out.println("EmersonLeiAutomatonBasedModelCounting: TIMEOUT parsing.");
+            failure = Failure.TRANSLATION_TIMEOUT;
         } catch (InterruptedException | ExecutionException e) {
             System.err.println("EmersonLeiAutomatonBasedModelCounting: ERROR while parsing. " + e.getMessage());
+            failure = Failure.ERROR;
         }
     }
 
@@ -171,8 +190,10 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
             return future.get(Settings.MC_TIMEOUT, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             System.out.println("EmersonLeiAutomatonBasedModelCounting::count TIMEOUT.");
+            failure = Failure.COUNT_TIMEOUT;
         } catch (InterruptedException | ExecutionException e) {
             System.err.println("EmersonLeiAutomatonBasedModelCounting::count ERROR. " + e.getMessage());
+            failure = Failure.ERROR;
         }
         return null;
     }
@@ -289,19 +310,7 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
     public FieldMatrix buildFinalStates() {
         int n = T.getRowDimension();
         //set final states
-        Set<S> final_states = new HashSet<>();
-        for (S s : automaton.states()) {
-            Set<Edge<S>> edges = automaton.edges(s);
-            for (Edge<S> edge : edges) {
-                //check if it is an acceptance transition
-                IntArrayList acceptanceSets = new IntArrayList();
-                if (edge.acceptanceSetIterator().hasNext())
-                    edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
-                if (accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets)) {
-                    final_states.add(edge.successor());
-                }
-            }
-        }
+        Set<S> final_states = finalStates();
 
         FieldMatrix v = createMatrix(n, 1);
         for (int i = 0; i < n; i++) {
@@ -310,6 +319,73 @@ public class EmersonLeiAutomatonBasedModelCounting<S> {
             }
         }
         return v;
+    }
+
+    private Set<S> finalStates() {
+        Set<S> final_states = new HashSet<>();
+        for (S s : automaton.states()) {
+            Set<Edge<S>> edges = automaton.edges(s);
+            for (Edge<S> edge : edges) {
+                //check if it is an acceptance transition
+                if (isAccepting(edge)) {
+                    final_states.add(edge.successor());
+                }
+            }
+        }
+        return final_states;
+    }
+
+    private boolean isAccepting(Edge<S> edge) {
+        IntArrayList acceptanceSets = new IntArrayList();
+        if (edge.acceptanceSetIterator().hasNext())
+            edge.acceptanceSetIterator().forEachRemaining((IntConsumer) acceptanceSets::add);
+        return accConditionIsSatisfied(automaton.acceptance().booleanExpression(), acceptanceSets);
+    }
+
+    /**
+     * Exposes the automaton the count is computed on: states, initial and
+     * final states, and one transition per state and letter. A letter is a
+     * bit mask whose bit {@code i} is the {@code i}-th variable of
+     * {@link AutomatonDump#variables()}.
+     *
+     * @return the automaton's contents
+     * @throws IllegalStateException    if the automaton was never built
+     * @throws IllegalArgumentException if the alphabet exceeds {@link AutomatonDump#MAX_VARIABLES} variables
+     */
+    public AutomatonDump dump() {
+        if (states == null)
+            throw new IllegalStateException("the automaton was not built: " + failure);
+        int variables = formula.variables().size();
+        if (variables > AutomatonDump.MAX_VARIABLES)
+            throw new IllegalArgumentException("alphabet too large to dump: " + variables
+                    + " variables (maximum " + AutomatonDump.MAX_VARIABLES + ")");
+
+        Map<Object, Integer> index = new HashMap<>();
+        for (int i = 0; i < states.length; i++)
+            index.put(states[i], i);
+
+        List<Integer> initial = new ArrayList<>();
+        Set<S> initialStates = automaton.initialStates();
+        Set<S> final_states = finalStates();
+        List<Integer> finals = new ArrayList<>();
+        List<AutomatonDump.Transition> transitions = new ArrayList<>();
+        for (int i = 0; i < states.length; i++) {
+            @SuppressWarnings("unchecked")
+            S state = (S) states[i];
+            if (initialStates.contains(state))
+                initial.add(i);
+            if (final_states.contains(state))
+                finals.add(i);
+            for (int letter = 0; letter < (1 << variables); letter++) {
+                BitSet valuation = BitSet.valueOf(new long[]{letter});
+                Set<Edge<S>> edges = automaton.edges(state, valuation);
+                if (edges.isEmpty())
+                    transitions.add(new AutomatonDump.Transition(i, letter, AutomatonDump.NO_SUCCESSOR, false));
+                for (Edge<S> edge : edges)
+                    transitions.add(new AutomatonDump.Transition(i, letter, index.get(edge.successor()), isAccepting(edge)));
+            }
+        }
+        return new AutomatonDump(formula.variables(), states.length, initial, finals, transitions);
     }
 
     /**

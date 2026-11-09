@@ -6,9 +6,9 @@ import com.lagodiuk.ga.GeneticAlgorithm;
 import geneticalgorithm.SpecificationChromosome.SPEC_STATUS;
 import main.Settings;
 import modelcounter.EmersonLeiAutomatonBasedModelCounting;
+import modelcounter.ModelCounter;
 import owl.ltl.*;
 import owl.ltl.parser.LtlParser;
-import owl.ltl.rewriter.SyntacticSimplifier;
 import owl.ltl.tlsf.Tlsf;
 import owl.ltl.visitors.SolverSyntaxOperatorReplacer;
 import solvers.LTLSolver;
@@ -385,57 +385,15 @@ public class AutomataBasedModelCountingSpecificationFitness implements Fitness<S
      * Approximate bounded model count {@code #(&phi;, k)} of a formula, with
      * {@code k = Settings.MC_BOUND}.
      *
-     * <p>The formula is first syntactically simplified (a formula collapsing
-     * to {@code false} has zero models by definition, with no counting
-     * needed); the surviving formula is handed to
-     * {@link EmersonLeiAutomatonBasedModelCounting}, which builds the
-     * automaton, encodes its transfer matrix {@code T}, and evaluates
-     * {@code I &middot; T^k &middot; F}.</p>
+     * <p>Delegates to {@link ModelCounter}, the public counting path; see
+     * {@link modelcounter.CountResult#fitnessCount()} for how its results map
+     * to the value used here.</p>
      *
      * @param formula the labelled formula to count
      * @return the approximate number of bounded models, or {@code null} if counting failed
      */
     private BigInteger countModels(LabelledFormula formula) {
-        SyntacticSimplifier simp = new SyntacticSimplifier();
-        Formula simplified = formula.formula().accept(simp);
-        if (simplified == BooleanConstant.FALSE)
-            return BigInteger.ZERO;
-        if (isProvablyUnsatisfiable(simplified))
-            return BigInteger.ZERO;
-        LabelledFormula simp_formula = LabelledFormula.of(simplified, formula.variables());
-        EmersonLeiAutomatonBasedModelCounting counter = new EmersonLeiAutomatonBasedModelCounting<>(simp_formula);
-        return counter.count(Settings.MC_BOUND);
-    }
-
-    /**
-     * Asks the LTL solver whether a formula has no models at all, so that an
-     * unsatisfiable formula the syntactic simplifier could not reduce to
-     * {@code false} counts {@code 0} instead of receiving spurious models from
-     * the automaton approximation.
-     *
-     * <p>Only a conclusive {@code UNSAT} answer returns {@code true}: a timeout
-     * or a solver failure says nothing about the formula. {@link LTLSolver}
-     * reports {@code UNSAT} whenever the solver prints no {@code sat} line,
-     * including when it dies with a non-zero exit and an empty stderr, so
-     * {@code numOfError} is checked too.</p>
-     *
-     * @param formula the simplified formula
-     * @return {@code true} iff the solver conclusively proved it unsatisfiable
-     */
-    private boolean isProvablyUnsatisfiable(Formula formula) {
-        int errorsBefore = LTLSolver.numOfError;
-        try {
-            // The visitor rewrites W and M, which aalta rejects with a syntax
-            // error, into operators it accepts. toSolverSyntax then separates
-            // the operators, without which aalta reads "Xp1" as a variable.
-            SolverResult result = LTLSolver.isSAT(SolverUtils.toSolverSyntax(formula.accept(visitor)));
-            return result == SolverResult.UNSAT && LTLSolver.numOfError == errorsBefore;
-        } catch (IOException e) {
-            return false;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
+        return ModelCounter.count(formula, Settings.MC_BOUND).fitnessCount().orElse(null);
     }
 
     /**
