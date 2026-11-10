@@ -5,6 +5,7 @@ import modelcounter.CountResult;
 import modelcounter.ModelCounter;
 import owl.ltl.LabelledFormula;
 import owl.ltl.parser.LtlParser;
+import solvers.LTLSolver;
 import utils.TlsfUtils;
 
 import java.io.File;
@@ -60,13 +61,13 @@ public final class CountModels {
                     bound = Integer.parseInt(arg.substring(3));
                 } else if (arg.startsWith("-vars=")) {
                     vars = Arrays.stream(arg.substring(6).split(",")).map(String::trim).collect(Collectors.toList());
-                } else if (arg.startsWith("-sat-bin=")) {
-                    Settings.SAT_BIN = arg.substring(9);
-                } else if (arg.startsWith("-sat=")) {
-                    String sat = arg.substring(5);
-                    if (!sat.equalsIgnoreCase("aalta") && !sat.equalsIgnoreCase("black"))
-                        return usage(errors, "unknown value for -sat: " + sat);
-                    Settings.SAT_SOLVER = sat;
+                } else if (arg.startsWith("-sat=") || arg.startsWith("-sat-")) {
+                    try {
+                        if (!LTLSolver.applyOption(arg))
+                            return usage(errors, "unknown option: " + arg);
+                    } catch (IllegalArgumentException e) {
+                        return usage(errors, e.getMessage());
+                    }
                 } else if (arg.startsWith("--timeout=")) {
                     int seconds = Integer.parseInt(arg.substring(10));
                     Settings.PARSING_TIMEOUT = seconds;
@@ -88,6 +89,11 @@ public final class CountModels {
         }
         if (input == null)
             return usage(errors, "no formula given; see --help");
+        try {
+            LTLSolver.validateSettings();
+        } catch (IllegalArgumentException e) {
+            return usage(errors, e.getMessage());
+        }
         if (countOnly && dump)
             return usage(errors, "-c and --dump cannot be combined");
         if (input.endsWith(".tlsf") && vars != null)
@@ -195,8 +201,12 @@ public final class CountModels {
         out.println("  -vars=a,b,...   declared variables; they set the alphabet and so the count.");
         out.println("                  Default: the variables that appear in the formula.");
         out.println("                  Not allowed with TLSF files, which declare their own.");
-        out.println("  -sat=NAME       satisfiability solver: aalta (default) or black");
+        out.println("  -sat=NAME       satisfiability solver: aalta (default), black or custom");
         out.println("  -sat-bin=PATH   override the satisfiability solver binary");
+        out.println("  -sat-cmd='CMD'  any solver: CMD with {formula} or {file}; selects -sat=custom");
+        out.println("  -sat-syntax=NAME          formula syntax for -sat-cmd: aalta (default) or black");
+        out.println("  -sat-sat-pattern=RE       output line meaning satisfiable (default: sat, any case)");
+        out.println("  -sat-unsat-pattern=RE     output line meaning unsatisfiable (default: unsat, any case)");
         out.println("  --timeout=S     translation and counting timeouts, in seconds");
         out.println("  --dump          add the automaton to the output (up to "
                 + AutomatonDump.MAX_VARIABLES + " variables, status ok only)");

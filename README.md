@@ -248,10 +248,52 @@ Usage: `./unreal-repair.sh [flags] input-file.{tlsf|spectra}`
 | `-use-spectra` | off | Treat the input as a Spectra specification |
 | `-synth=NAME` | `strix` | Realisability tool to use: `strix` (native binary or Docker, see above) or `ltlsynt` — a **Docker-free** alternative from the [Spot](https://spot.lre.epita.fr/) library, installable via `brew install spot` (macOS) or `conda install -c conda-forge spot` (Linux/macOS); see [spot.lre.epita.fr/install.html](https://spot.lre.epita.fr/install.html) for Debian/Ubuntu packages |
 | `-synth-bin=PATH` | tool default | Override the synthesiser binary path/name |
-| `-sat=NAME` | `aalta` | LTL satisfiability solver: `aalta` (bundled in `lib/`) or `black` ([BLACK](https://www.black-sat.org), which must be installed separately). aalta shares a work file in its current directory, so use `black` when several runs execute at once in the same directory |
-| `-sat-bin=PATH` | tool default | Override the satisfiability solver binary path/name |
+| `-sat=NAME` | `aalta` | LTL satisfiability solver: `aalta` (bundled in `lib/`), `black` ([BLACK](https://www.black-sat.org), which must be installed separately) or `custom` (see `-sat-cmd`). Each call runs in its own temporary directory, so simultaneous calls do not interfere |
+| `-sat-bin=PATH` | tool default | Override the satisfiability solver binary path/name. A relative path is resolved against the directory AuRUS runs from |
+| `-sat-cmd='CMD'` | — | Any solver, without code changes: `CMD` is split on spaces (no shell), `{formula}` becomes the formula as one argument and `{file}` the path of a file holding it. Selects `-sat=custom` |
+| `-sat-syntax=NAME` | `aalta` | Formula syntax given to `-sat-cmd`: `aalta` or `black` |
+| `-sat-sat-pattern=RE`, `-sat-unsat-pattern=RE` | `sat`, `unsat` | Regular expressions an output line of `-sat-cmd` must match in full. A formula is unsatisfiable only when the solver exits with 0 and prints a line matching the unsat pattern; anything else is an error, never unsatisfiable |
 | `-ref=file.tlsf` | — | Reference (genuine) solution for the end-of-run quality analysis (repeatable) |
 | `-out=dir` | input dir | Output directory for the generated repairs |
+
+### Adding a satisfiability solver
+
+Any LTL satisfiability solver can be used without changing the code. You tell AuRUS three things:
+
+1. **How to call it**, with `-sat-cmd`. Write the command as you would type it, and put `{formula}` where the formula goes, or `{file}` if the solver reads the formula from a file. AuRUS splits the command on spaces and runs it directly, without a shell.
+2. **Which syntax it reads**, with `-sat-syntax`: `aalta` (the default) or `black`. The main difference is that `black` writes the constants as `True` and `False`.
+3. **How it answers**, with `-sat-sat-pattern` and `-sat-unsat-pattern`. These are regular expressions, and one line of the solver's output must match one of them in full. The defaults accept `sat` and `unsat` in any case, so a solver that prints `SAT`/`UNSAT` or `sat`/`unsat` needs neither option.
+
+For example, BLACK can also be configured this way. It prints `SAT` or `UNSAT`, which the defaults already accept:
+
+```bash
+./count-models.sh -k=10 -vars=a,b -sat-cmd='black solve -f {formula}' -sat-syntax=black \
+    'G (a -> X b) & !G (a -> F b)'
+# {"status":"unsat_solver","count":"0","ms":89}
+```
+
+`-sat-syntax=black` matters for formulas that contain the constants `true` or `false`. Without it BLACK would read them as propositions.
+
+The same options work with `unreal-repair.sh`. A formula is considered unsatisfiable only when the solver exits with code 0 and prints a line that matches the unsat pattern. Anything else is reported as an error and is never taken to mean unsatisfiable: an error, a crash, empty output, or output in which no line matches a pattern. In that last case the log names the patterns. A solver that answers with something else, such as `RESULT: UNSAT`, needs its own patterns: `-sat-sat-pattern='RESULT: SAT' -sat-unsat-pattern='RESULT: UNSAT'`.
+
+If the solver needs more than one command, or gives its answer in some other way, such as an exit code, write a small script that prints `sat` or `unsat` and use the script as the solver:
+
+```sh
+#!/bin/sh
+# my-solver.sh: adapts a solver that answers with its exit code (10 = sat, 20 = unsat).
+mysolver "$1"
+case $? in
+  10) echo sat ;;
+  20) echo unsat ;;
+  *)  exit 1 ;;
+esac
+```
+
+```bash
+./unreal-repair.sh -sat-cmd='./my-solver.sh {formula}' case-studies/arbiter/arbiter.tlsf
+```
+
+A relative path such as `./my-solver.sh` is resolved against the directory AuRUS runs from. Each call runs in its own temporary directory, so the solver can write work files in its current directory without disturbing other calls.
 
 ---
 

@@ -3,6 +3,7 @@ package main;
 import geneticalgorithm.SpecificationChromosome;
 import geneticalgorithm.SpecificationGeneticAlgorithm;
 import owl.ltl.tlsf.Tlsf;
+import solvers.LTLSolver;
 import utils.TlsfUtils;
 
 import java.io.BufferedWriter;
@@ -137,15 +138,16 @@ public class Main {
                 Settings.USE_SPECTRA = true;
             } else if (arg.startsWith("-synth-bin=")) {
                 Settings.SYNTH_BIN = arg.replace("-synth-bin=", "");
-            } else if (arg.startsWith("-sat-bin=")) {
-                Settings.SAT_BIN = arg.replace("-sat-bin=", "");
-            } else if (arg.startsWith("-sat=")) {
-                String sat = arg.replace("-sat=", "");
-                if (!sat.equalsIgnoreCase("aalta") && !sat.equalsIgnoreCase("black")) {
-                    System.err.println("ERROR: unknown value for -sat: '" + sat + "' (expected 'aalta' or 'black').");
+            } else if (arg.startsWith("-sat=") || arg.startsWith("-sat-")) {
+                try {
+                    if (!LTLSolver.applyOption(arg)) {
+                        System.err.println("ERROR: unknown or malformed argument: " + arg);
+                        System.exit(1);
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println("ERROR: " + e.getMessage());
                     System.exit(1);
                 }
-                Settings.SAT_SOLVER = sat;
             } else if (arg.startsWith("-seed=")) {
                 seedValue = parseLongArg("-seed", arg.replace("-seed=", ""));
                 seedGiven = true;
@@ -220,6 +222,12 @@ public class Main {
         if (filename.isEmpty()) {
             System.err.println("ERROR: no input specification provided (expected a .tlsf or .spectra file).");
             printUsage();
+            System.exit(1);
+        }
+        try {
+            LTLSolver.validateSettings();
+        } catch (IllegalArgumentException e) {
+            System.err.println("ERROR: " + e.getMessage());
             System.exit(1);
         }
         File input_file = new File(filename);
@@ -510,8 +518,12 @@ public class Main {
         System.out.println("  -use-spectra         treat the input as a Spectra specification");
         System.out.println("  -synth=NAME          synthesiser to use: strix (default) or ltlsynt (Docker-free)");
         System.out.println("  -synth-bin=PATH      override the synthesiser binary path/name");
-        System.out.println("  -sat=NAME            LTL satisfiability solver: aalta (default) or black");
+        System.out.println("  -sat=NAME            LTL satisfiability solver: aalta (default), black or custom");
         System.out.println("  -sat-bin=PATH        override the satisfiability solver binary path/name");
+        System.out.println("  -sat-cmd='CMD'       any solver: CMD with {formula} or {file}; selects -sat=custom");
+        System.out.println("  -sat-syntax=NAME     formula syntax for -sat-cmd: aalta (default) or black");
+        System.out.println("  -sat-sat-pattern=RE  output line meaning satisfiable (default: sat, any case)");
+        System.out.println("  -sat-unsat-pattern=RE output line meaning unsatisfiable (default: unsat, any case)");
         System.out.println("  -seed=N              fix the RNG seed (any whole number, e.g. -seed=12345 or");
         System.out.println("                       -seed=-987) for reproducible runs; default: derived from");
         System.out.println("                       the system clock, but always logged in out.txt as SEED=...");

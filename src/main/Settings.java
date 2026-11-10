@@ -219,11 +219,23 @@ public class Settings {
     /** Timeout, in seconds, for a single LTL satisfiability query (flag {@code -SatTO}, default {@code 30}). */
     public static int SAT_TIMEOUT = 30;
 
-    /** LTL satisfiability solver: {@code "aalta"} (default) or {@code "black"} (flag {@code -sat}). aalta shares a work file in its current directory, so concurrent runs in one directory interfere. Read by {@link solvers.LTLSolver}. */
+    /** LTL satisfiability solver: {@code "aalta"} (default), {@code "black"} or {@code "custom"} (flag {@code -sat}; {@code -sat-cmd} selects {@code "custom"}). Each call runs in its own temporary directory. Read by {@link solvers.LTLSolver}. */
     public static String SAT_SOLVER = "aalta";
 
-    /** Path/name of the satisfiability solver binary (flag {@code -sat-bin}). Empty means the default: the vendored {@code lib/aalta} binary, or {@code black} resolved from {@code PATH}. */
+    /** Path/name of the satisfiability solver binary (flag {@code -sat-bin}). Empty means the default: the vendored {@code lib/aalta} binary, {@code black} resolved from {@code PATH}, or the first word of {@link #SAT_CMD}. A relative path is resolved against the working directory of AuRUS. */
     public static String SAT_BIN = "";
+
+    /** Command template of the {@code custom} solver (flag {@code -sat-cmd}), split on whitespace without a shell. {@code {formula}} becomes the formula as one argument, {@code {file}} the path of a file holding it. */
+    public static String SAT_CMD = "";
+
+    /** Formula syntax the {@code custom} solver reads: {@code "aalta"} (default) or {@code "black"} (flag {@code -sat-syntax}). */
+    public static String SAT_SYNTAX = "aalta";
+
+    /** Regular expression that a whole output line of the {@code custom} solver matches when the formula is satisfiable (flag {@code -sat-sat-pattern}). The default accepts {@code sat} in any case. */
+    public static String SAT_SAT_PATTERN = "(?i)sat";
+
+    /** Regular expression that a whole output line of the {@code custom} solver matches when the formula is unsatisfiable (flag {@code -sat-unsat-pattern}). The default accepts {@code unsat} in any case. */
+    public static String SAT_UNSAT_PATTERN = "(?i)unsat";
 
     /**
      * Theoretical maximum value the fitness function can return: the sum of
@@ -316,6 +328,10 @@ public class Settings {
                 ", SAT_TIMEOUT=" + SAT_TIMEOUT +
                 ", SAT_SOLVER=" + SAT_SOLVER +
                 ", SAT_BIN='" + SAT_BIN + '\'' +
+                ", SAT_CMD='" + SAT_CMD + '\'' +
+                ", SAT_SYNTAX=" + SAT_SYNTAX +
+                ", SAT_SAT_PATTERN='" + SAT_SAT_PATTERN + '\'' +
+                ", SAT_UNSAT_PATTERN='" + SAT_UNSAT_PATTERN + '\'' +
                 ", allowAssumptionRemoval=" + allowAssumptionRemoval +
                 ", allowNonTemporalCrossover=" + allowNonTemporalCrossover +
                 ", allowHeuristicMutations=" + allowHeuristicMutations +

@@ -62,7 +62,7 @@ public class WellSeparationAnalysis {
                 Formula env_sys2 = env_sys.accept(visitor);
                 LTLSolver.SolverResult res = LTLSolver.isSAT(SolverUtils.toSolverSyntax(env_sys2));
                 System.out.println(res);
-                if (res == null)
+                if (res == null || res.inconclusive())
                     numOfTimeout++;
                 else if (res == LTLSolver.SolverResult.SAT) {
                     numOfSAT++;

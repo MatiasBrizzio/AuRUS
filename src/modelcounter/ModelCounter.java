@@ -81,20 +81,16 @@ public final class ModelCounter {
     }
 
     /**
-     * Only a conclusive {@code UNSAT} proves there are no models.
-     * {@link LTLSolver} also reports {@code UNSAT} when aalta dies with a
-     * non-zero exit and an empty stderr, so {@code numOfError} is checked too.
+     * Only a conclusive {@code UNSAT} proves there are no models;
+     * {@link LTLSolver} returns it only on an explicit verdict.
      */
     private static SatCheck checkSatisfiability(Formula formula) {
-        int errorsBefore = LTLSolver.numOfError;
         try {
             // The visitor rewrites W and M, which aalta rejects with a syntax
             // error, into operators it accepts. toSolverSyntax then separates
             // the operators, without which aalta reads "Xp1" as a variable.
             SolverResult result = LTLSolver.isSAT(
                     SolverUtils.toSolverSyntax(formula.accept(new SolverSyntaxOperatorReplacer())));
-            if (LTLSolver.numOfError != errorsBefore)
-                return SatCheck.ERROR;
             return switch (result) {
                 case SAT -> SatCheck.SATISFIABLE;
                 case UNSAT -> SatCheck.UNSATISFIABLE;
